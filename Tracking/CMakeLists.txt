@@ -35,12 +35,21 @@ else()
   message(STATUS "Found Acts ${Acts_VERSION}")
 endif()
 
-file(GLOB SRC_FILES CONFIGURE_DEPENDS 
+file(GLOB SRC_FILES CONFIGURE_DEPENDS
   ${PROJECT_SOURCE_DIR}/src/Tracking/Sim/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Reco/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/dqm/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/geo/[a-zA-z]*.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/[a-zA-z]*.cxx
+)
+
+# Add individual Digitization sources.
+list(APPEND SRC_FILES
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/ChargeCarrier.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/PulseShape.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/SiStripDigitizer.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/StripClusterer.cxx
+  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/StripPulseFitter.cxx
 )
 
 setup_library(module Tracking
@@ -51,6 +60,7 @@ setup_library(module Tracking
                            ROOT::Physics
                            Tracking::Event
                            Ecal::Event
+                           DetDescr::DetDescr
               sources ${SRC_FILES})
 
 setup_python(package_name LDMX/Tracking)

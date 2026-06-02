@@ -10,6 +10,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
+  ampl_weighting_ = ps.get<bool>("ampl_weighting");
   input_collection_ = ps.get<std::string>("input_collection");
   pass_name_ = ps.get<std::string>("input_pass_name");
   output_collection_ = ps.get<std::string>("output_collection");
@@ -22,6 +23,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
     ldmx_log(info) << "Got parameters: \nSeed threshold:   " << seed_
                    << "\nClustering threshold: " << min_thr_
                    << "\nMax cluster width: " << max_width_
+                   << "\nAmplitude weighting: " << ampl_weighting_
                    << "\nExpected pad hit time: " << pad_time_
                    << "\nMax hit time delay: " << time_tolerance_
                    << "\nVertical bar start index:     " << vert_bar_start_idx_
@@ -402,8 +404,10 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }  // if adding another hit, going forward, was allowed
 
       // done adding hits to cluster. calculate centroid
-      centroid_ /= val_;  // final weighting step: divide by total
-      centroid_ -= 1;     // shift back to actual channel center
+      centroid_ /=
+          sumw_;  // final weighting step: divide by total amplitude sum
+
+      centroid_ -= 1;  // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;
 
@@ -445,6 +449,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       val_e_ = 0;
       beam_e_ = 0;
       time_ = 0;
+      sumw_ = 0;
       // book keep which channels have already been added to a cluster
       v_added_indices_.resize(0);
 
@@ -476,13 +481,21 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
 void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   float ampl = hit.getPE();
-  val_ += ampl;
+  float w = 1;
+  if (ampl_weighting_) {  // if choosing to PE-weight centroid positions
+    w = ampl;
+  }
+
   float energy = hit.getEnergy();
   val_e_ += energy;
 
-  centroid_ += (idx + 1) * ampl;  // need non-zero weight of channel 0. shifting
-                                  // centroid back by 1 in the end
-  // this number gets divided by val at the end
+  val_ += ampl;
+  centroid_ += (idx + 1) * w;  // need non-zero weight of channel 0. shifting
+                               // centroid back by 1 in the end
+                               // this number gets divided by val at the end
+
+  sumw_ += w;
+
   v_added_indices_.push_back(idx);
 
   beam_e_ += hit.getBeamEfrac() * energy;

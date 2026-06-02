@@ -162,6 +162,8 @@ void DarkBremInteraction::produce(framework::Event& event) {
   float db_material_z =
       event.getEventHeader().getFloatParameter("db_material_z");
   event.add("DarkBremVertexMaterialZ", db_material_z);
+  float aprime_conversion_material_z =
+      event.getEventHeader().getFloatParameter("aprime_conversion_material_z");
 
   histograms_.fill("dark_brem_z", vtx_z);
 
@@ -179,9 +181,172 @@ void DarkBremInteraction::produce(framework::Event& event) {
     }
   }
 
-  histograms_.fill("dark_brem_element", i_element);
-  histograms_.fill("dark_brem_material", ap_vertex_material);
-}
+  histograms_.fill("dark_brem_element", i_element + 0.5);
+  histograms_.fill("dark_brem_material", ap_vertex_material + 0.5);
+
+  // Get the daughters of the A' if it decayed within the simulation
+  std::vector<int> aprime_daughters = aprime->getDaughters();
+  int n_ap_daughters = aprime_daughters.size();
+  ldmx_log(debug) << "A' with energy " << aprime->getEnergy() << " and momentum"
+                  << " (" << aprime_px << ", " << aprime_py << ", " << aprime_pz
+                  << ") GeV " << " has " << n_ap_daughters << " daughters";
+  if (n_ap_daughters == 0) {
+    histograms_.fill("aprime_daughter_pdgid", 0);
+    histograms_.fill("aprime_daughter_material", 0.5);
+    histograms_.fill("aprime_daughter_element", 0.5);
+  } else {
+    // Loop again on the particles to find the daughters of the A'
+    for (const auto& [track_id, daughter_particle] : particle_map) {
+      for (const auto& primary_daughter : aprime_daughters) {
+        if (track_id == primary_daughter) {
+          auto const& daughter_p = daughter_particle.getMomentum();
+          double daughter_px{daughter_p.at(0)}, daughter_py{daughter_p.at(1)},
+              daughter_pz{daughter_p.at(2)};
+
+          ldmx_log(debug) << "  Daughter track ID " << track_id
+                          << " with PDG ID " << daughter_particle.getPdgID()
+                          << " and energy " << daughter_particle.getEnergy()
+                          << " and charge " << daughter_particle.getCharge()
+                          << " and mass " << daughter_particle.getMass()
+                          << " GeV" << " and momentum (" << daughter_px << ", "
+                          << daughter_py << ", " << daughter_pz << ") GeV";
+          histograms_.fill("aprime_daughter_energy",
+                           daughter_particle.getEnergy());
+          histograms_.fill("aprime_daughter_pt",
+                           quadsum({daughter_px, daughter_py}));
+
+          // Fill histogram for daughter creation vertex Z position
+          double daughter_start_z = daughter_particle.getVertex().at(2);
+          histograms_.fill("aprime_daughter_start_z", daughter_start_z);
+
+          // Fill histogram for material where A' daughter was created.
+          // Prefer the explicit interaction material; fall back to vertex
+          // volume.
+          std::string daughter_material_name =
+              daughter_particle.getInteractionMaterial();
+          std::string daughter_vertex_volume =
+              daughter_particle.getVertexVolume();
+          int daughter_material = 0;
+
+          if (daughter_material_name.find("Carbon") != std::string::npos) {
+            daughter_material = 1;
+          } else if (daughter_material_name.find("FR4") != std::string::npos ||
+                     daughter_material_name.find("PCB") != std::string::npos ||
+                     daughter_vertex_volume.find("motherboard") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("PCB") != std::string::npos) {
+            daughter_material = 2;
+          } else if (daughter_material_name.find("Glue") != std::string::npos ||
+                     daughter_vertex_volume.find("Glue") != std::string::npos ||
+                     daughter_vertex_volume.find("CFMix") !=
+                         std::string::npos) {
+            daughter_material = 3;
+          } else if (daughter_material_name.find("Silicon") !=
+                         std::string::npos ||
+                     daughter_material_name.find("Si") != std::string::npos ||
+                     daughter_vertex_volume.find("Si") != std::string::npos ||
+                     daughter_vertex_volume.find("Sensor") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("sensor") !=
+                         std::string::npos) {
+            daughter_material = 4;
+          } else if (daughter_material_name.find("Al") != std::string::npos ||
+                     daughter_material_name.find("Aluminum") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("strongback") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("support") !=
+                         std::string::npos) {
+            daughter_material = 5;
+          } else if (daughter_material_name.find("W") != std::string::npos ||
+                     daughter_material_name.find("Tungsten") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("target") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("W_front_volume") !=
+                         std::string::npos ||
+                     daughter_vertex_volume.find("W_cooling") !=
+                         std::string::npos) {
+            daughter_material = 6;
+          } else if (daughter_material_name.find("Polyvinyltoluene") !=
+                         std::string::npos ||
+                     daughter_material_name.find("PVT") != std::string::npos ||
+                     daughter_vertex_volume.find("trigger_pad") !=
+                         std::string::npos) {
+            daughter_material = 7;
+          } else if (daughter_material_name.find("Air") != std::string::npos ||
+                     daughter_vertex_volume.find("Air") != std::string::npos) {
+            daughter_material = 8;
+          } else {
+            ldmx_log(warn) << "Daughter particle track ID " << track_id
+                           << " created in unknown material: "
+                           << daughter_material_name
+                           << " and vertex volume: " << daughter_vertex_volume;
+          }
+          histograms_.fill("aprime_daughter_material", daughter_material + 0.5);
+
+          // Fill histogram for element where A' conversion happened.
+          // This comes from the conversion process selecting an element in
+          // material.
+          int daughter_element = 0;
+          if (aprime_conversion_material_z > 0) {
+            if (known_elements_.find(static_cast<int>(
+                    aprime_conversion_material_z)) == known_elements_.end()) {
+              daughter_element = known_elements_.size();
+            } else {
+              daughter_element = known_elements_.at(
+                  static_cast<int>(aprime_conversion_material_z));
+            }
+          }
+          histograms_.fill("aprime_daughter_element", daughter_element + 0.5);
+
+          if (daughter_particle.getPdgID() == 11) {
+            histograms_.fill("aprime_daughter_pdgid", 1.5);
+          } else if (daughter_particle.getPdgID() == -11) {
+            histograms_.fill("aprime_daughter_pdgid", 2.5);
+          } else if (daughter_particle.getPdgID() == 13) {
+            histograms_.fill("aprime_daughter_pdgid", 3.5);
+          } else if (daughter_particle.getPdgID() == -13) {
+            histograms_.fill("aprime_daughter_pdgid", 4.5);
+          } else if (daughter_particle.getPdgID() == 17) {
+            histograms_.fill("aprime_daughter_pdgid", 5.5);
+          } else if (daughter_particle.getPdgID() == -17) {
+            histograms_.fill("aprime_daughter_pdgid", 6.5);
+          } else if (daughter_particle.getPdgID() == 211) {
+            histograms_.fill("aprime_daughter_pdgid", 7.5);
+          } else if (daughter_particle.getPdgID() == -211) {
+            histograms_.fill("aprime_daughter_pdgid", 8.5);
+          } else {
+            histograms_.fill("aprime_daughter_pdgid", 9.5);
+          }
+        }  // end if track_id matches primary daughter
+      }  // end loop over A' daughters
+    }  // end loop over particles
+  }  // end if n_ap_daughters > 0
+
+  // Get recoil electron daughters if it underwent bremsstrahlung
+  std::vector<int> recoil_daughters = recoil->getDaughters();
+  int n_recoil_brem_daughters = 0;
+  // Loop again on the particles to find the daughters of the recoil electron
+  for (const auto& [track_id, daughter_particle] : particle_map) {
+    for (const auto& primary_daughter : recoil_daughters) {
+      if (track_id == primary_daughter) {
+        if (daughter_particle.getEnergy() > (0.2 * recoil->getEnergy()) &&
+            (daughter_particle.getPdgID() == 22)) {
+          n_recoil_brem_daughters++;
+          histograms_.fill("recoil_brem_daughter_energy",
+                           daughter_particle.getEnergy());
+          histograms_.fill("recoil_brem_daughter_energy_ratio",
+                           daughter_particle.getEnergy() / recoil->getEnergy());
+          ldmx_log(debug) << "  Recoil electron daughter track ID " << track_id
+                          << " with PDG ID " << daughter_particle.getPdgID()
+                          << " and energy " << daughter_particle.getEnergy();
+        }
+      }
+    }  // end loop over recoil daughters
+  }  // end loop over particles
+  histograms_.fill("recoil_brem_daughter_num", n_recoil_brem_daughters);
+}  // end of produce
 
 }  // namespace dqm
 

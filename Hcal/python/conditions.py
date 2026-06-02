@@ -5,14 +5,18 @@ it is just here to share the configuration classes helpful
 for conditions between the multiple condition sets
 """
 
+from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
 
-from LDMX.Framework import ldmxcfg
 
+@conditions_object_provider(
+    "HcalReconConditions", "hcal::HcalReconConditionsProvider", "Hcal"
+)
+class HcalReconConditionsProvider(ConditionsObjectProvider):
+    """The HcalReconConditions object packages the reconstructing conditions
+    tables together
 
-class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
-    """The HcalReconConditions object packages the reconstructing conditions tables together
-
-    This makes the processor using the recon conditions less dependent on the underlying structure.
+    This makes the processor using the recon conditions less dependent on the
+    underlying structure.
 
     Parameters
     ----------
@@ -27,16 +31,11 @@ class HcalReconConditionsProvider(ldmxcfg.ConditionsObjectProvider) :
 
     Examples
     --------
-    The hcal_hardcoded_conditions.py file provides a working example where each condition
-    wrapped here are constant for all runs and all channels.
+    The hcal_hardcoded_conditions.py file provides a working example
+    where each condition wrapped here are constant for all runs and all channels.
     """
 
-    def __init__(self,adc_ped,adc_gain,tot_calib,toa_calib) :
-        super().__init__("HcalReconConditions","hcal::HcalReconConditionsProvider","Hcal")
-
-        # our COP only needs the object names but providing the full parent COPs
-        #   ensures that they exist
-        self.adc_ped = adc_ped.object_name
-        self.adc_gain = adc_gain.object_name
-        self.tot_calib = tot_calib.object_name
-        self.toa_calib = toa_calib.object_name
+    adc_ped: str
+    adc_gain: str
+    tot_calib: str
+    toa_calib: str

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+      xsi:noNamespaceSchemaLocation="gdml.xsd">
   <define>      
     &constants;
   
@@ -65,9 +64,7 @@
                                                       stereo_angle
                                                      -stereo_angle" />
   </define>
-  <materials> 
-    &materials;
-  </materials>
+
   <solids>
     <box lunit="mm" name="recoil_l14_active_sensor_box" 
          x="si_large_active_sensor_dx" y="si_large_active_sensor_dy" z="si_sensor_thickness"/>
@@ -86,11 +83,14 @@
     <volume name="Recoil_l14_active_Sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l14_active_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="recoil_l14_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l14_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
       <physvol name="recoil_l14_active_sensor">
         <volumeref ref="Recoil_l14_active_Sensor_vol"/>
         <position name="recoil_l14_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
@@ -99,11 +99,14 @@
     <volume name="Recoil_l56_active_Sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l56_active_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
     </volume>
     <volume name="recoil_l56_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l56_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleNoDau"/>
       <physvol name="recoil_l56_active_sensor">
         <volumeref ref="Recoil_l56_active_Sensor_vol"/>
         <position name="recoil_l56_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>

@@ -20,8 +20,9 @@ void PFHcalClusterProducer::configure(framework::config::Parameters& ps) {
   // DBScan parameters
   min_cluster_hit_mult_ = ps.get<int>("min_cluster_hit_mult");
   cluster_hit_dist_ = ps.get<double>("cluster_hit_dist");
-  cluster_z_bias_ = ps.get<double>("clusterZBias", 1);
+  cluster_z_bias_ = ps.get<double>("cluster_z_bias", 1);
   min_hit_energy_ = ps.get<double>("min_hit_energy");
+  save_hit_contribs_ = ps.get<bool>("save_hit_contribs", true);
 }
 
 void PFHcalClusterProducer::produce(framework::Event& event) {
@@ -47,7 +48,8 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
 
     for (const auto& hit_ptrs : all_hit_ptrs) {
       ldmx::CaloCluster cl;
-      cb.fillClusterInfoFromHits(&cl, hit_ptrs, log_energy_weight_);
+      cb.fillClusterInfoFromHits(&cl, hit_ptrs, log_energy_weight_,
+                                 save_hit_contribs_);
       pf_clusters.push_back(cl);
     }
 
@@ -59,7 +61,8 @@ void PFHcalClusterProducer::produce(framework::Event& event) {
       ptrs.push_back(&h);
     }
     DBScanClusterBuilder dummy;
-    dummy.fillClusterInfoFromHits(&cl, ptrs, log_energy_weight_);
+    dummy.fillClusterInfoFromHits(&cl, ptrs, log_energy_weight_,
+                                  save_hit_contribs_);
     pf_clusters.push_back(cl);
   }
 

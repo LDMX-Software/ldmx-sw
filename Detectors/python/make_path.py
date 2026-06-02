@@ -1,6 +1,7 @@
-"""Helpful python configuration functions for getting the path to installed detector descriptions.
+"""Helpful python configuration functions for getting the path to installed
+detector descriptions.
 
-makePath is meant to be internal to this module,
+_make_path is meant to be internal to this module,
 but there is no reason a user could use it for a different purpose if desired
 
 This file was configured by cmake for the installation of ldmx-sw at
@@ -11,10 +12,12 @@ import os
 import sys
 
 
-def makePath( det_name , file_name ) :
-    """Return a path to the installed data directory for the input detector and file names.
+def _make_path(det_name, file_name):
+    """Return a path to the installed data directory for the input detector and
+    file names.
 
-    Assumes the detectors are installed in the 'data/detectors' directory in the installation directory.
+    Assumes the detectors are installed in the 'data/detectors' directory in
+    the installation directory.
     Errors out the python script if the created full path does exist.
     This could happen because
     - The inputs were spelled wrong
@@ -24,9 +27,11 @@ def makePath( det_name , file_name ) :
     Parameters
     ----------
     det_name : str
-        Name of detector to get a path for (should match the name of one of the detector directories)
+        Name of detector to get a path for (should match the name of one of
+        the detector directories)
     file_name : str
-        Name of the detector gdml file to get a path for (should match the name -- no extension -- of one of the gdml files)
+        Name of the detector gdml file to get a path for (should match the
+        name -- no extension -- of one of the gdml files)
 
     Returns
     -------
@@ -34,19 +39,23 @@ def makePath( det_name , file_name ) :
         full path to installed detector gdml description
     """
 
-    full_path = '@CMAKE_INSTALL_PREFIX@/data/detectors/' + det_name + '/' + file_name + '.gdml'
-    if not os.path.isfile( full_path ) :
-        raise ValueError(f'GDML file \'{full_path}\' does not exist.')
+    full_path = (
+        "@CMAKE_INSTALL_PREFIX@/data/detectors/" + det_name + "/" + file_name + ".gdml"
+    )
+    if not os.path.isfile(full_path):
+        raise ValueError(f"GDML file '{full_path}' does not exist.")
 
     return full_path
 
-def makeDetectorPath( det_name ) :
+
+def make_detector_path(det_name):
     """Get the full path to the installed ldmx detector description
 
     Parameters
     ----------
     det_name : str
-        Name of detector to get a path for (should match the name of one of the detector directories)
+        Name of detector to get a path for (should match the name of one of
+        the detector directories)
 
     Returns
     -------
@@ -57,18 +66,20 @@ def makeDetectorPath( det_name ) :
     --------
     Useful for use with the simulator producer:
         from LDMX.Detector.makePath import *
-        mySimulator.detector = makeDetectorPath( 'ldmx-det-v12' )
+        mySimulator.detector = make_detector_path( 'ldmx-det-v12' )
     """
 
-    return makePath( det_name , 'detector' )
+    return _make_path(det_name, "detector")
 
-def makeScoringPlanesPath( det_name ) :
+
+def make_scoring_planes_path(det_name):
     """Get the full path to the installed ldmx scoring planes description
 
     Parameters
     ----------
     det_name : str
-        Name of detector to get a path for (should match the name of one of the detector directories)
+        Name of detector to get a path for (should match the name of one of
+        the detector directories)
 
     Returns
     -------
@@ -79,7 +90,7 @@ def makeScoringPlanesPath( det_name ) :
     --------
     Useful for use with the simulator producer:
         from LDMX.Detector.makePath import *
-        mySimulator.scoring_planes = makeScoringPlanesPath( 'ldmx-det-v12' )
+        mySimulator.scoring_planes = make_scoring_planes_path( 'ldmx-det-v12' )
     """
 
-    return makePath( det_name , 'scoring_planes' )
+    return _make_path(det_name, "scoring_planes")

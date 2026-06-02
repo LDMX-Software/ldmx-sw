@@ -16,11 +16,13 @@
 namespace ldmx {
 
 /**
- * Truth (Monte Carlo) representation of a silicon strip detector hit.
+ * Truth (Monte Carlo) representation of a digitized silicon strip detector hit.
  *
+ * This is the output of the realistic tracker digitization of simulated data.
  * In addition to the ADC samples and time stamp held by the SiStripHit base
- * class, this class carries the truth-level deposited charge and energy. The
- * reco-level (real data) counterpart is RawSiStripHit.
+ * class, it carries the sensor position (layer/strip) and the MC-truth matching
+ * information (originating track, particle, SimTrackerHit and deposited energy).
+ * The reco-level (real data) counterpart is RawSiStripHit.
  */
 class SimSiStripHit : public SiStripHit {
  public:
@@ -30,14 +32,20 @@ class SimSiStripHit : public SiStripHit {
   /**
    * Constructor.
    *
-   * The truth charge and energy are populated through the dedicated setters.
-   *
-   * @param[in] samples The ADC samples composing this hit.  For now, the size
-   *    of a sample is assumed to be 16 bits.
-   * @param[in] time The timestamp of this hit as set by the data acquisition
-   *    system.
+   * @param[in] layer_id    Sensor layer identifier (from tracking geometry).
+   * @param[in] strip_id    Readout strip index within the sensor.
+   * @param[in] samples     The ADC samples composing this hit (16-bit each).
+   * @param[in] time        Hit timestamp [ns].
+   * @param[in] track_id    Geant4 track ID of the particle that created this
+   *    hit.
+   * @param[in] pdg_id      PDG particle ID of the particle that created this
+   *    hit.
+   * @param[in] sim_hit_id  Detector ID of the originating SimTrackerHit.
+   * @param[in] edep        Energy deposited by the parent SimTrackerHit [MeV].
    */
-  SimSiStripHit(std::vector<short> samples, long time);
+  SimSiStripHit(int layer_id, int strip_id, std::vector<short> samples,
+                long time, int track_id = -1, int pdg_id = 0,
+                int sim_hit_id = -1, float edep = 0.f);
 
   /**
    * Destructor.
@@ -47,20 +55,43 @@ class SimSiStripHit : public SiStripHit {
   virtual ~SimSiStripHit() = default;
 
   /**
-   * Clear the samples, time stamp and truth fields.
+   * Clear the samples, time stamp, sensor position and truth fields.
    *
    * This method is needed by ROOT when building the dictionary.
    */
   void clear() override;
 
-  /// Get the truth (MC) deposited charge.
-  float getCharge() const { return charge_; }
-  /// Get the truth (MC) deposited energy.
+  /// Get the sensor layer identifier.
+  int getLayerID() const { return layer_id_; }
+
+  /// Get the readout strip index within the sensor.
+  int getStripID() const { return strip_id_; }
+
+  /// Get the Geant4 track ID of the particle that created this hit (-1 if
+  /// unknown).
+  int getTrackID() const { return track_id_; }
+
+  /// Get the PDG particle ID of the particle that created this hit (0 if
+  /// unknown).
+  int getPdgID() const { return pdg_id_; }
+
+  /// Get the detector ID of the originating SimTrackerHit (-1 if unknown).
+  int getSimHitID() const { return sim_hit_id_; }
+
+  /// Get the energy deposited by the parent SimTrackerHit [MeV] (0 if unknown).
   float getEdep() const { return edep_; }
 
-  /// Set the truth (MC) deposited charge.
-  void setCharge(float v) { charge_ = v; }
-  /// Set the truth (MC) deposited energy.
+  /// Set the sensor layer identifier.
+  void setLayerID(int v) { layer_id_ = v; }
+  /// Set the readout strip index within the sensor.
+  void setStripID(int v) { strip_id_ = v; }
+  /// Set the Geant4 track ID of the particle that created this hit.
+  void setTrackID(int v) { track_id_ = v; }
+  /// Set the PDG particle ID of the particle that created this hit.
+  void setPdgID(int v) { pdg_id_ = v; }
+  /// Set the detector ID of the originating SimTrackerHit.
+  void setSimHitID(int v) { sim_hit_id_ = v; }
+  /// Set the energy deposited by the parent SimTrackerHit [MeV].
   void setEdep(float v) { edep_ = v; }
 
   /**
@@ -78,11 +109,21 @@ class SimSiStripHit : public SiStripHit {
                                   const SimSiStripHit &hit);
 
  protected:
-  /// Truth (MC) deposited charge.
-  float charge_{0};
+  /// Sensor layer identifier (from tracking geometry).
+  int layer_id_{-1};
 
-  /// Truth (MC) deposited energy.
-  float edep_{0};
+  /// Readout strip index within the sensor.
+  int strip_id_{-1};
+
+  // Truth information (for MC truth matching; -1/0 means not set)
+  /// Geant4 track ID of the particle that created this hit.
+  int track_id_{-1};
+  /// PDG particle ID of the particle that created this hit.
+  int pdg_id_{0};
+  /// Detector ID of the originating SimTrackerHit.
+  int sim_hit_id_{-1};
+  /// Energy deposited by the parent SimTrackerHit [MeV].
+  float edep_{0.f};
 
   /// Class declaration needed by the ROOT dictionary.
   ClassDefOverride(SimSiStripHit, 1);

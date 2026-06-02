@@ -1,110 +1,195 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE gdml [
-<!ENTITY constants SYSTEM "constants.gdml">
+  <!ENTITY constants SYSTEM "constants.gdml">
 ]>
-<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd" >
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
   <define>
-
-    &constants;   
-    
+    &constants;
     <variable name="x" value="1"/>
-
-    <!-- Parent volume dimensions --> 
-    <constant name="target_area_envelope_x" value="magnet_gap_dx - 5" />
-    <constant name="target_area_envelope_y" value="magnet_gap_dy - 5" />
-    <constant name="target_area_envelope_z" value="2*(target_thickness/2 + 2*clearance + trigger_pad_thickness)" />
-
+    <variable name="j" value="1"/>
+    <!-- Parent volume dimensions -->
+    <constant name="target_area_envelope_x" value="magnet_gap_dx - 5*mm" />
+    <constant name="target_area_envelope_y" value="magnet_gap_dy - 5*mm" />
+    <!-- Envelope must contain target at z=0 and TS pad 3 at trigger_pad3_z -->
+    <constant name="ts3_stack_z" value="2*trigger_pad_bar_thickness + trigger_pad_bar_gap + 2*clearance" />
+    <constant name="ts3_margin_z" value="5*mm" />
+    <!-- trigger_pad3_z is negative; -trigger_pad3_z is upstream distance -->
+    <constant name="target_area_envelope_z" value="2*(-trigger_pad3_z + ts3_stack_z/2 + ts3_margin_z)" />
   </define>
 
   <solids>
+    <box lunit="mm" name="target_area_box"
+         x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
 
-    <box lunit="mm" name="target_area_box" x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
-    <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/> 
-    <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
-
-
+    <!-- LYSO target -->
+    <box lunit="mm" name="target_bar"    x="target_bar_dx"    y="target_bar_dy"    z="target_bar_thickness"/>
+    <box lunit="mm" name="target_array1" x="target_array1_dx" y="target_array1_dy" z="target_array1_thickness"/>
+    <box lunit="mm" name="target_array2" x="target_array2_dx" y="target_array2_dy" z="target_array2_thickness"/>
+    <box lunit="mm" name="target_box"    x="target_dim_x"     y="target_dim_y"     z="target_thickness"/>
+    <!-- TS3 bars + light pipes -->
+    <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" />
+    <box lunit="mm" name="lp3_bar_box"     x="trigger_bar_dx" y="lp_bar_dy"      z="trigger_pad_bar_thickness" />
   </solids>
 
-  <materials>
-
-      <material name="Vacuum" state="gas">
-      <MEE unit="eV" value="19.2"/>
-      <D unit="g/cm3" value="9.99999473841014e-09"/>
-      <fraction n="1" ref="H"/>
-    </material>
-    
-    <!-- Target --> 
-    <material name="Tungsten" state="solid">
-      <MEE unit="eV" value="727"/>
-      <D unit="g/cm3" value="19.2999898451316"/>
-      <fraction n="1" ref="W"/>
-    </material>
-
-    
-    <!-- Scintillator -->
-    <material name="Polyvinyltoluene">
-      <D type="density" value="1.023" unit="g/cm3"/>
-      <composite n="27" ref="C"/>
-      <composite n="30" ref="H"/>
-    </material>
-
-  </materials>
-
   <structure>
-
+    <!-- Single LYSO bar -->
     <volume name="target">
-      <materialref ref="Tungsten"/>
-      <solidref ref="target_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TargetVis"/>
+      <materialref ref="LYSO"/>
+      <solidref ref="target_bar"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
+      <auxiliary auxtype="Region" auxvalue="target"/>
     </volume>
 
+    <!-- Array containers -->
+    <volume name="lvTargetArray1">
+      <materialref ref="Air"/>
+      <solidref ref="target_array1"/>
+      <loop for="x" from="1" to="number_of_target_bars1" step="1">
+        <physvol>
+          <volumeref ref="target"/>
+          <position name="posTargetBar1" unit="mm"
+            x="0"
+            y="target_array1_first_bar_y + (x-1) * (target_bar_dy + target_bar_gap)"
+            z="0"/>
+          <rotationref ref="identity"/>
+        </physvol>
+      </loop>
+    </volume>
+
+    <volume name="lvTargetArray2">
+      <materialref ref="Air"/>
+      <solidref ref="target_array2"/>
+      <loop for="x" from="1" to="number_of_target_bars2" step="1">
+        <physvol>
+          <volumeref ref="target"/>
+          <position name="posTargetBar2" unit="mm"
+                    x="0"
+                    y="target_array2_first_bar_y + (x-1) * (target_bar_dy + target_bar_gap)"
+                    z="0"/>
+          <rotationref ref="identity"/>
+        </physvol>
+      </loop>
+    </volume>
+
+    <!-- Target envelope that holds both layers -->
+    <volume name="lvTarget">
+      <materialref ref="Air"/>
+      <solidref ref="target_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Target"/>
+      <auxiliary auxtype="Region" auxvalue="target"/>
+
+      <physvol name="lvTargetArray1_phys">
+        <volumeref ref="lvTargetArray1"/>
+        <position name="posTarget1" unit="mm" x="target_array1_x" y="target_array1_y" z="target_array1_z"/>
+        <rotationref ref="identity"/>
+      </physvol>
+
+      <physvol name="lvTargetArray2_phys">
+        <volumeref ref="lvTargetArray2"/>
+        <position name="posTarget2" unit="mm" x="target_array2_x" y="target_array2_y" z="target_array2_z"/>
+        <rotationref ref="identity"/>
+      </physvol>
+    </volume>
+
+    <!-- LYSO LP bars (uses AcrylicPMMA from global materials.gdml) -->
+    <volume name="lyso_lp_bar_volume">
+      <materialref ref="AcrylicPMMA"/>
+      <solidref ref="lp3_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="LightPipe"/>
+    </volume>
+
+    <!-- TS3 bars -->
     <volume name="trigger_pad3_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
+      <!-- keep or drop; not critical -->
+      <auxiliary auxtype="Region" auxvalue="trig_scint"/>
     </volume>
 
-    <volume name="TS_trgt">
-      <materialref ref="Vacuum"/>
-      <solidref ref="target_area_box" />
+    <volume name="lp_pad3_bar_volume">
+      <materialref ref="AcrylicPMMA"/>
+      <solidref ref="lp3_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="LightPipe"/>
+      <auxiliary auxtype="Region" auxvalue="trig_scint"/>
+    </volume>
 
-      <loop for="x" to="number_of_bars" step="1">
-        <physvol copynumber="2*x-2">
-          <volumeref ref="trigger_pad3_bar_volume" />
-          <position name="trigger_pad3_bar_layer1_pos" unit="mm" 
-          		x="0"
-                y="-target_dim_y/2 + trigger_bar_dy*(x - 0.5) + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
-        </physvol>
-        <physvol copynumber="2*x - 1">
-          <volumeref ref="trigger_pad3_bar_volume" />
-          <position name="trigger_pad3_bar_layer2_pos" unit="mm" 
-          		x="0"
-                y="-target_dim_y/2 + trigger_bar_dy*x + trigger_pad_bar_gap*(x - 1) + trigger_pad_offset" 
-                z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2" />
-          <rotationref ref="identity" />
+    <!-- Combined target+TS3 mother -->
+    <volume name="TS_trgt">
+      <materialref ref="Air"/>
+      <solidref ref="target_area_box"/>
+
+      <!-- LYSO light pipes: 12 bars, glued by x-shift (same style as TS3 LPs) -->
+      <loop for="x" from="1" to="number_of_bars" step="1">
+        <physvol copynumber="1000 + x">
+          <volumeref ref="lyso_lp_bar_volume"/>
+          <position name="lyso_lp_pos" unit="mm"
+            x="target_bar_dx"
+            y="-target_dim_y/2
+              + lp_bar_dy*(x - 0.5)
+              + lp_bar_y_gap*(x - 1)
+              + lp_pad_offset"
+            z="0"/>
+          <rotationref ref="identity"/>
         </physvol>
       </loop>
 
+      <!-- TS pad 3 scint + LP -->
+      <loop for="j" from="1" to="number_of_bars" step="1">
+        <physvol copynumber="2*j-2">  <!-- pad 3, layer 1-->
+          <volumeref ref="trigger_pad3_bar_volume"/>
+          <position name="trigger_pad3_bar_layer1_pos" unit="mm"
+                    x="0"
+                    y="-target_dim_y/2 + lp_bar_dy*(j - 0.5) + lp_bar_y_gap*(j - 1) + lp_pad_offset"
+                    z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2"/>
+          <rotationref ref="identity"/>
+        </physvol>
+        <physvol copynumber="2*j-1">  <!-- pad 3, layer 2-->
+          <volumeref ref="trigger_pad3_bar_volume"/>
+          <position name="trigger_pad3_bar_layer2_pos" unit="mm"
+                    x="0"
+                    y="-target_dim_y/2 + lp_bar_dy*(j - 0.5) + lp_bar_y_gap*(j - 1) + lp_pad_offset + lp_layer_y_shift"
+                    z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2"/>
+          <rotationref ref="identity"/>
+        </physvol>
+
+        <physvol copynumber="2000 + (2*j-2)">  <!-- LP pad 3, layer 1 -->
+          <volumeref ref="lp_pad3_bar_volume"/>
+          <position name="lp_pad3_bar_layer1_pos" unit="mm"
+                    x="trigger_bar_dx"
+                    y="-target_dim_y/2 + lp_bar_dy*(j - 0.5) + lp_bar_y_gap*(j - 1) + lp_pad_offset"
+                    z="trigger_pad3_z - trigger_pad_bar_thickness/2 - trigger_pad_bar_gap/2"/>
+          <rotationref ref="identity"/>
+        </physvol>
+        <physvol copynumber="2000 + (2*j-1)">  <!-- LP pad 3, layer 2 -->
+          <volumeref ref="lp_pad3_bar_volume"/>
+          <position name="lp_pad3_bar_layer2_pos" unit="mm"
+                    x="trigger_bar_dx"
+                    y="-target_dim_y/2 + lp_bar_dy*(j - 0.5) + lp_bar_y_gap*(j - 1) + lp_pad_offset + lp_layer_y_shift"
+                    z="trigger_pad3_z + trigger_pad_bar_thickness/2 + trigger_pad_bar_gap/2"/>
+          <rotationref ref="identity"/>
+        </physvol>
+      </loop>
+
+      <!-- Target at center -->
       <physvol copynumber="3">
-        <volumeref ref="target"/>
+        <volumeref ref="lvTarget"/>
         <positionref ref="center"/>
         <rotationref ref="identity"/>
       </physvol>
 
-      <auxiliary auxtype="Region" auxvalue="target" />
-      <!-- <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/> -->
+      <auxiliary auxtype="Region" auxvalue="target"/>
       <auxiliary auxtype="DetElem" auxvalue="target"/>
-
     </volume>
-
-  </structure> 
+  </structure>
 
   <setup name="Default" version="1.0">
     <world ref="TS_trgt"/>

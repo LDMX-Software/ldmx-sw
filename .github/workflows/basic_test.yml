@@ -20,7 +20,15 @@ jobs:
         fetch-depth: 0
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
+
+    - name: Cache ccache
+      uses: actions/cache@v5
+      with:
+        path: ~/.ccache
+        key: ccache-basic-${{ github.sha }}
+        restore-keys: |
+          ccache-basic-
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -29,5 +37,5 @@ jobs:
       shell: bash
 
     - name: Basic Tests for Functionality
-      run: just test 
+      run: just test
       shell: bash

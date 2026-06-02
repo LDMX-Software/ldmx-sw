@@ -54,6 +54,9 @@ class TrigScintClusterProducer : public framework::Producer {
   // max number of neighboring hits to combine when forming a cluster
   int max_width_{2};
 
+  // PE-amplitude weighting for centroid values
+  bool ampl_weighting_{true};
+
   // specific verbosity of this producer
   int verbose_{0};
 
@@ -89,6 +92,9 @@ class TrigScintClusterProducer : public framework::Producer {
 
   // edep content, only; leave val_ for PE
   float val_e_{0.};
+
+  // sum of hit cluster weights
+  float sumw_{0.};
 
   // book keep which channels have already been added to the cluster at hand
   std::vector<unsigned int> v_added_indices_;
