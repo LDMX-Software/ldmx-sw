@@ -5,25 +5,27 @@
 //----------------------//
 //   C++ Standard Lib   //
 //----------------------//
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
 //----------//
-//   ROOT   //
+//   LDMX   //
 //----------//
-#include "TObject.h"
+#include "Tracking/Event/SiStripHit.h"
 
 namespace ldmx {
 
 /**
  * Implementation of a raw digitized hit from a silicon strip detector.
  *
- * This class is meant to encapsulate the raw data coming from a silicon strip
- * detector prior to any additional processing. Typically, the raw data will
- * contain a header with ID information and timestamp, a tail with error info
- * and multiple 32 bit data samples.
+ * This class encapsulates the reco-level (real data) information for a silicon
+ * strip hit: in addition to the ADC samples and time stamp held by the
+ * SiStripHit base class, it carries the electronics identifiers (channel, APV,
+ * hybrid, FEB) and quality/error flags read out of the raw Rogue frame. The
+ * truth-level counterpart is SimSiStripHit.
  */
-class RawSiStripHit {
+class RawSiStripHit : public SiStripHit {
  public:
   /// Default constructor
   RawSiStripHit() = default;
@@ -31,55 +33,30 @@ class RawSiStripHit {
   /**
    * Constructor.
    *
+   * The remaining electronics and quality fields are populated through the
+   * dedicated setters.
+   *
+   * @param[in] channel The readout channel of this hit.
    * @param[in] samples The ADC samples composing this hit.  For now, the size
    *    of a sample is assumed to be 16 bits.
    * @param[in] time The timestamp of this hit as set by the data acquisition
    *    system.
    */
-  RawSiStripHit(std::vector<short> samples, long time);
-
-  /**
-   * Constructor with full electronics ID and quality fields from raw Rogue
-   * frame data.
-   */
-  RawSiStripHit(std::vector<short> samples, long time,
-                uint8_t channel, uint8_t apv_id, uint8_t hybrid_id,
-                uint8_t feb_id, uint16_t apv_trigger,
-                uint8_t read_error, uint8_t head, uint8_t tail, uint8_t filter);
+  RawSiStripHit(uint8_t channel, std::vector<short> samples, long time);
 
   /**
    * Destructor.
    *
    * Currently, the destructor does nothing.
    */
-  virtual ~RawSiStripHit(){};
+  virtual ~RawSiStripHit() = default;
 
   /**
-   * Clear the vector of samples and set the timestamp to 0.
+   * Clear the samples, time stamp and electronics/quality fields.
    *
-   * This class is needed by ROOT when building the dictionary.
+   * This method is needed by ROOT when building the dictionary.
    */
-  void clear();
-
-  /**
-   * Print the string representation of this object.
-   *
-   * This class is needed by ROOT when building the dictionary.
-   */
-  friend std::ostream &operator<<(std::ostream &o, const RawSiStripHit &d);
-
-  /**
-   * Get the digitized (ADC) samples composing this hit.
-   *
-   * This can be a single value or multiple values depending on the readout
-   * being used.
-   *
-   * @param[in] samples_ The ADC values composing this hit. For now, the size
-   *    of a sample is assumed to be 16 bits.
-   *
-   * @return[out] A std::vector of 16 bit samples.
-   */
-  std::vector<short> getSamples() const { return samples_; }
+  void clear() override;
 
   uint8_t  getChannel()    const { return channel_; }
   uint8_t  getApvId()      const { return apv_id_; }
@@ -102,51 +79,20 @@ class RawSiStripHit {
   void setFilter(uint8_t v)       { filter_ = v; }
 
   /**
-   * Get the time stamp of this hit.
-   *
-   * This is the time stamp as set by the data aquisition system. This will
-   * typically be in units of ns.
-   *
-   * @param[in] time_ The timestamp as set by the data acquisition system.
-   *
-   * @return[out] The timestamp of this hit in ns.
-   */
-  long getTime() const { return time_; }
-
-  /**
-   * When the less than operator is used for comparison, return true if this
-   * hit's time is less than the hit we are comparing against.
-   *
-   * @param[in] rhs The RawStripHit on the right side of the comparison.
-   *
-   * @return[out] True if the timestamp of this hit is less than the hit being
-   *    compared against.
-   */
-  bool operator<(const RawSiStripHit &rhs) const {
-    return getTime() < rhs.getTime();
-  }
-
-  /**
    * Overload the stream insertion operator to output a string representation
-   * of this RawStripHit.
+   * of this RawSiStripHit.
    *
    * @param[in] output The output stream where the string representation will
    *    be inserted.
    * @param[in] hit The RawSiStripHit to output.
    *
-   * @return[out] An ostream object with the string representation of
+   * @return An ostream object with the string representation of
    *    RawSiStripHit inserted.
    */
   friend std::ostream &operator<<(std::ostream &output,
                                   const RawSiStripHit &hit);
 
  protected:
-  /// 16 bit ADC samples associated with this hit.
-  std::vector<short> samples_;
-
-  /// The hit time stamp in units of ns.
-  long time_{0};
-
   uint8_t  channel_{0};
   uint8_t  apv_id_{0};
   uint8_t  hybrid_id_{0};
@@ -158,7 +104,7 @@ class RawSiStripHit {
   uint8_t  filter_{0};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 3);
+  ClassDefOverride(RawSiStripHit, 4);
 
 };  // RawSiStripHit
 }  // namespace ldmx

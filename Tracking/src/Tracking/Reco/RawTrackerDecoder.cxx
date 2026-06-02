@@ -74,11 +74,20 @@ void RawTrackerDecoder::produce(framework::Event& event) {
     uint8_t head       = (flags >> 4) & 1;
     uint8_t filter     = (flags >> 5) & 1;
 
-    hits.emplace_back(std::vector<short>{static_cast<short>(s0),
-                                        static_cast<short>(s1),
-                                        static_cast<short>(s2)},
-                      timestamp, channel, apv_id, hybrid_id, feb_id,
-                      apv_trigger, read_error, head, tail, filter);
+    ldmx::RawSiStripHit hit(channel,
+                            std::vector<short>{static_cast<short>(s0),
+                                               static_cast<short>(s1),
+                                               static_cast<short>(s2)},
+                            timestamp);
+    hit.setApvId(apv_id);
+    hit.setHybridId(hybrid_id);
+    hit.setFebId(feb_id);
+    hit.setApvTrigger(apv_trigger);
+    hit.setReadError(read_error);
+    hit.setHead(head);
+    hit.setTail(tail);
+    hit.setFilter(filter);
+    hits.push_back(std::move(hit));
   }
 
   event.add(output_collection_, hits);

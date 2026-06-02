@@ -1,31 +1,16 @@
 
 #include "Tracking/Event/RawSiStripHit.h"
 
+ClassImp(ldmx::RawSiStripHit);
+
 namespace ldmx {
 
-RawSiStripHit::RawSiStripHit(std::vector<short> samples, long time)
-    : samples_(samples), time_(time) {}
-
-RawSiStripHit::RawSiStripHit(std::vector<short> samples, long time,
-                              uint8_t channel, uint8_t apv_id,
-                              uint8_t hybrid_id, uint8_t feb_id,
-                              uint16_t apv_trigger, uint8_t read_error,
-                              uint8_t head, uint8_t tail, uint8_t filter)
-    : samples_(samples),
-      time_(time),
-      channel_(channel),
-      apv_id_(apv_id),
-      hybrid_id_(hybrid_id),
-      feb_id_(feb_id),
-      apv_trigger_(apv_trigger),
-      read_error_(read_error),
-      head_(head),
-      tail_(tail),
-      filter_(filter) {}
+RawSiStripHit::RawSiStripHit(uint8_t channel, std::vector<short> samples,
+                             long time)
+    : SiStripHit(samples, time), channel_(channel) {}
 
 void RawSiStripHit::clear() {
-  samples_.clear();
-  time_ = 0;
+  clearBase();
   channel_ = 0;
   apv_id_ = 0;
   hybrid_id_ = 0;
