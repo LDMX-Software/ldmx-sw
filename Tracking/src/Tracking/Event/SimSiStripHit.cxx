@@ -19,10 +19,8 @@ std::ostream &operator<<(std::ostream &output, const SimSiStripHit &hit) {
   for (auto isample{0}; isample < (hit.samples_.size() - 1); ++isample)
     output << hit.samples_[isample] << ", ";
   output << hit.samples_[hit.samples_.size() - 1] << " } "
-         << "Time: " << hit.time_
-         << " Charge: " << hit.charge_
-         << " Edep: " << hit.edep_
-         << std::endl;
+         << "Time: " << hit.time_ << " Charge: " << hit.charge_
+         << " Edep: " << hit.edep_ << std::endl;
 
   return output;
 }
