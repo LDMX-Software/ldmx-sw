@@ -96,9 +96,6 @@ class TrigScintClusterProducer : public framework::Producer {
   // sum of hit cluster weights
   float sumw_{0.};
 
-  // sum of hit cluster weights
-  float sumw_{0.};
-
   // book keep which channels have already been added to the cluster at hand
   std::vector<unsigned int> v_added_indices_;
 

@@ -93,7 +93,7 @@ class TrigScintCluster {
   /**
    * @param centroid The channel ID centroid
    */
-  void setCentroid(float centroid) { centroid_ = centroid; }
+  void setCentroid(double centroid) { centroid_ = centroid; }
 
   /** Set time of hit. */
   void setTime(float t) { time_ = t; }
@@ -132,7 +132,7 @@ class TrigScintCluster {
   const std::vector<unsigned int>& getHitIDs() const { return hit_ids_; }
 
   /** Get the cluster centroid in units of channel nb */
-  float getCentroid() const { return centroid_; }
+  double getCentroid() const { return centroid_; }
 
   bool operator<(const TrigScintCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
@@ -156,7 +156,7 @@ class TrigScintCluster {
 
   // hit centroid in units of channel nb: energy weighted average of the IDs of
   // the hits forming the cluster
-  float centroid_{-1};
+  double centroid_{-1};
 
   // hit centroid in x [mm] (not implemented)
   double centroid_x_{0};
