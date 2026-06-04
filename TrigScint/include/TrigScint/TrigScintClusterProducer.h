@@ -92,7 +92,7 @@ class TrigScintClusterProducer : public framework::Producer {
 
   // edep content, only; leave val_ for PE
   float val_e_{0.};
-  
+
   // sum of hit cluster weights
   float sumw_{0.};
 
