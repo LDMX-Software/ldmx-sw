@@ -55,10 +55,10 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
 
   string_vector_dump(
       "Pre Init Command",
-      parameters_.get<std::vector<std::string>>("preInitCommands", {}));
+      parameters_.get<std::vector<std::string>>("pre_init_commands", {}));
   string_vector_dump(
       "Post Init Command",
-      parameters_.get<std::vector<std::string>>("postInitCommands", {}));
+      parameters_.get<std::vector<std::string>>("post_init_commands", {}));
 
   simcore::XsecBiasingOperator::Factory::get().apply(
       [&header](auto bop) { bop->RecordConfig(header); });
@@ -136,6 +136,19 @@ void Simulator::produce(framework::Event& event) {
   saveTracks(event);
 
   saveSDHits(event);
+
+  savePhotonuclearInteractions(event);
+
+  // Extract and save Bertini cascade histories if any were recorded
+  auto& history_store = bertini::CascadeHistoryStore::getInstance();
+  ldmx_log(debug) << "Checking cascade history store: "
+                  << (history_store.empty() ? "empty" : "has histories");
+  if (!history_store.empty()) {
+    auto cascade_histories = history_store.extractHistories();
+    ldmx_log(info) << "Saving " << cascade_histories.size()
+                   << " cascade histories to event";
+    event.add("PhotonuclearCascadeHistories", cascade_histories);
+  }
 
   run_manager_->TerminateOneEvent();
 

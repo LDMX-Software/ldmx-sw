@@ -3,6 +3,7 @@
 #include "Acts/EventData/TrackContainer.hpp"
 #include "Acts/Utilities/TrackHelpers.hpp"
 #include "SimCore/Event/SimParticle.h"
+#include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
 #include "Tracking/Sim/GeometryContainers.h"
 
@@ -60,69 +61,13 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   target_surface_ =
       Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
 
-  // Custom transformation of the interpolated bfield map
-  bool debug_transform = false;
-  auto transform_pos = [this, debug_transform](const Acts::Vector3& pos_) {
-    Acts::Vector3 rot_pos;
-    rot_pos(0) = pos_(1);
-    rot_pos(1) = pos_(2);
-    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
-
-    // Systematic effect
-    rot_pos(0) += this->map_offset_[0];
-    rot_pos(1) += this->map_offset_[1];
-    rot_pos(2) += this->map_offset_[2];
-
-    // Apply A rotation around the center of the magnet. (I guess offset first
-    // and then rotation)
-
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
-      std::cout << "PF::Check:: transforming Pos" << std::endl;
-      std::cout << pos_ << std::endl;
-      std::cout << "TO" << std::endl;
-      std::cout << rot_pos << std::endl;
-    }
-
-    return rot_pos;
-  };
-
-  Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
-  double scale = 1.;
-
-  auto transform_b_field = [rotation, scale, debug_transform](
-                               const Acts::Vector3& field,
-                               const Acts::Vector3& /*pos_*/) {
-    // Rotate the field in tracking coordinates
-    Acts::Vector3 rot_field;
-    rot_field(0) = field(2);
-    rot_field(1) = field(0);
-    rot_field(2) = field(1);
-
-    // Scale the field
-    rot_field = scale * rot_field;
-
-    // Rotate the field
-    rot_field = rotation * rot_field;
-
-    // A distortion scaled by position.
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
-      std::cout << "PF::Check:: transforming" << std::endl;
-      std::cout << field << std::endl;
-      std::cout << "TO" << std::endl;
-      std::cout << rot_field << std::endl;
-    }
-
-    return rot_field;
-  };
-
   // Setup a interpolated bfield map
-  const auto map = std::make_shared<InterpolatedMagneticField3>(
-      loadDefaultBField(field_map_,
-                        // default_transformPos,
-                        // default_transformBField));
-                        transform_pos, transform_b_field));
+  if (field_map_.empty())
+    loadBField(map_offset_);
+  else
+    loadBField(field_map_, map_offset_);
+  const auto map =
+      std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
   auto acts_logging_level = Acts::Logging::FATAL;
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
@@ -227,19 +172,18 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["setup"] +=
       std::chrono::duration<double, std::milli>(setup - start).count();
 
-  const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(measurement_collection_,
-                                             input_pass_name_);
+  const auto& measurements = event.getCollection<ldmx::Measurement>(
+      measurement_collection_, input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
   std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool =
       nullptr;
   std::map<int, ldmx::SimParticle> particle_map;
 
-  if (event.exists("SimParticles", sim_particles_event_passname_)) {
+  if (event.exists(sim_particles_coll_name_, sim_particles_event_passname_)) {
     ldmx_log(debug) << "Setting up track truth matching tool";
     particle_map = event.getMap<int, ldmx::SimParticle>(
-        "SimParticles", sim_particles_event_passname_);
+        sim_particles_coll_name_, sim_particles_event_passname_);
     truth_matching_tool = std::make_shared<tracking::sim::TruthMatchingTool>(
         particle_map, measurements);
   }
@@ -255,7 +199,7 @@ void CKFProcessor::produce(framework::Event& event) {
   // ============   Setup the CKF  ============
 
   // Retrieve the seeds
-  const std::vector<ldmx::Track> seed_tracks =
+  const auto& seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(info) << "Number of " << seed_coll_name_
@@ -274,10 +218,13 @@ void CKFProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << "Transform the seed track to bound parameters";
   int seed_track_index{0};
   for (auto& seed : seed_tracks) {
-    // Transform the seed track to bound parameters
+    // Transform the seed track to bound parameters.
+    // Perigee is stored in LDMX global frame; convert to ACTS frame for
+    // surface.
+    Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+        seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
     std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-        Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-            seed.getPerigeeX(), seed.getPerigeeY(), seed.getPerigeeZ()));
+        Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
     Acts::BoundVector param_vec;
     param_vec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
@@ -487,132 +434,94 @@ void CKFProcessor::produce(framework::Event& event) {
     for (auto& track : tracks_from_seed) {
       // do the track smoothing...this is not done in the CKF code anymore
       Acts::smoothTrack(geometryContext(), track);  // from TrackHelpers
-      // make the empty ldmx::Track() and track state at target
-      ldmx::Track trk = ldmx::Track();
-      ldmx::Track::TrackState ts_at_target;
+      // Build the output Track
+      ldmx::Track trk;
 
-      // Extrapolate to the target
-      bool success = trk_extrap_->trackStateAtSurface(
-          track, target_surface_, ts_at_target, ldmx::TrackStateType::AtTarget);
+      // Extrapolate to the target surface
+      auto opt_target = trk_extrap_->extrapolate(track, target_surface_);
 
-      // If extrapolation with field fails, try appropriate fallback based on
-      // tracking system
-      if (!success) {
+      if (!opt_target) {
         if (tagger_tracking_) {
-          // Tagger tracking: try const-B (1.5T) fallback
           n_fieldmap_target_extrap_failed_tagger_++;
           ldmx_log(debug) << "    Field-map target extrapolation failed, "
                              "trying const-B (1.5T) fallback";
-          success = trk_extrap_const_b_->trackStateAtSurface(
-              track, target_surface_, ts_at_target,
-              ldmx::TrackStateType::AtTarget);
-          if (success) {
+          opt_target = trk_extrap_const_b_->extrapolate(track, target_surface_);
+          if (opt_target)
             n_constb_target_extrap_recovered_tagger_++;
-            ldmx_log(debug)
-                << "    Yay! Const-B target extrapolation successful!";
-          } else {
+          else
             ldmx_log(debug) << "    Both field-map and Const-B target "
                                "extrapolation failed!";
-          }
         } else {
-          // Recoil tracking: try zero-B fallback
           n_fieldmap_target_extrap_failed_recoil_++;
           ldmx_log(debug) << "    Field-map target extrapolation failed, "
                              "trying zero-B fallback";
-          success = trk_extrap_zero_b_->trackStateAtSurface(
-              track, target_surface_, ts_at_target,
-              ldmx::TrackStateType::AtTarget);
-          if (success) {
+          opt_target = trk_extrap_zero_b_->extrapolate(track, target_surface_);
+          if (opt_target)
             n_zerob_target_extrap_recovered_recoil_++;
-            ldmx_log(debug)
-                << "    Yay! Zero-B target extrapolation successful!";
-          } else {
+          else
             ldmx_log(debug)
                 << "    Both field-map and Zero-B target extrapolation failed!";
-          }
         }
       }
 
-      // Check if the extrapolation to target succeeded
-      if (success) {
-        ldmx_log(debug) << "    Successfully obtained TrackState at target";
-
-        ldmx_log(debug) << "    Parameters At Target: Loc0 = "
-                        << ts_at_target.params_[0] << ", Loc1 "
-                        << ts_at_target.params_[1]
-                        << ", phi = " << ts_at_target.params_[2]
-                        << ", theta = " << ts_at_target.params_[3] << ", QoP "
-                        << ts_at_target.params_[4];
-
-        trk.addTrackState(ts_at_target);
-      }  // end if success
-      else {
+      if (!opt_target) {
         ldmx_log(debug) << "    Could not extrapolate to target! nhits = "
-                        << track.nMeasurements() << " Printing track states:  ";
+                        << track.nMeasurements() << " Printing track states:";
         for (const auto ts : track.trackStatesReversed()) {
-          if (ts.hasSmoothed()) {
-            ldmx_log(debug) << "    Track momentum for smoothed track state = "
-                            << 1 / ts.smoothed()[Acts::eBoundQOverP];
+          if (ts.hasSmoothed())
             ldmx_log(debug) << "    Parameters: " << ts.smoothed().transpose();
-          } else {
+          else
             ldmx_log(debug) << "    Track state not smoothed!";
-          }
         }
         ldmx_log(debug) << "    ...skipping this track candidate...";
         continue;
       }
 
-      // get the BoundTrackParameters at the target
-      // ...use to fill in the Acts::TrackProxy object
-      // This isn't really necessary, since we can take
-      // most everything for making the ldmx::track
-      // from tsAtTarget...maybe useful for something?
-      // -->one thing this does is allow Acts to
-      // calculate the momentum 3-vector for you
-      Acts::BoundTrackParameters bound_state_at_target =
-          tracking::sim::utils::btp(ts_at_target, target_surface_, 11);
+      ldmx_log(debug) << "    Successfully obtained TrackState at target";
+
+      // Build TrackState in LDMX coordinates and add to track
+      auto ts_at_target = tracking::sim::utils::makeTrackState(
+          geometryContext(), *opt_target, ldmx::AtTarget);
+      trk.addTrackState(ts_at_target);
+
+      ldmx_log(debug) << "    Position at target (LDMX): ("
+                      << ts_at_target.pos_[0] << ", " << ts_at_target.pos_[1]
+                      << ", " << ts_at_target.pos_[2] << ") mm"
+                      << "  Momentum: (" << ts_at_target.mom_[0] << ", "
+                      << ts_at_target.mom_[1] << ", " << ts_at_target.mom_[2]
+                      << ") GeV";
+
+      // Update ACTS track reference surface (needed for downstream ACTS usage)
       track.setReferenceSurface(target_surface_);
-      track.parameters() = bound_state_at_target.parameters();
+      track.parameters() = opt_target->parameters();
 
-      // ldmx_log(debug) << "  typeid(track).name() = " << typeid(track).name();
-      // These are the parameters at the target surface
-      const Acts::BoundVector& track_pars = track.parameters();
-      // const Acts::BoundMatrix& trk_cov = track.covariance();
-
-      ldmx_log(debug) << "    Track parameters (at target): Loc0 = "
-                      << track_pars[Acts::eBoundLoc0]
-                      << ", Loc1 = " << track_pars[Acts::eBoundLoc1]
-                      << ", Theta = " << track_pars[Acts::eBoundTheta]
-                      << ", Phi = " << track_pars[Acts::eBoundPhi]
-                      << ", chi2 = " << track.chi2()
-                      << ", nHits = " << track.nMeasurements();
-
-      // the target...it's not really perigee anymore.
-      trk.setPerigeeLocation(0, 0, 0);
-      trk.setPerigeeParameters(ts_at_target.params_);
-      trk.setPerigeeCov(ts_at_target.cov_);
+      // Store perigee (bound) parameters at the target for convenience
+      trk.setPerigeeParameters(tracking::sim::utils::convertActsToLdmxPars(
+          opt_target->parameters()));
+      if (opt_target->covariance()) {
+        std::vector<double> cov_vec;
+        tracking::sim::utils::flatCov(*(opt_target->covariance()), cov_vec);
+        trk.setPerigeeCov(cov_vec);
+      }
+      // Perigee location: target surface origin rotated to LDMX frame
+      Acts::Vector3 target_loc_ldmx = tracking::sim::utils::acts2Ldmx(
+          target_surface_->transform(geometryContext()).translation());
+      trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
+                             target_loc_ldmx[2]);
 
       trk.setChi2(track.chi2());
       trk.setNhits(track.nMeasurements());
-      // trk.setNdf(track.nDoF());
-      // TODO Switch back to nDoF when Acts is fixed.
       trk.setNdf(track.nMeasurements() - 5);
       trk.setNsharedHits(track.nSharedHits());
-
-      ldmx_log(debug) << "    Track momentum: px = " << track.momentum()[0]
-                      << " py = " << track.momentum()[1]
-                      << " pz = " << track.momentum()[2];
-      trk.setMomentum(track.momentum()[0], track.momentum()[1],
-                      track.momentum()[2]);
+      trk.setCharge(opt_target->parameters()[Acts::eBoundQOverP] > 0 ? 1 : -1);
 
       // At least min_hits hits and p > 50 MeV
-      if ((trk.getNhits() <= min_hits_) || (abs(1. / trk.getQoP()) <= 0.05)) {
+      if ((trk.getNhits() <= min_hits_) ||
+          (std::abs(1. / trk.getQoP()) <= 0.05)) {
         ldmx_log(debug)
             << "  > Track candidate did NOT meet the requirements: Nhits = "
-            << trk.getNhits() << " and p = " << abs(1. / trk.getQoP())
+            << trk.getNhits() << " and p = " << std::abs(1. / trk.getQoP())
             << " GeV";
-        // No point of doing the extrapolations if the track candidate anyway
-        // wont be kept
         continue;
       }
 
@@ -654,6 +563,19 @@ void CKFProcessor::produce(framework::Event& event) {
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
 
+          // Store the smoothed state for algebraic unbiased residuals in the
+          // DQM.  The leave-one-out formula (NIM A 262, 444, 1987) removes
+          // this hit's contribution analytically:
+          //   r_ubs = V/(V - C) * (m - x_smooth),  pull = r_ubs * sqrt(V-C)/V
+          // This works correctly for all layers, including seed layers where
+          // the predicted state would be biased.
+          if (ts.hasSmoothed()) {
+            trk.addSmoothedLoc0(
+                static_cast<float>(ts.smoothed()[Acts::eBoundLoc0]),
+                static_cast<float>(ts.smoothedCovariance()(Acts::eBoundLoc0,
+                                                           Acts::eBoundLoc0)));
+          }
+
           // Extract path length from the track state based on the angle
           if (ts.hasSmoothed()) {
             const auto& meas_surface = ts.referenceSurface();
@@ -689,7 +611,14 @@ void CKFProcessor::produce(framework::Event& event) {
             // tan(angle) = sqrt(phi_u^2 + phi_v^2)
             // cos(angle) = 1 / sqrt(1 + tan(angle)^2)
             // path_length = thickness / cos(angle)
-            const float sensor_thickness = 0.320f;  // mm
+            float sensor_thickness = 0.0f;
+            if (const auto* det_el = meas_surface.associatedDetectorElement()) {
+              sensor_thickness = static_cast<float>(det_el->thickness());
+            } else {
+              ldmx_log(warn) << "No detector element for measurement surface"
+                             << " — skipping dE/dx for this hit";
+              continue;
+            }
             float tan_angle_sq = phi_u * phi_u + phi_v * phi_v;
             float cos_angle = 1.0f / std::sqrt(1.0f + tan_angle_sq);
             float path_length = sensor_thickness / cos_angle;
@@ -728,53 +657,41 @@ void CKFProcessor::produce(framework::Event& event) {
 
       if (tagger_tracking_) {
         ldmx_log(debug) << "    Beam Origin Extrapolation";
-        ldmx::Track::TrackState ts_at_beam_origin;
-        success = trk_extrap_->trackStateAtSurface(
-            track, beam_origin_surface, ts_at_beam_origin,
-            ldmx::TrackStateType::AtBeamOrigin);
-
-        if (success) {
-          trk.addTrackState(ts_at_beam_origin);
+        auto opt_beam_origin =
+            trk_extrap_->extrapolate(track, beam_origin_surface);
+        if (opt_beam_origin) {
+          trk.addTrackState(tracking::sim::utils::makeTrackState(
+              geometryContext(), *opt_beam_origin, ldmx::AtBeamOrigin));
           ldmx_log(debug)
-              << "  Successfully obtained TrackState at beam origin";
+              << "    Successfully obtained TrackState at beam origin";
         }
       }
 
       // Recoil Extrapolation to ECAL only
       if (!tagger_tracking_) {
         ldmx_log(debug) << "    Ecal Extrapolation";
-        ldmx::Track::TrackState ts_at_ecal;
-        success = trk_extrap_->trackStateAtSurface(
-            track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
+        auto opt_ecal = trk_extrap_->extrapolate(track, ecal_surface);
 
-        // If extrapolation with field fails, try zero-B fallback
-        if (!success) {
+        if (!opt_ecal) {
           n_fieldmap_ecal_extrap_failed_recoil_++;
           ldmx_log(debug) << "    Field-map ECAL extrapolation failed, trying "
                              "zero-B fallback";
-          success = trk_extrap_zero_b_->trackStateAtSurface(
-              track, ecal_surface, ts_at_ecal, ldmx::TrackStateType::AtECAL);
-          if (success) {
+          opt_ecal = trk_extrap_zero_b_->extrapolate(track, ecal_surface);
+          if (opt_ecal)
             n_zerob_ecal_extrap_recovered_recoil_++;
-            ldmx_log(debug) << "    Yay! Zero-B ECAL extrapolation successful";
-          } else {
+          else
             ldmx_log(debug)
                 << "    Both field-map and Zero-B ECAL extrapolation failed!";
-          }
         }
 
-        if (success) {
+        if (opt_ecal) {
+          auto ts_at_ecal = tracking::sim::utils::makeTrackState(
+              geometryContext(), *opt_ecal, ldmx::AtECAL);
           trk.addTrackState(ts_at_ecal);
-          ldmx_log(debug) << "    Successfully obtained TrackState at Ecal";
-          ldmx_log(debug) << "    Parameters At Ecal: Loc0 = "
-                          << ts_at_ecal.params_[0]
-                          << ", Loc1 = " << ts_at_ecal.params_[1]
-                          << ", phi = " << ts_at_ecal.params_[2]
-                          << ", theta = " << ts_at_ecal.params_[3]
-                          << ", QoP = " << ts_at_ecal.params_[4];
-        } else {
-          ldmx_log(debug) << "    Could not extrapolate to ECAL!! Please check "
-                             "the track states";
+          ldmx_log(debug) << "    Successfully obtained TrackState at ECAL";
+          ldmx_log(debug) << "    Position at ECAL (LDMX): ("
+                          << ts_at_ecal.pos_[0] << ", " << ts_at_ecal.pos_[1]
+                          << ", " << ts_at_ecal.pos_[2] << ") mm";
         }
       }
 
@@ -927,7 +844,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   const_b_field_ = parameters.get<bool>("const_b_field", false);
   field_map_ = parameters.get<std::string>("field_map");
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
-  propagator_max_steps_ = parameters.get<int>("propagator_maxSteps", 10000);
+  propagator_max_steps_ = parameters.get<int>("propagator_max_steps", 10000);
   measurement_collection_ = parameters.get<std::string>(
       "measurement_collection", "TaggerMeasurements");
   outlier_pval_ = parameters.get<double>("outlier_pval_", 3.84);
@@ -948,6 +865,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   // seeds from the event
   seed_coll_name_ = parameters.get<std::string>("seed_coll_name", "seedTracks");
 
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_event_passname_ =
       parameters.get<std::string>("sim_particles_event_passname");
 
@@ -956,7 +875,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("out_trk_collection", "Tracks");
 
   // keep track on which system tracking is running
-  tagger_tracking_ = parameters.get<bool>("taggerTracking", true);
+  tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
 
   // BField Systematics
   map_offset_ =

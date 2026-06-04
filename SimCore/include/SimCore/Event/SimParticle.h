@@ -9,6 +9,7 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -299,6 +300,18 @@ class SimParticle {
   void addParent(const int& parent_track_id) {
     parents_.push_back(parent_track_id);
   }
+
+  /**
+   * Encodes all Track IDs in the SimParticle object according
+   * to the schema provided in the 'encodeFunc' passed to this method.
+   * @param encodeFunc The track ID encoding function to be called.
+   * @param encoding_version The version number for the track ID bitwise
+   * encoding schema. Possible values range over [0, 15].
+   * @param event_index The sample event index to assign the track ID.
+   */
+  void encodeTracks(
+      std::function<int(int, unsigned int, unsigned int)> encodeFunc,
+      const unsigned int encoding_version, const unsigned int event_index = 0);
 
   /**
    * Get the creator process type of this particle.

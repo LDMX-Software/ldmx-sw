@@ -17,45 +17,22 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
     if (!trk_ts.has_value()) continue;
-    ldmx::Track::TrackState &ecal_track_state = trk_ts.value();
+    ldmx::Track::TrackState ecal_track_state = trk_ts.value();
 
     // Check that the track state is filled
-    if (ecal_track_state.params_.size() < 5) continue;
+    if (ecal_track_state.pos_.size() < 3 || ecal_track_state.mom_.size() < 3)
+      continue;
 
-    float track_state_loc0 = static_cast<float>(ecal_track_state.params_[0]);
-    float track_state_loc1 = static_cast<float>(ecal_track_state.params_[1]);
-    // param 2 = phi (azimuthal), param 3 = theta (polar)
-    // param 4 = QoP
-    // ACTS (local)  to  LDMX (global) coordinates: (y_,z_,x_)->  (x_,y_,z_)
-    // convert qop [1/GeV] to p [MeV]
-    float p_track_state = (-1 / ecal_track_state.params_[4]) * 1000;
-    // p * sin(theta) * sin(phi)
-    float recoil_mom_x = p_track_state * sin(ecal_track_state.params_[3]) *
-                         sin(ecal_track_state.params_[2]);
-    // p * cos(theta)
-    float recoil_mom_y = p_track_state * cos(ecal_track_state.params_[3]);
-    // p * sin(theta) * cos(phi)
-    float recoil_mom_z = p_track_state * sin(ecal_track_state.params_[3]) *
-                         cos(ecal_track_state.params_[2]);
-
-    // Store the new track state variables
-    new_track_states.push_back(track_state_loc0);
-    new_track_states.push_back(track_state_loc1);
-    // z_-position at the ECAL (4) or Target (1)
-    if (ts_type == 4) {
-      // this should match `ECAL_SCORING_PLANE` in CKFProcessor
-      new_track_states.push_back(240.5);
-    } else if (ts_type == 1) {
-      // This should match `target_surface` in CKFProcessor
-      new_track_states.push_back(0.0);
-    }
-
-    new_track_states.push_back(recoil_mom_x);
-    new_track_states.push_back(recoil_mom_y);
-    new_track_states.push_back(recoil_mom_z);
+    // pos_ is (x, y, z) in mm (LDMX global); mom_ is (px, py, pz) in MeV
+    new_track_states.push_back(static_cast<float>(ecal_track_state.pos_[0]));
+    new_track_states.push_back(static_cast<float>(ecal_track_state.pos_[1]));
+    new_track_states.push_back(static_cast<float>(ecal_track_state.pos_[2]));
+    new_track_states.push_back(static_cast<float>(ecal_track_state.mom_[0]));
+    new_track_states.push_back(static_cast<float>(ecal_track_state.mom_[1]));
+    new_track_states.push_back(static_cast<float>(ecal_track_state.mom_[2]));
 
     // Break after getting the first valid track state
-    // TODO: interface this with CLUE to make sure the propageted track
+    // TODO: interface this with CLUE to make sure the propagated track
     //       has an associated cluster in the ECAL
     break;
   }

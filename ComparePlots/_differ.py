@@ -83,7 +83,7 @@ class Differ :
         ylim = (None,None),
         out_dir = None,
         file_name = None,
-        legend_kw = dict(),
+        legend_kw = None,
         rebin = 1,
         **hist_kwargs
     ):
@@ -120,14 +120,16 @@ class Differ :
         hist_kwargs : dict
             All other key-word arguments are passed into each File.plot1d
         """
+        if legend_kw is None:
+            legend_kw = {}
         fig = matplotlib.pyplot.figure('differ',figsize=(11,8))
         raw_ax, ratio_ax = fig.subplots(
             nrows = 2,
             sharex = 'col',
             height_ratios = [2, 1],
-            gridspec_kw = dict(
-                hspace = 0.05
-            )
+            gridspec_kw = {
+                'hspace': 0.05
+            }
         )
 
         raw_histograms = []

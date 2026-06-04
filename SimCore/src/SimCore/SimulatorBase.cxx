@@ -1,5 +1,7 @@
 #include "SimCore/SimulatorBase.h"
 
+#include "SimCore/G4User/PhotonuclearTracker.h"
+
 namespace simcore {
 
 const std::vector<std::string> SimulatorBase::INVALID_COMMANDS = {
@@ -26,6 +28,12 @@ void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
                                 event_info->getENEnergy());
   eventHeader.setFloatParameter("db_material_z",
                                 event_info->getDarkBremMaterialZ());
+  eventHeader.setFloatParameter("aprime_conversion_material_z",
+                                event_info->getAPrimeConversionMaterialZ());
+  eventHeader.setIntParameter("pn_target_z", event_info->getPNTargetZ());
+  eventHeader.setIntParameter("pn_target_a", event_info->getPNTargetA());
+  eventHeader.setIntParameter("pn_resample_count",
+                              event_info->getPNResampleCount());
 }
 void SimulatorBase::onProcessEnd() {
   run_manager_->TerminateEventLoop();
@@ -110,11 +118,11 @@ void SimulatorBase::configure(framework::config::Parameters& parameters) {
   parameters_ = parameters;
 
   pre_init_commands_ =
-      parameters_.get<std::vector<std::string>>("preInitCommands", {});
+      parameters_.get<std::vector<std::string>>("pre_init_commands", {});
 
   // Get the extra simulation configuring commands
   post_init_commands_ =
-      parameters_.get<std::vector<std::string>>("postInitCommands", {});
+      parameters_.get<std::vector<std::string>>("post_init_commands", {});
 
   verifyParameters();
   if (run_manager_) {
@@ -163,6 +171,17 @@ void SimulatorBase::saveSDHits(framework::Event& event) {
     sd->saveHits(event);
     sd->onFinishedEvent();
   });
+}
+
+void SimulatorBase::savePhotonuclearInteractions(framework::Event& event) {
+  // Save photonuclear interactions if the PhotonuclearTracker is active
+  auto pn_tracker = PhotonuclearTracker::get();
+  if (pn_tracker) {
+    auto pn_interactions = pn_tracker->getInteractions();
+    if (!pn_interactions.empty()) {
+      event.add("PhotonuclearInteractions", pn_interactions);
+    }
+  }
 }
 
 void SimulatorBase::buildGeometry() {

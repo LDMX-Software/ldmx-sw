@@ -15,6 +15,7 @@ on:
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_NUM_EVENTS: 20000
+  LDMX_LOG_LEVEL: 1
 
 jobs:
   compile-ldmx-sw:
@@ -30,7 +31,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -71,16 +72,14 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-package.tar
 
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
 
     - run: just install-denv init
 
     - name: Run ${{matrix.sample}} ${{matrix.run}}
       id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ${{matrix.sample}}
-        no_comp: true
+      run: just run-validation ${{matrix.sample}} true
+      shell: bash
 
     - name: Upload Histogram File
       uses: actions/upload-artifact@v7
@@ -102,7 +101,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         tar xf ldmx-sw-build-${GITHUB_SHA}/ldmx-sw-package.tar
 
-    - uses: extractions/setup-just@v3
+    - uses: extractions/setup-just@v4
 
     - run: just install-denv init
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
       xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
@@ -10,17 +9,22 @@
   
     <variable name="i" value="1" /> 
 
+    <constant name="recoil_envelope_dz_esa" value="220*mm"/>
+
+    <!-- Trim downstream empty recoil envelope to avoid overlaps with target/TS3 -->
+    <constant name="recoil_cut_start_z" value="40*mm"/>
+    <constant name="recoil_cut_box_z"   value="2000*mm"/>
+    <variable name="recoil_cut_center_z" value="recoil_cut_start_z + recoil_cut_box_z/2"/>
+
     <!-- layering start position in envelope volume -->
-    <variable name="recoil_envelope_up_face_z" value="-(recoil_envelope_dz/2)" />
+    <variable name="recoil_envelope_up_face_z" value="-(recoil_envelope_dz_esa/2)" />
 
     <!-- Position in z of each sensor in the local coordinates of the envelope volume --> 
     <variable name="recoil_l1_z"  
               value="recoil_envelope_up_face_z + tracker_envelope_clearance"/>
     <matrix name="recoil_l14_z" coldim="1" 
-            values=" recoil_l1_z
-                     recoil_l1_z+recoil_delta_l14
-                     recoil_l1_z+2*recoil_delta_l14
-                     recoil_l1_z+3*recoil_delta_l14" />
+            values=" -100*mm
+                      0*mm" />
 
     <variable name="recoil_l5_mid_z" 
               value="recoil_l1_z+3*recoil_delta_l14+recoil_delta_l45" />
@@ -65,9 +69,8 @@
                                                       stereo_angle
                                                      -stereo_angle" />
   </define>
-  <materials> 
-    &materials;
-  </materials>
+
+  
   <solids>
     <box lunit="mm" name="recoil_l14_active_sensor_box" 
          x="si_large_active_sensor_dx" y="si_large_active_sensor_dy" z="si_sensor_thickness"/>
@@ -78,7 +81,16 @@
     <box lunit="mm" name="recoil_l56_sensor_box" 
          x="si_large_sensor_dx" y="si_large_sensor_dy" z="si_sensor_thickness"/>
     <box lunit="mm" name="recoil_box" 
-         x="recoil_envelope_dx" y="recoil_envelope_dy" z="recoil_envelope_dz"/>
+         x="recoil_envelope_dx" y="recoil_envelope_dy" z="recoil_envelope_dz_esa"/>
+
+    <box lunit="mm" name="recoil_downstream_cut_box"
+         x="recoil_envelope_dx" y="recoil_envelope_dy" z="recoil_cut_box_z"/>
+
+    <subtraction name="recoil_box_trimmed">
+      <first ref="recoil_box"/>
+      <second ref="recoil_downstream_cut_box"/>
+      <position name="recoil_cut_pos" unit="mm" x="0" y="0" z="recoil_cut_center_z"/>
+    </subtraction>
   </solids>
 
   <structure>
@@ -111,7 +123,7 @@
     </volume>
     <volume name="recoil">
       <materialref ref="Air"/>
-      <solidref ref="recoil_box"/>
+      <solidref ref="recoil_box_trimmed"/>
       <loop for="i" from="1" to="2" step="1"> 
         <!-- Axial sensors --> 
         <physvol copynumber="20*i-10"> 

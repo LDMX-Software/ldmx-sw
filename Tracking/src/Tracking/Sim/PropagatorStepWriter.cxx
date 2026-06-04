@@ -7,6 +7,7 @@
 #include <Acts/Surfaces/Surface.hpp>
 
 #include "Acts/Geometry/DetectorElementBase.hpp"
+#include "Framework/Exception/Exception.h"
 // mg ... I don't think these are used, and they are not defined in acts v36
 // #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 // #include "Acts/Plugins/Identification/Identifier.hpp"
@@ -18,7 +19,7 @@ PropagatorStepWriter::PropagatorStepWriter(
     const tracking::sim::PropagatorStepWriter::Config& cfg)
     : m_cfg_(cfg), m_output_file_(cfg.root_file_) {
   if (m_cfg_.tree_name_.empty()) {
-    throw std::invalid_argument("Missing tree name");
+    EXCEPTION_RAISE("InvalidArgument", "Missing tree name");
   }
 
   // Setup ROOT I/O

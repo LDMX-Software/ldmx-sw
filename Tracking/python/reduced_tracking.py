@@ -1,100 +1,98 @@
-from LDMX.Framework.ldmxcfg import Producer
-from LDMX.Tracking.make_path import makeFieldMapPath
+from LDMX.Framework import Processor, processor
 
 
-#from LDMX.Tracking.make_path import makeDetectorPath
-
-class LinearSeedFinder(Producer):
-    """ Producer to find Seeds for the reduced geometry track finding
-
-    Parameters
-    ----------
-    instance_name : str
-        Unique name for this instance.
+@processor("tracking::reco::LinearSeedFinder", "Tracking")
+class LinearSeedFinder(Processor):
+    """Producer to find Seeds for the reduced geometry track finding.
 
     Attributes
     ----------
-    input_hits_collection : string
+    input_hits_collection : str
         The name of the input collection of hits to be used for seed finding.
-    input_rec_hits_collection : string
-        The name of the input collection of Ecal RecHits (from layer 1) to give a degree of freedom to seed finding.
-    out_seed_collection : string
-        The name of the ouput collection of seeds to be stored.
-    recoil_uncertainty : double
-        The position uncertainty in [x, y] of a recoil tracker double-layer from combining an axial-stereo sensor pair to make one 3D position
-    ecal_uncertainty : double
-        The radius of an ECal hexagonal cell
-    ecal_distance_threshold : double
-        The maximum distance on the Ecal First Layer at which we still allow a seed to be saved
-    layer12_midpoint : double
-        The z coordinate of the midpoint between Recoil layers 1 and 2
-    layer23_midpoint : double
-        The z coordinate of the midpoint between Recoil layers 2 and 3
-    layer34_midpoint : double
-        The z coordinate of the midpoint between Recoil layers 3 and 4
+    input_rec_hits_collection : str
+        The name of the input collection of Ecal RecHits (from layer 1) to give
+        a degree of freedom to seed finding.
+    out_seed_collection : str
+        The name of the output collection of seeds to be stored.
+    recoil_uncertainty : list[float]
+        The position uncertainty in [x, y] of a recoil tracker double-layer from
+        combining an axial-stereo sensor pair to make one 3D position.
+    ecal_uncertainty : float
+        The radius of an ECal hexagonal cell.
+    ecal_first_layer_z_threshold : float
+        The z threshold for the first ECal layer.
+    ecal_distance_threshold : float
+        The maximum distance on the Ecal First Layer at which we still allow a
+        seed to be saved.
+    layer12_midpoint : float
+        The z coordinate of the midpoint between Recoil layers 1 and 2.
+    layer23_midpoint : float
+        The z coordinate of the midpoint between Recoil layers 2 and 3.
+    layer34_midpoint : float
+        The z coordinate of the midpoint between Recoil layers 3 and 4.
+    input_pass_name : str
+        The pass name of the input collections.
+    sim_particles_passname : str
+        The pass name of the sim particles.
+    sim_particles_events_passname : str
+        The events pass name of the sim particles.
     """
 
-    def __init__(self, instance_name="LinearSeedFinder"):
-        super().__init__(instance_name, 'tracking::reco::LinearSeedFinder', 'Tracking')
-        self.input_hits_collection = 'DigiRecoilSimHits'
-        self.input_rec_hits_collection = 'EcalRecHits'
-        self.out_seed_collection = 'LinearRecoilSeedTracks'
-        self.recoil_uncertainty = [0.006, 0.085]
-        self.ecal_uncertainty = 3.87
-        self.ecal_first_layer_z_threshold = 250.0
-        self.ecal_distance_threshold = 15.0
-        self.layer12_midpoint = 12.5
-        self.layer23_midpoint = 20.0
-        self.layer34_midpoint = 27.5
+    input_hits_collection: str = "DigiRecoilSimHits"
+    input_rec_hits_collection: str = "EcalRecHits"
+    out_seed_collection: str = "LinearRecoilSeedTracks"
+    recoil_uncertainty: list[float] = [0.006, 0.085]
+    ecal_uncertainty: float = 3.87
+    ecal_first_layer_z_threshold: float = 250.0
+    ecal_distance_threshold: float = 15.0
+    layer12_midpoint: float = 12.5
+    layer23_midpoint: float = 20.0
+    layer34_midpoint: float = 27.5
+    input_pass_name: str = ""
+    sim_particles_passname: str = ""
+    sim_particles_events_passname: str = ""
 
-        self.input_pass_name = ''
-        self.sim_particles_passname = ''
-        self.sim_particles_events_passname = ''
 
-class LinearTrackFinder(Producer):
-    """ Producer to find Seeds for the reduced geometry track finding
-
-    Parameters
-    ----------
-    instance_name : str
-        Unique name for this instance.
+@processor("tracking::reco::LinearTrackFinder", "Tracking")
+class LinearTrackFinder(Processor):
+    """Producer to find tracks for the reduced geometry track finding.
 
     Attributes
     ----------
-    seed_coll_name : string
+    seed_collection_ : str
         The name of the input collection of seeds to be used for track finding.
-    out_trk_collection : string
-        The name of the ouput collection of tracks to be stored.
+    out_trk_collection : str
+        The name of the output collection of tracks to be stored.
+    input_pass_name : str
+        The pass name of the input collections.
     """
 
-    def __init__(self, instance_name="LinearTrackFinder"):
-        super().__init__(instance_name, 'tracking::reco::LinearTrackFinder', 'Tracking')
-        self.seed_collection_ = 'LinearRecoilSeedTracks'
-        self.out_trk_collection = 'LinearRecoilTracks'
-        self.input_pass_name = ''
+    seed_collection_: str = "LinearRecoilSeedTracks"
+    out_trk_collection: str = "LinearRecoilTracks"
+    input_pass_name: str = ""
 
-class LinearTruthTracking(Producer):
-    """ Producer to find (truth) tracks using trackID=1 for the reduced geometry
 
-    Parameters
-    ----------
-    instance_name : str
-        Unique name for this instance.
+@processor("tracking::reco::LinearTruthTracking", "Tracking")
+class LinearTruthTracking(Processor):
+    """Producer to find (truth) tracks using trackID=1 for the reduced geometry.
 
     Attributes
     ----------
-    input_hits_collection : string
+    input_hits_collection : str
         The name of the input collection of hits to be used for truth tracking.
-    input_rec_hits_collection : string
-        The name of the input collection of Ecal RecHits (from layer 1) to check track quality
-    out_track_collection : string
-        The name of the ouput collection of truth tracks to be stored.
+    input_rec_hits_collection : str
+        The name of the input collection of Ecal RecHits (from layer 1) to check
+        track quality.
+    out_track_collection : str
+        The name of the output collection of truth tracks to be stored.
+    ecal_first_layer_z_threshold : float
+        The z threshold for the first ECal layer.
+    input_pass_name : str
+        The pass name of the input collections.
     """
 
-    def __init__(self, instance_name="LinearTruthTracking"):
-        super().__init__(instance_name, 'tracking::reco::LinearTruthTracking', 'Tracking')
-        self.input_hits_collection = 'RecoilSimHits'
-        self.input_rec_hits_collection = 'EcalRecHits'
-        self.out_track_collection = 'LinearRecoilTruthTracks'
-        self.ecal_first_layer_z_threshold = 250.0
-        self.input_pass_name = ''
+    input_hits_collection: str = "RecoilSimHits"
+    input_rec_hits_collection: str = "EcalRecHits"
+    out_track_collection: str = "LinearRecoilTruthTracks"
+    ecal_first_layer_z_threshold: float = 250.0
+    input_pass_name: str = ""

@@ -1,222 +1,627 @@
-# Load the tracking module
 from LDMX.Tracking import geo, tracking
-from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
+from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
 
 
-trackgeo.get_instance().setDetector('ldmx-det-v15-8gev')
+class TrackingSequence:
+    """Return value of full_tracking_sequence() and related functions.
 
-# Truth seeder
-# Runs truth tracking producing tracks from target scoring plane hits for Recoil
-# and generated electros for Tagger.
-# Truth tracks can be used for assessing tracking performance or using as seeds
-truth_tracking               = tracking.TruthSeedProcessor()
-truth_tracking.debug         = True
-truth_tracking.trk_coll_name = "RecoilTruthSeeds"
-truth_tracking.pdgIDs        = [11]
-truth_tracking.scoring_hits  = "TargetScoringPlaneHits"
-truth_tracking.z_min         = 0.
-truth_tracking.track_id      = -1
-truth_tracking.p_cut         = 0.05 # In MeV
-truth_tracking.pz_cut        = 0.03
-truth_tracking.p_cutEcal     = 0. # In MeV
+    Attributes
+    ----------
+    sequence : list
+        Processor sequence (digi + seeds + CKF + ambiguity + GSF [+ veto]).
+    dqm_sequence : list
+        DQM processor sequence.
 
-# Smearing Processor - Tagger
-# Runs G4 hit smearing producing measurements in the Tagger tracker.
-# Hits that belong to the same sensor with the same trackID are merged together to
-# reduce combinatorics
-digi_tagger = tracking.DigitizationProcessor("DigitizationProcessor")
-digi_tagger.hit_collection = "TaggerSimHits"
-digi_tagger.out_collection = "DigiTaggerSimHits"
+    Individual processors are also accessible as attributes, e.g.
+    ``trk.digi_recoil``, ``trk.seeder_tagger``, ``trk.gsf_recoil``.
+    Charge-digitization processors (``fit_tagger``, ``cluster_recoil``, etc.)
+    are only present when ``use_truth_smearing=False``.
+    """
 
-# Smearing Processor - Recoil
-digi_recoil = tracking.DigitizationProcessor("DigitizationProcessorRecoil")
-digi_recoil.hit_collection = "RecoilSimHits"
-digi_recoil.out_collection = "DigiRecoilSimHits"
+    def __init__(self, sequence, dqm_sequence, **processors):
+        self.sequence = sequence
+        self.dqm_sequence = dqm_sequence
+        for name, proc in processors.items():
+            setattr(self, name, proc)
 
-# Seed Finder Tagger
-# This runs the track seed finder looking for 5 hits in consecutive sensors and fitting
-# them with a
-# parabola+linear fit. Compatibility with expected particles is checked by looking at
-# the track
-# parameters and the impact parameters at the target or generation point. For the tagger
-# one should look
-# for compatibility with the beam orbit / beam spot
-seeder_tagger = tracking.SeedFinderProcessor("SeedTagger")
-seeder_tagger.input_hits_collection =  digi_tagger.out_collection
-seeder_tagger.out_seed_collection = "TaggerRecoSeeds"
-seeder_tagger.pmin  = 0.03
-seeder_tagger.pmax  =  63.0
-seeder_tagger.d0min =  -36.9
-seeder_tagger.d0max = 31.5
-seeder_tagger.z0max = 54.6
-seeder_tagger.thetacut = 0.26
-seeder_tagger.phicut =  0.84
+    def set_overlay(self, pass_name: str):
+        """Modify sequence and dqm_sequence in-place for overlay collections."""
 
-#Seed finder processor - Recoil
-seeder_recoil = tracking.SeedFinderProcessor("SeedRecoil")
-seeder_recoil.perigee_location = [0.,0.,0.]
-seeder_recoil.input_hits_collection =  digi_recoil.out_collection
-seeder_recoil.out_seed_collection = "RecoilRecoSeeds"
-seeder_recoil.bfield = 1.5
-seeder_recoil.pmin  =   0.04
-seeder_recoil.pmax  =  819.0
-seeder_recoil.d0min =  -40.2
-seeder_recoil.d0max = 36.5
-seeder_recoil.z0max = 40.5
-seeder_recoil.thetacut =  1.5
-seeder_recoil.phicut =  1.6
+        collection_names_to_update = [
+            "TriggerPad1SimHits",
+            "TriggerPad2SimHits",
+            "TriggerPad3SimHits",
+            "TargetSimHits",
+            "EcalSimHits",
+            "HcalSimHits",
+            "TaggerSimHits",
+            "RecoilSimHits",
+            "EcalScoringPlaneHits",
+            "TargetScoringPlaneHits",
+            "SimParticles",
+        ]
+        overlay_str = "Overlay"
 
-# CKF track finding for tagger tracker using seeds.
-tracking_tagger  = tracking.CKFProcessor("Tagger_TrackFinder")
-tracking_tagger.taggerTracking = True
-# for truth seed based case use
-# tracking_tagger.seed_coll_name = "TaggerTruthSeeds"
-tracking_tagger.seed_coll_name = seeder_tagger.out_seed_collection
-tracking_tagger.out_trk_collection = "TaggerTracks"
-tracking_tagger.measurement_collection = digi_tagger.out_collection
-tracking_tagger.min_hits = 5
-tracking_tagger.outlier_pval_ = 16.5
-
-# CKF track finding for recoil tracker using seeds.
-tracking_recoil  = tracking.CKFProcessor("Recoil_TrackFinder")
-tracking_recoil.taggerTracking = False
-tracking_recoil.seed_coll_name = seeder_recoil.out_seed_collection
-tracking_recoil.out_trk_collection = "RecoilTracks"
-# for truth seed based case use
-# tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
-tracking_recoil.measurement_collection = digi_recoil.out_collection
-tracking_recoil.min_hits = 5
-tracking_recoil.outlier_pval_ =  22.1
-
-# Greedy ambiguity solver for the tagger
-greedy_solver_tagger = tracking.GreedyAmbiguitySolver("GreedySolverTagger")
-greedy_solver_tagger.out_trk_collection = "TaggerTracksClean"
-greedy_solver_tagger.track_collection = tracking_tagger.out_trk_collection
-greedy_solver_tagger.meas_collection = digi_tagger.out_collection
-
-# Greedy ambiguity solver for the recoil
-greedy_solver_recoil = tracking.GreedyAmbiguitySolver("GreedySolverRecoil")
-greedy_solver_recoil.out_trk_collection = "RecoilTracksClean"
-greedy_solver_recoil.track_collection = tracking_recoil.out_trk_collection
-greedy_solver_recoil.meas_collection = digi_recoil.out_collection
-
-# Gaussian sum filter for the tagger
-GSF_tagger = tracking.GSFProcessor("Tagger_GSF")
-GSF_tagger.taggerTracking = True
-GSF_tagger.track_collection = greedy_solver_tagger.out_trk_collection
-GSF_tagger.meas_collection  = digi_tagger.out_collection
-GSF_tagger.out_trk_collection = "GSFTaggerTracks"
-
-# Gaussian sum filter for the recoil
-GSF_recoil = tracking.GSFProcessor("Recoil_GSF")
-GSF_recoil.taggerTracking = False
-GSF_recoil.track_collection = greedy_solver_recoil.out_trk_collection
-GSF_recoil.meas_collection  = digi_recoil.out_collection
-GSF_recoil.out_trk_collection = "GSFRecoilTracks"
-
-# Running DQM for the collections above
-from LDMX.Tracking import dqm as tkdqm
+        for proc in self.sequence + self.dqm_sequence:
+            params = vars(proc)
+            for key, value in params.items():
+                if str(key) in [
+                    "input_pass_name",
+                    "track_collection_event_passname",
+                    "track_passname",
+                    "meas_collection_event_passname",
+                    "meas_passname",
+                    "measurement_passname",
+                    "truth_events_passname",
+                    "truth_passname",
+                    "track_collection_events_passname",
+                    "input_tagger_pass_name",
+                    "input_recoil_pass_name",
+                    "input_collection_events_passname",
+                    "tagger_trks_event_collection_passname",
+                ]:
+                    params[key] = pass_name
+                    continue
+                if str(value) in collection_names_to_update:
+                    params[key] += overlay_str
+                    continue
 
 
-# Seeder DQM for the tagger
-dqm_seed_tagger = tkdqm.TrackingRecoDQM("SeedTaggerDQM")
-dqm_seed_tagger.track_collection = seeder_tagger.out_seed_collection
-dqm_seed_tagger.truth_collection = "TaggerTruthTracks"
-dqm_seed_tagger.title = ""
-dqm_seed_tagger.buildHistograms()
+def full_tracking_sequence(
+    use_truth_smearing=True,
+    detector="ldmx-det-v15-8gev",
+    tag="",
+):
+    """Build and return the full LDMX tracking processor sequence.
 
-# Seeder DQM for the recoil
-dqm_seed_recoil = tkdqm.TrackingRecoDQM("SeedRecoilDQM")
-dqm_seed_recoil.track_collection = seeder_recoil.out_seed_collection
-dqm_seed_recoil.truth_collection = "RecoilTruthTracks"
-dqm_seed_recoil.title = ""
-dqm_seed_recoil.buildHistograms()
+    Parameters
+    ----------
+    use_truth_smearing : bool
+        If True (default), use simple Gaussian smearing (Mode 0).
+        If False, use full charge digitization (Mode 1).
+    detector : str
+        Detector geometry tag.
+    tag : str
+        Optional prefix applied to all processor instance names and output
+        collection names.  Use this when running two chains in the same job
+        (e.g. a smear/digi comparison) to avoid name conflicts.
+        Example: ``tag="Smear"`` turns ``"TaggerTracks"`` into
+        ``"SmearTaggerTracks"``.
 
-# DQM for the tagger with CKF
-dqm_tagger_ckf = tkdqm.TrackingRecoDQM("TaggerDQM")
-dqm_tagger_ckf.track_collection = tracking_tagger.out_trk_collection
-dqm_tagger_ckf.truth_hit_collection="TaggerSimHits"
-dqm_tagger_ckf.truth_collection = "TaggerTruthTracks"
-dqm_tagger_ckf.trackStates = ["target"]
-dqm_tagger_ckf.title = ""
-dqm_tagger_ckf.measurement_collection=digi_tagger.out_collection
-dqm_tagger_ckf.buildHistograms()
+    Returns
+    -------
+    TrackingSequence
+        Object with .sequence, .dqm_sequence, .set_overlay(), and individual
+        processor attributes (e.g. .digi_recoil, .seeder_tagger, .gsf_recoil).
+    """
 
-# DQM for the recoil with CKF
-dqm_recoil_ckf = tkdqm.TrackingRecoDQM("RecoilDQM")
-dqm_recoil_ckf.track_collection = tracking_recoil.out_trk_collection
-dqm_recoil_ckf.truth_collection = "RecoilTruthTracks"
-dqm_recoil_ckf.trackStates = ["ecal","target"]
-dqm_recoil_ckf.title = ""
-dqm_recoil_ckf.measurement_collection=digi_recoil.out_collection
-dqm_recoil_ckf.truth_hit_collection = "RecoilSimHits"
-dqm_recoil_ckf.buildHistograms()
+    def tagged(name):
+        return f"{tag}{name}" if tag else name
 
-# DQM for the tagger with GAS  (Greedy ambiguity solver)
-dqm_tagger_gas = tkdqm.TrackingRecoDQM("TaggerGASDQM")
-dqm_tagger_gas.track_collection = greedy_solver_tagger.out_trk_collection
-dqm_tagger_gas.truth_hit_collection="TaggerSimHits"
-dqm_tagger_gas.truth_collection = "TaggerTruthTracks"
-dqm_tagger_gas.trackStates = ["target"]
-dqm_tagger_gas.title = ""
-dqm_tagger_gas.measurement_collection=digi_tagger.out_collection
-dqm_tagger_gas.buildHistograms()
+    TrackGeo.get_instance().set_detector(detector)
 
-# DQM for the recoil with GAS
-dqm_recoil_gas = tkdqm.TrackingRecoDQM("RecoilGASDQM")
-dqm_recoil_gas.track_collection = greedy_solver_recoil.out_trk_collection
-dqm_recoil_gas.truth_collection = "RecoilTruthTracks"
-dqm_recoil_gas.trackStates = ["ecal","target"]
-dqm_recoil_gas.title = ""
-dqm_recoil_gas.measurement_collection=digi_recoil.out_collection
-dqm_recoil_gas.truth_hit_collection = "RecoilSimHits"
-dqm_recoil_gas.buildHistograms()
+    # ------------------------------------------------------------------
+    # Truth seeder
+    # ------------------------------------------------------------------
+    truth_tracking = tracking.TruthSeedProcessor(
+        instance_name=tagged("TruthSeedProcessor"),
+        recoil_seeds_collection=tagged("RecoilTruthSeeds"),
+        tagger_seeds_collection=tagged("TaggerTruthSeeds"),
+        tagger_truth_collection=tagged("TaggerTruthTracks"),
+        recoil_truth_collection=tagged("RecoilTruthTracks"),
+        beam_electrons_collection=tagged("beamElectrons"),
+        pdg_ids=[11],
+        scoring_hits_coll_name="TargetScoringPlaneHits",
+        z_min=0.0,
+        track_id=-1,
+        p_cut=0.05,
+        pz_cut=0.03,
+        p_cut_ecal=0.0,
+    )
 
-# DQM for the tagger with GSF
-dqm_tagger_gsf = tkdqm.TrackingRecoDQM("TaggerGSFDQM")
-dqm_tagger_gsf.track_collection = GSF_tagger.out_trk_collection
-dqm_tagger_gsf.truth_hit_collection="TaggerSimHits"
-dqm_tagger_gsf.truth_collection = "TaggerTruthTracks"
-dqm_tagger_gsf.trackStates = ["target"]
-dqm_tagger_gsf.title = ""
-dqm_tagger_gsf.measurement_collection=digi_tagger.out_collection
-dqm_tagger_gsf.buildHistograms()
+    # ------------------------------------------------------------------
+    # Digitization
+    # ------------------------------------------------------------------
+    if use_truth_smearing:
+        digi_tagger = tracking.DigitizationProcessor(
+            instance_name=tagged("DigitizationProcessor"),
+            hit_collection="TaggerSimHits",
+            out_collection=tagged("DigiTaggerSimHits"),
+            tracker_hit_passname="",
+            use_charge_digitization=False,
+            do_smearing=True,
+            sigma_u=0.006,
+            sigma_v=0.0,
+            merge_hits=True,
+        )
 
-# DQM for the recoil with GSF
-dqm_recoil_gsf = tkdqm.TrackingRecoDQM("RecoilGSFDQM")
-dqm_recoil_gsf.track_collection = GSF_recoil.out_trk_collection
-dqm_recoil_gsf.truth_collection = "RecoilTruthTracks"
-dqm_recoil_gsf.trackStates = ["ecal","target"]
-dqm_recoil_gsf.title = ""
-dqm_recoil_gsf.measurement_collection=digi_recoil.out_collection
-dqm_recoil_gsf.truth_hit_collection = "RecoilSimHits"
-dqm_recoil_gsf.buildHistograms()
+        digi_recoil = tracking.DigitizationProcessor(
+            instance_name=tagged("DigitizationProcessorRecoil"),
+            hit_collection="RecoilSimHits",
+            out_collection=tagged("DigiRecoilSimHits"),
+            tracker_hit_passname="",
+            use_charge_digitization=False,
+            do_smearing=True,
+            sigma_u=0.006,
+            sigma_v=0.0,
+            merge_hits=True,
+        )
 
-tracker_veto = tracking.TrackerVetoProcessor()
+        tagger_meas_collection = digi_tagger.out_collection
+        recoil_meas_collection = digi_recoil.out_collection
+        digi_sequence = [digi_tagger, digi_recoil]
+        charge_digi_processors = {}
 
-# Put it all together into a single sequance
-sequence = [
-    digi_tagger,
-    digi_recoil,
-    truth_tracking,
-    seeder_tagger,
-    seeder_recoil,
-    tracking_tagger,
-    tracking_recoil,
-    greedy_solver_tagger,
-    greedy_solver_recoil,
-    GSF_tagger,
-    GSF_recoil,
-    tracker_veto
-]
+    else:
+        digi_tagger = tracking.DigitizationProcessor(
+            instance_name=tagged("DigitizationProcessor"),
+            hit_collection="TaggerSimHits",
+            out_collection=tagged("DigiTaggerSimHits"),
+            tracker_hit_passname="",
+            use_charge_digitization=True,
+            merge_hits=True,
+            bias_voltage=200.0,
+            depletion_voltage=70.0,
+            noise_electrons=1000.0,
+            threshold_electrons=3000.0,
+            out_raw_collection=tagged("TaggerRawSiStripHits"),
+        )
 
-dqm_sequence = [
-    dqm_seed_tagger,
-    dqm_seed_recoil,
-    dqm_tagger_ckf,
-    dqm_recoil_ckf,
-    dqm_tagger_gas,
-    dqm_recoil_gas,
-    dqm_tagger_gsf,
-    dqm_recoil_gsf
-]
+        digi_recoil = tracking.DigitizationProcessor(
+            instance_name=tagged("DigitizationProcessorRecoil"),
+            hit_collection="RecoilSimHits",
+            out_collection=tagged("DigiRecoilSimHits"),
+            tracker_hit_passname="",
+            use_charge_digitization=True,
+            merge_hits=True,
+            bias_voltage=200.0,
+            depletion_voltage=70.0,
+            noise_electrons=1000.0,
+            threshold_electrons=3000.0,
+            out_raw_collection=tagged("RecoilRawSiStripHits"),
+        )
+
+        fit_tagger = tracking.StripFitProcessor(
+            instance_name=tagged("StripFitTagger"),
+            in_collection=digi_tagger.out_raw_collection,
+            out_collection=tagged("TaggerFittedSiStripHits"),
+            t_scan_min_ns=-50.0,
+            t_scan_max_ns=150.0,
+            t_scan_step_ns=1.0,
+        )
+
+        fit_recoil = tracking.StripFitProcessor(
+            instance_name=tagged("StripFitRecoil"),
+            in_collection=digi_recoil.out_raw_collection,
+            out_collection=tagged("RecoilFittedSiStripHits"),
+            t_scan_min_ns=-50.0,
+            t_scan_max_ns=150.0,
+            t_scan_step_ns=1.0,
+        )
+
+        cluster_tagger = tracking.StripClusterProcessor(
+            instance_name=tagged("StripClusterTagger"),
+            in_collection=fit_tagger.out_collection,
+            out_collection=tagged("TaggerClusterMeasurements"),
+            seed_threshold=4.0,
+            neighbor_threshold=3.0,
+            cluster_threshold=4.0,
+        )
+
+        cluster_recoil = tracking.StripClusterProcessor(
+            instance_name=tagged("StripClusterRecoil"),
+            in_collection=fit_recoil.out_collection,
+            out_collection=tagged("RecoilClusterMeasurements"),
+            seed_threshold=4.0,
+            neighbor_threshold=3.0,
+            cluster_threshold=4.0,
+        )
+
+        tagger_meas_collection = cluster_tagger.out_collection
+        recoil_meas_collection = cluster_recoil.out_collection
+        digi_sequence = [
+            digi_tagger,    digi_recoil,
+            fit_tagger,     fit_recoil,
+            cluster_tagger, cluster_recoil,
+        ]
+        charge_digi_processors = {
+            "fit_tagger": fit_tagger,
+            "fit_recoil": fit_recoil,
+            "cluster_tagger": cluster_tagger,
+            "cluster_recoil": cluster_recoil,
+        }
+
+    # ------------------------------------------------------------------
+    # Seeding
+    # ------------------------------------------------------------------
+    seeder_tagger = tracking.SeedFinderProcessor(
+        instance_name=tagged("SeedTagger"),
+        input_hits_collection=tagger_meas_collection,
+        out_seed_collection=tagged("TaggerRecoSeeds"),
+        pmin=0.03,
+        pmax=63.0,
+        d0min=-36.9,
+        d0max=31.5,
+        z0max=54.6,
+        thetacut=0.26,
+        phicut=0.84,
+    )
+
+    seeder_recoil = tracking.SeedFinderProcessor(
+        instance_name=tagged("SeedRecoil"),
+        perigee_location=[0.0, 0.0, 0.0],
+        input_hits_collection=recoil_meas_collection,
+        out_seed_collection=tagged("RecoilRecoSeeds"),
+        bfield=1.5,
+        pmin=0.04,
+        pmax=819.0,
+        d0min=-40.2,
+        d0max=36.5,
+        z0max=40.5,
+        thetacut=1.5,
+        phicut=1.6,
+    )
+
+    # ------------------------------------------------------------------
+    # CKF track finding
+    # ------------------------------------------------------------------
+    tracking_tagger = tracking.CKFProcessor(
+        instance_name=tagged("Tagger_TrackFinder"),
+        tagger_tracking=True,
+        seed_coll_name=seeder_tagger.out_seed_collection,
+        out_trk_collection=tagged("TaggerTracks"),
+        measurement_collection=tagger_meas_collection,
+        min_hits=5,
+        outlier_pval_=16.5,
+    )
+
+    tracking_recoil = tracking.CKFProcessor(
+        instance_name=tagged("Recoil_TrackFinder"),
+        tagger_tracking=False,
+        seed_coll_name=seeder_recoil.out_seed_collection,
+        out_trk_collection=tagged("RecoilTracks"),
+        measurement_collection=recoil_meas_collection,
+        min_hits=5,
+        outlier_pval_=22.1,
+    )
+
+    # ------------------------------------------------------------------
+    # Greedy ambiguity solver
+    # ------------------------------------------------------------------
+    greedy_solver_tagger = tracking.GreedyAmbiguitySolver(
+        instance_name=tagged("GreedySolverTagger"),
+        out_trk_collection=tagged("TaggerTracksClean"),
+        track_collection=tracking_tagger.out_trk_collection,
+        meas_collection=tagger_meas_collection,
+    )
+
+    greedy_solver_recoil = tracking.GreedyAmbiguitySolver(
+        instance_name=tagged("GreedySolverRecoil"),
+        out_trk_collection=tagged("RecoilTracksClean"),
+        track_collection=tracking_recoil.out_trk_collection,
+        meas_collection=recoil_meas_collection,
+    )
+
+    # ------------------------------------------------------------------
+    # Gaussian sum filter
+    # ------------------------------------------------------------------
+    gsf_tagger = tracking.GSFProcessor(
+        instance_name=tagged("Tagger_GSF"),
+        tagger_tracking=True,
+        track_collection=greedy_solver_tagger.out_trk_collection,
+        meas_collection=tagger_meas_collection,
+        out_trk_collection=tagged("GSFTaggerTracks"),
+    )
+
+    gsf_recoil = tracking.GSFProcessor(
+        instance_name=tagged("Recoil_GSF"),
+        tagger_tracking=False,
+        track_collection=greedy_solver_recoil.out_trk_collection,
+        meas_collection=recoil_meas_collection,
+        out_trk_collection=tagged("GSFRecoilTracks"),
+    )
+
+    tracker_veto = tracking.TrackerVetoProcessor(
+        instance_name=tagged("TrackerVetoProcessor"),
+        tagger_track_collection=tracking_tagger.out_trk_collection,
+        recoil_track_collection=tracking_recoil.out_trk_collection,
+        output_collection=tagged("TrackerVeto"),
+    )
+
+    # ------------------------------------------------------------------
+    # DQM
+    # ------------------------------------------------------------------
+    from LDMX.Tracking import dqm as tkdqm
+
+    dqm_seed_tagger = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("SeedTaggerDQM"),
+        track_collection=seeder_tagger.out_seed_collection,
+        truth_collection=tagged("TaggerTruthTracks"),
+        measurement_collection=tagger_meas_collection,
+        title="",
+    )
+
+    dqm_seed_recoil = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("SeedRecoilDQM"),
+        track_collection=seeder_recoil.out_seed_collection,
+        truth_collection=tagged("RecoilTruthTracks"),
+        measurement_collection=recoil_meas_collection,
+        title="",
+    )
+
+    dqm_tagger_ckf = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("TaggerDQM"),
+        track_collection=tracking_tagger.out_trk_collection,
+        truth_hit_collection="TaggerSimHits",
+        truth_collection=tagged("TaggerTruthTracks"),
+        track_states=["target"],
+        title="",
+        measurement_collection=tagger_meas_collection,
+    )
+
+    dqm_recoil_ckf = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("RecoilDQM"),
+        track_collection=tracking_recoil.out_trk_collection,
+        truth_collection=tagged("RecoilTruthTracks"),
+        track_states=["ecal", "target"],
+        title="",
+        measurement_collection=recoil_meas_collection,
+        truth_hit_collection="RecoilSimHits",
+    )
+
+    dqm_tagger_gas = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("TaggerGASDQM"),
+        track_collection=greedy_solver_tagger.out_trk_collection,
+        truth_hit_collection="TaggerSimHits",
+        truth_collection=tagged("TaggerTruthTracks"),
+        track_states=["target"],
+        title="",
+        measurement_collection=tagger_meas_collection,
+    )
+
+    dqm_recoil_gas = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("RecoilGASDQM"),
+        track_collection=greedy_solver_recoil.out_trk_collection,
+        truth_collection=tagged("RecoilTruthTracks"),
+        track_states=["ecal", "target"],
+        title="",
+        measurement_collection=recoil_meas_collection,
+        truth_hit_collection="RecoilSimHits",
+    )
+
+    dqm_tagger_gsf = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("TaggerGSFDQM"),
+        track_collection=gsf_tagger.out_trk_collection,
+        truth_hit_collection="TaggerSimHits",
+        truth_collection=tagged("TaggerTruthTracks"),
+        track_states=["target"],
+        title="",
+        measurement_collection=tagger_meas_collection,
+    )
+
+    dqm_recoil_gsf = tkdqm.TrackingRecoDQM(
+        instance_name=tagged("RecoilGSFDQM"),
+        track_collection=gsf_recoil.out_trk_collection,
+        truth_collection=tagged("RecoilTruthTracks"),
+        track_states=["ecal", "target"],
+        title="",
+        measurement_collection=recoil_meas_collection,
+        truth_hit_collection="RecoilSimHits",
+    )
+
+    dqm_digi_tagger = tkdqm.DigiDQM(
+        instance_name=tagged("TaggerDigiDQM"),
+        sim_coll_name="TaggerSimHits",
+        digi_coll_name="" if use_truth_smearing else digi_tagger.out_collection,
+        fitted_coll_name="" if use_truth_smearing else fit_tagger.out_collection,
+        cluster_coll_name="" if use_truth_smearing else cluster_tagger.out_collection,
+    )
+
+    dqm_digi_recoil = tkdqm.DigiDQM(
+        instance_name=tagged("RecoilDigiDQM"),
+        sim_coll_name="RecoilSimHits",
+        digi_coll_name="" if use_truth_smearing else digi_recoil.out_collection,
+        fitted_coll_name="" if use_truth_smearing else fit_recoil.out_collection,
+        cluster_coll_name="" if use_truth_smearing else cluster_recoil.out_collection,
+    )
+
+    # ------------------------------------------------------------------
+    # Assemble
+    # ------------------------------------------------------------------
+    sequence = [
+        *digi_sequence,
+        truth_tracking,
+        seeder_tagger,
+        seeder_recoil,
+        tracking_tagger,
+        tracking_recoil,
+        greedy_solver_tagger,
+        greedy_solver_recoil,
+        gsf_tagger,
+        gsf_recoil,
+        tracker_veto,
+    ]
+
+    dqm_sequence = [
+        dqm_seed_tagger,
+        dqm_seed_recoil,
+        dqm_tagger_ckf,
+        dqm_recoil_ckf,
+        dqm_tagger_gas,
+        dqm_recoil_gas,
+        dqm_tagger_gsf,
+        dqm_recoil_gsf,
+        dqm_digi_tagger,
+        dqm_digi_recoil,
+    ]
+
+    return TrackingSequence(
+        sequence,
+        dqm_sequence,
+        truth_tracking=truth_tracking,
+        digi_tagger=digi_tagger,
+        digi_recoil=digi_recoil,
+        seeder_tagger=seeder_tagger,
+        seeder_recoil=seeder_recoil,
+        tracking_tagger=tracking_tagger,
+        tracking_recoil=tracking_recoil,
+        greedy_solver_tagger=greedy_solver_tagger,
+        greedy_solver_recoil=greedy_solver_recoil,
+        gsf_tagger=gsf_tagger,
+        gsf_recoil=gsf_recoil,
+        tracker_veto=tracker_veto,
+        dqm_seed_tagger=dqm_seed_tagger,
+        dqm_seed_recoil=dqm_seed_recoil,
+        dqm_tagger_ckf=dqm_tagger_ckf,
+        dqm_recoil_ckf=dqm_recoil_ckf,
+        dqm_tagger_gas=dqm_tagger_gas,
+        dqm_recoil_gas=dqm_recoil_gas,
+        dqm_tagger_gsf=dqm_tagger_gsf,
+        dqm_recoil_gsf=dqm_recoil_gsf,
+        dqm_digi_tagger=dqm_digi_tagger,
+        dqm_digi_recoil=dqm_digi_recoil,
+        **charge_digi_processors,
+    )
+
+
+def recoil_sequence(
+    use_truth_smearing=True,
+    detector="ldmx-det-v15-8gev",
+    tag="",
+):
+    """Build and return a recoil-only tracking sequence.
+
+    Includes digi, truth seeding, seed finding, CKF, ambiguity solver, and
+    GSF for the recoil tracker only. The tracker veto is omitted (it requires
+    a tagger track). Useful for studies and configs where tagger reconstruction
+    is not needed.
+
+    Parameters
+    ----------
+    use_truth_smearing : bool
+        If True (default), use simple Gaussian smearing.
+        If False, use full charge digitization.
+    detector : str
+        Detector geometry tag.
+    tag : str
+        Optional prefix for instance and collection names (see
+        full_tracking_sequence).
+
+    Returns
+    -------
+    TrackingSequence
+    """
+    full = full_tracking_sequence(
+        use_truth_smearing=use_truth_smearing, detector=detector, tag=tag
+    )
+
+    if use_truth_smearing:
+        digi_seq = [full.digi_recoil]
+    else:
+        digi_seq = [full.digi_recoil, full.fit_recoil, full.cluster_recoil]
+
+    sequence = [
+        *digi_seq,
+        full.truth_tracking,
+        full.seeder_recoil,
+        full.tracking_recoil,
+        full.greedy_solver_recoil,
+        full.gsf_recoil,
+    ]
+
+    dqm_sequence = [
+        full.dqm_seed_recoil,
+        full.dqm_recoil_ckf,
+        full.dqm_recoil_gas,
+        full.dqm_recoil_gsf,
+        full.dqm_digi_recoil,
+    ]
+
+    processors = {k: v for k, v in vars(full).items()
+                  if k not in ("sequence", "dqm_sequence")}
+    return TrackingSequence(sequence, dqm_sequence, **processors)
+
+
+def tagger_sequence(
+    use_truth_smearing=True,
+    detector="ldmx-det-v15-8gev",
+    tag="",
+):
+    """Build and return a tagger-only tracking sequence.
+
+    Includes digi, truth seeding, seed finding, CKF, ambiguity solver, and
+    GSF for the tagger tracker only. Useful for studies and configs where
+    recoil reconstruction is not needed.
+
+    Parameters
+    ----------
+    use_truth_smearing : bool
+        If True (default), use simple Gaussian smearing.
+        If False, use full charge digitization.
+    detector : str
+        Detector geometry tag.
+    tag : str
+        Optional prefix for instance and collection names (see
+        full_tracking_sequence).
+
+    Returns
+    -------
+    TrackingSequence
+    """
+    full = full_tracking_sequence(
+        use_truth_smearing=use_truth_smearing, detector=detector, tag=tag
+    )
+
+    if use_truth_smearing:
+        digi_seq = [full.digi_tagger]
+    else:
+        digi_seq = [full.digi_tagger, full.fit_tagger, full.cluster_tagger]
+
+    sequence = [
+        *digi_seq,
+        full.truth_tracking,
+        full.seeder_tagger,
+        full.tracking_tagger,
+        full.greedy_solver_tagger,
+        full.gsf_tagger,
+    ]
+
+    dqm_sequence = [
+        full.dqm_seed_tagger,
+        full.dqm_tagger_ckf,
+        full.dqm_tagger_gas,
+        full.dqm_tagger_gsf,
+        full.dqm_digi_tagger,
+    ]
+
+    processors = {k: v for k, v in vars(full).items()
+                  if k not in ("sequence", "dqm_sequence")}
+    return TrackingSequence(sequence, dqm_sequence, **processors)
+
+
+def __getattr__(name):
+    """Backward-compatible module-level access.
+
+    Old configs that access module-level attributes directly:
+        from LDMX.Tracking import full_tracking_sequence
+        p.sequence.extend(full_tracking_sequence.sequence)
+        p.sequence.extend(full_tracking_sequence.dqm_sequence)
+        full_tracking_sequence.set_overlay(pass_name)
+        full_tracking_sequence.digi_recoil  # individual processor
+    all work: the default TrackingSequence is built lazily on first access
+    and every attribute is cached as a real module global for subsequent lookups.
+    """
+    if name.startswith("_"):
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    _default = full_tracking_sequence()
+
+    # Cache all processor attributes from the default sequence.
+    for attr, val in vars(_default).items():
+        globals()[attr] = val
+    # Cache the methods that live on the object, not in __dict__.
+    globals()["set_overlay"] = _default.set_overlay
+
+    if name in globals():
+        return globals()[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

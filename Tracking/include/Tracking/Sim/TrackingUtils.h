@@ -1,8 +1,6 @@
 #ifndef TRACKUTILS_H_
 #define TRACKUTILS_H_
 
-// TODO:: MAKE A CXX!!
-
 // Recoil back layers numbering scheme for module_
 
 //    +Y  /\   4  3  2  1  0
@@ -39,6 +37,7 @@
 #include "Acts/EventData/TrackParameters.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Surfaces/PlaneSurface.hpp"
+#include "Acts/Surfaces/Surface.hpp"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/IndexSourceLink.h"
 
@@ -46,247 +45,79 @@ namespace tracking {
 namespace sim {
 namespace utils {
 
-/*
-  It looks like the recoil is subdetector ID 4 and tagger is subdetector ID 1
-https://github.com/LDMX-Software/ldmx-sw/blob/0476ccc407e068560518e0614aa83b6eda22e186/DetDescr/include/DetDescr/DetectorID.h#L11-L24
-So you could bit shift and mask to get these numbers
-https://github.com/LDMX-Software/ldmx-sw/blob/0476ccc407e068560518e0614aa83b6eda22e186/DetDescr/include/DetDescr/DetectorID.h#L38-L39
-(sim_tracker_hit.getID() >> 26)&0x3f
-or if you are in ldmx-sw, it is easier, more robust, and just as performant to
-wrap the ID in the helper class and use its accessors sd =
-TrackerID(sim_tracker_hit.getID()).subdet(); if (sd ==
-SubdetectorID::SD_TRACKER_RECOIL) {
-  // hit in recoil
-} else if (sd == SubdetectorID::SD_TRACKER_TAGGER) {
-  // hit in tagger
-} else {
-  // this should never happen since the TrackerID constructor checks for
-mal-formed IDs
-}
-*/
-
 // This method returns the sensor ID
-inline int getSensorID(const ldmx::SimTrackerHit& hit) {
-  bool debug = false;
-
-  int vol = 2;
-
-  // TODO!! FIX THIS HARDCODE!
-  if (hit.getPosition()[2] > 0) vol = 3;
-
-  unsigned int sensor_id = 0;
-  unsigned int layer_id = 0;
-
-  // tagger numbering scheme for surfaces mapping
-  // Layers from 1 to 14  => transform to 0->13
-  if (vol == 2) {
-    sensor_id = (hit.getLayerID() + 1) % 2;  // 0,1,0,1 ...
-
-    // v12
-    // layerId  = (hit.getLayerID() + 1) / 2; //1,2,3,4,5,6,7
-    // v14
-    layer_id = 7 - ((hit.getLayerID() - 1) / 2);
-  }
-
-  // recoil numbering scheme for surfaces mapping
-  if (vol == 3) {
-    // For axial-stereo modules use the same numbering scheme as the tagger
-    if (hit.getLayerID() < 9) {
-      sensor_id = (hit.getLayerID() + 1) % 2;
-      layer_id = (hit.getLayerID() + 1) / 2;
-    }
-
-    // For the axial only modules
-    else {
-      sensor_id = hit.getModuleID();
-      layer_id = (hit.getLayerID() + 2) / 2;  // 9->11 /2 = 5 10->12 / 2 = 6
-    }
-  }
-
-  // vol * 1000 + ly * 100 + sensor
-  unsigned int index = vol * 1000 + layer_id * 100 + sensor_id;
-
-  if (debug) {
-    std::cout << "LdmxSpacePointConverter::Check index::" << vol << "--"
-              << layer_id << "--" << sensor_id << "==>" << index << std::endl;
-    std::cout << vol << "===" << hit.getLayerID() << "===" << hit.getModuleID()
-              << std::endl;
-  }
-
-  return index;
-}
+int getSensorID(const ldmx::SimTrackerHit& hit);
 
 // This method converts a SimHit in a LdmxSpacePoint for the Acts seeder.
 //  (1) Rotate the coordinates into acts::seedFinder coordinates defined by
-//  B-Field along z_ axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts] (2)
-//  Saves the error information. At the moment the errors are fixed. They should
-//  be obtained from the digitized hits_.
-
-// TODO::Move to shared pointers?!
-// TODO::Pass to instances?
+//  B-Field along z_ axis [Z_ldmx -> X_acts, X_ldmx->Y_acts, Y_ldmx->Z_acts]
+//  (2) Saves the error information. At the moment the errors are fixed. They
+//  should be obtained from the digitized hits_.
 // Vol==2 for tagger, Vol==3 for recoil
-
-inline ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
+ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
     const ldmx::SimTrackerHit& hit, unsigned int vol = 2, double sigma_u = 0.05,
-    double sigma_v = 1.) {
-  unsigned int index = getSensorID(hit);
-
-  // Rotate position
-  float ldmxsp_x = hit.getPosition()[2];
-  float ldmxsp_y = hit.getPosition()[0];
-  float ldmxsp_z = hit.getPosition()[1];
-
-  return new ldmx::LdmxSpacePoint(ldmxsp_x, ldmxsp_y, ldmxsp_z, hit.getTime(),
-                                  index, hit.getEdep(), sigma_u * sigma_u,
-                                  sigma_v * sigma_v, hit.getID());
-}
+    double sigma_v = 1.);
 
 // BoundSymMatrix doesn't exist in v36  .. use BoundSquareMatrix
 //   have to change this everywhere ..  I think using BoundSysMatrix was defined
 //  exactly the same as BoundSquareMatrix is now in ACTs
-inline void flatCov(Acts::BoundSquareMatrix cov, std::vector<double>& v_cov) {
-  v_cov.clear();
-  v_cov.reserve(cov.rows() * (cov.rows() + 1) / 2);
-  for (int i = 0; i < cov.rows(); i++)
-    for (int j = i; j < cov.cols(); j++) v_cov.push_back(cov(i, j));
-}
+void flatCov(Acts::BoundSquareMatrix cov, std::vector<double>& v_cov);
 
-inline Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
-  Acts::BoundSquareMatrix cov;
-  int e{0};
-  for (int i = 0; i < cov.rows(); i++)
-    for (int j = i; j < cov.cols(); j++) {
-      cov(i, j) = v_cov.at(e);
-      cov(j, i) = cov(i, j);
-      e++;
-    }
+Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov);
 
-  return cov;
-}
+// Rotate LDMX global -> ACTS frame: z_ldmx->x_acts, x_ldmx->y_acts,
+// y_ldmx->z_acts (0 0 1) * (x,y,z)_ldmx = x_acts (1 0 0) * (x,y,z)_ldmx =
+// y_acts (0 1 0) * (x,y,z)_ldmx = z_acts
+Acts::SquareMatrix3 ldmx2ActsRotation();
 
-// Rotate to ACTS frame
-// z_->x_, x_->y_, y_->z_
+Acts::Vector3 ldmx2Acts(Acts::Vector3 ldmx_v);
 
-//(0 0 1) x_  = z_
-//(1 0 0) y_  = x_
-//(0 1 0) z_  = y_
+// Rotate ACTS frame -> LDMX global (inverse of ldmx2Acts, i.e. transpose):
+// x_ldmx = y_acts, y_ldmx = z_acts, z_ldmx = x_acts
+Acts::SquareMatrix3 acts2LdmxRotation();
 
-inline Acts::Vector3 ldmx2Acts(Acts::Vector3 ldmx_v) {
-  // TODO::Move it to a static member
-  Acts::SquareMatrix3 acts_rot;
-  acts_rot << 0., 0., 1., 1., 0., 0., 0., 1, 0.;
-
-  return acts_rot * ldmx_v;
-}
+Acts::Vector3 acts2Ldmx(Acts::Vector3 acts_v);
 
 // Transform position, momentum and charge to free parameters
-
-inline Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
-                                         Acts::ActsScalar q) {
-  Acts::FreeVector free_params;
-  Acts::ActsScalar p = mom.norm() * Acts::UnitConstants::MeV;
-
-  free_params[Acts::eFreePos0] = pos_(Acts::ePos0) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos1] = pos_(Acts::ePos1) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreePos2] = pos_(Acts::ePos2) * Acts::UnitConstants::mm;
-  free_params[Acts::eFreeTime] = 0.;
-  free_params[Acts::eFreeDir0] = mom(0) / mom.norm();
-  free_params[Acts::eFreeDir1] = mom(1) / mom.norm();
-  free_params[Acts::eFreeDir2] = mom(2) / mom.norm();
-  free_params[Acts::eFreeQOverP] =
-      (q != Acts::ActsScalar(0)) ? (q / p) : 0.;  // 1. / p instead?
-
-  return free_params;
-}
+Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
+                                  Acts::ActsScalar q);
 
 // Pack the acts track parameters into something that is serializable for the
 // event bus
+std::vector<double> convertActsToLdmxPars(Acts::BoundVector acts_par);
 
-inline std::vector<double> convertActsToLdmxPars(Acts::BoundVector acts_par) {
-  std::vector<double> v_ldmx(
-      acts_par.data(), acts_par.data() + acts_par.rows() * acts_par.cols());
-  return v_ldmx;
-}
+Acts::BoundVector boundState(const ldmx::Track& trk);
 
-inline Acts::BoundVector boundState(const ldmx::Track& trk) {
-  Acts::BoundVector param_vec;
-  param_vec << trk.getD0(), trk.getZ0(), trk.getPhi(), trk.getTheta(),
-      trk.getQoP(), trk.getT();
-  return param_vec;
-}
-
-inline Acts::BoundVector boundState(const ldmx::Track::TrackState& ts) {
-  Acts::BoundVector param_vec;
-  param_vec << ts.params_[0], ts.params_[1], ts.params_[2], ts.params_[3],
-      ts.params_[4], ts.params_[5];
-  return param_vec;
-}
-
-inline Acts::BoundTrackParameters boundTrackParameters(
-    const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
-  Acts::BoundVector param_vec = boundState(trk);
-  Acts::BoundSquareMatrix cov_mat = unpackCov(trk.getPerigeeCov());
-  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto
-  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(trk.getPdgID())))};
-  //  return Acts::BoundTrackParameters(perigee, paramVec, std::move(covMat));
-  // need to add particle hypothesis
-  return Acts::BoundTrackParameters(perigee, param_vec, std::move(cov_mat),
-                                    part_hypo);
-}
-
-inline Acts::BoundTrackParameters btp(const ldmx::Track::TrackState& ts,
-                                      std::shared_ptr<Acts::Surface> surf,
-                                      int pdgid) {
-  Acts::BoundVector param_vec = boundState(ts);
-  Acts::BoundSquareMatrix cov_mat = unpackCov(ts.cov_);
-  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
-  //  auto
-  //  part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(Acts::PdgParticle(pdgid)))};
-  return Acts::BoundTrackParameters(surf, param_vec, std::move(cov_mat),
-                                    part_hypo);
-}
+Acts::BoundTrackParameters boundTrackParameters(
+    const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee);
 
 // Return an unbound surface
-inline const std::shared_ptr<Acts::PlaneSurface> unboundSurface(
-    double xloc, double yloc = 0., double zloc = 0.) {
-  // Define the target surface - be careful:
-  //  x_ - downstream
-  //  y_ - left (when looking along x_)
-  //  z_ - up
-  //  Passing identity here means that your target surface is oriented in the
-  //  same way
-  Acts::RotationMatrix3 surf_rotation = Acts::RotationMatrix3::Zero();
-  // u direction along +Y
-  surf_rotation(1, 0) = 1;
-  // v direction along +Z
-  surf_rotation(2, 1) = 1;
-  // w direction along +X
-  surf_rotation(0, 2) = 1;
-
-  Acts::Vector3 pos(xloc, yloc, zloc);
-  Acts::Translation3 surf_translation(pos);
-  Acts::Transform3 surf_transform(surf_translation * surf_rotation);
-
-  // Unbounded surface
-  const std::shared_ptr<Acts::PlaneSurface> target_surface =
-      Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
-
-  return Acts::Surface::makeShared<Acts::PlaneSurface>(surf_transform);
-}
+const std::shared_ptr<Acts::PlaneSurface> unboundSurface(double xloc,
+                                                         double yloc = 0.,
+                                                         double zloc = 0.);
 
 // This method returns a source link index
-inline std::size_t sourceLinkHash(const Acts::SourceLink& a) {
-  return static_cast<std::size_t>(
-      a.get<acts_examples::IndexSourceLink>().index());
-}
+std::size_t sourceLinkHash(const Acts::SourceLink& a);
 
 // This method checks if two source links are equal by index
-inline bool sourceLinkEquality(const Acts::SourceLink& a,
-                               const Acts::SourceLink& b) {
-  return a.get<acts_examples::IndexSourceLink>().index() ==
-         b.get<acts_examples::IndexSourceLink>().index();
-}
+bool sourceLinkEquality(const Acts::SourceLink& a, const Acts::SourceLink& b);
+
+/*
+ * Build a TrackState from ACTS BoundTrackParameters.
+ * All output quantities (position, momentum, covariance) are in the LDMX
+ * global frame: x=horizontal, y=vertical, z=downstream.
+ *
+ * Covariance transformation steps:
+ *   1. Bound (6x6) -> Free (8x8) via ACTS bound-to-free Jacobian
+ *   2. Drop time row/col -> 7x7
+ *   3. 7D (x,y,z,d0,d1,d2,qop) -> 6D Cartesian (x,y,z,px,py,pz) in ACTS frame
+ *   4. Rotate 6x6 covariance ACTS -> LDMX via block-diagonal rotation
+ *   5. Flatten upper triangle -> 21-element vector
+ */
+ldmx::Track::TrackState makeTrackState(
+    const Acts::GeometryContext& gctx,
+    const Acts::BoundTrackParameters& bound_pars,
+    ldmx::TrackStateType ts_type = ldmx::Invalid);
 
 }  // namespace utils
 }  // namespace sim

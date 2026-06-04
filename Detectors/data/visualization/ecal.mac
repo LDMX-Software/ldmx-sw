@@ -1,0 +1,14 @@
+/vis/open OGLIX 600x600+0+0
+/vis/scene/create
+/vis/scene/add/volume em_calorimeters_PV
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 180 0
+
+/vis/open OGLIX 600x600+400+150
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointVector -1 1 -1
+
+/vis/open OGLIX 600x600-1+300
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 270 0
+/vis/viewer/zoom 1.4

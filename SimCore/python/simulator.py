@@ -4,39 +4,89 @@ Defines a derived class from ldmxcfg.Producer
 with several helpful member functions.
 """
 
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import Processor, field, parameter_set, processor
+
+from .bias_operators import XsecBiasingOperator
+from .dark_brem import DarkBrem
+from .fcp_physics import FCPPhysics
+from .generators import PrimaryGenerator
+from .kaon_physics import KaonPhysics
+from .photonuclear_models import BertiniModel, PhotoNuclearModel
+from .sensitive_detectors import SensitiveDetector
+from .user_actions import UserAction
 
 
+@parameter_set
 class _EventToReSim:
-    """A class to hold the information identifying a specific event we wish to re-simulate
+    """A class to hold the information identifying a specific event we wish to
+    re-simulate
 
     This is an internal class used by simulator.resimulate in order to pass the event
     identification to the ReSimulator class
 
     Attributes
     ----------
-    run: int
-        run number of the event to re-sim, -1 if we don't care about the run
     event: int
         event number to re-sim, required
+    run: int
+        run number of the event to re-sim, -1 if we don't care about the run
     """
 
-    def __init__(self, event, run = -1):
-        self.event = event
-        self.run = run
+    event: int
+    run: int = -1
 
 
-class simulator(Producer):
+@processor("simcore::ReSimulator", "SimCore")
+class ReSimulator(Processor):
+    """Configuration for resimulating events from an existing file.
+
+    Created via Simulator.resimulate() to carry the same configuration
+    as the original simulation plus the re-simulation-specific parameters.
+
+    Attributes
+    ----------
+    resimulate_all_events : bool
+        If True, every event in the input file is re-simulated.
+    care_about_run : bool
+        If True, match both run *and* event number when selecting events.
+    events_to_resimulate : list of _EventToReSim
+        Specific events (and optionally runs) to re-simulate when
+        resimulate_all_events is False.
+    """
+
+    generators: list[PrimaryGenerator] = []
+    detector: str = ""
+    sensitive_detectors: list[SensitiveDetector] = []
+    description: str = ""
+    scoring_planes: str = ""
+    time_shift_primaries: bool = True
+    pre_init_commands: list[str] = []
+    post_init_commands: list[str] = []
+    actions: list[UserAction] = []
+    biasing_operators: list[XsecBiasingOperator] = []
+    logging_prefix: str = "GEANT4"
+    root_primary_gen_use_seed: bool = False
+    validate_detector: bool = False
+    verbosity: int = 0
+    dark_brem: DarkBrem = field(default_factory=DarkBrem)
+    photonuclear_model: PhotoNuclearModel = field(default_factory=BertiniModel)
+    kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
+    fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
+    resimulate_all_events: bool = True
+    care_about_run: bool = False
+    events_to_resimulate: list[_EventToReSim] = []
+
+
+@processor("simcore::Simulator", "SimCore")
+class Simulator(Processor):
     """A instance of the simulation configuration
 
     This class is derived from ldmxcfg.Producer and is mainly
     focused on providing helper functions that can be used instead
     of accessing the parameters member directly.
 
-    The parameters that are lists ('preInitCommands', 'postInitCommands', 'actions', and 'generators')
-    are initialized as empty lists so that we can append to them later.
-
-    The ECal hit conbtibutions are enabled and compressed by default.
+    The parameters that are lists are initialized as empty lists
+    so that we can append to them later.
 
     Parameters
     ----------
@@ -48,7 +98,7 @@ class simulator(Producer):
     generators : list of PrimaryGenerator
         Generators to use to make primaries
     detector : str
-        Full path to detector description gdml (suggested to use setDetector)
+        Full path to detector description gdml (suggested to use set_detector)
     validate_detector : bool, optional
         Should we have Geant4 validate that the gdml is correctly formatted?
     sensitive_detectors : list[SensitiveDetector]
@@ -56,12 +106,12 @@ class simulator(Producer):
     description : str
         Describe this run in a human-readable way
     scoringPlanes : str, optional
-        Full path to the scoring planes gdml (suggested to use setDetector)
+        Full path to the scoring planes gdml (suggested to use set_detector)
     time_shift_primaries : bool
         Should we shift the times of primaries so that z=0mm corresponds to t=0ns?
-    preInitCommands : list of str, optional
+    pre_init_commands : list of str, optional
         Geant4 commands to run before the run is initialized
-    postInitCommands : list of str, optional
+    post_init_commands : list of str, optional
         Geant4 commands to run after run is initialized (but before run starts)
     actions : list of UserAction, optional
         Special User-defined actions to take during the simulation
@@ -77,42 +127,31 @@ class simulator(Producer):
         Verbosity level to print
     """
 
-    def __init__(self, instance_name ) :
-        super().__init__( instance_name , "simcore::Simulator" , "SimCore" )
+    generators: list[PrimaryGenerator] = []
+    detector: str = ""
+    sensitive_detectors: list[SensitiveDetector] = []
+    description: str = ""
+    scoring_planes: str = ""
+    time_shift_primaries: bool = True
+    pre_init_commands: list[str] = []
+    post_init_commands: list[str] = []
+    actions: list[UserAction] = []
+    biasing_operators: list[XsecBiasingOperator] = []
+    logging_prefix: str = "GEANT4"
+    root_primary_gen_use_seed: bool = False
+    validate_detector: bool = False
+    verbosity: int = 0
+    dark_brem: DarkBrem = field(default_factory=DarkBrem)
+    photonuclear_model: PhotoNuclearModel = field(default_factory=BertiniModel)
+    kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
+    fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
 
-        #######################################################################
-        # Required Parameters
-        self.generators = [ ]
-        self.detector = ''
-        self.sensitive_detectors = [ ]
-        self.description = ''
-
-        #######################################################################
-        # Optional Parameters (with helpful defaults)
-        self.scoring_planes = ''
-        self.time_shift_primaries = True
-        self.preInitCommands = [ ]
-        self.postInitCommands = [ ]
-        self.actions = [ ]
-        self.biasing_operators = [ ]
-        self.logging_prefix = 'GEANT4'
-        self.root_primary_gen_use_seed = False
-        self.validate_detector = False
-        self.verbosity = 0
-
-
-        #Dark Brem stuff
-        from LDMX.SimCore import dark_brem
-        self.dark_brem = dark_brem.DarkBrem()
-
-        # Default photonuclear model
-        from LDMX.SimCore import photonuclear_models
-        self.photonuclear_model = photonuclear_models.BertiniModel()
-
-        from LDMX.SimCore import kaon_physics
-        self.kaon_parameters = kaon_physics.KaonPhysics()
-
-    def setDetector(self, det_name , include_scoring_planes_others = False, include_scoring_planes_minimal = False ) :
+    def set_detector(
+        self,
+        det_name,
+        include_scoring_planes_others=False,
+        include_scoring_planes_minimal=False,
+    ):
         """Set the detector description with the option to include the scoring planes
 
         Parameters
@@ -130,39 +169,53 @@ class simulator(Producer):
         sensitive_detectors for configuring the SDs
         """
 
-        from LDMX.Detectors import make_path as mP
+        from LDMX.Detectors import make_path
 
         from . import sensitive_detectors as sds
-        self.detector = mP.makeDetectorPath( det_name )
-        if 'v12' in det_name :
-            trigscint = [ sds.TrigScintSD.up(), sds.TrigScintSD.tag(), sds.TrigScintSD.down() ]
-        elif 'hcal-prototype' in det_name :
-            trigscint = [ sds.TrigScintSD.testbeam() ]
-        else :
-            trigscint = [ sds.TrigScintSD.pad1(), sds.TrigScintSD.pad2(), sds.TrigScintSD.pad3() ]
-        self.sensitive_detectors = [
-                sds.TrackerSD.tagger(),
-                sds.TrackerSD.recoil(),
-                sds.HcalSD(),
-                sds.EcalSD(),
-                sds.TrigScintSD.target(),
-                *trigscint]
-        if include_scoring_planes_minimal :
-            self.scoring_planes = mP.makeScoringPlanesPath( det_name )
-            self.sensitive_detectors.extend([
-                sds.ScoringPlaneSD.target(),
-                sds.ScoringPlaneSD.ecal(),
-                ])
-        if include_scoring_planes_others :
-            self.scoring_planes = mP.makeScoringPlanesPath( det_name )
-            self.sensitive_detectors.extend([
-                sds.ScoringPlaneSD.hcal(),
-                sds.ScoringPlaneSD.trigscint(),
-                sds.ScoringPlaneSD.tracker(),
-                sds.ScoringPlaneSD.magnet()
-                ])
 
-    def resimulate(self, which_events = None, which_runs = None):
+        self.detector = make_path.make_detector_path(det_name)
+        if "v12" in det_name:
+            trigscint = [
+                sds.TrigScintSD.up(),
+                sds.TrigScintSD.tag(),
+                sds.TrigScintSD.down(),
+            ]
+        elif "hcal-prototype" in det_name:
+            trigscint = [sds.TrigScintSD.testbeam()]
+        else:
+            trigscint = [
+                sds.TrigScintSD.pad1(),
+                sds.TrigScintSD.pad2(),
+                sds.TrigScintSD.pad3(),
+            ]
+        self.sensitive_detectors = [
+            sds.TrackerSD.tagger(),
+            sds.TrackerSD.recoil(),
+            sds.HcalSD(),
+            sds.EcalSD(),
+            sds.TrigScintSD.target(),
+            *trigscint,
+        ]
+        if include_scoring_planes_minimal:
+            self.scoring_planes = make_path.make_scoring_planes_path(det_name)
+            self.sensitive_detectors.extend(
+                [
+                    sds.ScoringPlaneSD.target(),
+                    sds.ScoringPlaneSD.ecal(),
+                ]
+            )
+        if include_scoring_planes_others:
+            self.scoring_planes = make_path.make_scoring_planes_path(det_name)
+            self.sensitive_detectors.extend(
+                [
+                    sds.ScoringPlaneSD.hcal(),
+                    sds.ScoringPlaneSD.trigscint(),
+                    sds.ScoringPlaneSD.tracker(),
+                    sds.ScoringPlaneSD.magnet(),
+                ]
+            )
+
+    def resimulate(self, which_events=None, which_runs=None):
         """Create a resimulator based on the simulator configuration.
 
         This is intended to ensure that a resimulator has the same configuration
@@ -194,34 +247,56 @@ class simulator(Producer):
             check is ignored). If only one value is provided, all events requested
             are also required to have that value for their run number to be resimulated.
             If more than one value is provided, it must be the same length as the
-            number of events requested so that the event/run number pair can be required.
+            number of events requested so that the event/run number pair can be
+            required.
 
         """
-        resimulator = self
-        resimulator.class_name = 'simcore::ReSimulator'
+        resimulator = ReSimulator(self.instance_name)
+        # Copy all Simulator fields into the ReSimulator
+        _skip = {"class_name", "module_name", "instance_name", "histograms"}
+        for fname in self.__dataclass_fields__:
+            if fname not in _skip:
+                resimulator.__dict__[fname] = self.__dict__[fname]
+
         if which_events is None:
             resimulator.resimulate_all_events = True
             resimulator.care_about_run = False
-            resimulator.events_to_resimulate = [ ]
+            resimulator.events_to_resimulate = []
         elif isinstance(which_events, list):
             resimulator.resimulate_all_events = False
             if len(which_events) == 0:
-                raise ValueError('which_events must contain at least one element if provided')
+                raise ValueError(
+                    "which_events must contain at least one element if provided"
+                )
             if which_runs is None:
                 resimulator.care_about_run = False
-                resimulator.events_to_resimulate = [ _EventToReSim(event) for event in which_events ]
+                resimulator.events_to_resimulate = [
+                    _EventToReSim(event) for event in which_events
+                ]
             elif isinstance(which_runs, int):
                 resimulator.care_about_run = True
-                resimulator.events_to_resimulate = [ _EventToReSim(event, which_runs) for event in which_events ]
+                resimulator.events_to_resimulate = [
+                    _EventToReSim(event, which_runs) for event in which_events
+                ]
             elif isinstance(which_runs, list):
                 if len(which_runs) == 0:
-                    raise ValueError('which_runs must have at least one value if provided as a list')
+                    raise ValueError(
+                        "which_runs must have at least one value if provided as a list"
+                    )
                 if len(which_runs) != len(which_events):
-                    raise ValueError('which_runs must have the same number of entries as which_events if more than one run is provided')
+                    raise ValueError(
+                        "which_runs must have the same number of entries as "
+                        "which_events if more than one run is provided"
+                    )
                 resimulator.care_about_run = True
-                resimulator.runs_to_resimulate = [ _EventToReSim(event, run) for event, run in zip(which_events, which_runs) ]
+                resimulator.events_to_resimulate = [
+                    _EventToReSim(event, run)
+                    for event, run in zip(which_events, which_runs, strict=True)
+                ]
             else:
-                raise ValueError('which_runs must be an int or a list of ints if provided')
+                raise ValueError(
+                    "which_runs must be an int or a list of ints if provided"
+                )
         else:
-            raise ValueError('which_events must be a list if provided')
+            raise ValueError("which_events must be a list if provided")
         return resimulator
