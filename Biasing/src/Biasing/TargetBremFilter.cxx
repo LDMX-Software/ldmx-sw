@@ -136,38 +136,50 @@ void TargetBremFilter::stepping(const G4Step* step) {
           ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
         }
 
-        if (ebrem_process && secondary_track->GetKineticEnergy() > brem_energy_threshold_){
-	
-	  //Brem angle
+        if (ebrem_process &&
+            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
+          // Brem angle
           auto momentum = secondary_track->GetMomentum();
-          double theta = std::atan2(std::sqrt(momentum.x() * momentum.x() + momentum.y() * momentum.y()),momentum.z());
-          bool pass_brem_theta = theta >= brem_theta_min_ && theta <= brem_theta_max_;
-	  
-	  //Maximum and Minimum angle between outgoing Brem photons and electrons
+          double theta = std::atan2(std::sqrt(momentum.x() * momentum.x() +
+                                              momentum.y() * momentum.y()),
+                                    momentum.z());
+          bool pass_brem_theta =
+              theta >= brem_theta_min_ && theta <= brem_theta_max_;
+
+          // Maximum and Minimum angle between outgoing Brem photons and
+          // electrons
           auto gamma_mom = secondary_track->GetMomentum();
           auto electron_mom = track->GetMomentum();
           double gamma_eta = gamma_mom.eta();
           double gamma_phi = gamma_mom.phi();
           double electron_eta = electron_mom.eta();
           double electron_phi = electron_mom.phi();
- 
-	  double dphi = std::atan2(std::sin(electron_phi - gamma_phi), std::cos(electron_phi - gamma_phi));
-          double dral = std::sqrt((electron_eta - gamma_eta) * (electron_eta - gamma_eta) + dphi * dphi);
-	  bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
-	  //ldmx_log(info) << "ready";
+
+          double dphi = std::atan2(std::sin(electron_phi - gamma_phi),
+                                   std::cos(electron_phi - gamma_phi));
+          double dral = std::sqrt((electron_eta - gamma_eta) *
+                                      (electron_eta - gamma_eta) +
+                                  dphi * dphi);
+          bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
+          // ldmx_log(info) << "ready";
           if (pass_brem_theta && pass_dral) {
-		ldmx_log(info) << "E_gamma = " << secondary_track->GetKineticEnergy() << " theta = " << theta;
-		ldmx_log(info) << " dral = " << dral;
-	  	auto track_info{simcore::UserTrackInformation::get(secondary_track)};
-          	track_info->tagBremCandidate();
+            ldmx_log(info) << "E_gamma = "
+                           << secondary_track->GetKineticEnergy()
+                           << " theta = " << theta;
+            ldmx_log(info) << " dral = " << dral;
+            auto track_info{
+                simcore::UserTrackInformation::get(secondary_track)};
+            track_info->tagBremCandidate();
 
-          	getEventInfo()->incBremCandidateCount();
+            getEventInfo()->incBremCandidateCount();
 
-          	has_brem_candidate = true;
+            has_brem_candidate = true;
 
-		ldmx_log(info) << "E_gamma = " << secondary_track->GetKineticEnergy() << " theta = " << theta;
-		ldmx_log(info) << " dral = " << dral;
-	  }
+            ldmx_log(info) << "E_gamma = "
+                           << secondary_track->GetKineticEnergy()
+                           << " theta = " << theta;
+            ldmx_log(info) << " dral = " << dral;
+          }
         }
       }
     }
