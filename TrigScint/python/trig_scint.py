@@ -467,3 +467,25 @@ class TestBeamClusterAnalyzer(ldmxcfg.Analyzer) :
         self.start_sample=2      #first time sample included in reformatting
         self.deadChannels=[ 8 ]
 
+
+class ClusterTripletMaker(ldmxcfg.Analyzer) :
+    """Configuration for cluster text file maker for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::ClusterTripletMaker','TrigScint')
+
+        self.cluster_input_collections = ["TriggerPad1Clusters", "TriggerPad2Clusters","TriggerPad3Clusters"]
+        self.input_pass_name=""   #take any pass
+        self.output_collection="clusters.txt"
+
+
+class PatternLUTMaker(ldmxcfg.Analyzer) :
+    """Configuration for track-pattern LUT-writing analyzer for Trigger Scintillators"""
+
+    def __init__(self,name) :
+        super().__init__(name,'trigscint::PatternLUTMaker','TrigScint')
+
+        self.input_collection="clusters.txt"
+        self.input_pass_name=""   #take any pass
+        self.output_collection="LUT.txt"
+        self.lut_threshold=0.0008
