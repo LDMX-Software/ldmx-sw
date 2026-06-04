@@ -203,75 +203,77 @@ void TrigScintTrackProducer::produce(framework::Event& event) {
       
       else { //ends line 283, normal tstp tracking
       
-        for (const auto &cluster1 : clusters_pad1) {
-          if (verbose_ > 1) {
-            ldmx_log(debug) << "\tGot pad1 cluster with centroid "
-                            << cluster1.getCentroid();
-          }
-          if (fabs(cluster1.getCentroid() - centroid) < max_delta_ ||
-            (centroid >= vert_bar_start_idx_  // then in vertical bars
-             && seed.getCentroidX() == cluster1.getCentroidX())) {
-              // use geometry y overlap scheme to see if this is really a match in x
-              // should be done in a map
-            
-            if (centroid >= vert_bar_start_idx_ &&
+      for (const auto &cluster1 : clusters_pad1) {
+        if (verbose_ > 1) {
+          ldmx_log(debug) << "\tGot pad1 cluster with centroid "
+                          << cluster1.getCentroid();
+        }
+        if ((fabs(cluster1.getCentroid() - centroid) < max_delta_ &&
+            centroid < vert_bar_start_idx_) ||
+            (centroid >= vert_bar_start_idx_ && cluster1.getCentroid() >= vert_bar_start_idx_ &&
+            seed.getCentroidX() == cluster1.getCentroidX())) { 
+            // use geometry y overlap scheme to see if this is really a match in x
+            // should be done in a map
+
+          if (centroid >= vert_bar_start_idx_ &&
               seed.getCentroidY() < cluster1.getCentroidY()) {
-              // impossible combination
-              if (verbose_ > 1) {
-                ldmx_log(debug) << "\tSkipping impossible x cluster combination "
-                                   "with y flags (tag up) ("
-                                << seed.getCentroidY() << " "
-                                << cluster1.getCentroidY() << ")";
-              }
-              continue;
-            }
-
-            // else: first (possible) match! loop through next pad too
-
+            // impossible combination
             if (verbose_ > 1) {
-              ldmx_log(debug) << "\t\tIt is close enough!. Check pad2";
+              ldmx_log(debug) << "\tSkipping impossible x cluster combination "
+                                 "with y flags (tag up) ("
+                              << seed.getCentroidY() << " "
+                              << cluster1.getCentroidY() << ")";
+            }
+            continue;
+          }
+
+          // else: first (possible) match! loop through next pad too
+
+          if (verbose_ > 1) {
+            ldmx_log(debug) << "\t\tIt is close enough!. Check pad2";
+          }
+
+          // try making third pad clusters an optional part of track
+
+          std::vector<ldmx::TrigScintCluster> cluster_vec = {seed, cluster1};
+
+          bool has_match_dn = false;
+
+          for (const auto &cluster2 : clusters_pad2) {
+            if (verbose_ > 1) {
+              ldmx_log(debug) << "\tGot pad2 cluster with centroid "
+                              << cluster2.getCentroid();
             }
 
-            // try making third pad clusters an optional part of track
+            if ((fabs(cluster2.getCentroid() - centroid) < max_delta_ &&
+                centroid < vert_bar_start_idx_) ||
+                (centroid >= vert_bar_start_idx_ && cluster2.getCentroid() >= vert_bar_start_idx_ &&
+                fabs(seed.getCentroidX() - cluster2.getCentroidX()) <= max_delta_vert)) { 
+                        // use geometry y overlap scheme to see if this is really a match
+                    // in x
 
-            std::vector<ldmx::TrigScintCluster> cluster_vec = {seed, cluster1};
-
-            bool has_match_dn = false;
-
-            for (const auto &cluster2 : clusters_pad2) {
-              if (verbose_ > 1) {
-                ldmx_log(debug) << "\tGot pad2 cluster with centroid "
-                                << cluster2.getCentroid();
+              if (centroid >= vert_bar_start_idx_ &&
+                  (seed.getCentroidY() < cluster2.getCentroidY() ||
+                   cluster1.getCentroidY() >
+                       cluster2.getCentroidY())) {  // impossible
+                if (verbose_ > 1) {
+                  ldmx_log(debug)
+                      << "\tSkipping impossible x cluster combination with y "
+                         "flags (tag up dn) ("
+                      << seed.getCentroidY() << " " << cluster1.getCentroidY()
+                      << " " << cluster2.getCentroidY() << ")";
+                }
+                continue;
               }
 
-              if (fabs(cluster2.getCentroid() - centroid) < max_delta_ ||
-                  (centroid >= vert_bar_start_idx_  // then in vertical bars
-                   && seed.getCentroidX() == cluster2.getCentroidX())) {
-                // use geometry y overlap scheme to see if this is really a match
-                // in x
+              // first match! loop through next pad too
 
-                if (centroid >= vert_bar_start_idx_ &&
-                    (seed.getCentroidY() < cluster2.getCentroidY() ||
-                     cluster1.getCentroidY() >
-                         cluster2.getCentroidY())) {  // impossible
-                  if (verbose_ > 1) {
-                    ldmx_log(debug)
-                        << "\tSkipping impossible x cluster combination with y "
-                           "flags (tag up dn) ("
-                        << seed.getCentroidY() << " " << cluster1.getCentroidY()
-                        << " " << cluster2.getCentroidY() << ")";
-                  }
-                  continue;
-                }
+              if (verbose_ > 1) {
+                ldmx_log(debug) << "\t\tIt is close enough!. Make a track";
+              }
 
-                // first match! loop through next pad too
-
-                if (verbose_ > 1) {
-                  ldmx_log(debug) << "\t\tIt is close enough!. Make a track";
-                }
-
-                // only make this vector now! this ensures against hanging
-                // clusters with indices from earlier in the loop
+              // only make this vector now! this ensures against hanging
+              // clusters with indices from earlier in the loop
                 std::vector<ldmx::TrigScintCluster> three_cluster_vec = {
                     seed, cluster1, cluster2};
 
