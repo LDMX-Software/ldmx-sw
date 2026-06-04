@@ -1,12 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 14 21:58:25 2026
-
-@author: kvarn
-"""
-
-#digis, then clusters, then makes clusters.txt
+#example config which makes digis, clusters, and writes clusters 
+#to .txt file using ClusterTripletMaker
 
 from LDMX.Framework import ldmxcfg
 
@@ -41,16 +34,15 @@ for cluster, digi in zip(clusters, digis):
     cluster.ampl_weighting = False
     cluster.clustering_threshold = 3.0
 
-CVA= ldmxcfg.Analyzer.from_file('ClusterViewerAnalyzer.cxx', 
-     needs = ['TrigScint_Event', 'SimCore_Event'])
+from LDMX.TrigScint.trig_scint import ClusterTripletMaker
 
-CVA.pass_name = "nontruthclusters"
+triplets = ClusterTripletMaker("tripletmaker")
 
 p.sequence = [
              #*truth_hits,
               *digis,
               *clusters, 
-              CVA
+              triplets
               ]
 
     
