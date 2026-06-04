@@ -1,5 +1,5 @@
 /**
- * @file LUTAnalyzer.h
+ * @file PatternLUTMaker.h
  * @brief Outputs a LUT based on frequency of track propagation patterns
  * (PATTERNS, NOT INDIVIDUAL BAR ID COMBINATIONS), which can then be used
  * as input in TrigScintTrackProducer for LUT-method track-making.

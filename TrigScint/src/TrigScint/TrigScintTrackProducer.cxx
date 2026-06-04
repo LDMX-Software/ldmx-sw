@@ -19,7 +19,6 @@ void TrigScintTrackProducer::configure(framework::config::Parameters &ps) {
       "further_input_collections");  // {"TriggerPadUpClusters" ,
                                      // "TriggerPadDnClusters" }
   output_collection_ = ps.get<std::string>("output_collection");
-  
   pass_name_ = ps.get<std::string>("input_pass_name");
   verbose_ = ps.get<int>("verbosity");
   vert_bar_start_idx_ = ps.get<int>("vertical_bar_start_index");
@@ -175,7 +174,6 @@ void TrigScintTrackProducer::produce(framework::Event &event) {
 
       // reset for each seed
       // bool madeTrack = false;
-<<<<<<< HEAD
       
       if (lut_tracking_) { //if using LUT method
         for (const auto &cluster1 : clusters_pad1) {
