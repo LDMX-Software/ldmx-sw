@@ -136,18 +136,18 @@ void TargetBremFilter::stepping(const G4Step* step) {
           ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
         }
 
-        if (ebrem_process &&
-            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
-          // Brem angle
-          auto momentum = secondary_track->GetMomentum();
-          double theta = std::atan2(std::sqrt(momentum.x() * momentum.x() +
-                                              momentum.y() * momentum.y()),
-                                    momentum.z());
-          bool pass_brem_theta =
-              theta >= brem_theta_min_ && theta <= brem_theta_max_;
+        if (ebrem_process && secondary_track->GetKineticEnergy() > brem_energy_threshold_){
+	  
+	  //Check if secondary is photon
+	  auto secondary_pdg_id = secondary_track->GetParticleDefinition()->GetPDGEncoding();
+          if (secondary_pdg_id != 22) continue;
 
-          // Maximum and Minimum angle between outgoing Brem photons and
-          // electrons
+	  //Brem angle
+          auto momentum = secondary_track->GetMomentum();
+          double theta = std::atan2(std::sqrt(momentum.x() * momentum.x() + momentum.y() * momentum.y()),momentum.z());
+          bool pass_brem_theta = theta >= brem_theta_min_ && theta <= brem_theta_max_;
+	 
+	  //Maximum and Minimum angle between outgoing Brem photons and electrons
           auto gamma_mom = secondary_track->GetMomentum();
           auto electron_mom = track->GetMomentum();
           double gamma_eta = gamma_mom.eta();

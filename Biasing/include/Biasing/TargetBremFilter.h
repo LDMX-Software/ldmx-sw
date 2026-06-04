@@ -69,12 +69,12 @@ class TargetBremFilter : public simcore::UserAction {
   double brem_energy_threshold_{2500};
 
   /// Maximum and Minimum brem gamma angle relative to beam axis [rad].
-  double brem_theta_min_{-999.0};  // rad
-  double brem_theta_max_{999.0};   // rad
+  double brem_theta_min_;
+  double brem_theta_max_;
 
   /// Maximum and Minimum electron-photon separation in eta-phi space.
-  double dral_max_{999.};
-  double dral_min_{-999.};
+  double dral_min_;
+  double dral_max_;
 
   /// Flag indicating if the recoil electron track should be killed
   bool kill_recoil_{false};
