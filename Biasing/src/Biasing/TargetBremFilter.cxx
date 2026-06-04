@@ -17,6 +17,11 @@
 #include "SimCore/G4User/UserEventInformation.h"
 #include "SimCore/G4User/UserTrackInformation.h"
 
+/*~~~~~~~~~~~~~*/
+/*  C++ StdLib */
+/*~~~~~~~~~~~~~*/
+#include <cmath>
+
 namespace biasing {
 
 TargetBremFilter::TargetBremFilter(const std::string& name,
@@ -24,6 +29,10 @@ TargetBremFilter::TargetBremFilter(const std::string& name,
     : simcore::UserAction(name, parameters) {
   recoil_max_p_threshold_ = parameters.get<double>("recoil_max_p_threshold");
   brem_energy_threshold_ = parameters.get<double>("brem_min_energy_threshold");
+  brem_theta_min_ = parameters.get<double>("brem_theta_min");
+  brem_theta_max_ = parameters.get<double>("brem_theta_max");
+  dral_min_ = parameters.get<double>("dral_min");
+  dral_max_ = parameters.get<double>("dral_max");
   kill_recoil_ = parameters.get<bool>("kill_recoil_track");
 }
 
@@ -127,14 +136,38 @@ void TargetBremFilter::stepping(const G4Step* step) {
           ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
         }
 
-        if (ebrem_process &&
-            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
-          auto track_info{simcore::UserTrackInformation::get(secondary_track)};
-          track_info->tagBremCandidate();
+        if (ebrem_process && secondary_track->GetKineticEnergy() > brem_energy_threshold_){
+	
+	  //Brem angle
+          auto momentum = secondary_track->GetMomentum();
+          double theta = std::atan2(std::sqrt(momentum.x() * momentum.x() + momentum.y() * momentum.y()),momentum.z());
+          bool pass_brem_theta = theta >= brem_theta_min_ && theta <= brem_theta_max_;
+	  
+	  //Maximum and Minimum angle between outgoing Brem photons and electrons
+          auto gamma_mom = secondary_track->GetMomentum();
+          auto electron_mom = track->GetMomentum();
+          double gamma_eta = gamma_mom.eta();
+          double gamma_phi = gamma_mom.phi();
+          double electron_eta = electron_mom.eta();
+          double electron_phi = electron_mom.phi();
+ 
+	  double dphi = std::atan2(std::sin(electron_phi - gamma_phi), std::cos(electron_phi - gamma_phi));
+          double dral = std::sqrt((electron_eta - gamma_eta) * (electron_eta - gamma_eta) + dphi * dphi);
+	  bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
+	  //ldmx_log(info) << "ready";
+          if (pass_brem_theta && pass_dral) {
+		ldmx_log(info) << "E_gamma = " << secondary_track->GetKineticEnergy() << " theta = " << theta;
+		ldmx_log(info) << " dral = " << dral;
+	  	auto track_info{simcore::UserTrackInformation::get(secondary_track)};
+          	track_info->tagBremCandidate();
 
-          getEventInfo()->incBremCandidateCount();
+          	getEventInfo()->incBremCandidateCount();
 
-          has_brem_candidate = true;
+          	has_brem_candidate = true;
+
+		ldmx_log(info) << "E_gamma = " << secondary_track->GetKineticEnergy() << " theta = " << theta;
+		ldmx_log(info) << " dral = " << dral;
+	  }
         }
       }
     }
@@ -145,6 +178,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
       return;
     }
 
+    ldmx_log(info) << "Brem found";
     /*
     std::cout << "[TargetBremFilter] : Found brem candidate" << std::endl;
      */
