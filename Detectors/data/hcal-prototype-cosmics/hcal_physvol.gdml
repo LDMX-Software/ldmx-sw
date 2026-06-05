@@ -1,0 +1,89 @@
+
+<!-- Bottom -->
+
+<loop for="layer_index" from="1" to="num_layers_bottom" step="2">
+  <!-- alongz layers -->
+  <physvol name="alongz_scint_cover_physvol_bottom">
+    <volumeref ref="alongz_scint_cover_box_volume"/>
+    <position name="alongz_scint_cover_pos_bottom" unit="mm"
+              x="0"
+              y="(layer_index - 1)*layer_thickness + first_layer_scint_cover_ypos_bottom"
+              z="0"/>
+  </physvol>
+
+  <loop for="strip_index" from="1" to="num_bars" step="1">
+    <physvol name="alongz_scint_physvol_bottom"
+             copynumber="1*256*256*256 + 2*256*256 + (layer_index)*256 + (strip_index-1)">
+      <volumeref ref="alongz_scint_box_volume"/>
+      <position name="alongz_scint_pos_bottom" unit="mm"
+                x="first_scint_alongz_xpos + (strip_index - 1)*scint_bar_width"
+                y="(layer_index - 1)*layer_thickness + first_layer_scint_ypos_bottom"
+                z="0"/>
+    </physvol>
+  </loop>
+
+  <!-- alongx Layers -->
+  <physvol name="alongx_scint_cover_physvol_bottom">
+    <volumeref ref="alongx_scint_cover_box_volume"/>
+    <position name="alongx_scint_cover_pos_bottom" unit="mm"
+              x="0"
+              y="(layer_index)*layer_thickness + first_layer_scint_cover_ypos_bottom"
+              z="0"/>
+  </physvol>
+
+  <loop for="strip_index" from="1" to="num_bars" step="1">
+    <physvol name="alongx_scint_physvol_bottom"
+             copynumber="1*256*256*256 + 2*256*256 + (layer_index+1) * 256 + (strip_index-1)">
+      <volumeref ref="alongx_scint_box_volume"/>
+      <position name="alongx_scint_pos_bottom" unit="mm"
+                x="0"
+                y="(layer_index)*layer_thickness + first_layer_scint_ypos_bottom"
+                z="first_scint_alongx_zpos + (strip_index - 1)*scint_bar_width"/>
+    </physvol>
+  </loop>
+</loop>
+
+
+<!-- Top -->
+
+<loop for="layer_index" from="1" to="num_layers_top" step="2">
+  <!-- alongz layers -->
+  <physvol name="alongz_scint_cover_physvol_top">
+    <volumeref ref="alongz_scint_cover_box_volume"/>
+    <position name="alongz_scint_cover_pos_top" unit="mm"
+              x="0"
+              y="(layer_index - 1)*layer_thickness + first_layer_scint_cover_ypos_top"
+              z="0"/>
+  </physvol>
+
+  <loop for="strip_index" from="1" to="num_bars" step="1">
+    <physvol name="alongz_scint_physvol_top"
+             copynumber="1*256*256*256 + 1*256*256 + (layer_index)*256 + (strip_index-1)">
+      <volumeref ref="alongz_scint_box_volume"/>
+      <position name="alongz_scint_pos_top" unit="mm"
+                x="first_scint_alongz_xpos + (strip_index - 1)*scint_bar_width"
+                y="(layer_index - 1)*layer_thickness + first_layer_scint_ypos_top"
+                z="0"/>
+    </physvol>
+  </loop>
+
+  <!-- alongx Layers -->
+  <physvol name="alongx_scint_cover_physvol_top">
+    <volumeref ref="alongx_scint_cover_box_volume"/>
+    <position name="alongx_scint_cover_pos_top" unit="mm"
+              x="0"
+              y="(layer_index)*layer_thickness + first_layer_scint_cover_ypos_top"
+              z="0"/>
+  </physvol>
+
+  <loop for="strip_index" from="1" to="num_bars" step="1">
+    <physvol name="alongx_scint_physvol_top"
+             copynumber="1*256*256*256 + 1*256*256 + (layer_index+1) * 256 + (strip_index-1)">
+      <volumeref ref="alongx_scint_box_volume"/>
+      <position name="alongx_scint_pos_top" unit="mm"
+                x="0"
+                y="(layer_index)*layer_thickness + first_layer_scint_ypos_top"
+                z="first_scint_alongx_zpos + (strip_index - 1)*scint_bar_width"/>
+    </physvol>
+  </loop>
+</loop>

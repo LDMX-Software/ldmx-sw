@@ -1,0 +1,28 @@
+<!-- Scintillators -->
+<!-- Front -->
+<volume name="alongx_scint_box_volume">
+  <materialref ref="Scintillator"/>
+  <solidref ref="alongx_scint_box"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+  
+</volume>
+<volume name="alongz_scint_box_volume">
+  <materialref ref="Scintillator"/>
+  <solidref ref="alongz_scint_box"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+</volume>
+
+
+<!-- Scintillator covers -->
+
+<volume name="alongx_scint_cover_box_volume">
+  <materialref ref="Aluminum3003"/>
+  <solidref ref="alongx_scint_cover_box"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+</volume>
+<volume name="alongz_scint_cover_box_volume">
+  <materialref ref="Aluminum3003"/>
+  <solidref ref="alongz_scint_cover_box"/>
+  <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+</volume>
+

@@ -1,0 +1,23 @@
+<!-- Scintillators -->
+<!-- Scintilator strip -->
+
+<box lunit="mm" name="alongx_scint_box"
+      x="scint_bar_length"
+      y="scint_thickness"
+      z="scint_bar_width"/>
+<box lunit="mm" name="alongz_scint_box"
+      x="scint_bar_width"
+      y="scint_thickness"
+      z="scint_bar_length"/>
+
+<!-- Scintillator covers -->
+
+<box lunit="mm" name="alongx_scint_cover_box"
+      x="scint_bar_length"
+      y="scint_bar_cover_thickness"
+      z="layer_width"/>
+<box lunit="mm" name="alongz_scint_cover_box"
+      x="layer_width"
+      y="scint_bar_cover_thickness"
+      z="scint_bar_length"/>
+

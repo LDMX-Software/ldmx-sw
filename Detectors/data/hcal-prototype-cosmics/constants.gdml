@@ -1,0 +1,75 @@
+
+<!-- TODO: Include mounting plates. -->
+
+<!-- Center position -->
+<position name="center" x="0" y="0" z="0"/>
+
+<!-- Scintillators  -->
+<variable name="scint_thickness" value="20."/>
+<variable name="scint_bar_width" value="50."/>
+<variable name="scint_bar_length" value="2000."/>
+<variable name="scint_bar_cover_thickness" value="0.5"/>
+
+<!--number of scintillator bars per layer-->
+<variable name="num_bars" value="8"/>
+
+<!-- Layers -->
+<variable name="layer_width" value="num_bars * scint_bar_width"/>
+<variable name="layer_thickness" value="21.5"/>
+<variable name="air_thickness" 
+          value="layer_thickness - scint_thickness - scint_bar_cover_thickness"/> 
+<variable name="space_between_sections" value="1000"/>
+
+<variable name="num_layers_alongx_bottom" value="4"/>
+<variable name="num_layers_alongz_bottom" value="4"/>
+
+<variable name="num_layers_alongx_top" value="4"/>
+<variable name="num_layers_alongz_top" value="4"/>
+
+<variable name="num_layers_bottom"
+          value="num_layers_alongx_bottom + num_layers_alongz_bottom"/>
+
+<variable name="num_layers_top"
+          value="num_layers_alongx_top + num_layers_alongz_top"/>
+
+<variable name="num_layers_total"
+          value="num_layers_top + num_layers_bottom"/>
+
+<!-- Distances between layers -->
+<constant name="distance_to_subsequent_scint_layer" value="2*layer_thickness"/>
+
+<!-- World and prototype dimensions-->
+<constant name="world_dim" value="10.0*m"/>
+<variable name="dx" value="3000."/> <!--longer than 2000 for some reason-->
+<variable name="dy" value="(num_layers_bottom + num_layers_top) * layer_thickness + space_between_sections"/>
+<variable name="dz" value="3000."/>
+
+<!-- Positional constants -->
+
+<position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/> <!--center of the hcal-->
+
+<!-- First layer start at bottom, cover positioned on top of scint layer. -->
+
+<variable name="first_layer_ypos_bottom" 
+          value="-dy/2.0"/> 
+<variable name="first_layer_scint_cover_ypos_bottom"
+          value="first_layer_ypos_bottom + scint_thickness + scint_bar_cover_thickness/2.0"/>
+<variable name="first_layer_scint_ypos_bottom"
+          value="first_layer_ypos_bottom + scint_thickness/2.0"/>
+
+<variable name="first_layer_ypos_top" 
+          value="dy/2.0 - layer_thickness*num_layers_top"/> 
+<variable name="first_layer_scint_cover_ypos_top"
+          value="first_layer_ypos_top + scint_thickness + scint_bar_cover_thickness/2.0"/>
+<variable name="first_layer_scint_ypos_top"
+          value="first_layer_ypos_top + scint_thickness/2.0"/>
+
+<variable name="first_scint_alongx_zpos"
+          value="-layer_width/2.0 + scint_bar_width/2.0"/>
+<variable name="first_scint_alongz_xpos"
+          value="-layer_width/2.0 + scint_bar_width/2.0"/>
+
+<!-- Prototype box  -->
+<!-- Note: 1m extra spacing -->
+<variable name="prototype_box_dy"
+          value="dy + 1000"/>
