@@ -508,7 +508,7 @@ class TestBeamClusterAnalyzer(Processor):
 
 
 @processor("trigscint::ClusterTripletMaker", "TrigScint")
-class ClusterTripletMaker(ldmxcfg.Analyzer) :
+class ClusterTripletMaker(Processor) :
     """Configuration for cluster text file maker for Trigger Scintillators"""
 
     cluster_input_collections: list[str] = ["TriggerPad1Clusters", "TriggerPad2Clusters","TriggerPad3Clusters"]
@@ -517,7 +517,7 @@ class ClusterTripletMaker(ldmxcfg.Analyzer) :
 
 
 @processor("trigscint::PatternLUTMaker", "TrigScint")
-class PatternLUTMaker(ldmxcfg.Analyzer) :
+class PatternLUTMaker(Processor) :
     """Configuration for track-pattern LUT-writing analyzer for Trigger Scintillators"""
 
     input_collection: str ="clusters.txt"
