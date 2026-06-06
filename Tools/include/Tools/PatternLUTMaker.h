@@ -1,8 +1,6 @@
 /**
  * @file PatternLUTMaker.h
- * @brief Outputs a LUT based on frequency of track propagation patterns
- * which can then be used as input in TrigScintTrackProducer for 
- * LUT-method track-making.
+ * @brief Writes LUT based on frequency of track propagation patterns for LUT-based TS tracking.
  * @author Lucia Kvarnstrom, Lund University
  */
 
