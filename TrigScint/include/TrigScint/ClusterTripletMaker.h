@@ -1,3 +1,9 @@
+/**
+ * @file ClusterTripletMaker.h
+ * @brief Writes cluster combinations to text file
+ * @author Lucia Kvarnstrom, Lund University
+ */
+
 #ifndef TRIGSCINT_CLUSTERTRIPLETMAKER_H
 #define TRIGSCINT_CLUSTERTRIPLETMAKER_H
 
