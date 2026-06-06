@@ -36,7 +36,6 @@
 #include "G4strstreambuf.hh"
 #include "Tracking/geo/DetectorElement.h"
 #include "Tracking/geo/GeoUtils.h"
-
 namespace tracking::geo {
 
 /**
@@ -101,9 +100,14 @@ class TrackingGeometry : public framework::ConditionsObject {
 
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
+  /// Full path to the field map file extracted from the GDML auxiliary data.
+  /// Empty if no MagneticField auxiliary block was found.
+  const std::string& fieldMapFile() const { return field_map_file_; }
+
   // Global vector holding all the alignable detector elements of the tracking
   // geometry.
-  std::vector<std::shared_ptr<DetectorElement>> det_elements_;
+  //  std::vector<std::shared_ptr<DetectorElement>> det_elements_;
+  std::vector<std::shared_ptr<tracking::geo::DetectorElement>> det_elements_;
 
  protected:
   const Acts::GeometryContext& gctx_;
@@ -114,6 +118,7 @@ class TrackingGeometry : public framework::ConditionsObject {
   G4VPhysicalVolume* f_world_phys_vol_{nullptr};
 
  private:
+  std::string field_map_file_{""};
   enableLogging("TrackingGeometry")
 };
 }  // namespace tracking::geo

@@ -162,7 +162,7 @@ recoil_tracking = [
     full_tracking_sequence.seeder_recoil,
     full_tracking_sequence.tracking_recoil,
     full_tracking_sequence.greedy_solver_recoil,
-    full_tracking_sequence.GSF_recoil,
+    full_tracking_sequence.gsf_recoil,
 ]
 
 recoil_tracker_dqm = [

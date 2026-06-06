@@ -61,69 +61,13 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   target_surface_ =
       Acts::Surface::makeShared<Acts::PlaneSurface>(target_transform);
 
-  // Custom transformation of the interpolated bfield map
-  bool debug_transform = false;
-  auto transform_pos = [this, debug_transform](const Acts::Vector3& pos_) {
-    Acts::Vector3 rot_pos;
-    rot_pos(0) = pos_(1);
-    rot_pos(1) = pos_(2);
-    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
-
-    // Systematic effect
-    rot_pos(0) += this->map_offset_[0];
-    rot_pos(1) += this->map_offset_[1];
-    rot_pos(2) += this->map_offset_[2];
-
-    // Apply A rotation around the center of the magnet. (I guess offset first
-    // and then rotation)
-
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
-      std::cout << "PF::Check:: transforming Pos" << std::endl;
-      std::cout << pos_ << std::endl;
-      std::cout << "TO" << std::endl;
-      std::cout << rot_pos << std::endl;
-    }
-
-    return rot_pos;
-  };
-
-  Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
-  double scale = 1.;
-
-  auto transform_b_field = [rotation, scale, debug_transform](
-                               const Acts::Vector3& field,
-                               const Acts::Vector3& /*pos_*/) {
-    // Rotate the field in tracking coordinates
-    Acts::Vector3 rot_field;
-    rot_field(0) = field(2);
-    rot_field(1) = field(0);
-    rot_field(2) = field(1);
-
-    // Scale the field
-    rot_field = scale * rot_field;
-
-    // Rotate the field
-    rot_field = rotation * rot_field;
-
-    // A distortion scaled by position.
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM" << std::endl;
-      std::cout << "PF::Check:: transforming" << std::endl;
-      std::cout << field << std::endl;
-      std::cout << "TO" << std::endl;
-      std::cout << rot_field << std::endl;
-    }
-
-    return rot_field;
-  };
-
   // Setup a interpolated bfield map
-  const auto map = std::make_shared<InterpolatedMagneticField3>(
-      loadDefaultBField(field_map_,
-                        // default_transformPos,
-                        // default_transformBField));
-                        transform_pos, transform_b_field));
+  if (field_map_.empty())
+    loadBField(map_offset_);
+  else
+    loadBField(field_map_, map_offset_);
+  const auto map =
+      std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
   auto acts_logging_level = Acts::Logging::FATAL;
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
@@ -228,9 +172,8 @@ void CKFProcessor::produce(framework::Event& event) {
   profiling_map_["setup"] +=
       std::chrono::duration<double, std::milli>(setup - start).count();
 
-  const std::vector<ldmx::Measurement> measurements =
-      event.getCollection<ldmx::Measurement>(measurement_collection_,
-                                             input_pass_name_);
+  const auto& measurements = event.getCollection<ldmx::Measurement>(
+      measurement_collection_, input_pass_name_);
 
   // check if SimParticleMap is available for truth matching
   std::shared_ptr<tracking::sim::TruthMatchingTool> truth_matching_tool =
@@ -256,7 +199,7 @@ void CKFProcessor::produce(framework::Event& event) {
   // ============   Setup the CKF  ============
 
   // Retrieve the seeds
-  const std::vector<ldmx::Track> seed_tracks =
+  const auto& seed_tracks =
       event.getCollection<ldmx::Track>(seed_coll_name_, input_pass_name_);
 
   ldmx_log(info) << "Number of " << seed_coll_name_
@@ -620,6 +563,19 @@ void CKFProcessor::produce(framework::Event& event) {
           ldmx_log(trace) << "    Measurement:\n" << ldmx_meas;
           trk.addMeasurementIndex(sl.index());
 
+          // Store the smoothed state for algebraic unbiased residuals in the
+          // DQM.  The leave-one-out formula (NIM A 262, 444, 1987) removes
+          // this hit's contribution analytically:
+          //   r_ubs = V/(V - C) * (m - x_smooth),  pull = r_ubs * sqrt(V-C)/V
+          // This works correctly for all layers, including seed layers where
+          // the predicted state would be biased.
+          if (ts.hasSmoothed()) {
+            trk.addSmoothedLoc0(
+                static_cast<float>(ts.smoothed()[Acts::eBoundLoc0]),
+                static_cast<float>(ts.smoothedCovariance()(Acts::eBoundLoc0,
+                                                           Acts::eBoundLoc0)));
+          }
+
           // Extract path length from the track state based on the angle
           if (ts.hasSmoothed()) {
             const auto& meas_surface = ts.referenceSurface();
@@ -655,7 +611,14 @@ void CKFProcessor::produce(framework::Event& event) {
             // tan(angle) = sqrt(phi_u^2 + phi_v^2)
             // cos(angle) = 1 / sqrt(1 + tan(angle)^2)
             // path_length = thickness / cos(angle)
-            const float sensor_thickness = 0.320f;  // mm
+            float sensor_thickness = 0.0f;
+            if (const auto* det_el = meas_surface.associatedDetectorElement()) {
+              sensor_thickness = static_cast<float>(det_el->thickness());
+            } else {
+              ldmx_log(warn) << "No detector element for measurement surface"
+                             << " — skipping dE/dx for this hit";
+              continue;
+            }
             float tan_angle_sq = phi_u * phi_u + phi_v * phi_v;
             float cos_angle = 1.0f / std::sqrt(1.0f + tan_angle_sq);
             float path_length = sensor_thickness / cos_angle;

@@ -7,12 +7,16 @@ p.max_tries_per_event = 10000
 
 from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
+from LDMX.SimCore.user_actions import PhotonuclearTracker
 
 
 det = "ldmx-det-v15-8gev"
 
 my_sim = ecal.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 my_sim.description = "ECal PN Test Simulation"
+
+# Enable detailed photonuclear interaction tracking
+my_sim.actions.append(PhotonuclearTracker())
 
 p.sequence = [my_sim]
 
@@ -87,6 +91,7 @@ from LDMX.DQM import dqm
 ecal_veto = ecal_vetos.EcalVetoProcessor()
 ecal_mip = ecal_vetos.EcalMipProcessor()
 ecal_veto_pnet = ecal_vetos.EcalPnetVetoProcessor()
+ecal_tracking = ecal_vetos.EcalTrackFinderProcessor()
 
 # Load hcal veto
 import LDMX.Hcal.hcal as hcal
@@ -119,6 +124,7 @@ p.sequence.extend(
     [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
+        ecal_tracking,
         ecal_pres_skimmer,
         ecal_cluster.EcalClusterProducer(),
         ecal_veto,

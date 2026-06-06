@@ -423,6 +423,19 @@ class TrackingRecoDQM(Processor):
             500,
         )
 
+        # Per-layer unbiased U-residuals and pulls
+        for i in range(14):
+            self.histogram(
+                f"unbiased_res_u_l{i}",
+                f"Unbiased U residual layer {i} (mm)",
+                200, -0.3, 0.3,
+            )
+            self.histogram(
+                f"unbiased_pull_u_l{i}",
+                f"Unbiased U pull layer {i}",
+                100, -5.0, 5.0,
+            )
+
         if self.do_truth:
             self.histogram("truth_N_tracks", "truth_N tracks", 10, 0, 10)
             self.histogram("truth_nHits", "truth nHits", 15, 0, 15)
@@ -692,6 +705,50 @@ class TrackingRecoDQM(Processor):
                     3,
                 )
 
+
+
+@processor("tracking::dqm::DigiDQM", "Tracking")
+class DigiDQM(Processor):
+    """DQM for silicon-strip digitization and clustering.
+
+    Produces per-sensor histograms for sim hits, fitted strips, and clusters.
+    """
+
+    n_sensors: int = 14
+    sim_coll_name: str = "TaggerSimHits"
+    sim_pass_name: str = ""
+    digi_coll_name: str = ""
+    digi_pass_name: str = ""
+    fitted_coll_name: str = "TaggerFittedSiStripHits"
+    fitted_pass_name: str = ""
+    cluster_coll_name: str = "TaggerClusterMeasurements"
+    cluster_pass_name: str = ""
+
+    def __post_init__(self):
+        for i in range(self.n_sensors):
+            s = str(i)
+
+            # sim hits
+            self.histogram(f"sim_n_s{s}", "N sim hits", 10, 0, 10)
+            self.histogram(f"sim_edep_s{s}", "Sim E_{dep} (MeV)", 100, 0, 0.5)
+
+            # fitted strips
+            self.histogram(f"strip_n_s{s}", "N fitted strips", 20, 0, 20)
+            self.histogram(f"strip_amp_s{s}", "Strip amplitude (ADC)", 150, 0, 2500)
+            self.histogram(f"strip_t0_s{s}", "Strip fitted t_{0} (ns)", 100, -50, 150)
+            self.histogram(f"strip_chi2ndf_s{s}", "Strip #chi^{{2}}/ndf", 100, 0, 5)
+
+            # clusters
+            self.histogram(f"cluster_n_s{s}", "N clusters", 10, 0, 10)
+            self.histogram(f"cluster_u_s{s}", "Cluster local U (mm)", 200, -23.0, 23.0)
+            self.histogram(f"cluster_amp_s{s}", "Cluster amplitude (ADC)", 150, 0, 2500)
+            self.histogram(f"cluster_nstrips_s{s}", "Strips per cluster", 10, 0, 10)
+            self.histogram(f"cluster_time_s{s}", "Cluster time (ns)", 100, -50, 150)
+
+            # sim-cluster residual (filled only when digi_coll_name is set)
+            self.histogram(
+                f"sim_cluster_du_s{s}", "Sim U #minus Cluster U (mm)", 100, -0.1, 0.1
+            )
 
 @processor("tracking::dqm::StraightTracksDQM", "Tracking")
 class StraightTracksDQM(Processor):

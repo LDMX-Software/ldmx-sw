@@ -6,6 +6,9 @@
 
 #pragma link C++ namespace ldmx;
 #pragma link C++ class ldmx::RawSiStripHit + ;
+#pragma link C++ class std::vector < ldmx::RawSiStripHit> + ;
+#pragma link C++ class ldmx::FittedSiStripHit + ;
+#pragma link C++ class std::vector < ldmx::FittedSiStripHit> + ;
 #pragma link C++ class ldmx::StraightTrack + ;
 #pragma link C++ class std::vector < ldmx::StraightTrack> + ;
 #pragma link C++ class ldmx::TruthTrack + ;

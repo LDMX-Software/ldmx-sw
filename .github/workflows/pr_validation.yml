@@ -134,9 +134,8 @@ jobs:
 
     - name: Run Validation
       id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ${{matrix.sample}}
+      run: just run-validation ${{matrix.sample}}
+      shell: bash
 
     - name: Upload Validation Plots
       uses: actions/upload-artifact@v7
@@ -147,9 +146,8 @@ jobs:
     - name: Did any validation plots fail?
       id: check_result
       continue-on-error: true
-      uses: ./.github/actions/check
-      with:
-        plots: ${{ steps.validation.outputs.plots }}
+      run: just check-validation "${{ steps.validation.outputs.plots }}" 2>&1 | tee check_output.txt
+      shell: bash
 
     - name: Upload validation status
       if: always()
@@ -165,12 +163,23 @@ jobs:
           fi
         fi
 
+        # Extract and store check messages
+        if [[ -f check_output.txt ]]; then
+          # Extract error and warning messages, removing GitHub annotation prefixes
+          grep -E '::(error|warning)::' check_output.txt | \
+            sed -e 's/::error:://' -e 's/::warning:://' > check_messages.txt || true
+          # Also include regular info messages about timing and log diffs
+          grep -E '^(Timing for |Log character count differs|Timing within)' check_output.txt >> check_messages.txt || true
+        fi
+
     - name: Upload status artifact
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.sample }}-validation-status
-        path: status.txt
+        path: |
+          status.txt
+          check_messages.txt
 
     - name: Fail if validation failed
       if: steps.check_result.outcome == 'failure'
@@ -198,9 +207,19 @@ jobs:
 
       - name: Post validation summary comment
         run: |
+          # Fetch artifact list for this workflow run
+          declare -A artifact_urls
+          artifacts_json=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?per_page=100")
+          while IFS=$'\t' read -r aname aid; do
+            artifact_urls[$aname]="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${aid}"
+          done < <(echo "$artifacts_json" | jq -r '.artifacts[] | [.name, (.id|tostring)] | @tsv')
+
           passed=()
           failed=()
           declare -A reasons
+          declare -A check_details
           for dir in statuses/*/; do
             sample=$(basename "$dir" -validation-status)
             mapfile -t lines < "$dir/status.txt"
@@ -210,6 +229,11 @@ jobs:
             else
               failed+=("$sample")
               reasons[$sample]="${lines[1]:-0}"
+            fi
+
+            # Read check messages if available
+            if [[ -f "$dir/check_messages.txt" ]]; then
+              check_details[$sample]=$(cat "$dir/check_messages.txt" | sed 's/^/- /')
             fi
           done
 
@@ -225,18 +249,32 @@ jobs:
           done
           for s in "${failed[@]}"; do
             n="${reasons[$s]}"
+            artifact_link=""
+            artifact_name="${s}-pr-validation"
+            if [[ -n "${artifact_urls[$artifact_name]:-}" ]]; then
+              artifact_link=" ([artifact](${artifact_urls[$artifact_name]}))"
+            fi
             if [[ "$n" -gt 0 ]]; then
-              table+="| \`$s\` | :x: FAIL ($n histograms failed KS test) |\n"
+              table+="| \`$s\` | :x: FAIL ($n histograms failed KS test)${artifact_link} |\n"
             else
-              table+="| \`$s\` | :x: FAIL |\n"
+              table+="| \`$s\` | :x: FAIL${artifact_link} |\n"
             fi
           done
 
-          body="## Validation Results\n\n${header}\n\n${table}"
+          # Add details section for samples with check messages
+          details_section=""
+          all_samples=("${failed[@]}" "${passed[@]}")
+          for s in "${all_samples[@]}"; do
+            if [[ -n "${check_details[$s]:-}" ]]; then
+              details_section+="\n**\`${s}\`:**\n${check_details[$s]}\n"
+            fi
+          done
+
+          body="## Validation Results\n\n${header}\n\n${table}${details_section}"
 
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg body "$(printf "$body")" '{"body": $body}')" \
+            -d "$(jq -n --arg body "$(printf '%b' "$body")" '{"body": $body}')" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments"
 

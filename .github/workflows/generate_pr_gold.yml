@@ -75,10 +75,8 @@ jobs:
 
     - name: Run Validation
       id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ${{matrix.sample}}
-        no_comp: true
+      run: just run-validation ${{matrix.sample}} true
+      shell: bash
 
     - name: Upload New Golden Histograms
       uses: actions/upload-artifact@v7
@@ -87,6 +85,7 @@ jobs:
         path: |
           ${{steps.validation.outputs.hists}}
           ${{steps.validation.outputs.log}}
+          ${{steps.validation.outputs.timing}}
 
   push-new-gold:
     needs: [generation]
@@ -113,6 +112,7 @@ jobs:
           error "No artifacts matching '${artifacts_d}/*-new-gold'."
           exit 1
         fi
+        > ci-data/gold.time
         for sample_d in ${artifacts_d}/*-new-gold; do
           sample=$(basename ${sample_d})
           sample=${sample%%-new-gold}
@@ -120,6 +120,7 @@ jobs:
           mkdir -p ci-data/${sample}
           mv ${sample_d}/hist.root ci-data/${sample}/gold.root
           mv ${sample_d}/output.log ci-data/${sample}/gold.log
+          cat ${sample_d}/timing.txt >> ci-data/gold.time
         done
         echo "${GITHUB_REF##refs/tags/}" | tee ci-data/label
 

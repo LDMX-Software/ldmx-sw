@@ -118,6 +118,22 @@ class Lhe(PrimaryGenerator):
     vertex: list[float] = [0.0, 0.0, 0.0]
 
 
+@primary_generator("simcore::generators::HepMCPrimaryGenerator")
+class HepMC(PrimaryGenerator):
+    """HepMC file primary generator
+
+    Parameters
+    ----------
+    file_path : str
+        path to HepMC file containing the primary vertices
+    vertex : list of float, optional
+        Vertex position offset to apply [mm]. Defaults to [0.0, 0.0, 0.0]
+    """
+
+    file_path: str
+    vertex: list[float] = [0.0, 0.0, 0.0]
+
+
 @primary_generator("simcore::generators::GeneralParticleSource")
 class Gps(PrimaryGenerator):
     """general particle source

@@ -71,6 +71,7 @@ class LdmxMeasurementCalibrator {
     auto meas = m_measurements_->at(source_link.index());
     Acts::Vector2 local_pos{meas.getLocalPosition()[0],
                             meas.getLocalPosition()[1]};
+    trackState.allocateCalibrated(2);
     auto ts_cal{trackState.template calibrated<2>()};
     auto ts_cal_cov{trackState.template calibratedCovariance<2>()};
     ts_cal.setZero();
@@ -89,6 +90,7 @@ class LdmxMeasurementCalibrator {
     projector(1, 1) = 1.;
 
     trackState.setProjector(projector);
+    trackState.setUncalibratedSourceLink(genericSourceLink);
   }
 
   /// Find the measurement corresponding to the source link.

@@ -51,12 +51,10 @@ void LinearSeedFinder::produce(framework::Event& event) {
   n_events_++;
   auto tg{geometry()};
 
-  const std::vector<ldmx::Measurement> recoil_hits =
-      event.getCollection<ldmx::Measurement>(input_hits_collection_,
-                                             input_pass_name_);
-  const std::vector<ldmx::EcalHit> ecal_rec_hit =
-      event.getCollection<ldmx::EcalHit>(input_rec_hits_collection_,
-                                         input_pass_name_);
+  const auto& recoil_hits = event.getCollection<ldmx::Measurement>(
+      input_hits_collection_, input_pass_name_);
+  const auto& ecal_rec_hit = event.getCollection<ldmx::EcalHit>(
+      input_rec_hits_collection_, input_pass_name_);
 
   std::vector<std::array<double, 3>> first_layer_ecal_rec_hits;
 
@@ -92,12 +90,10 @@ void LinearSeedFinder::produce(framework::Event& event) {
       std::tuple<ldmx::Measurement, ldmx::SimTrackerHit, ldmx::SimTrackerHit>>
       second_two_layers;
 
-  const std::vector<ldmx::SimTrackerHit> recoil_sim_hits =
-      event.getCollection<ldmx::SimTrackerHit>("RecoilSimHits",
-                                               input_pass_name_);
-  const std::vector<ldmx::SimTrackerHit> scoring_hits =
-      event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
-                                               input_pass_name_);
+  const auto& recoil_sim_hits = event.getCollection<ldmx::SimTrackerHit>(
+      "RecoilSimHits", input_pass_name_);
+  const auto& scoring_hits = event.getCollection<ldmx::SimTrackerHit>(
+      "TargetScoringPlaneHits", input_pass_name_);
 
   // Index all sim hits_ by track ID
   std::unordered_map<int, std::vector<const ldmx::SimTrackerHit*>>

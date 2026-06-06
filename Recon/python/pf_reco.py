@@ -22,7 +22,9 @@ class PFEcalClusterProducer(Processor):
     log_energy_weight: bool = True
     min_cluster_hit_mult: int = 2
     cluster_hit_dist: float = 50.0
+    cluster_z_bias: float = 1.0
     min_hit_energy: float = 1.0
+    save_hit_contribs: bool = True
 
 
 @processor("recon::PFHcalClusterProducer", "Recon")
@@ -36,7 +38,9 @@ class PFHcalClusterProducer(Processor):
     log_energy_weight: bool = True
     min_cluster_hit_mult: int = 2
     cluster_hit_dist: float = 100.0
+    cluster_z_bias: float = 1.0
     min_hit_energy: float = 0.1
+    save_hit_contribs: bool = True
 
 
 @processor("recon::PFTrackProducer", "Recon")

@@ -29,20 +29,19 @@ detector = "ldmx-det-v14-8gev-no-cals"
 sim = simulator.Simulator("inclusive_single_8gev")
 sim.set_detector(detector, include_scoring_planes_minimal=True)
 sim.description = "A single 8gev electron shot from upstream of the 8gev tagger."
-sim.beamSpotSmear = [20.0, 80.0, 0]
 particle_gun = generators.single_8gev_e_upstream_tagger()
-sim.generators.append(particle_gun)
+sim.generators = [particle_gun]
 p.sequence = [sim]
 ####  end beam simulation
 
-# Load the full tracking sequance
-from LDMX.Tracking import full_tracking_sequence
+# Load the full tracking sequence
+from LDMX.Tracking.full_tracking_sequence import full_tracking_sequence
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
 # resolution, GSF, DQM
-p.sequence.extend(full_tracking_sequence.sequence)
-p.sequence.extend(full_tracking_sequence.dqm_sequence)
-
+trk = full_tracking_sequence(detector=detector)
+p.sequence.extend(trk.sequence)
+p.sequence.extend(trk.dqm_sequence)
 
 # Output name
 #   just append '_withTracking' to the name of the input file
@@ -51,7 +50,7 @@ from pathlib import Path
 p.output_files = ["test_8gev_electrons_withTracking.root"]
 
 # lower log level so 'info' and above messages can be printed
-p.term_log_level = 1
+#p.term_log_level = 1
 
 # Number of events
 p.max_events = n_evts

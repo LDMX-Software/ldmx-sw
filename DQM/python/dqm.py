@@ -1016,6 +1016,8 @@ class PhotoNuclearDQM(Processor):
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
     count_light_ions: bool = True
+    pn_collection_name: str = "PhotonuclearInteractions"
+    pn_pass_name: str = ""
 
     def __post_init__(self):
         event_type_labels = [
@@ -1274,6 +1276,367 @@ class PhotoNuclearDQM(Processor):
             50,
             -250,
             250,
+        )
+
+        # PhotonuclearInteraction collection histograms
+        self.histogram(
+            "pn_interaction_count",
+            "Number of PN Interactions per Event",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "pn_target_z",
+            "Target Atomic Number (Z)",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "pn_target_a",
+            "Target Mass Number (A)",
+            250,
+            0,
+            250,
+        )
+        self.histogram(
+            "pn_target_z:target_a",
+            "Target Atomic Number (Z)",
+            100,
+            0,
+            100,
+            "Target Mass Number (A)",
+            250,
+            0,
+            250,
+        )
+        self.histogram(
+            "pn_cascade_multiplicity",
+            "PN cascade multiplicity ",
+            200,
+            0,
+            200,
+        )
+        self.histogram(
+            "pn_descendants_per_cascade_particle",
+            "All Descendants per cascade",
+            200,
+            0,
+            5000,
+        )
+        self.histogram(
+            "pn_total_final_state_descendants",
+            "Total Descendants in all cascades",
+            200,
+            0,
+            10000,
+        )
+        self.histogram(
+            "pn_cascade_evolution_ratio",
+            "Cascade compactness (immediate secondaries / all)",
+            100,
+            0,
+            1,
+        )
+
+
+@processor("dqm::ElectroNuclearDQM", "DQM")
+class ElectroNuclearDQM(Processor):
+    """Configured ElectroNuclearDQM python object
+
+    Analyzes Geant4 electro-nuclear (EN) interactions. Finds daughters of the
+    primary electron that were produced via the electronNuclear process and
+    histograms their kinematics and multiplicities.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.ElectroNuclearDQM() )
+    """
+
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
+    count_light_ions: bool = True
+
+    def __post_init__(self):
+        event_type_labels = [
+            "Nothing hard",  # 0
+            "1 n",  # 1
+            "2 n",  # 2
+            "#geq 3 n",  # 3
+            "1 #pi^{#pm}",  # 4
+            "2 #pi^{#pm}",  # 5
+            "1 #pi^{0}",  # 6
+            "1 #pi^{#pm} A",  # 7
+            "1 #pi^{#pm} 2 A",  # 8
+            "2 #pi^{#pm} A",  # 9
+            "1 #pi^{0} A",  # 10
+            "1 #pi^{0} 2 A",  # 11
+            "#pi^{0} #pi^{#pm} A",  # 12
+            "1 p",  # 13
+            "2 p",  # 14
+            "pn",  # 15
+            "K^{0}_{L} X",  # 16
+            "K X",  # 17
+            "K^{0}_{S} X",  # 18
+            "exotics",  # 19
+            "multi-body",  # 20
+        ]
+        self.histogram(
+            "en_particle_mult", "Electro-nuclear Daughter Multiplicity", 75, 0, 75
+        )
+        self.histogram(
+            "en_neutron_mult", "Electro-nuclear Neutron Multiplicity", 20, 0, 20
+        )
+        self.histogram(
+            "en_proton_mult", "Electro-nuclear Proton Multiplicity", 20, 0, 20
+        )
+        self.histogram(
+            "en_charged_pion_mult",
+            "Electro-nuclear Charged Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_neutral_pion_mult",
+            "Electro-nuclear Neutral Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram("en_electron_energy", "EN Electron Energy [MeV]", 100, 0, 8000)
+        self.histogram("en_electron_vertex_x", "EN Electron Vertex x [mm]", 40, -40, 40)
+        self.histogram("en_electron_vertex_y", "EN Electron Vertex y [mm]", 80, -80, 80)
+        self.histogram(
+            "en_electron_vertex_z", "EN Electron Vertex z [mm]", 20, -950, -850
+        )
+        self.histogram("en_vertex_x", "EN Interaction Vertex x [mm]", 40, -40, 40)
+        self.histogram("en_vertex_y", "EN Interaction Vertex y [mm]", 80, -80, 80)
+        self.histogram("en_vertex_z", "EN Interaction Vertex z [mm]", 100, -5, 5)
+        self.histogram(
+            "en_total_ke",
+            "Total Kinetic Energy of Electro-nuclear Products [MeV]",
+            100,
+            0,
+            8000,
+        )
+        self.histogram(
+            "en_total_neutron_ke",
+            "Total Kinetic Energy of Electro-nuclear Neutrons [MeV]",
+            100,
+            0,
+            8000,
+        )
+        self.histogram(
+            "leading_particle_type",
+            "Leading Particle Type",
+            [
+                "#pi^{#pm} + X",
+                "#pi^{0} + X",
+                "K^{#pm} + X",
+                "K^{0}_{S/L} + X",
+                "p + X",
+                "n + X",
+                "other + X",
+            ],
+        )
+        self.histogram(
+            "hardest_ke",
+            "Kinetic Energy Hardest Electro-nuclear Particle [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_theta",
+            "#theta of Hardest Electro-nuclear Particle [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "hardest_p_ke",
+            "Kinetic Energy Hardest Electro-nuclear Proton [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_p_theta",
+            "#theta of Hardest Electro-nuclear Proton [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "hardest_n_ke",
+            "Kinetic Energy Hardest Electro-nuclear Neutron [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_n_theta",
+            "#theta of Hardest Electro-nuclear Neutron [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "hardest_pi0_ke",
+            "Kinetic Energy Hardest Electro-nuclear #pi^{0} [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "hardest_pi0_theta",
+            "#theta of Hardest Electro-nuclear #pi^{0} [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "h_ke_h_theta",
+            "Kinetic Energy Hardest Electro-nuclear Particle [MeV]",
+            200,
+            0,
+            8000,
+            "#theta of Hardest Electro-nuclear Particle [Degrees]",
+            180,
+            0,
+            180,
+        )
+        # Reconstructable (semi-inclusive acceptance) histograms:
+        #   theta < 80 deg, |p| > 100 MeV/c (pi+/-), |p| > 800 MeV/c (p, K),
+        #   KE > 1 GeV (n), KE > 2 GeV (pi0)
+        self.histogram("event_type_recon", "", event_type_labels)
+        self.histogram(
+            "recon_leading_particle_type",
+            "Reconstructable Leading Particle Type",
+            [
+                "#pi^{#pm} + X",
+                "#pi^{0} + X",
+                "K^{#pm} + X",
+                "K^{0}_{S/L} + X",
+                "p + X",
+                "n + X",
+                "other + X",
+            ],
+        )
+        self.histogram(
+            "recon_hardest_ke",
+            "KE Hardest Reconstructable Particle [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_theta",
+            "#theta of Hardest Reconstructable Particle [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_n_ke",
+            "KE Hardest Reconstructable Neutron [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_n_theta",
+            "#theta of Hardest Reconstructable Neutron [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_p_ke",
+            "KE Hardest Reconstructable Proton [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_p_theta",
+            "#theta of Hardest Reconstructable Proton [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_pi_ke",
+            "KE Hardest Reconstructable #pi^{#pm} [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_pi_theta",
+            "#theta of Hardest Reconstructable #pi^{#pm} [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "recon_hardest_pi0_ke",
+            "KE Hardest Reconstructable #pi^{0} [MeV]",
+            200,
+            0,
+            8000,
+        )
+        self.histogram(
+            "recon_hardest_pi0_theta",
+            "#theta of Hardest Reconstructable #pi^{0} [Degrees]",
+            180,
+            0,
+            180,
+        )
+        self.histogram(
+            "en_recon_neutron_mult",
+            "Reconstructable Neutron Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_proton_mult",
+            "Reconstructable Proton Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_charged_pion_mult",
+            "Reconstructable Charged Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_neutral_pion_mult",
+            "Reconstructable Neutral Pion Multiplicity",
+            20,
+            0,
+            20,
+        )
+        self.histogram(
+            "en_recon_total_ke",
+            "Total KE of Reconstructable EN Products [MeV]",
+            100,
+            0,
+            8000,
+        )
+        self.histogram(
+            "en_recon_total_neutron_ke",
+            "Total KE of Reconstructable EN Neutrons [MeV]",
+            100,
+            0,
+            8000,
         )
 
 
@@ -1659,6 +2022,150 @@ class GenieTruthDQM(Processor):
     hepmc3_pass_name: str = ""
 
 
+@processor("dqm::CascadeHistoryDQM", "DQM")
+class CascadeHistoryDQM(Processor):
+    """DQM for Bertini cascade history from BertiniWithHistoryModel.
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.CascadeHistoryDQM() )
+    """
+
+    cascade_coll_name: str = "PhotonuclearCascadeHistories"
+    cascade_pass_name: str = ""
+
+    def __post_init__(self):
+        # Particle category labels for histograms
+        particle_categories = ["p", "n", "#pi^{+}", "#pi^{-}", "#pi^{0}", "K", "other"]
+
+        # Stage labels
+        stage_labels = [
+            "Unknown",
+            "Incident",
+            "Primary",
+            "Cascade",
+            "Pre-eq.",
+            "Absorbed",
+            "Spectator",
+            "De-exc.",
+        ]
+
+        # Number of cascades per event
+        self.histogram("n_cascades", "Number of PN cascades per event", 20, 0, 20)
+
+        # Per-cascade histograms
+        self.histogram("cascade_n_steps", "Number of cascade steps", 100, 0, 100)
+        self.histogram("cascade_target_A", "Target nucleus A", 250, 0, 250)
+        self.histogram("cascade_target_Z", "Target nucleus Z", 100, 0, 100)
+        self.histogram(
+            "incident_photon_energy", "Incident photon energy [MeV]", 100, 0, 10000
+        )
+
+        # Particle multiplicities
+        self.histogram("cascade_n_protons", "Number of protons in cascade", 50, 0, 50)
+        self.histogram("cascade_n_neutrons", "Number of neutrons in cascade", 50, 0, 50)
+        self.histogram("cascade_n_pions", "Number of pions in cascade", 30, 0, 30)
+        self.histogram("cascade_n_kaons", "Number of kaons in cascade", 20, 0, 20)
+        self.histogram(
+            "cascade_n_other", "Number of other particles in cascade", 20, 0, 20
+        )
+        self.histogram(
+            "cascade_n_interacted", "Number of particles that interacted", 50, 0, 50
+        )
+        self.histogram(
+            "cascade_n_escaped", "Number of particles that escaped", 50, 0, 50
+        )
+        self.histogram(
+            "cascade_max_generation", "Maximum cascade generation", 30, 0, 30
+        )
+
+        # Per-step histograms
+        self.histogram(
+            "step_pdg_category", "Particle type category", particle_categories
+        )
+        self.histogram("step_generation", "Cascade generation", 20, 0, 20)
+        self.histogram("step_stage", "Cascade stage", stage_labels)
+        self.histogram("step_ke", "Step kinetic energy [MeV]", 100, 0, 5000)
+        self.histogram("step_zone", "Nuclear zone", 10, 0, 10)
+        self.histogram("step_radius", "Radius within nucleus [fm]", 100, 0, 20)
+        self.histogram("step_x", "X position within nucleus [fm]", 100, -20, 20)
+        self.histogram("step_y", "Y position within nucleus [fm]", 100, -20, 20)
+        self.histogram("step_z", "Z position within nucleus [fm]", 100, -20, 20)
+
+        # Escaped particles
+        self.histogram(
+            "escaped_pdg_category", "Particle type that escaped", particle_categories
+        )
+        self.histogram(
+            "escaped_ke", "Kinetic energy of escaped particles [MeV]", 100, 0, 5000
+        )
+
+        # Primary reaction products
+        self.histogram(
+            "primary_n_daughters", "Number of primary reaction products", 20, 0, 20
+        )
+        self.histogram("primary_n_protons", "Number of protons from primary", 10, 0, 10)
+        self.histogram(
+            "primary_n_neutrons", "Number of neutrons from primary", 10, 0, 10
+        )
+        self.histogram("primary_n_piplus", "Number of #pi^{+} from primary", 10, 0, 10)
+        self.histogram("primary_n_piminus", "Number of #pi^{-} from primary", 10, 0, 10)
+        self.histogram("primary_n_pizero", "Number of #pi^{0} from primary", 10, 0, 10)
+        self.histogram("primary_n_pions", "Number of pions from primary", 15, 0, 15)
+        self.histogram("primary_n_kaons", "Number of kaons from primary", 5, 0, 5)
+        self.histogram(
+            "primary_n_other", "Number of other particles from primary", 10, 0, 10
+        )
+        self.histogram(
+            "primary_daughter_pdg",
+            "Primary daughter particle type",
+            particle_categories,
+        )
+        self.histogram("primary_daughter_ke", "Primary daughter KE [MeV]", 100, 0, 5000)
+        self.histogram(
+            "primary_total_daughter_ke",
+            "Total KE of primary daughters [MeV]",
+            100,
+            0,
+            10000,
+        )
+        self.histogram(
+            "primary_max_daughter_ke", "Maximum daughter KE [MeV]", 100, 0, 5000
+        )
+
+        # De-excitation products
+        self.histogram(
+            "deexcitation_pdg", "De-excitation particle type", particle_categories
+        )
+        self.histogram("deexcitation_ke", "De-excitation product KE [MeV]", 100, 0, 500)
+        self.histogram("n_deexcitation", "N de-excitation products", 30, 0, 30)
+        self.histogram("n_deexcitation_neutrons", "N de-excitation neutrons", 20, 0, 20)
+        self.histogram("n_deexcitation_protons", "N de-excitation protons", 10, 0, 10)
+        self.histogram("n_deexcitation_gammas", "N de-excitation gammas", 20, 0, 20)
+        self.histogram("n_deexcitation_alphas", "N de-excitation alphas", 10, 0, 10)
+        self.histogram(
+            "deexcitation_neutron_ke", "De-excitation neutron KE [MeV]", 100, 0, 100
+        )
+        self.histogram(
+            "deexcitation_proton_ke", "De-excitation proton KE [MeV]", 100, 0, 100
+        )
+        self.histogram(
+            "deexcitation_gamma_energy", "De-excitation gamma energy [MeV]", 100, 0, 50
+        )
+        self.histogram(
+            "deexcitation_alpha_ke", "De-excitation alpha KE [MeV]", 100, 0, 100
+        )
+        self.histogram(
+            "deexcitation_total_energy", "Total de-excitation energy [MeV]", 100, 0, 500
+        )
+
+        # Excitation energy and residual nucleus
+        self.histogram("excitation_energy", "Excitation energy [MeV]", 100, 0, 5000)
+        self.histogram("residual_A", "Residual nucleus A", 250, 0, 250)
+        self.histogram("residual_Z", "Residual nucleus Z", 100, 0, 100)
+
+
 sample_validation_dqm = [SampleValidation()]
 
 
@@ -1828,6 +2335,183 @@ class EcalClusterAnalyzer(Processor):
             200,
             0,
             1,
+        )
+
+
+@processor("dqm::EcalTrackAnalyzer", "DQM")
+class EcalTrackAnalyzer(Processor):
+    """Analyze ECAL tracks produced by ACTS tracking"""
+
+    track_collection: str = "EcalTracks"
+    track_pass_name: str = ""
+    rec_hit_collection: str = "EcalRecHits"
+    rec_hit_pass_name: str = ""
+
+    def __post_init__(self):
+        self.histogram("n_tracks", "Number of ECAL Tracks", 20, 0, 20)
+        self.histogram("track_chi2", "Track Chi2", 100, 0, 100)
+        self.histogram("track_chi2_ndf", "Track Chi2/NDF", 100, 0, 10)
+        self.histogram("track_ndf", "Track NDF", 50, 0, 50)
+        self.histogram("track_nhits", "Track Number of Hits", 40, 0, 40)
+        self.histogram("track_d0", "Track d0 [mm]", 100, -50, 50)
+        self.histogram("track_z0", "Track z0 [mm]", 100, 200, 400)
+        self.histogram("track_phi", "Track phi [rad]", 100, -3.2, 3.2)
+        self.histogram("track_theta", "Track theta [rad]", 100, 0, 3.2)
+        self.histogram("track_qop", "Track q/p [1/MeV]", 100, -0.01, 0.01)
+        self.histogram("track_p", "Track momentum [MeV]", 100, 0, 5000)
+        self.histogram("track_pt", "Track pT [MeV]", 100, 0, 2000)
+        self.histogram("track_px", "Track px [MeV]", 100, -1000, 1000)
+        self.histogram("track_py", "Track py [MeV]", 100, -1000, 1000)
+        self.histogram("track_pz", "Track pz [MeV]", 100, 0, 5000)
+        self.histogram("track_charge", "Track charge", 5, -2.5, 2.5)
+        self.histogram("track_x", "Track x [mm]", 100, -300, 300)
+        self.histogram("track_y", "Track y [mm]", 100, -300, 300)
+        self.histogram(
+            "track_p_multitracks",
+            "Track p (multi-track events) [MeV]",
+            100, 0, 5000,
+        )
+        self.histogram(
+            "track_separation",
+            "Track angular separation [rad]",
+            100, 0, 3.2,
+        )
+        self.histogram(
+            "track_xy",
+            "Track x [mm]",
+            100,
+            -300,
+            300,
+            "Track y [mm]",
+            100,
+            -300,
+            300,
+        )
+        self.histogram(
+            "track_p_vs_theta",
+            "Track momentum [MeV]",
+            100,
+            0,
+            5000,
+            "Track theta [rad]",
+            100,
+            0,
+            3.2,
+        )
+        self.histogram(
+            "track_chi2_vs_nhits",
+            "Track Chi2",
+            100,
+            0,
+            100,
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+        )
+        self.histogram(
+            "track_nhits_vs_chi2",
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+            "Track Chi2",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "track_nhits_vs_chi2_ndf",
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+            "Track Chi2/NDF",
+            100,
+            0,
+            10,
+        )
+        self.histogram(
+            "track_p_vs_chi2",
+            "Track momentum [MeV]",
+            100,
+            0,
+            5000,
+            "Track Chi2",
+            100,
+            0,
+            100,
+        )
+        self.histogram(
+            "track_p_vs_nhits",
+            "Track momentum [MeV]",
+            100,
+            0,
+            5000,
+            "Track Number of Hits",
+            40,
+            0,
+            40,
+        )
+
+
+@processor("dqm::EcalSPTrackCompare", "DQM")
+class EcalSPTrackCompare(Processor):
+    """Compare primary electron at ECal scoring plane with reconstructed EcalTracks."""
+
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    ecal_sp_pass_name: str = ""
+    track_collection: str = "EcalTracks"
+    track_pass_name: str = ""
+
+    def __post_init__(self):
+        # SP electron truth
+        self.histogram("sp_x", "SP Electron x [mm]", 200, -200, 200)
+        self.histogram("sp_y", "SP Electron y [mm]", 200, -200, 200)
+        self.histogram("sp_p", "SP Electron p [MeV]", 100, 0, 5000)
+        self.histogram("sp_pt", "SP Electron pT [MeV]", 100, 0, 2000)
+        self.histogram("sp_theta", "SP Electron theta [rad]", 100, 0, 0.5)
+        self.histogram("sp_phi", "SP Electron phi [rad]", 100, 0, 6.3)
+
+        # Event-level
+        self.histogram("n_tracks", "Number of ECAL Tracks", 20, 0, 20)
+        self.histogram("has_match", "Has track match", 2, -0.5, 1.5)
+
+        # Best-match track
+        self.histogram("trk_x", "Track x [mm]", 200, -200, 200)
+        self.histogram("trk_y", "Track y [mm]", 200, -200, 200)
+        self.histogram("trk_p", "Track p [MeV]", 100, 0, 5000)
+        self.histogram("trk_pt", "Track pT [MeV]", 100, 0, 2000)
+        self.histogram("trk_theta", "Track theta [rad]", 100, 0, 0.5)
+        self.histogram("trk_phi", "Track phi [rad]", 100, 0, 6.3)
+
+        # Residuals (track - truth)
+        self.histogram("delta_x", "Track x - SP x [mm]", 200, -100, 100)
+        self.histogram("delta_y", "Track y - SP y [mm]", 200, -100, 100)
+        self.histogram("delta_theta", "Track theta - SP theta [rad]", 200, -0.2, 0.2)
+        self.histogram("delta_phi", "Track phi - SP phi [rad]", 200, -0.5, 0.5)
+        self.histogram("delta_p", "Track p - SP p [MeV]", 200, -2000, 2000)
+        self.histogram("delta_pt", "Track pT - SP pT [MeV]", 200, -1000, 1000)
+        self.histogram("delta_p_frac", "(Track p - SP p) / SP p", 200, -2, 2)
+        self.histogram("delta_r", "Track-SP position distance [mm]", 100, 0, 200)
+        self.histogram("delta_angle", "Track-SP angular distance [rad]", 100, 0, 1.0)
+
+        # 2D correlations
+        self.histogram(
+            "sp_x_vs_trk_x", "SP x [mm]", 100, -200, 200,
+            "Track x [mm]", 100, -200, 200,
+        )
+        self.histogram(
+            "sp_y_vs_trk_y", "SP y [mm]", 100, -200, 200,
+            "Track y [mm]", 100, -200, 200,
+        )
+        self.histogram(
+            "sp_p_vs_trk_p", "SP p [MeV]", 100, 0, 5000,
+            "Track p [MeV]", 100, 0, 5000,
+        )
+        self.histogram(
+            "sp_theta_vs_trk_theta", "SP theta [rad]", 100, 0, 0.5,
+            "Track theta [rad]", 100, 0, 0.5,
         )
 
 

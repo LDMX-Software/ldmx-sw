@@ -139,6 +139,52 @@ class UserEventInformation : public G4VUserEventInformation {
    */
   bool wasLastStepEN() const { return last_step_en_; }
 
+  /**
+   * Set the Z of the target nucleus in the photonuclear interaction
+   *
+   * @param[in] z atomic number of target nucleus
+   */
+  void setPNTargetZ(int z) { pn_target_z_ = z; }
+
+  /**
+   * Get the Z of the target nucleus in the photonuclear interaction
+   *
+   * @note This will return -1 if no PN interaction occurred within this event.
+   *
+   * @return atomic number of target nucleus
+   */
+  int getPNTargetZ() const { return pn_target_z_; }
+
+  /**
+   * Set the A of the target nucleus in the photonuclear interaction
+   *
+   * @param[in] a mass number of target nucleus
+   */
+  void setPNTargetA(int a) { pn_target_a_ = a; }
+
+  /**
+   * Get the A of the target nucleus in the photonuclear interaction
+   *
+   * @note This will return -1 if no PN interaction occurred within this event.
+   *
+   * @return mass number of target nucleus
+   */
+  int getPNTargetA() const { return pn_target_a_; }
+
+  /**
+   * Set the number of resample attempts for photonuclear interactions
+   *
+   * @param[in] count number of resample attempts (1 if no resampling)
+   */
+  void setPNResampleCount(int count) { pn_resample_count_ = count; }
+
+  /**
+   * Get the number of resample attempts for photonuclear interactions
+   *
+   * @return number of resample attempts (1 if no resampling)
+   */
+  int getPNResampleCount() const { return pn_resample_count_; }
+
   void addHepMC3GenEvent(ldmx::HepMC3GenEvent event) {
     hepmc3_events_.push_back(event);
   }
@@ -200,6 +246,25 @@ class UserEventInformation : public G4VUserEventInformation {
    * (-1 if conversion didn't happen)
    */
   double aprime_conversion_material_z_{-1.};
+
+  /**
+   * Atomic number (Z) of the target nucleus in the first photonuclear
+   * interaction
+   * (-1 if no PN interaction occurred)
+   */
+  int pn_target_z_{-1};
+
+  /**
+   * Mass number (A) of the target nucleus in the first photonuclear interaction
+   * (-1 if no PN interaction occurred)
+   */
+  int pn_target_a_{-1};
+
+  /**
+   * Number of resample attempts for photonuclear interactions
+   * (1 if no resampling, >1 if resampling occurred)
+   */
+  int pn_resample_count_{1};
 
   /**
    * a collection of HepMC3 event records.

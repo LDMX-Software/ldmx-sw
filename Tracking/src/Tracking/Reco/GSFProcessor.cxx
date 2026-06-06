@@ -16,69 +16,13 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   target_surface_ = tracking::sim::utils::unboundSurface(0.);
   ecal_surface_ = tracking::sim::utils::unboundSurface(240.5);
 
-  // Custom transformation of the interpolated bfield map
-  bool debug_transform = false;
-  auto transform_pos = [debug_transform](const Acts::Vector3& pos_) {
-    Acts::Vector3 rot_pos;
-    rot_pos(0) = pos_(1);
-    rot_pos(1) = pos_(2);
-    rot_pos(2) = pos_(0) + DIPOLE_OFFSET;
-
-    // Apply A rotation around the center of the magnet. (I guess offset first
-    // and then rotation)
-
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM\n";
-      std::cout << "PF::Check:: transforming Pos\n";
-      std::cout << pos_;
-      std::cout << "\nTO\n";
-      std::cout << rot_pos << "\n";
-    }
-
-    return rot_pos;
-  };
-
-  // Reminder about coordinate system:
-  // acts x = global z
-  // acts y = global x
-  // acts z = global y
-  Acts::RotationMatrix3 rotation = Acts::RotationMatrix3::Identity();
-  double scale = 1.;
-
-  auto transform_b_field = [rotation, scale, debug_transform](
-                               const Acts::Vector3& field,
-                               const Acts::Vector3& /*pos_*/) {
-    // Rotate the field in tracking coordinates
-    Acts::Vector3 rot_field;
-    rot_field(0) = field(2);
-    rot_field(1) = field(0);
-    rot_field(2) = field(1);
-
-    // Scale the field
-    rot_field = scale * rot_field;
-
-    // Rotate the field
-    rot_field = rotation * rot_field;
-
-    // A distortion scaled by position.
-
-    if (debug_transform) {
-      std::cout << "PF::DEFAULT3 TRANSFORM\n";
-      std::cout << "PF::Check:: transforming\n";
-      std::cout << field;
-      std::cout << "\nTO\n";
-      std::cout << rot_field << "\n";
-    }
-
-    return rot_field;
-  };
-
   // Setup a interpolated bfield map
-  const auto map = std::make_shared<InterpolatedMagneticField3>(
-      loadDefaultBField(field_map_,
-                        // default_transformPos,
-                        // default_transformBField));
-                        transform_pos, transform_b_field));
+  if (field_map_.empty())
+    loadBField();
+  else
+    loadBField(field_map_);
+  const auto map =
+      std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
   auto acts_logging_level = Acts::Logging::FATAL;
 
@@ -169,13 +113,13 @@ void GSFProcessor::produce(framework::Event& event) {
   // Retrieve the tracks
   if (!event.exists(track_collection_, track_collection_event_passname_))
     return;
-  auto tracks{
-      event.getCollection<ldmx::Track>(track_collection_, track_passname_)};
+  const auto& tracks =
+      event.getCollection<ldmx::Track>(track_collection_, track_passname_);
 
   // Retrieve the measurements
   if (!event.exists(meas_collection_, meas_collection_event_passname_)) return;
-  auto measurements{
-      event.getCollection<ldmx::Measurement>(meas_collection_, meas_passname_)};
+  const auto& measurements =
+      event.getCollection<ldmx::Measurement>(meas_collection_, meas_passname_);
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
@@ -279,7 +223,7 @@ void GSFProcessor::produce(framework::Event& event) {
       const Acts::Surface* hit_surface =
           tg.geo::TrackingGeometry::getSurface(meas.getLayerID());
 
-      // Store the index_ source link
+      // Store the index source link
       acts_examples::IndexSourceLink idx_sl(hit_surface->geometryId(), imeas);
       fit_track_source_links.push_back(Acts::SourceLink(idx_sl));
     }
