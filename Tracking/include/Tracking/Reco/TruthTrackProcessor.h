@@ -31,9 +31,10 @@ using TruthPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 namespace tracking::reco {
 
 /**
- * Produce final truth tracks from truth seeds by propagating to the target
- * surface, applying more hit and momentum cuts, and applying ecal states to  
- * recoil tracks
+ * Creates a track from a seed from the tagger or recoil tracker. 
+ * The track paramterization is expressed in the ACTS coordinate system, 
+ * and the track is extrapolated to a surface depending on if its from the tagger or recoil.
+ * Optional smearing is applied for the seed collections.
  */
 class TruthTrackProcessor : public TrackingGeometryUser {
  public:
@@ -62,13 +63,6 @@ class TruthTrackProcessor : public TrackingGeometryUser {
   void configure(framework::config::Parameters& parameters) override;
 
   /**
-   * Callback for the EventProcessor to take any necessary action when the
-   * processing of events starts. For this class, the callback is used to
-   * retrieve the GeometryContext from ACTS.
-   */
-  void onProcessStart() override {};
-
-  /**
    * onNewRun is the first function called for each processor
    * *after* the conditions are fully configured and accessible.
    * This is where you could create single-processors, multi-event
@@ -77,7 +71,7 @@ class TruthTrackProcessor : public TrackingGeometryUser {
   void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
-   * Main loop that produces final truth tracks for both the tagger and recoil
+   * Main loop that creates the seed tracks for both the tagger and recoil
    * tracker.
    *
    * @param event The event containing the collections to process.
@@ -86,38 +80,61 @@ class TruthTrackProcessor : public TrackingGeometryUser {
 
  private:
 
+  /*
+   * Create a truth track using the track state of a track.
+   *
+   * @param ts The track state at the target surface for the track.
+   */
+  void createTruthTrack(const ldmx::Track::TrackState& ts, ldmx::Track& trk,
+                        const std::shared_ptr<Acts::Surface>& target_surface);
+
+  
+  /** Create a track seed from a truth track applying a smearing to the truth
+   * parameters as well as an inflation to the covariance matrix.
+   * @param tt TruthTrack to be used to form a seed
+   * @return seed The seed track
+   */
+
+  ldmx::Track seedFromTruth(const ldmx::Track& tt, bool seed_smearing);
+
+  ldmx::Track recoilFullSeed(
+      const ldmx::SimParticle& particle, const int trackID,
+      const ldmx::SimTrackerHit& hit, const ldmx::SimTrackerHit& ecal_hit,
+      const std::map<int, std::vector<int>>& hit_count_map,
+      const std::shared_ptr<Acts::Surface>& origin_surface,
+      const std::shared_ptr<Acts::Surface>& target_surface,
+      const std::shared_ptr<Acts::Surface>& ecal_surface);
+
+  /**
+   * This method retrieves the beam electron and forms a full seed
+   * The seed parameters are the truth parameters from the beam electron stored
+   * at the beam origin .
+   * Linear extrapolations are done from the origin of the particle to the
+   * reference surfaces This track also contains the list of hits belonging to
+   * the beam electron on the sensitive surfaces on the tagger tracker, for
+   * acceptance studies
+   * @param beam_electron  : the beam electron track
+   * @param trackID        : the unique ID of the track
+   * electron particle survived
+   * @param origin_surface : where to express the track origin parameters. Can
+   * be perigee, plane...
+   * @param target_surface : the target surface for the truth target state
+   */
+  ldmx::Track taggerFullSeed(
+      const ldmx::Track& beam_electron, const int trackID,
+      const std::shared_ptr<Acts::Surface>& origin_surface,
+      const std::shared_ptr<Acts::Surface>& target_surface);
+
   /// The ACTS geometry context properly
   Acts::GeometryContext gctx_;
 
-  /// Pass name for the input seed collections
+
+  /// Pass name for the sim hit collections
   std::string input_pass_name_{""};
 
-  std::string sim_particles_coll_name_;
-  std::string sim_particles_passname_;
-
-  std::string ecal_sp_coll_name_{"EcalScoringPlaneHits"};
-  std::string sp_pass_name_{""};
-
-  /**
-   * Minimum number of hits left in the tagger tracker to consider the track
-   * as findable
-   */
-  int n_min_hits_tagger_{7};
-
-  /**
-   * Minimum number of hits left in the recoil tracker to consider the seed
-   * as findable
-   */
-  int n_min_hits_recoil_{7};
-
-  /// Ask for a minimum pz for the seeds
-  double pz_cut_{-9999};
-
-  /// Ask for a minimum p for the seeds
-  double p_cut_{0.};
-
-  /// Ask for a maximum p for the seeds
-  double p_cut_max_{100000.};
+  std::string input_tagger_truth_collection_;
+  std::string input_recoil_truth_collection_;
+  std::string input_beam_electrons_collection_;
 
   // skip the tagger tracker
   bool skip_tagger_{false};
@@ -148,11 +165,13 @@ class TruthTrackProcessor : public TrackingGeometryUser {
   double relpsmear_;
   std::vector<double> rel_smearfactors_;
   std::vector<double> inflate_factors_;
+  std::vector<double> beam_origin_{-880.1, -44., 0.};
   int particle_hypothesis_;
 
+  std::string beam_electrons_collection_;
+  std::string tagger_truth_collection_;
+  std::string recoil_truth_collection_;
   std::string tagger_seeds_collection_;
   std::string recoil_seeds_collection_;
-  std::string tagger_tracks_collection_;
-  std::string recoil_tracks_collection_;
 };
 }  // namespace tracking::reco
