@@ -1,16 +1,12 @@
 #include "Tracking/Reco/TruthTrackProcessor.h"
 
-
 #include "Tracking/Sim/GeometryContainers.h"
 
-
 namespace tracking::reco {
-
 
 TruthTrackProcessor::TruthTrackProcessor(const std::string& name,
                                          framework::Process& process)
     : TrackingGeometryUser(name, process) {}
-
 
 void TruthTrackProcessor::onNewRun(const ldmx::RunHeader& rh) {
   gctx_ = Acts::GeometryContext();
@@ -108,12 +104,9 @@ void TruthTrackProcessor::configure(framework::config::Parameters& parameters) {
   field_map_ = parameters.get<std::string>("field_map");
 }
 
-
 void TruthTrackProcessor::createTruthTrack(
-    const ldmx::Track::TrackState& ts,
-    ldmx::Track& trk,
+    const ldmx::Track::TrackState& ts, ldmx::Track& trk,
     const std::shared_ptr<Acts::Surface>& target_surface) {
-
   // Rotate the position and momentum into the ACTS frame.
   Acts::Vector3 pos_ldmx{ts.pos_[0], ts.pos_[1], ts.pos_[2]};
   Acts::Vector3 mom_ldmx{ts.mom_[0], ts.mom_[1], ts.mom_[2]};
@@ -122,7 +115,7 @@ void TruthTrackProcessor::createTruthTrack(
 
   // Get the charge of the particle.
   int pdg = trk.getPdgID();
-  //find charge from pdg already attached to track
+  // find charge from pdg already attached to track
   int charge = (pdg == 11 || pdg == 13 || pdg == -211 || pdg == -2212) ? -1 : 1;
   double q{charge * Acts::UnitConstants::e};
 
@@ -179,8 +172,7 @@ ldmx::Track TruthTrackProcessor::taggerFullSeed(
     const ldmx::Track& beam_electron, const int trackID,
     const std::shared_ptr<Acts::Surface>& origin_surface,
     const std::shared_ptr<Acts::Surface>& target_surface) {
-
-  //find correct target and beam origin states
+  // find correct target and beam origin states
   ldmx::Track::TrackState target_state;
   ldmx::Track::TrackState beam_origin_state;
   bool found_target = false;
@@ -198,12 +190,14 @@ ldmx::Track TruthTrackProcessor::taggerFullSeed(
   }
 
   if (!found_target) {
-    ldmx_log(error) << "Beam electron track at: " << beam_electron.getTrackID() << " missing AtTarget state, skipping";
+    ldmx_log(error) << "Beam electron track at: " << beam_electron.getTrackID()
+                    << " missing AtTarget state, skipping";
     return ldmx::Track();
   }
 
   if (!found_beam_origin) {
-    ldmx_log(error) << "Beam electron track at: " << beam_electron.getTrackID() << " missing AtBeamOrigin state, skipping";
+    ldmx_log(error) << "Beam electron track at: " << beam_electron.getTrackID()
+                    << " missing AtBeamOrigin state, skipping";
     return ldmx::Track();
   }
 
@@ -216,7 +210,8 @@ ldmx::Track TruthTrackProcessor::taggerFullSeed(
   // Smeared track at the beam origin
   ldmx::Track smeared_truth_track = seedFromTruth(truth_track, true);
 
-  // Copy track states and measurement indices from beam_electron to smeared_truth_track
+  // Copy track states and measurement indices from beam_electron to
+  // smeared_truth_track
   for (const auto& ts : beam_electron.getTrackStates()) {
     smeared_truth_track.addTrackState(ts);
   }
@@ -229,7 +224,6 @@ ldmx::Track TruthTrackProcessor::taggerFullSeed(
     ldmx_log(debug) << par << " ";
   ldmx_log(debug);
 
-
   ldmx_log(debug) << "Smeared parameters at origin";
   for (auto par : smeared_truth_track.getPerigeeParameters())
     ldmx_log(debug) << par << " ";
@@ -238,7 +232,7 @@ ldmx::Track TruthTrackProcessor::taggerFullSeed(
 }
 
 ldmx::Track TruthTrackProcessor::seedFromTruth(const ldmx::Track& tt,
-                                              bool seed_smearing) {
+                                               bool seed_smearing) {
   ldmx::Track seed = ldmx::Track();
   seed.setPerigeeLocation(tt.getPerigeeLocation()[0],
                           tt.getPerigeeLocation()[1],
@@ -360,7 +354,6 @@ ldmx::Track TruthTrackProcessor::seedFromTruth(const ldmx::Track& tt,
   return seed;
 }
 
-
 void TruthTrackProcessor::produce(framework::Event& event) {
   // Retrieve the tagger seeds from TruthSeedProcessor
   const auto& tagger_seeds = event.getCollection<ldmx::Track>(
@@ -394,26 +387,23 @@ void TruthTrackProcessor::produce(framework::Event& event) {
   auto beam_origin_surface{Acts::Surface::makeShared<Acts::PerigeeSurface>(
       Acts::Vector3(beam_origin_[0], beam_origin_[1], beam_origin_[2]))};
 
-
   if (!skip_tagger_) {
     for (const auto& trk : tagger_seeds) {
-      //find the track state at the target surface
-      bool found_target_state=false;
+      // find the track state at the target surface
+      bool found_target_state = false;
       ldmx::Track::TrackState target_state;
 
-      for(const auto& ts: trk.getTrackStates())
-      {
-        if(ts.ts_type_ == ldmx::AtTarget)
-        {
+      for (const auto& ts : trk.getTrackStates()) {
+        if (ts.ts_type_ == ldmx::AtTarget) {
           target_state = ts;
           found_target_state = true;
           break;
         }
       }
 
-      if(!found_target_state)
-      {
-        ldmx_log(warn) << "track ID" << trk.getTrackID() << "missing AtTarget state, skipping.";
+      if (!found_target_state) {
+        ldmx_log(warn) << "track ID" << trk.getTrackID()
+                       << "missing AtTarget state, skipping.";
         continue;
       }
 
@@ -423,22 +413,20 @@ void TruthTrackProcessor::produce(framework::Event& event) {
     }
 
     for (const auto& trk : beam_electrons_in) {
-      bool found_target_state=false;
+      bool found_target_state = false;
       ldmx::Track::TrackState target_state;
 
-      for(const auto& ts: trk.getTrackStates())
-      {
-        if(ts.ts_type_ == ldmx::AtTarget)
-        {
+      for (const auto& ts : trk.getTrackStates()) {
+        if (ts.ts_type_ == ldmx::AtTarget) {
           target_state = ts;
           found_target_state = true;
           break;
         }
       }
 
-      if(!found_target_state)
-      {
-        ldmx_log(warn) << "beam electron track ID" << trk.getTrackID() << "missing AtTarget state, skipping.";
+      if (!found_target_state) {
+        ldmx_log(warn) << "beam electron track ID" << trk.getTrackID()
+                       << "missing AtTarget state, skipping.";
         continue;
       }
 
@@ -446,43 +434,39 @@ void TruthTrackProcessor::produce(framework::Event& event) {
       createTruthTrack(target_state, truth_trk, target_surface);
 
       ldmx::Track beam_e_truth_seed =
-          taggerFullSeed(truth_trk, trk.getTrackID(),
-                         beam_origin_surface,
+          taggerFullSeed(truth_trk, trk.getTrackID(), beam_origin_surface,
                          target_unbound_surface);
       beam_electrons.push_back(beam_e_truth_seed);
     }
   }
 
-    // Findable particle selection
-    // ldmx_log(trace) << "!!! n_recoil_sim_hits found: " <<
-    // hit_count_map_recoil[hit.getTrackID()].size();
-    if (!skip_recoil_) {
-      for(const auto& trk: recoil_seeds)
-      {
-        bool found_target_state=false;
-        ldmx::Track::TrackState target_state;
+  // Findable particle selection
+  // ldmx_log(trace) << "!!! n_recoil_sim_hits found: " <<
+  // hit_count_map_recoil[hit.getTrackID()].size();
+  if (!skip_recoil_) {
+    for (const auto& trk : recoil_seeds) {
+      bool found_target_state = false;
+      ldmx::Track::TrackState target_state;
 
-        for(const auto& ts: trk.getTrackStates())
-        {
-          if(ts.ts_type_ == ldmx::AtTarget)
-          {
-            target_state = ts;
-            found_target_state = true;
-            break;
-          }
+      for (const auto& ts : trk.getTrackStates()) {
+        if (ts.ts_type_ == ldmx::AtTarget) {
+          target_state = ts;
+          found_target_state = true;
+          break;
         }
-
-        if(!found_target_state)
-        {
-          ldmx_log(warn) << "track ID" << trk.getTrackID() << "missing AtTarget state, skipping.";
-          continue;
-        }
-        ldmx::Track truth_trk = trk;
-        createTruthTrack(target_state, truth_trk, target_surface);
-
-        recoil_truth_tracks.push_back(truth_trk);
       }
+
+      if (!found_target_state) {
+        ldmx_log(warn) << "track ID" << trk.getTrackID()
+                       << "missing AtTarget state, skipping.";
+        continue;
+      }
+      ldmx::Track truth_trk = trk;
+      createTruthTrack(target_state, truth_trk, target_surface);
+
+      recoil_truth_tracks.push_back(truth_trk);
     }
+  }
 
   /*
     for (std::pair<int,std::vector<int>> element : recoil_sh_count_map) {
@@ -526,6 +510,5 @@ void TruthTrackProcessor::produce(framework::Event& event) {
 }
 
 }  // namespace tracking::reco
-
 
 DECLARE_PRODUCER(tracking::reco::TruthTrackProcessor)

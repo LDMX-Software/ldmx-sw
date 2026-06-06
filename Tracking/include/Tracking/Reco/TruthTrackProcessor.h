@@ -31,10 +31,10 @@ using TruthPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 namespace tracking::reco {
 
 /**
- * Creates a track from a seed from the tagger or recoil tracker. 
- * The track paramterization is expressed in the ACTS coordinate system, 
- * and the track is extrapolated to a surface depending on if its from the tagger or recoil.
- * Optional smearing is applied for the seed collections.
+ * Creates a track from a seed from the tagger or recoil tracker.
+ * The track paramterization is expressed in the ACTS coordinate system,
+ * and the track is extrapolated to a surface depending on if its from the
+ * tagger or recoil. Optional smearing is applied for the seed collections.
  */
 class TruthTrackProcessor : public TrackingGeometryUser {
  public:
@@ -79,7 +79,6 @@ class TruthTrackProcessor : public TrackingGeometryUser {
   void produce(framework::Event& event) override;
 
  private:
-
   /*
    * Create a truth track using the track state of a track.
    *
@@ -88,7 +87,6 @@ class TruthTrackProcessor : public TrackingGeometryUser {
   void createTruthTrack(const ldmx::Track::TrackState& ts, ldmx::Track& trk,
                         const std::shared_ptr<Acts::Surface>& target_surface);
 
-  
   /** Create a track seed from a truth track applying a smearing to the truth
    * parameters as well as an inflation to the covariance matrix.
    * @param tt TruthTrack to be used to form a seed
@@ -127,7 +125,6 @@ class TruthTrackProcessor : public TrackingGeometryUser {
 
   /// The ACTS geometry context properly
   Acts::GeometryContext gctx_;
-
 
   /// Pass name for the sim hit collections
   std::string input_pass_name_{""};

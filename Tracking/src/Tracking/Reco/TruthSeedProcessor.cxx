@@ -62,7 +62,6 @@ void TruthSeedProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<std::string>("recoil_truth_collection");
 }
 
-
 void TruthSeedProcessor::makeHitCountMap(
     const std::vector<ldmx::SimTrackerHit>& sim_hits,
     std::map<int, std::vector<int>>& hit_count_map) {
@@ -264,52 +263,49 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         });
   }
 
-  
-  //build vector of Tracks to pass on to TruthTrackProcessor
+  // build vector of Tracks to pass on to TruthTrackProcessor
   std::vector<ldmx::Track> tagger_truth_tracks;
   std::vector<ldmx::Track> recoil_truth_tracks;
   std::vector<ldmx::Track> beam_electrons;
 
-  //make the tagger seeds
-  if(!skip_tagger_)
-  {
-    for (auto& [tid, indices]: tagger_sh_count_map)
-    {
+  // make the tagger seeds
+  if (!skip_tagger_) {
+    for (auto& [tid, indices] : tagger_sh_count_map) {
       const auto& hit = scoring_hits.at(indices.at(0));
-      if(hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_)
-      {
+      if (hit_count_map_tagger[hit.getTrackID()].size() > n_min_hits_tagger_) {
         ldmx::Track tagger_trk;
         tagger_trk.setTrackID(hit.getTrackID());
         tagger_trk.setPdgID(hit.getPdgID());
 
-        //package seed attributes like momentum and position
+        // package seed attributes like momentum and position
         ldmx::Track::TrackState ts;
-        ts.pos_ = {hit.getPosition()[0], hit.getPosition()[1], hit.getPosition()[2]};
-        ts.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1], hit.getMomentum()[2] };
+        ts.pos_ = {hit.getPosition()[0], hit.getPosition()[1],
+                   hit.getPosition()[2]};
+        ts.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1],
+                   hit.getMomentum()[2]};
         ts.ts_type_ = ldmx::AtTarget;
         tagger_trk.addTrackState(ts);
 
-        for(auto idx:hit_count_map_tagger[hit.getTrackID()])
-        {
+        for (auto idx : hit_count_map_tagger[hit.getTrackID()]) {
           tagger_trk.addMeasurementIndex(idx);
         }
         tagger_trk.setNhits(hit_count_map_tagger[hit.getTrackID()].size());
 
         tagger_truth_tracks.push_back(tagger_trk);
 
-        if(hit.getPdgID()==11 && hit.getTrackID() < max_track_id_)
-        {
-          // Add the truth track state at the beam origin using particle vertex/momentum
-          // (SimParticle vertex and momentum are in LDMX global frame)
+        if (hit.getPdgID() == 11 && hit.getTrackID() < max_track_id_) {
+          // Add the truth track state at the beam origin using particle
+          // vertex/momentum (SimParticle vertex and momentum are in LDMX global
+          // frame)
           ldmx::Track beam_electron_trk = tagger_trk;
           ldmx::Track::TrackState ts_truth_beam_origin;
           auto beam_electron = particle_map[hit.getTrackID()];
           ts_truth_beam_origin.pos_ = {beam_electron.getVertex()[0],
-                                 beam_electron.getVertex()[1],
-                                 beam_electron.getVertex()[2]};
+                                       beam_electron.getVertex()[1],
+                                       beam_electron.getVertex()[2]};
           ts_truth_beam_origin.mom_ = {beam_electron.getMomentum()[0],
-                                 beam_electron.getMomentum()[1],
-                                 beam_electron.getMomentum()[2]};
+                                       beam_electron.getMomentum()[1],
+                                       beam_electron.getMomentum()[2]};
           ts_truth_beam_origin.ts_type_ = ldmx::AtBeamOrigin;
           beam_electron_trk.addTrackState(ts_truth_beam_origin);
           beam_electrons.push_back(beam_electron_trk);
@@ -330,15 +326,13 @@ void TruthSeedProcessor::produce(framework::Event& event) {
     }
   }
 
-  //make the recoil seeds for TruthTrackProcessor
-  if(!skip_recoil_)
-  {
+  // make the recoil seeds for TruthTrackProcessor
+  if (!skip_recoil_) {
     auto ecal_surface = tracking::sim::utils::unboundSurface(240.5);
 
-    for (auto& [tid, indices]: recoil_sh_count_map)
-    {
+    for (auto& [tid, indices] : recoil_sh_count_map) {
       const auto& hit = scoring_hits.at(indices.at(0));
-  
+
       ldmx::SimTrackerHit ecal_hit;
       bool found_ecal_hit = false;
       for (const auto& ecal_sp_hit : sel_ecal_sp_hits) {
@@ -351,16 +345,17 @@ void TruthSeedProcessor::produce(framework::Event& event) {
 
       if (!found_ecal_hit) continue;
 
-      if(hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_)
-      {
+      if (hit_count_map_recoil[hit.getTrackID()].size() > n_min_hits_recoil_) {
         ldmx::Track recoil_trk;
         recoil_trk.setTrackID(hit.getTrackID());
         recoil_trk.setPdgID(hit.getPdgID());
 
-        //package seed attributes like momentum and position
+        // package seed attributes like momentum and position
         ldmx::Track::TrackState ts;
-        ts.pos_ = {hit.getPosition()[0], hit.getPosition()[1], hit.getPosition()[2]};
-        ts.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1], hit.getMomentum()[2] };
+        ts.pos_ = {hit.getPosition()[0], hit.getPosition()[1],
+                   hit.getPosition()[2]};
+        ts.mom_ = {hit.getMomentum()[0], hit.getMomentum()[1],
+                   hit.getMomentum()[2]};
         ts.ts_type_ = ldmx::AtTarget;
         recoil_trk.addTrackState(ts);
 
@@ -380,7 +375,8 @@ void TruthSeedProcessor::produce(framework::Event& event) {
           ep[2] += delta * em[2] / em[0];
           ep[0] = 240.5;
         }
-        double q_ecal = particle_map[hit.getTrackID()].getCharge() * Acts::UnitConstants::e;
+        double q_ecal =
+            particle_map[hit.getTrackID()].getCharge() * Acts::UnitConstants::e;
         auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
         auto ecal_bound = Acts::transformFreeToBoundParameters(
             ecal_free, *ecal_surface, gctx_);
@@ -394,8 +390,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
               geometryContext(), ecal_pars, ldmx::AtECAL));
         }
 
-        for(auto& idx:hit_count_map_recoil[hit.getTrackID()])
-        {
+        for (auto& idx : hit_count_map_recoil[hit.getTrackID()]) {
           recoil_trk.addMeasurementIndex(idx);
         }
         recoil_trk.setNhits(hit_count_map_recoil[hit.getTrackID()].size());
