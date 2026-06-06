@@ -391,6 +391,9 @@ class TrigScintTrackProducer(Processor):
     input_pass_name: str = ""
     output_collection: str = "TriggerPadTracks"
     verbosity: int = 0
+    lut_tracking: bool = False
+    lut_file: str = "LUT.txt"
+    
 
 
 trig_scint_track = TrigScintTrackProducer(instance_name="trig_scint_track")
@@ -513,8 +516,9 @@ class ClusterTripletMaker(Processor) :
     """Configuration for cluster text file maker for Trigger Scintillators"""
 
     cluster_input_collections: list[str] = ["TriggerPad1Clusters", "TriggerPad2Clusters","TriggerPad3Clusters"]
-    input_pass_name: str = ""
+    pass_name: str = ""
     output_collection: str = "clusters.txt"
+    verbosity: int = 0
 
 
 @processor("trigscint::PatternLUTMaker", "TrigScint")
@@ -525,3 +529,4 @@ class PatternLUTMaker(Processor) :
     input_pass_name: str = ""
     output_collection: str ="LUT.txt"
     lut_threshold: float = 0.0008
+    verbosity: int = 0

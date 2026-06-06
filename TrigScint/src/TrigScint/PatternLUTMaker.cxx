@@ -11,8 +11,8 @@ PatternLUTMaker::PatternLUTMaker(const std::string& name,
     : Analyzer(name, process) {}
 
 void PatternLUTMaker::configure(framework::config::Parameters& ps) {
-  input_file_ = ps.get<std::string>("input_file");
-  output_file_ = ps.get<std::string>("output_file");
+  input_collection_ = ps.get<std::string>("input_collection");
+  output_collection_ = ps.get<std::string>("output_collection");
   lut_threshold_ = ps.get<double>("lut_threshold");
   verbose_ = ps.get<int>("verbosity");
   
@@ -28,8 +28,8 @@ void PatternLUTMaker::configure(framework::config::Parameters& ps) {
         
   if (verbose_) {
     ldmx_log(info) << "In PatternLUTMaker: configure done!" << std::endl;
-    ldmx_log(info) << "Got parameters: \nInput file:   " << input_file_
-                   << "\nOutput file:     " << output_file_
+    ldmx_log(info) << "Got parameters: \nInput file:   " << input_collection_
+                   << "\nOutput file:     " << output_collection_
                    << "\nLUT threshold:     " << lut_threshold_ 
                    << "\nVerbosity:      " << verbose_;
   }
@@ -37,8 +37,8 @@ void PatternLUTMaker::configure(framework::config::Parameters& ps) {
 }
 
 void PatternLUTMaker::onProcessStart() {
-  infile.open(input_file_);
-  outfile.open(output_file_);
+  infile.open(input_collection_);
+  outfile.open(output_collection_);
   return;
 }
 

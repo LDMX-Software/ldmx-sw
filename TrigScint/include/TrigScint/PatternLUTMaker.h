@@ -1,8 +1,8 @@
 /**
  * @file PatternLUTMaker.h
  * @brief Outputs a LUT based on frequency of track propagation patterns
- * (PATTERNS, NOT INDIVIDUAL BAR ID COMBINATIONS), which can then be used
- * as input in TrigScintTrackProducer for LUT-method track-making.
+ * which can then be used as input in TrigScintTrackProducer for 
+ * LUT-method track-making.
  * @author Lucia Kvarnstrom, Lund University
  */
 
@@ -43,10 +43,10 @@ class PatternLUTMaker : public framework::Analyzer {
   int verbose_{0};
   
   // input text file of clusters
-  std::string input_file_;
+  std::string input_collection_;
   
   //output LUT file name
-  std::string output_file_;
+  std::string output_collection_;
   
   //minimum frequency of a specific pattern to be written to the LUT
   double lut_threshold_{0.0008};
