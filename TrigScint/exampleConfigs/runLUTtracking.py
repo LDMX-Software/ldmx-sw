@@ -2,7 +2,7 @@
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('tracking')
-p.input_files = ["TruthSamples.root"]
+p.input_files = ["Clusters.root"]
 p.output_files = ["Tracks.root"]
 
 from LDMX.TrigScint.trig_scint import TrigScintTrackProducer

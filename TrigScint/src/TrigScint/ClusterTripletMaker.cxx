@@ -4,10 +4,14 @@
 
 namespace trigscint {
 
+ClusterTripletMaker::ClusterTripletMaker(const std::string& name,
+                                 framework::Process& process) 
+    : Analyzer(name, process) {}
+
 void ClusterTripletMaker::configure(framework::config::Parameters& ps) {
      pass_name_ = ps.get<std::string>("pass_name");
      cluster_input_collections_ = ps.get<std::vector<std::string>>("cluster_input_collections");
-     output_file_ = ps.get<std::string>("output_file");
+     output_collection_ = ps.get<std::string>("output_collection");
      verbose_ = ps.get<int>("verbosity");
 
   if (verbose_) {
@@ -20,7 +24,7 @@ void ClusterTripletMaker::configure(framework::config::Parameters& ps) {
         << "\nInput collection 3: "
         << cluster_input_collections_.at(2)
         << "\nPass name: " << pass_name_
-        << "\nOutput file: " << output_file_
+        << "\nOutput file: " << output_collection_
         << "\nVerbosity: " << verbose_;
   }
 
@@ -28,10 +32,10 @@ void ClusterTripletMaker::configure(framework::config::Parameters& ps) {
 }
 
 void ClusterTripletMaker::onProcessStart() {
-  output_stream_.open(output_file_);
+  output_stream_.open(output_collection_);
 
   if (verbose_) {
-    ldmx_log(info) << "Opened output file " << output_file_;
+    ldmx_log(info) << "Opened output file " << output_collection_;
   }
 
   return;
@@ -112,7 +116,7 @@ void ClusterTripletMaker::onProcessEnd() {
   if (verbose_) {
     ldmx_log(info)
         << "Closed output file "
-        << output_file_;
+        << output_collection_;
   }
 
   return;

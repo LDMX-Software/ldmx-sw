@@ -45,7 +45,7 @@ class ClusterTripletMaker : public framework::Analyzer {
   std::vector<std::string> cluster_input_collections_;
 
   // output text file
-  std::string output_file_{"clusters.txt"};
+  std::string output_collection_{"clusters.txt"};
 
   // output stream
   std::ofstream output_stream_;

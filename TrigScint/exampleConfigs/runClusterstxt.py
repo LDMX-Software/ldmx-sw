@@ -5,7 +5,7 @@ from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('nontruthclusters')
 p.input_files =  ["SimSamples.root"]
-p.output_files = ["AllSamples.root"]
+p.output_files = ["Clusters.root"]
 #an additional output file called clusters.txt will be created as well
 
 from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
@@ -20,9 +20,9 @@ digis = [TrigScintDigiProducer.pad1(),
 for digi in digis:
     digi.input_collection = f"TriggerPad{pad_num}SimHits"
     pad_num+=1
-    
+
 from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
-    
+
 clusters = [
         TrigScintClusterProducer.pad1(),
         TrigScintClusterProducer.pad2(),
@@ -37,12 +37,13 @@ for cluster, digi in zip(clusters, digis):
 from LDMX.TrigScint.trig_scint import ClusterTripletMaker
 
 triplets = ClusterTripletMaker("tripletmaker")
+triplets.output_collection = "clusters.txt"
 
 p.sequence = [
              #*truth_hits,
               *digis,
-              *clusters, 
+              *clusters,
               triplets
               ]
 
-    
+
