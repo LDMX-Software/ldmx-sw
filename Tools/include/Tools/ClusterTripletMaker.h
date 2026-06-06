@@ -13,11 +13,11 @@
 #include "Framework/EventProcessor.h"
 
 // TrigScint
-#include "TrigScint/Event/TrigScintCluster.h"
-
 #include <fstream>
 #include <string>
 #include <vector>
+
+#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace trigscint {
 
