@@ -47,23 +47,27 @@ class HcalReadoutGeometry:
         Offset of the entire Hcal geometry to be taken into account
     """
 
-    detectors_valid: list[str]
-    scint_thickness: float
-    scint_width: float
-    scint_length: list[float, float]
-    zero_layer: list[float]
-    zero_strip: list[float, float]
-    layer_thickness: list[float]
-    num_layers: list[int]
-    num_strips: list[int, int]
-    half_total_width: list[float, float]
-    ecal_dx: float
-    ecal_dy: float
-    num_sections: int
-    verbose: int = 0
-    back_horizontal_parity: int = 1
-    side_3d_readout: int = 0
-    y_offset: float = 0.0
+    def __init__(self):
+
+        # parameters that must align with the geometry
+        self.detectors_valid = []
+        self.scint_thickness = 0.0
+        self.scint_width = 0.0
+        self.scint_length = [[]]
+        self.zero_layer = []
+        self.zero_strip = [[]]
+        self.layer_thickness = []
+        self.num_layers = []
+        self.num_strips = [[]]
+        self.half_total_width = [[]]
+        self.ecal_dx = 0.0
+        self.ecal_dy = 0.0
+        self.num_sections = 0
+        self.verbose = 0
+        self.back_horizontal_parity = 1
+        self.side_3d_readout = 0
+        self.y_offset=0.
+    
 
     def __str__(self):
         """Stringify this configuration class"""
@@ -100,7 +104,7 @@ class HcalGeometry:
         self.make_v14()
         self.make_v1_prototype()
         self.make_v2_prototype()
-        self.make_test_prototype()
+        self.make_prototype_cosmics()
 
     def make_v13(self):
         """Create the HcalGeometry with the v13 geometry parameters
@@ -505,63 +509,73 @@ class HcalGeometry:
         self.v14.detectors_valid = ["ldmx-det-v14", "ldmx-det-v14.*", "ldmx-vertTS-v14.*", "ldmx-reduced", "ldmx-reduced-v2", "ldmx-reduced-v3","ldmx-lyso-r4-v15", "ldmx-lyso-r4-v15.*", "ldmx-det-v15","ldmx-det-v15.*"]
         self.v14.y_offset = 19.05
 
-#----------------
-#MY CHANGE
-#----------------
 
-    def make_test_prototype(self):
-        """Create the HcalGeometry with the prototype to be set up at SLAC geometry parameters"""
-        self.test_prototype = HcalReadoutGeometry()
-        # GDML-parameters
+#The HCal prototype that will be used to measure cosmic muons.
+#The HCal prototype has been assumed to be the top and bottom section of the side HCal since they share the same scintillator orientation.
+#More changes are required in the software to sucessfully digitize and reconstruct the data obtained when using this geometry.
+    def make_prototype_cosmics(self):
+
+        self.prototype_cosmics = HcalReadoutGeometry()
+        
         scint_thickness = 20.0
+        scint_bar_width = 50.0
         scint_bar_length = 2000.0
         scint_bar_cover_thickness = 0.5
         layer_thickness = 21.5
-        # air_thickness = layer_thickness - (
-        #     absorber_thickness
-        #     + bar_mounting_plate_thickness
-        #     + scint_thickness
-        #     + scint_bar_cover_thickness
-        # )
-        num_layers_alongx = 4
-        num_layers_alongz = 4
-        num_layers = num_layers_alongx + num_layers_alongz
-        # back_start = num_layers_front * layer_thickness
-        scint_bar_width = 50.0
+        space_between_sections = 1000
+
+
+        
+        #Number of sections is hard-coded, therfore the layers in the back HCal is defined. 
+        #Zero in this case since it doesn't actually exist.
+        num_layers_back = 0
+       
+        num_layers_alongx_top = 4
+        num_layers_alongz_top = 4
+
+        num_layers_alongx_bottom= 4
+        num_layers_alongz_bottom = 4
+
+        num_layers_top = num_layers_alongx_top + num_layers_alongz_top
+        num_layers_bottom =  num_layers_alongx_bottom + num_layers_alongz_bottom
         num_bars = 8
-        dy = num_layers * layer_thickness
-        # End GDML-parameters
+        dy = (num_layers_top + num_layers_bottom) * layer_thickness + space_between_sections
 
-        self.test_prototype.scint_thickness = scint_thickness
-        self.test_prototype.scint_width = scint_bar_width
-        self.test_prototype.scint_length = [[scint_bar_length for layer in range(num_layers)] ]
-
-        self.test_prototype.zero_layer = [
-            -dy / 2
-            + scint_bar_cover_thickness
-            + scint_thickness / 2
+        self.prototype_cosmics.scint_thickness = scint_thickness
+        self.prototype_cosmics.scint_width = scint_bar_width
+        #Number of sections are hard-coded, each list index represents one section: [back, top, bottom, right, left]. 
+        self.prototype_cosmics.scint_length = [[0.0],
+                                               [scint_bar_length for layer in range(num_layers_top)],
+                                               [scint_bar_length for layer in range(num_layers_bottom)]]
+       
+        self.prototype_cosmics.num_strips = [[0],
+                                             [num_bars for i in range(num_layers_top)],
+                                             [num_bars for i in range(num_layers_bottom)]]
+        
+        self.prototype_cosmics.zero_strip = [[0.0],
+                                             [-scint_bar_width*num_bars/2] * num_layers_top,
+                                             [-scint_bar_width*num_bars/2] * num_layers_bottom]
+        
+        self.prototype_cosmics.half_total_width = self.prototype_cosmics.zero_strip 
+       
+    
+        self.prototype_cosmics.layer_thickness = [0.0, layer_thickness, layer_thickness]
+        #3 due to hard-coding.
+        self.prototype_cosmics.num_sections = 3
+        self.prototype_cosmics.num_layers = [num_layers_back, num_layers_top, num_layers_bottom]
+        self.prototype_cosmics.zero_layer = [0.0,
+                                             dy / 2.0 - layer_thickness * num_layers_top ,
+                                             -dy / 2.0]
+       
+        self.prototype_cosmics.ecal_dx = 0.0
+        self.prototype_cosmics.ecal_dy = 0.0
+        self.prototype_cosmics.detectors_valid = [
+            "hcal-prototype-cosmics",
         ]
-        self.test_prototype.layer_thickness = [layer_thickness]
-        self.test_prototype.num_sections = 1 #?????????????
-        self.test_prototype.num_layers = [num_layers]
-        num_strips = [num_bars for i in range(num_layers)]
-        self.test_prototype.num_strips = [num_strips]
-        # zero_strip and half_total_width are identical
-        self.test_prototype.zero_strip = [[
-            N * scint_bar_width / 2 for N in num_strips
-        ]]
-        self.test_prototype.half_total_width = self.test_prototype.zero_strip
-        self.test_prototype.ecal_dx = 0.0
-        self.test_prototype.ecal_dy = 0.0
-        self.test_prototype.detectors_valid = [
-            "ldmx-hcal-prototype-test",
-        ]
 
-        '''
-        # Layers with even parity (0) are horizontal (scintillator bar length
-        # along the x-axis) in the back HCal
-        self.v2_prototype.back_horizontal_parity = 0
-        self.v2_prototype.side_3d_readout = 0
-        # TODO: Check this
-        self.v2_prototype.y_offset = 0.
-        '''
+        self.prototype_cosmics.back_horizontal_parity = 0
+        #Side_3d_readout should probably not be 1. A new variable maybe needs to be defined and used throughout the software.
+        self.prototype_cosmics.side_3d_readout = 1
+        self.prototype_cosmics.y_offset = 0.
+
+   
