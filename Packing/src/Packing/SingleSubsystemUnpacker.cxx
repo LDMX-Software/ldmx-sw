@@ -39,7 +39,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
     const auto frame_end =
         reader_.tell() + static_cast<std::streamoff>(frame_header.size());
 
-    if (frame_header.probablyYaml()) {
+    if (frame_header.channel() != 0 or frame_header.probablyYaml()) {
       // non-data channel in StreamWriter, skip
       reader_.seek(frame_end);
       continue;
