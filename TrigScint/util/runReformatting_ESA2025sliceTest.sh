@@ -19,7 +19,7 @@ fileList=""
 channelMap="channelMap_4modules_14lanes.txt" #<--- use this for 2025 data 
 OPTIND=1 #reset option counter between runs
 
-while getopts 'f:hs:n:e:d:r:c:VRS' flag; do
+while getopts 'f:hs:n:e:d:r:c:o:VRS' flag; do
   case "${flag}" in
     h)
       cat <<HELP
@@ -31,6 +31,7 @@ usage: (note boolean flags with capital letters)
     [-d dead channel nb (default: $deadChannel)]
     [-r hit reco time sample (default: $recoSamp)]
     [-c channel map name (default: $channelMap)]
+    [-o output directory for root files (default: $rootFilePath)]
     [-V verbose boolean ]
     [-R rerun from first step ]
     [-S run with singularity (sets appropriate fire command)]
@@ -44,6 +45,7 @@ HELP
     d) deadChannel="${OPTARG}" ;;
     r) recoSamp="${OPTARG}" ;;
     c) channelMap="${OPTARG}" ;;
+    o) outputDir="${OPTARG}" ;;
     V) doVerbose=1 ;;
     R) startDoRerun=1 ;;
     S) RUN_FIRE='fire' ;;
@@ -78,8 +80,11 @@ for file in $(cat $fileList) ; do
   echo "Running over $file ..."
   sleep 1 
   timeStart=$(date +%s)                   #keep track of processing time  
-  path=${file%/*}
-  path="${path}/${rootFilePath}"           #set it to the final path for now. when running batch, instead use a tmp dir, and then copy
+  if [[ -n "${outputDir}" ]] ; then
+    path="${outputDir}/${rootFilePath}"
+  else
+    path="${file%/*}/${rootFilePath}"
+  fi
   mkdir -p $path
   echo "Using root file output path $path"
   fName=${file##*/}
