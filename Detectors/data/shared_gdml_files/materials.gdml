@@ -56,6 +56,9 @@ use "glue" instead of listing the chemical formula.
 <element Z="20" formula="Ca" name="Ca">
   <atom type="A" unit="g/mol" value="40.08"/>
 </element>
+<element Z="22" formula="Ti" name="Ti">
+  <atom type="A" unit="g/mol" value="47.867"/>
+</element>
 <element Z="25" formula="Mn" name="Mn">
   <atom type="A" unit="g/mol" value="54.938"/>
 </element>
@@ -64,6 +67,12 @@ use "glue" instead of listing the chemical formula.
 </element>
 <element Z="29" formula="Cu" name="Cu">
   <atom type="A" unit="g/mol" value="63.546"/>
+</element>           
+<element Z="39" formula="Y" name="Y">
+  <atom type="A" unit="g/mol" value="88.906"/>
+</element>
+<element Z="71" formula="Lu" name="Lu">
+  <atom type="A" unit="g/mol" value="174.967"/>
 </element>           
 <element Z="74" formula="W" name="W">
   <atom type="A" unit="g/mol" value="183.842"/>
@@ -122,6 +131,12 @@ use "glue" instead of listing the chemical formula.
   <MEE unit="eV" value="322"/>
   <D unit="g/cm3" value="8.96"/>
   <fraction n="1" ref="Cu"/>
+</material>
+<material name="Titanium" state="solid">
+  <T unit="K" value="293.15"/>
+  <MEE unit="eV" value="233.0"/>
+  <D unit="g/cm3" value="4.506"/>
+  <fraction n="1" ref="Ti"/>
 </material>
 <material name="Tungsten" state="solid">
   <T unit="K" value="293.15"/>
@@ -220,3 +235,26 @@ use "glue" instead of listing the chemical formula.
   <fraction n="0.333" ref="C"/>	
   <fraction n="0.133" ref="O"/>
 </material>
+    <!-- LYSO target -->
+    <!--
+      Molar mass calculations:
+    - Lu: 1.86 × 174.967 = 325.44 g/mol
+    - Y: 0.2 × 88.906 = 17.78 g/mol
+    - Si: 1 × 28.085 = 28.09 g/mol
+    - O: 5 × 15.999 = 80.00 g/mol
+    - Total molar mass: 325.44 + 17.78 + 28.09 + 80.00 = 451.31 g/mol
+
+    Mass fraction calculations:
+    - Lu fraction: 325.44 / 451.31 = 0.7211
+    - Y fraction: 17.78 / 451.31 = 0.0394
+    - Si fraction: 28.09 / 451.31 = 0.0623
+    - O fraction: 80.00 / 451.31 = 0.1772
+    -->
+<material formula="Lu1.86Y0.2SiO5" name="LYSO" >
+  <D value="7.1" unit="g/cm3" />
+  <fraction n="0.7211" ref="Lu" />
+  <fraction n="0.0394" ref="Y"  />
+  <fraction n="0.0623" ref="Si" />
+  <fraction n="0.1772" ref="O"  />
+</material>
+
