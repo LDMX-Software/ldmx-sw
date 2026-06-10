@@ -1,6 +1,6 @@
 <!-- detector version -->
 <auxiliary auxtype="DetectorVersion" auxvalue="1">
-  <auxiliary auxtype="DetectorName" auxvalue="hcal-prototype-cosmics"/>
+  <auxiliary auxtype="DetectorName" auxvalue="ldmx-cosmic-hcal-prototype"/>
   <auxiliary auxtype="Author" auxvalue="Wilde Hedin"/>
   <auxiliary auxtype="Description" auxvalue="The HCal prototype geometry that will be used to measure cosmic muons at SLAC."/>
 </auxiliary>

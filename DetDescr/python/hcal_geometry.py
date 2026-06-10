@@ -523,8 +523,6 @@ class HcalGeometry:
         scint_bar_cover_thickness = 0.5
         layer_thickness = 21.5
         space_between_sections = 1000
-
-
         
         #Number of sections is hard-coded, therfore the layers in the back HCal is defined. 
         #Zero in this case since it doesn't actually exist.
@@ -558,7 +556,6 @@ class HcalGeometry:
         
         self.prototype_cosmics.half_total_width = self.prototype_cosmics.zero_strip 
        
-    
         self.prototype_cosmics.layer_thickness = [0.0, layer_thickness, layer_thickness]
         #3 due to hard-coding.
         self.prototype_cosmics.num_sections = 3
@@ -570,7 +567,7 @@ class HcalGeometry:
         self.prototype_cosmics.ecal_dx = 0.0
         self.prototype_cosmics.ecal_dy = 0.0
         self.prototype_cosmics.detectors_valid = [
-            "hcal-prototype-cosmics",
+            "ldmx-cosmic-hcal-prototype",
         ]
 
         self.prototype_cosmics.back_horizontal_parity = 0
