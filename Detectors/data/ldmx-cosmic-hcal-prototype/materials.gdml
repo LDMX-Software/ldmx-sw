@@ -105,23 +105,28 @@
    <fraction n="0.014" ref="Mn"/>
    <fraction n="0.0017" ref="C"/>
 </material>
+
 <isotope N="27" Z="13" name="Al27">
    <atom unit="g/mole" value="26.981539"/>
 </isotope>
+
 <element name="Al">
    <fraction n="1" ref="Al27"/>
 </element>
+
 <material name="Aluminum" state="solid">
    <T unit="K" value="293.15"/>
    <D unit="g/cm3" value="2.6989"/>
    <fraction n="1" ref="Al"/>
 </material>
+
 <material name="Aluminum3003" state="solid">
    <T unit="K" value="293.15"/>
    <D unit="g/cm3" value="2.6989"/>
    <fraction n="0.99" ref="Al"/>
    <fraction n="0.01" ref="Mn"/>
 </material>
+
 <material name="Scintillator" state="solid">
    <T unit="K" value="293.15"/>
    <MEE unit="eV" value="64.7494480275643"/>
