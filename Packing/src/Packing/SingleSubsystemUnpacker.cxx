@@ -3,7 +3,6 @@
 
 #include "Packing/LDMXRoRHeader.h"
 #include "Packing/RogueFrameHeader.h"
-#include <iostream>
 
 namespace packing {
 
@@ -32,14 +31,6 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static packing::RogueFrameHeader frame_header;
   static packing::LDMXRoRHeader ror_header;
 
-  static long n_total = 0;
-  static long n_yaml = 0;
-  static long n_invalid = 0;
-  static long n_wrong_subsystem = 0;
-  static long n_wrong_contributor = 0;
-  static long n_accepted = 0;
-  static bool summary_printed = false;
-
   while (reader_ and not reader_.eof()) { 
     reader_ >> frame_header;
     n_total++;
@@ -50,63 +41,40 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
         reader_.tell() + static_cast<std::streamoff>(frame_header.size());
 
     if (frame_header.probablyYaml()) {
-      n_yaml++;
-      if (n_yaml <= 10) {
-        std::cout << "[yaml] frame " << n_total
-                  << " size=" << frame_header.size()
-                  << " channel=" << frame_header.channel()
-                  << std::endl;
-      }
+      // non-data channel in StreamWriter, skip
       reader_.seek(frame_end);
       continue;
     }
 
+    // data channel, read RoR header
     reader_ >> ror_header;
-
     if (!ror_header.valid()) {
-      n_invalid++;
-      if (n_invalid <= 10) {
-        std::cout << "[invalid] frame " << n_total
-                  << " size=" << frame_header.size()
-                  << " channel=" << frame_header.channel()
-                  << std::endl;
-      }
       reader_.seek(frame_end);
       continue;
     }
 
     if (ror_header.subsystem() != subsystem_) {
-      n_wrong_subsystem++;
-      if (n_wrong_subsystem <= 10) {
-        std::cout << "[wrong subsystem] frame " << n_total
-                  << " got subsystem=" << ror_header.subsystem()
-                  << " expected=" << subsystem_
-                  << " contributor=" << ror_header.contributor()
-                  << std::endl;
-      }
+      // wrong subsystem ID number
       reader_.seek(frame_end);
       continue;
     }
 
     if (contributor_ >= 0 and contributor_ != ror_header.contributor()) {
-      n_wrong_contributor++;
-      if (n_wrong_contributor <= 10) {
-        std::cout << "[wrong contributor] frame " << n_total
-                  << " got contributor=" << ror_header.contributor()
-                  << " expected=" << contributor_
-                  << " subsystem=" << ror_header.subsystem()
-                  << std::endl;
-      }
+      // wrong contributor ID number
       reader_.seek(frame_end);
       continue;
     }
 
+    // correct subsystem and contributor channel
     frame_count_++;
     if (frame_offset_ >= frame_count_) {
+      // skip the first frame_offset_ frames that correspond to the selected
+      // subsystem
       reader_.seek(frame_end);
       continue;
     }
 
+    // load data into memory, add to event, and leave    
     std::vector<uint8_t> buff;
     if (not reader_.read(buff,
                          frame_header.size() - packing::LDMXRoRHeader::SIZE)) {
@@ -116,25 +84,16 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     n_accepted++;
 
+    // buff has subsystem data without RoR header
     event.add(output_name_, buff);
+    // ror_header has global RoR information
     event.getEventHeader().setIntParameter("RoR Timestamp",
                                            ror_header.timestamp());
+     // successfully unpacked an event, return from produce
     return;
   }
 
-  if (!summary_printed) {
-    summary_printed = true;
-    std::cout << "\n=== SingleSubsystemUnpacker summary ===\n"
-              << "total frames seen      : " << n_total << "\n"
-              << "yaml frames skipped    : " << n_yaml << "\n"
-              << "invalid RoR skipped    : " << n_invalid << "\n"
-              << "wrong subsystem skipped: " << n_wrong_subsystem << "\n"
-              << "wrong contrib skipped  : " << n_wrong_contributor << "\n"
-              << "accepted frames        : " << n_accepted << "\n"
-              << "=======================================\n"
-              << std::endl;
-  }
-
+  /// abort event if we've reached the end of the file (left while loop)
   abortEvent();
 }
 

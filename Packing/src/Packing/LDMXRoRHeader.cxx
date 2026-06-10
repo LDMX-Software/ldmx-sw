@@ -34,7 +34,7 @@ utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
     return r;
   }
 
-  // sentinel should be 0xa5; if not, this is not a valid LDMX data frame
+  // sentinel should be 0xa5
   if (sentinel != 0xa5) return r;
 
   if (!(r >> zero)) return r;

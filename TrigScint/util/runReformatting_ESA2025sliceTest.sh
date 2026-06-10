@@ -156,4 +156,3 @@ for file in $(cat $fileList) ; do
   #now could copy selected output to some storage
   #leaving plot making to a separate script 
 done
-       
