@@ -1,9 +1,10 @@
 """Test packing config"""
 
 from LDMX.Framework import ldmxcfg
-import sys, os
+import sys
+import os
 
-p = ldmxcfg.Process('unpack')
+p = ldmxcfg.Process("unpack")
 
 n_ev = 400000
 
@@ -16,25 +17,27 @@ n_samp = int(sys.argv[4])
 log_name = p.output_files[0].replace(".root", "_toLDMX.log")
 
 
-map_file = (sys.argv[5] if len(sys.argv) > 5
-    else "toyChannelMap_4modules_14lanes.txt")
+map_file = sys.argv[5] if len(sys.argv) > 5 else "toyChannelMap_4modules_14lanes.txt"
 
-log_verbosity = int(sys.argv[6]) if len(sys.argv) > 6 else 2 # default
+log_verbosity = int(sys.argv[6]) if len(sys.argv) > 6 else 2  # default
 
-n_chan = int(sys.argv[7]) if len(sys.argv) > 7 else 14*6 # default 
+n_chan = int(sys.argv[7]) if len(sys.argv) > 7 else 14 * 6  # default
 
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
+
 dec = ZCCMDecoder(channel_map_file=map_file)
 module_map_file = os.path.join(
     os.path.dirname(map_file),
-    os.path.basename(map_file).replace("channelMap", "moduleMap").replace("ChannelMap", "ModuleMap")
+    os.path.basename(map_file)
+    .replace("channelMap", "moduleMap")
+    .replace("ChannelMap", "ModuleMap"),
 )
 dec.module_map_file = module_map_file
 dec.input_pass_name = input_pass
 dec.output_collection = dec.output_collection + "Pad"
 dec.number_channels = n_chan
 dec.number_time_samples = n_samp
-dec.is_real_data = True  
+dec.is_real_data = True
 
 p.sequence = [dec]
 
@@ -43,8 +46,8 @@ p.logger.file_path = log_name
 p.logger.file_level = log_verbosity
 
 if log_verbosity < 2:
-    p.logger.debug(dec) # pass instance itself
+    p.logger.debug(dec)  # pass instance itself
 if log_verbosity < 1:
     p.logger.trace(dec)
 
-#p.pause()
+# p.pause()
