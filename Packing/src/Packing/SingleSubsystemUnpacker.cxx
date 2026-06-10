@@ -33,7 +33,6 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
   while (reader_ and not reader_.eof()) { 
     reader_ >> frame_header;
-    n_total++;
 
     // store location of end-of-frame for skipping this frame
     // if we fail any of the filter checks
@@ -81,8 +80,6 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
       EXCEPTION_RAISE(
           "MalForm", "Raw file provided was unable to read entire data frame.");
     }
-
-    n_accepted++;
 
     // buff has subsystem data without RoR header
     event.add(output_name_, buff);
