@@ -12,6 +12,7 @@
 
 //--- LDMX ---//
 #include "Tracking/Reco/TrackingGeometryUser.h"
+#include "Tracking/EigenStepper.h"
 
 //--- ACTS ---//
 
@@ -37,7 +38,6 @@
 #include "Acts/Propagator/AbortList.hpp"
 #include "Acts/Propagator/ActionList.hpp"
 #include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-#include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
