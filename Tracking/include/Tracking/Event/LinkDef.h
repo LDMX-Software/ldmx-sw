@@ -5,8 +5,11 @@
 #pragma link C++ nestedtypedef;
 
 #pragma link C++ namespace ldmx;
+#pragma link C++ class ldmx::SiStripHit + ;
 #pragma link C++ class ldmx::RawSiStripHit + ;
 #pragma link C++ class std::vector < ldmx::RawSiStripHit> + ;
+#pragma link C++ class ldmx::SimSiStripHit + ;
+#pragma link C++ class std::vector < ldmx::SimSiStripHit> + ;
 #pragma link C++ class ldmx::FittedSiStripHit + ;
 #pragma link C++ class std::vector < ldmx::FittedSiStripHit> + ;
 #pragma link C++ class ldmx::StraightTrack + ;

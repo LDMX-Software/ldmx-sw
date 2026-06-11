@@ -64,6 +64,9 @@ class LDMXRoRHeader {
 
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);
+  /// true if the header was parsed successfully (sentinel and reserved word
+  /// matched)
+  bool valid() const { return valid_; }
   /// version of LDMX data (should be zero)
   uint8_t version() const { return version_; }
   /// ID number for subsystem originating data (compiled into firmware)
@@ -74,6 +77,8 @@ class LDMXRoRHeader {
   uint64_t timestamp() const { return timestamp_; }
 
  private:
+  /// set to true only when all validity checks pass during read()
+  bool valid_{false};
   /// version of LDMX data (should be zero)
   uint8_t version_;
   /// ID number for subsystem originating data (compiled into firmware)

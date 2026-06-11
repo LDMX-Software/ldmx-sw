@@ -13,7 +13,7 @@
 #include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/SiStripDigitizer.h"
 #include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/RawSiStripHit.h"
+#include "Tracking/Event/SimSiStripHit.h"
 #include "Tracking/Sim/TrackingUtils.h"
 #include "Tracking/geo/DetectorElement.h"
 
@@ -74,11 +74,11 @@ class DigitizationProcessor : public TrackingGeometryUser {
    *
    * @param sim_hits  The collection of SimTrackerHits to digitize.
    * @param raw_hits  If non-null and charge digitization is active, filled
-   *                  with one RawSiStripHit per above-threshold readout strip.
+   *                  with one SimSiStripHit per above-threshold readout strip.
    */
   std::vector<ldmx::Measurement> digitizeHits(
       const std::vector<ldmx::SimTrackerHit>& sim_hits,
-      std::vector<ldmx::RawSiStripHit>* raw_hits = nullptr);
+      std::vector<ldmx::SimSiStripHit>* raw_hits = nullptr);
 
   // TODO avoid copies and use references
   bool mergeSimHits(const std::vector<ldmx::SimTrackerHit>& sim_hits,
