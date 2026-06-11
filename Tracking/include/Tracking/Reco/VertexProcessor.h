@@ -12,6 +12,23 @@
 
 // --- ACTS --- //
 
+// Propagator
+
+// the EigenStepper produces a maybe-uninitialized warning
+// that we are just ignoring for now
+#if !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+#include "Acts/Propagator/EigenStepper.hpp"
+#if !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
+#include "Acts/Propagator/Propagator.hpp"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
+
+
 // Vertexing
 
 #include "Acts/Vertexing/FullBilloirVertexFitter.hpp"
@@ -22,13 +39,6 @@
 
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
-
-// Propagator
-
-#include "Acts/Propagator/EigenStepper.hpp"
-#include "Acts/Propagator/Propagator.hpp"
-// #include "Acts/Propagator/Navigator.hpp"
-// #include "Acts/Propagator/StandardAborters.hpp"
 
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
