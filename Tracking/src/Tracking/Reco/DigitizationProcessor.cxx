@@ -69,14 +69,14 @@ void DigitizationProcessor::onProcessStart() {
     for (const auto& [layer_id, surface] : geometry().layer_surface_map_) {
       const auto& xf = surface->transform(geometryContext());
       const auto ctr = xf.translation();  // centre [mm in Acts units]
-      const auto R = xf.rotation();
-      const auto U = R.col(0);
-      const auto V = R.col(1);
-      const auto W = R.col(2);
+      const auto r = xf.rotation();
+      const auto u = r.col(0);
+      const auto v = r.col(1);
+      const auto w = r.col(2);
       csv << layer_id << "," << ctr.x() << "," << ctr.y() << "," << ctr.z()
-          << "," << U.x() << "," << U.y() << "," << U.z() << "," << V.x() << ","
-          << V.y() << "," << V.z() << "," << W.x() << "," << W.y() << ","
-          << W.z() << "\n";
+          << "," << u.x() << "," << u.y() << "," << u.z() << "," << v.x() << ","
+          << v.y() << "," << v.z() << "," << w.x() << "," << w.y() << ","
+          << w.z() << "\n";
     }
     ldmx_log(info) << "Surface geometry written to " << dump_geo_csv_ << "  ("
                    << geometry().layer_surface_map_.size() << " surfaces)";
@@ -144,11 +144,11 @@ void DigitizationProcessor::buildLorentzCache() {
     loadBField(field_map_);
 
   // Low-field (Hall) mobility from the Canali model [cm²/(V·s)] → [m²/(V·s)]
-  const double T = sensor_params_.temperature;
+  const double t = sensor_params_.temperature;
   auto carrier_e = tracking::digitization::getCarrier(-1);
   auto carrier_h = tracking::digitization::getCarrier(1);
-  const double mu_e = carrier_e.mu0(T) * 1.0e-4;  // m²/(V·s)
-  const double mu_h = carrier_h.mu0(T) * 1.0e-4;
+  const double mu_e = carrier_e.mu0(t) * 1.0e-4;  // m²/(V·s)
+  const double mu_h = carrier_h.mu0(t) * 1.0e-4;
 
   auto bfield_cache = bField()->makeCache(magneticFieldContext());
 
@@ -158,22 +158,22 @@ void DigitizationProcessor::buildLorentzCache() {
     if (!b_result.ok()) continue;
 
     // B in Tesla (ACTS field providers return values in Acts internal units)
-    const Acts::Vector3 b_T = b_result.value() / Acts::UnitConstants::T;
+    const Acts::Vector3 b_t = b_result.value() / Acts::UnitConstants::T;
 
     // Sensor W-normal = 3rd column of the rotation matrix
     const Acts::Vector3 w_hat =
         surface->transform(geometryContext()).rotation().col(2);
 
-    const double Bw = b_T.dot(w_hat);  // [T]
+    const double bw = b_t.dot(w_hat);  // [T]
 
     // tan(θ_L) = charge_sign · μ · Bw
     // electrons: charge = −1, holes: charge = +1
-    const double tan_e = -mu_e * Bw;
-    const double tan_h = +mu_h * Bw;
+    const double tan_e = -mu_e * bw;
+    const double tan_h = +mu_h * bw;
 
     lorentz_tan_cache_[layer_id] = {tan_e, tan_h};
 
-    ldmx_log(debug) << "Lorentz cache: layer=" << layer_id << "  Bw=" << Bw
+    ldmx_log(debug) << "Lorentz cache: layer=" << layer_id << "  Bw=" << bw
                     << " T" << "  tan_e=" << tan_e << "  tan_h=" << tan_h;
   }
 
@@ -199,7 +199,7 @@ void DigitizationProcessor::produce(framework::Event& event) {
 
   std::vector<ldmx::SimTrackerHit> merged_hits;
   std::vector<ldmx::Measurement> measurements;
-  std::vector<ldmx::RawSiStripHit> raw_hits;
+  std::vector<ldmx::SimSiStripHit> raw_hits;
 
   const bool save_raw =
       use_charge_digitization_ && !out_raw_collection_.empty();
@@ -323,7 +323,7 @@ bool DigitizationProcessor::mergeSimHits(
 
 std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     const std::vector<ldmx::SimTrackerHit>& sim_hits,
-    std::vector<ldmx::RawSiStripHit>* raw_hits) {
+    std::vector<ldmx::SimSiStripHit>* raw_hits) {
   ldmx_log(debug) << "Found: " << sim_hits.size() << " sim hits in '"
                   << hit_collection_ << "' with passname '"
                   << tracker_hit_passname_ << "'";
@@ -331,12 +331,12 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
   std::vector<ldmx::Measurement> measurements;
 
   struct StripContrib {
-    double charge_electrons;
-    double hit_time_ns;
-    int track_id;
-    int pdg_id;
-    int sim_hit_id;
-    float edep;
+    double charge_electrons_;
+    double hit_time_ns_;
+    int track_id_;
+    int pdg_id_;
+    int sim_hit_id_;
+    float edep_;
   };
   // layer_id -> strip_idx -> per-hit contributions (populated in Phase 1,
   // consumed in Phase 2 after the loop to apply noise once per strip)
@@ -504,7 +504,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
   }  // loop over sim hits
 
   // Phase 2: apply noise once per strip across all sim-hit contributions,
-  // then build RawSiStripHits with correctly superimposed pulse shapes.
+  // then build SimSiStripHits with correctly superimposed pulse shapes.
   if (raw_hits && pulse_shape_) {
     const int adc_max = (1 << tracking::digitization::ADC_BITS) - 1;
 
@@ -513,7 +513,7 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       std::map<int, double> total_charges;
       for (const auto& [strip_idx, contribs] : strip_contribs_map) {
         double total = 0.0;
-        for (const auto& c : contribs) total += c.charge_electrons;
+        for (const auto& c : contribs) total += c.charge_electrons_;
         total_charges[strip_idx] = total;
       }
 
@@ -538,13 +538,13 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
           // Dominant contributor = strip's largest single charge deposit.
           const StripContrib* dom = &contribs.front();
           for (const auto& c : contribs)
-            if (c.charge_electrons > dom->charge_electrons) dom = &c;
+            if (c.charge_electrons_ > dom->charge_electrons_) dom = &c;
 
-          ref_time_ns = dom->hit_time_ns;
-          track_id_out = dom->track_id;
-          pdg_id_out = dom->pdg_id;
-          sim_hit_id_out = dom->sim_hit_id;
-          for (const auto& c : contribs) edep_out += c.edep;
+          ref_time_ns = dom->hit_time_ns_;
+          track_id_out = dom->track_id_;
+          pdg_id_out = dom->pdg_id_;
+          sim_hit_id_out = dom->sim_hit_id_;
+          for (const auto& c : contribs) edep_out += c.edep_;
 
           // ADC = pedestal + superposition of each contributor's shaped pulse.
           for (int isamp = 0; isamp < tracking::digitization::N_SAMPLES;
@@ -555,9 +555,9 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
             double val =
                 static_cast<double>(tracking::digitization::ADC_PEDESTAL);
             for (const auto& c : contribs)
-              val += (c.charge_electrons /
+              val += (c.charge_electrons_ /
                       tracking::digitization::ADC_ELECTRONS_PER_COUNT) *
-                     pulse_shape_->eval(t_samp - c.hit_time_ns);
+                     pulse_shape_->eval(t_samp - c.hit_time_ns_);
             samples[isamp] = static_cast<short>(
                 std::clamp(static_cast<int>(std::round(val)), 0, adc_max));
           }
@@ -570,8 +570,8 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
             if (nb != strip_contribs_map.end() && !nb->second.empty()) {
               const StripContrib* dom = &nb->second.front();
               for (const auto& c : nb->second)
-                if (c.charge_electrons > dom->charge_electrons) dom = &c;
-              ref_time_ns = dom->hit_time_ns;
+                if (c.charge_electrons_ > dom->charge_electrons_) dom = &c;
+              ref_time_ns = dom->hit_time_ns_;
               break;
             }
           }

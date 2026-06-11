@@ -80,7 +80,8 @@ void PhotonuclearTracker::stepping(const G4Step* step) {
   pn_interaction.setTarget(target_z, target_a, target_material);
 
   // Set interaction metadata
-  pn_interaction.setInteractionVolume(incident_track->GetVolume()->GetName());
+  G4VPhysicalVolume* volume{incident_track->GetVolume()};
+  pn_interaction.setInteractionVolume(volume ? volume->GetName() : "null");
   pn_interaction.setProcessName("photonNuclear");
 
   // Record all immediate secondaries

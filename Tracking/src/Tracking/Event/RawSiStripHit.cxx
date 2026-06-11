@@ -1,41 +1,38 @@
 
 #include "Tracking/Event/RawSiStripHit.h"
 
+ClassImp(ldmx::RawSiStripHit);
+
 namespace ldmx {
 
-RawSiStripHit::RawSiStripHit(int layer_id, int strip_id,
-                             std::vector<short> samples, long time,
-                             int track_id, int pdg_id, int sim_hit_id,
-                             float edep)
-    : layer_id_(layer_id),
-      strip_id_(strip_id),
-      samples_(samples),
-      time_(time),
-      track_id_(track_id),
-      pdg_id_(pdg_id),
-      sim_hit_id_(sim_hit_id),
-      edep_(edep) {}
+RawSiStripHit::RawSiStripHit(uint8_t channel, std::vector<short> samples,
+                             long time)
+    : SiStripHit(samples, time), channel_(channel) {}
 
 void RawSiStripHit::clear() {
-  layer_id_ = -1;
-  strip_id_ = -1;
-  samples_.clear();
-  time_ = 0;
-  track_id_ = -1;
-  pdg_id_ = 0;
-  sim_hit_id_ = -1;
-  edep_ = 0.f;
+  clearBase();
+  channel_ = 0;
+  apv_id_ = 0;
+  hybrid_id_ = 0;
+  feb_id_ = 0;
+  apv_trigger_ = 0;
+  read_error_ = 0;
+  head_ = 0;
+  tail_ = 0;
+  filter_ = 0;
 }
 
 std::ostream &operator<<(std::ostream &output, const RawSiStripHit &hit) {
-  output << "[ RawSiStripHit ]: layer=" << hit.layer_id_
-         << " strip=" << hit.strip_id_ << " Samples: { ";
-  for (auto isample{0}; isample < (int)(hit.samples_.size() - 1); ++isample)
+  output << "[ RawSiStripHit ]: Samples: { ";
+  for (auto isample{0}; isample < (hit.samples_.size() - 1); ++isample)
     output << hit.samples_[isample] << ", ";
   output << hit.samples_[hit.samples_.size() - 1] << " } "
-         << "Time: " << hit.time_ << " track_id=" << hit.track_id_
-         << " pdg_id=" << hit.pdg_id_ << " sim_hit_id=" << hit.sim_hit_id_
-         << " edep=" << hit.edep_ << " MeV" << std::endl;
+         << "Time: " << hit.time_ << " Ch: " << static_cast<int>(hit.channel_)
+         << " APV: " << static_cast<int>(hit.apv_id_)
+         << " Hybrid: " << static_cast<int>(hit.hybrid_id_)
+         << " FEB: " << static_cast<int>(hit.feb_id_)
+         << " Trig: " << hit.apv_trigger_
+         << " Err: " << static_cast<int>(hit.read_error_) << std::endl;
 
   return output;
 }

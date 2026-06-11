@@ -141,10 +141,10 @@ void StraightTracksDQM::trackMonitoringUnique(
     double sigma_loc0_target = std::sqrt(track.getCov()[4]);
     double sigma_loc1_target = std::sqrt(track.getCov()[9]);
     double sigma_loc0_ecal =
-        locError(track.getCov()[0], track.getCov()[4], track.getCov()[1],
+        locError(track.getCov().at(0), track.getCov().at(4), track.getCov().at(1),
                  track.getEcalLayer1Z());
     double sigma_loc1_ecal =
-        locError(track.getCov()[7], track.getCov()[9], track.getCov()[8],
+        locError(track.getCov().at(7), track.getCov().at(9), track.getCov().at(8),
                  track.getEcalLayer1Z());
 
     histograms_.fill(title + "phi", trk_phi);

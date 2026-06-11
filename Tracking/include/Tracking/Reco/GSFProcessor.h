@@ -33,11 +33,11 @@
 #include <Acts/Geometry/TrackingGeometry.hpp>
 
 // propagation testing
+#include "Tracking/EigenStepper.h"
 #include "Acts/MagneticField/ConstantBField.hpp"
 #include "Acts/Propagator/AbortList.hpp"
 #include "Acts/Propagator/ActionList.hpp"
 #include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-#include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
