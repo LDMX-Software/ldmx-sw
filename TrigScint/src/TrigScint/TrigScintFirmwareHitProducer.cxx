@@ -61,7 +61,7 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
     std::vector<int> adcs = digi.getADC();
     std::vector<int> tdcs = digi.getTDC();
     for (int i = 0; i < NTIMES; i++) {
-      fifo[digi.getChanID()][i] = (ap_uint<14>)((adcs[i] << 6) + (tdcs[i]));
+      fifo[digi.getChanID()][i] = static_cast<ap_uint<14>>((adcs.at(i) << 6) + (tdcs.at(i)));
     }
   }
   hitproducerHw(fifo, out_hit, peds);

@@ -333,7 +333,7 @@ format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
 format-cpp: format-cpp-all
 
 # format only the C++ files that have changed relative to trunk
-format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only origin/trunk" "clang-format" args)
+format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only --diff-filter=d origin/trunk" "clang-format" args)
 
 # format the Python source code
 format-python:
@@ -369,7 +369,7 @@ default_tidy_args := '-p build --fix -fix-errors --quiet'
 tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-tidy" args)
 
 # tidy C++ files that are different relative to trunk
-tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only origin/trunk" "clang-tidy" args)
+tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only --diff-filter=d origin/trunk" "clang-tidy" args)
 
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)

@@ -274,6 +274,10 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     ldmx_log(trace) << "  Considering track " << track_i;
     for (int track_j = track_i + 1; track_j < track_list.size(); track_j++) {
       std::vector<ldmx::HitData> checking_track = track_list[track_j];
+      if (checking_track.empty()) {
+        ldmx_log(error) << "Broken logic: a straight ecal track had no hits in it during merge.";
+        continue;
+      }
       ldmx::HitData head_hitdata = checking_track.front();
       // if 1-2 layers behind, and xy within one cell...
       if ((head_hitdata.layer_ == tail_hitdata.layer_ + 1 ||
