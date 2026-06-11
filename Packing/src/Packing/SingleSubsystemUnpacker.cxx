@@ -38,7 +38,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static packing::RogueFrameHeader frame_header;
   static packing::LDMXRoRHeader ror_header;
 
-  while (reader_ and not reader_.eof()) { 
+  while (reader_ and not reader_.eof()) {
     reader_ >> frame_header;
 
     // store location of end-of-frame for skipping this frame
@@ -54,13 +54,8 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // data channel, read RoR header
     reader_ >> ror_header;
-    if (!ror_header.valid()) {
-      reader_.seek(frame_end);
-      continue;
-    }
-
-    if (ror_header.subsystem() != subsystem_) {
-      // wrong subsystem ID number
+    if (!ror_header.valid() or ror_header.subsystem() != subsystem_) {
+      // not a valid LDMX data frame or wrong subsystem ID number
       reader_.seek(frame_end);
       continue;
     }
@@ -80,7 +75,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
       continue;
     }
 
-    // load data into memory, add to event, and leave    
+    // load data into memory, add to event, and leave
     std::vector<uint8_t> buff;
     if (not reader_.read(buff,
                          frame_header.size() - packing::LDMXRoRHeader::SIZE)) {
