@@ -13,7 +13,7 @@ n_ev = 400000
 start_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 0
 
 
-from LDMX.TrigScint.trigScint import QIEAnalyzer
+from LDMX.TrigScint.trig_scint import QIEAnalyzer
 
 
 # ------------------- all set; setup in detail, and run with these settings
@@ -96,7 +96,7 @@ p.histogram_file = outname  # .replace(".root"
 
 p.max_events = n_ev
 
-p.log_file_name = outname.replace(".root", ".log")
+p.logger.file_path = outname.replace(".root", ".log")
 p.logger.term_level = 1  # 0
 p.logger.file_level = 0
 

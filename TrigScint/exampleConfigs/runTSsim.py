@@ -59,9 +59,9 @@ simulation.generators = [gun]
 simulation.set_detector("ldmx-hcal-prototype-v" + str(det_v) + ".0")
 simulation.beamSpotSmear = [beam_x_smear, beam_y_smear, 0]  # mm, at start position
 
-from LDMX.TrigScint.trigScint import TrigScintQIEDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
+from LDMX.TrigScint.trig_scint import TrigScintQIEDigiProducer
+from LDMX.TrigScint.trig_scint import TrigScintRecHitProducer
+from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
 
 ts_digis = TrigScintQIEDigiProducer.up()
 ts_digis.number_of_strips = 12
@@ -89,7 +89,7 @@ ts_cl.clustering_threshold = 30.0  # to add in neighboring
 ts_cl.seed_threshold = 40.0
 
 
-from LDMX.TrigScint.trigScint import EventReadoutProducer
+from LDMX.TrigScint.trig_scint import EventReadoutProducer
 
 ts_ev = EventReadoutProducer("eventLinearizer")
 ts_ev.input_pass_name = this_pass_name
@@ -101,7 +101,7 @@ gain_list = [ts_digis.sipm_gain] * n_channels
 ped_list = [ts_digis.pedestal] * n_channels
 
 
-from LDMX.TrigScint.trigScint import QIEAnalyzer
+from LDMX.TrigScint.trig_scint import QIEAnalyzer
 
 ts_ana = QIEAnalyzer("plotMaker")
 ts_ana.input_pass_name = this_pass_name
