@@ -58,6 +58,11 @@ G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
 }
 
 void TargetBremFilter::stepping(const G4Step* step) {
+      int n_photons = 0;
+      int n_pass_theta = 0;
+      int n_pass_dral = 0;
+      double last_dral = -1;
+      double last_theta = -1;
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
@@ -128,6 +133,8 @@ void TargetBremFilter::stepping(const G4Step* step) {
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     } else {
+
+
       for (auto& secondary_track : *secondaries) {
         auto electron = G4Electron::Definition();
         auto ebrem_process =
@@ -136,12 +143,12 @@ void TargetBremFilter::stepping(const G4Step* step) {
           ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
         }
 
-        if (ebrem_process &&
-            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
-          // Check if secondary is photon
-          auto secondary_pdg_id =
-              secondary_track->GetParticleDefinition()->GetPDGEncoding();
+        if (ebrem_process && secondary_track->GetKineticEnergy() > brem_energy_threshold_){
+
+	  //Check if secondary is photon
+	  auto secondary_pdg_id = secondary_track->GetParticleDefinition()->GetPDGEncoding();
           if (secondary_pdg_id != 22) continue;
+	  n_photons++;
 
           // Brem angle
           auto momentum = secondary_track->GetMomentum();
@@ -166,12 +173,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
                                       (electron_eta - gamma_eta) +
                                   dphi * dphi);
           bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
-          // ldmx_log(info) << "ready";
+
+	  if (pass_brem_theta) n_pass_theta++;
+	  if (pass_dral) n_pass_dral++;
+
+	  last_theta = theta;
+	  last_dral = dral;
+
           if (pass_brem_theta && pass_dral) {
-            ldmx_log(info) << "E_gamma = "
-                           << secondary_track->GetKineticEnergy()
-                           << " theta = " << theta;
-            ldmx_log(info) << " dral = " << dral;
             auto track_info{
                 simcore::UserTrackInformation::get(secondary_track)};
             track_info->tagBremCandidate();
@@ -179,11 +188,6 @@ void TargetBremFilter::stepping(const G4Step* step) {
             getEventInfo()->incBremCandidateCount();
 
             has_brem_candidate = true;
-
-            ldmx_log(info) << "E_gamma = "
-                           << secondary_track->GetKineticEnergy()
-                           << " theta = " << theta;
-            ldmx_log(info) << " dral = " << dral;
           }
         }
       }
@@ -192,13 +196,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
     if (!has_brem_candidate) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
+      std::cout << "not a candidate, returning" << std::endl;
       return;
     }
 
-    ldmx_log(info) << "Brem found";
-    /*
-    std::cout << "[TargetBremFilter] : Found brem candidate" << std::endl;
-     */
+    //std::cout << "[TargetBremFilter] : Found brem candidate" << std::endl;
+    ldmx_log(trace) << "[TargetBremFilter] : Found brem candidate";
+    ldmx_log(trace) << "Passed theta = " << last_theta;
+    ldmx_log(trace) << "Passed dral = " << last_dral;
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.
