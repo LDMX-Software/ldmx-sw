@@ -58,9 +58,6 @@ G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
 }
 
 void TargetBremFilter::stepping(const G4Step* step) {
-      int n_photons = 0;
-      int n_pass_theta = 0;
-      int n_pass_dral = 0;
       double last_dral = -1;
       double last_theta = -1;
   // Get the track associated with this step.
@@ -148,7 +145,6 @@ void TargetBremFilter::stepping(const G4Step* step) {
 	  //Check if secondary is photon
 	  auto secondary_pdg_id = secondary_track->GetParticleDefinition()->GetPDGEncoding();
           if (secondary_pdg_id != 22) continue;
-	  n_photons++;
 
           // Brem angle
           auto momentum = secondary_track->GetMomentum();
@@ -174,9 +170,6 @@ void TargetBremFilter::stepping(const G4Step* step) {
                                   dphi * dphi);
           bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
 
-	  if (pass_brem_theta) n_pass_theta++;
-	  if (pass_dral) n_pass_dral++;
-
 	  last_theta = theta;
 	  last_dral = dral;
 
@@ -196,7 +189,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
     if (!has_brem_candidate) {
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
-      std::cout << "not a candidate, returning" << std::endl;
+      ldmx_log(trace) << "not a candidate, returning";
       return;
     }
 
