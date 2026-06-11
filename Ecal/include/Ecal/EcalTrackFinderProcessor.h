@@ -15,6 +15,7 @@
 #include "Framework/EventProcessor.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
+#include "Tracking/EigenStepper.h" // help silence and internal warning
 #include "Tracking/Sim/IndexSourceLink.h"
 
 // ACTS
