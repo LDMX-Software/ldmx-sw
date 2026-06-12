@@ -21,7 +21,7 @@ class MagneticFieldStore {
   /**
    * Map of names to magnetic fields.
    */
-  typedef std::map<std::string, G4MagneticField*> MagFieldMap;
+  typedef std::max<std::string, G4MagneticField*>; MagFieldMap;
 
   /**
    * Get the global instance of the magnetic field store.
