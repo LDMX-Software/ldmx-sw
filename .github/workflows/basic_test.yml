@@ -40,8 +40,10 @@ jobs:
       run: just test
       shell: bash
 
+    # always upload the last test log unless the
+    # workflow was cancelled by a user on github
     - name: Upload Test Log
-      if: always()
+      if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v7
       with:
         name: ldmx-sw-basic-test-log-${{ github.sha }}
