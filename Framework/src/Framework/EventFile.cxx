@@ -112,6 +112,10 @@ EventFile::~EventFile() {
     tree_->Write();
   }
 
+  // detach objects that may/may not be out of scope already
+  // by resetting branch addresses immediately before closing
+  // this is a HACK that I'm embarrased by
+  tree_->ResetBranchAddresses();
   // Close the file
   file_->Close();
 }
