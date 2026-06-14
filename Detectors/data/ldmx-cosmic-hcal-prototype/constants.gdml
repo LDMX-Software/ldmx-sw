@@ -40,7 +40,7 @@
 
 <!-- World and prototype dimensions-->
 <constant name="world_dim" value="10.0*m"/>
-<variable name="dx" value="3000."/> <!--longer than 2000 for some reason-->
+<variable name="dx" value="3000."/> 
 <variable name="dy" value="(num_layers_bottom + num_layers_top) * layer_thickness + space_between_sections"/>
 <variable name="dz" value="3000."/>
 
