@@ -27,6 +27,8 @@
 #define DEV_IMAGE_MAJOR 4
 #elif PY_MINOR_VERSION == 12
 #define DEV_IMAGE_MAJOR 5
+#elif PY_MINOR_VERSION == 14
+#define DEV_IMAGE_MAJOR 6
 #endif
 
 #ifndef DEV_IMAGE_MAJOR

@@ -164,7 +164,7 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("TaggerRawSiStripHits"),
+            out_raw_collection=tagged("TaggerSimHits"),
         )
 
         digi_recoil = tracking.DigitizationProcessor(
@@ -178,13 +178,13 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("RecoilRawSiStripHits"),
+            out_raw_collection=tagged("RecoilSimHits"),
         )
 
         fit_tagger = tracking.StripFitProcessor(
             instance_name=tagged("StripFitTagger"),
             in_collection=digi_tagger.out_raw_collection,
-            out_collection=tagged("TaggerFittedSiStripHits"),
+            out_collection=tagged("TaggerFittedHits"),
             t_scan_min_ns=-50.0,
             t_scan_max_ns=150.0,
             t_scan_step_ns=1.0,
@@ -193,7 +193,7 @@ def full_tracking_sequence(
         fit_recoil = tracking.StripFitProcessor(
             instance_name=tagged("StripFitRecoil"),
             in_collection=digi_recoil.out_raw_collection,
-            out_collection=tagged("RecoilFittedSiStripHits"),
+            out_collection=tagged("RecoilFittedHits"),
             t_scan_min_ns=-50.0,
             t_scan_max_ns=150.0,
             t_scan_step_ns=1.0,

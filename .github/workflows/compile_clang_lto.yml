@@ -36,3 +36,13 @@ jobs:
         just install-denv init configure-clang-lto-fail-on-warning
         just build
         just test
+
+    # always upload the last test log unless the
+    # workflow was cancelled by a user on github
+    - name: Upload Test Log
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: ldmx-sw-clang-lto-test-log-${{ github.sha }}
+        path: build/Testing/Temporary/LastTest.log
+

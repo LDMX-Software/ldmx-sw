@@ -152,6 +152,15 @@ class EventHeader {
   void setWeight(double weight) { this->weight_ = weight; }
 
   /**
+   * Check whether an int parameter exists.
+   * @param name The name of the parameter.
+   * @return true if the parameter exists.
+   */
+  bool hasIntParameter(const std::string& name) const {
+    return int_parameters_.find(name) != int_parameters_.end();
+  }
+
+  /**
    * Get an int parameter value.
    * @throw Exception if parameter does not exist
    * @param name The name of the parameter.

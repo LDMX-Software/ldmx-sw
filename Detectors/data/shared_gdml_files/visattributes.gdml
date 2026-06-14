@@ -164,6 +164,16 @@ perfect color.
       <auxiliary auxtype="Visible" auxvalue="true"/>
       <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
     </auxiliary>
+    <auxiliary auxtype="VisAttributes" auxvalue="TitaniumMaterialVis">
+      <auxiliary auxtype="R" auxvalue="0.1"/>
+      <auxiliary auxtype="G" auxvalue="0.27"/>
+      <auxiliary auxtype="B" auxvalue="0.8"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.0"/>
+    </auxiliary>
     <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis">
       <auxiliary auxtype="R" auxvalue="1.0"/>
       <auxiliary auxtype="G" auxvalue="0.0"/>

@@ -51,7 +51,7 @@ class DBScanClusterBuilder {
   int setMinHitMultiplicity() const { return min_cluster_hit_mult_; }
 
  private:
-  bool isIn(unsigned int i, std::vector<unsigned int> l) {
+  bool isIn(unsigned int i, const std::vector<unsigned int>& l) {
     return std::find(l.begin(), l.end(), i) != l.end();
   }
   float dist(const ldmx::CalorimeterHit *a, const ldmx::CalorimeterHit *b) {

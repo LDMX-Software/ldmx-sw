@@ -1,6 +1,7 @@
 name: Apply clang tools
 on:
   pull_request:
+      types: [opened, ready_for_review]
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'
@@ -34,6 +35,7 @@ jobs:
       run: |
         just format-cpp
         just tidy-cpp-all
+        git diff # fail job if format/tidy made a change
     - name: auto-commit changes
       if: github.ref != 'refs/heads/trunk'
       run: |

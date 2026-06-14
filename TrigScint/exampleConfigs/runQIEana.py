@@ -13,7 +13,7 @@ n_ev = 2000
 start_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 2
 
 
-from LDMX.TrigScint.trigScint import QIEAnalyzer
+from LDMX.TrigScint.trig_scint import QIEAnalyzer
 
 
 # ------------------- all set; setup in detail, and run with these settings

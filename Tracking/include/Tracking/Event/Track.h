@@ -191,6 +191,7 @@ class Track {
     perigee_ = perigee;
   }
   void setPerigeeLocation(const double& x, const double& y, const double& z) {
+    perigee_.resize(3);
     perigee_[0] = x;
     perigee_[1] = y;
     perigee_[2] = z;

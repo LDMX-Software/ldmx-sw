@@ -13,18 +13,17 @@
 namespace tracking::reco {
 
 /**
- * Fits a pulse shape to each RawSiStripHit and produces FittedSiStripHits.
+ * Fits a pulse shape to each SimSiStripHit and produces FittedSiStripHits.
  *
- * This processor is intended to run on both real and simulated data; it
- * requires only the RawSiStripHit collection and knowledge of the readout
+ * It requires only the SimSiStripHit collection and knowledge of the readout
  * pulse shape.
  *
- * Input  : collection of ldmx::RawSiStripHit
+ * Input  : collection of ldmx::SimSiStripHit
  * Output : collection of ldmx::FittedSiStripHit
  *
  * Configuration parameters
  * ------------------------
- *   in_collection         Name of the RawSiStripHit input collection.
+ *   in_collection         Name of the SimSiStripHit input collection.
  *   in_pass               Pass name for the input collection.
  *   out_collection        Name of the FittedSiStripHit output collection.
  *   pulse_shape           "CRRC" (default) or "FourPole".
@@ -53,7 +52,7 @@ class StripFitProcessor : public framework::Producer {
 
  private:
   // I/O
-  std::string in_collection_{"RawSiStripHits"};
+  std::string in_collection_{"SimSiStripHits"};
   std::string in_pass_{""};
   std::string out_collection_{"FittedSiStripHits"};
 

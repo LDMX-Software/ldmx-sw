@@ -112,7 +112,10 @@ void LinearSeedFinder::produce(framework::Event& event) {
   for (const auto& point : recoil_hits) {
     // x is in tracking coordinates, z is in ldmx coordinates
     float x = point.getGlobalPosition()[0];
-    int track_id = point.getTrackIds()[0];
+    // need to do a size check here since getTrackIds is a std::vector
+    // which could be empty
+    auto track_ids = point.getTrackIds();
+    int track_id = (track_ids.size() > 0) ? track_ids.at(0) : -1;
 
     // get the key value = track_id
     auto sim_range_it = sim_hits_by_track_id.find(track_id);

@@ -5,25 +5,27 @@
 //----------------------//
 //   C++ Standard Lib   //
 //----------------------//
+#include <cstdint>
 #include <iostream>
 #include <vector>
 
 //----------//
-//   ROOT   //
+//   LDMX   //
 //----------//
-#include "TObject.h"
+#include "Tracking/Event/SiStripHit.h"
 
 namespace ldmx {
 
 /**
  * Implementation of a raw digitized hit from a silicon strip detector.
  *
- * This class is meant to encapsulate the raw data coming from a silicon strip
- * detector prior to any additional processing. Typically, the raw data will
- * contain a header with ID information and timestamp, a tail with error info
- * and multiple 32 bit data samples.
+ * This class encapsulates the reco-level (real data) information for a silicon
+ * strip hit: in addition to the ADC samples and time stamp held by the
+ * SiStripHit base class, it carries the electronics identifiers (channel, APV,
+ * hybrid, FEB) and quality/error flags read out of the raw Rogue frame. The
+ * truth-level counterpart is SimSiStripHit.
  */
-class RawSiStripHit {
+class RawSiStripHit : public SiStripHit {
  public:
   /// Default constructor
   RawSiStripHit() = default;
@@ -31,136 +33,78 @@ class RawSiStripHit {
   /**
    * Constructor.
    *
-   * @param[in] layer_id    Sensor layer identifier (from tracking geometry).
-   * @param[in] strip_id    Readout strip index within the sensor.
-   * @param[in] samples     The ADC samples composing this hit (16-bit each).
-   * @param[in] time        Hit timestamp [ns].
-   * @param[in] track_id    Geant4 track ID of the particle that created this
-   * hit.
-   * @param[in] pdg_id      PDG particle ID of the particle that created this
-   * hit.
-   * @param[in] sim_hit_id  Detector ID of the originating SimTrackerHit.
+   * The remaining electronics and quality fields are populated through the
+   * dedicated setters.
+   *
+   * @param[in] channel The readout channel of this hit.
+   * @param[in] samples The ADC samples composing this hit.  For now, the size
+   *    of a sample is assumed to be 16 bits.
+   * @param[in] time The timestamp of this hit as set by the data acquisition
+   *    system.
    */
-  RawSiStripHit(int layer_id, int strip_id, std::vector<short> samples,
-                long time, int track_id = -1, int pdg_id = 0,
-                int sim_hit_id = -1, float edep = 0.f);
+  RawSiStripHit(uint8_t channel, std::vector<short> samples, long time);
 
   /**
    * Destructor.
    *
    * Currently, the destructor does nothing.
    */
-  virtual ~RawSiStripHit(){};
+  virtual ~RawSiStripHit() = default;
 
   /**
-   * Clear the vector of samples and set the timestamp to 0.
+   * Clear the samples, time stamp and electronics/quality fields.
    *
-   * This class is needed by ROOT when building the dictionary.
+   * This method is needed by ROOT when building the dictionary.
    */
-  void clear();
+  void clear() override;
 
-  /**
-   * Print the string representation of this object.
-   *
-   * This class is needed by ROOT when building the dictionary.
-   */
-  friend std::ostream &operator<<(std::ostream &o, const RawSiStripHit &d);
+  uint8_t getChannel() const { return channel_; }
+  uint8_t getApvId() const { return apv_id_; }
+  uint8_t getHybridId() const { return hybrid_id_; }
+  uint8_t getFebId() const { return feb_id_; }
+  uint16_t getApvTrigger() const { return apv_trigger_; }
+  uint8_t getReadError() const { return read_error_; }
+  uint8_t getHead() const { return head_; }
+  uint8_t getTail() const { return tail_; }
+  uint8_t getFilter() const { return filter_; }
 
-  /**
-   * Get the digitized (ADC) samples composing this hit.
-   *
-   * This can be a single value or multiple values depending on the readout
-   * being used.
-   *
-   * @param[in] samples_ The ADC values composing this hit. For now, the size
-   *    of a sample is assumed to be 16 bits.
-   *
-   * @return[out] A std::vector of 16 bit samples.
-   */
-  std::vector<short> getSamples() const { return samples_; }
-
-  /// Get the sensor layer identifier.
-  int getLayerID() const { return layer_id_; }
-
-  /// Get the readout strip index within the sensor.
-  int getStripID() const { return strip_id_; }
-
-  /**
-   * Get the time stamp of this hit.
-   *
-   * This is the time stamp as set by the data aquisition system. This will
-   * typically be in units of ns.
-   *
-   * @return[out] The timestamp of this hit in ns.
-   */
-  long getTime() const { return time_; }
-
-  /// Get the Geant4 track ID of the particle that created this hit (-1 if
-  /// unknown).
-  int getTrackID() const { return track_id_; }
-
-  /// Get the PDG particle ID of the particle that created this hit (0 if
-  /// unknown).
-  int getPdgID() const { return pdg_id_; }
-
-  /// Get the detector ID of the originating SimTrackerHit (-1 if unknown).
-  int getSimHitID() const { return sim_hit_id_; }
-
-  /// Get the energy deposited by the parent SimTrackerHit [MeV] (0 if unknown).
-  float getEdep() const { return edep_; }
-
-  /**
-   * When the less than operator is used for comparison, return true if this
-   * hit's time is less than the hit we are comparing against.
-   *
-   * @param[in] rhs The RawStripHit on the right side of the comparison.
-   *
-   * @return[out] True if the timestamp of this hit is less than the hit being
-   *    compared against.
-   */
-  bool operator<(const RawSiStripHit &rhs) const {
-    return getTime() < rhs.getTime();
-  }
+  void setChannel(uint8_t v) { channel_ = v; }
+  void setApvId(uint8_t v) { apv_id_ = v; }
+  void setHybridId(uint8_t v) { hybrid_id_ = v; }
+  void setFebId(uint8_t v) { feb_id_ = v; }
+  void setApvTrigger(uint16_t v) { apv_trigger_ = v; }
+  void setReadError(uint8_t v) { read_error_ = v; }
+  void setHead(uint8_t v) { head_ = v; }
+  void setTail(uint8_t v) { tail_ = v; }
+  void setFilter(uint8_t v) { filter_ = v; }
 
   /**
    * Overload the stream insertion operator to output a string representation
-   * of this RawStripHit.
+   * of this RawSiStripHit.
    *
    * @param[in] output The output stream where the string representation will
    *    be inserted.
    * @param[in] hit The RawSiStripHit to output.
    *
-   * @return[out] An ostream object with the string representation of
+   * @return An ostream object with the string representation of
    *    RawSiStripHit inserted.
    */
   friend std::ostream &operator<<(std::ostream &output,
                                   const RawSiStripHit &hit);
 
  protected:
-  /// Sensor layer identifier (from tracking geometry).
-  int layer_id_{-1};
-
-  /// Readout strip index within the sensor.
-  int strip_id_{-1};
-
-  /// 16 bit ADC samples associated with this hit.
-  std::vector<short> samples_;
-
-  /// The hit time stamp in units of ns.
-  long time_{0};
-
-  // Truth information (for MC truth matching; -1/0 means not set)
-  /// Geant4 track ID of the particle that created this hit.
-  int track_id_{-1};
-  /// PDG particle ID of the particle that created this hit.
-  int pdg_id_{0};
-  /// Detector ID of the originating SimTrackerHit.
-  int sim_hit_id_{-1};
-  /// Energy deposited by the parent SimTrackerHit [MeV].
-  float edep_{0.f};
+  uint8_t channel_{0};
+  uint8_t apv_id_{0};
+  uint8_t hybrid_id_{0};
+  uint8_t feb_id_{0};
+  uint16_t apv_trigger_{0};
+  uint8_t read_error_{0};
+  uint8_t head_{0};
+  uint8_t tail_{0};
+  uint8_t filter_{0};
 
   /// Class declaration needed by the ROOT dictionary.
-  ClassDef(RawSiStripHit, 3);
+  ClassDefOverride(RawSiStripHit, 4);
 
 };  // RawSiStripHit
 }  // namespace ldmx
