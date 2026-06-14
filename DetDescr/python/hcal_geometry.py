@@ -68,7 +68,6 @@ class HcalReadoutGeometry:
         self.side_3d_readout = 0
         self.y_offset=0.
     
-
     def __str__(self):
         """Stringify this configuration class"""
         s = f"""
@@ -92,7 +91,6 @@ class HcalReadoutGeometry:
         """
         return s
 
-
 class HcalGeometry:
     """Container for the various geometries
 
@@ -104,7 +102,7 @@ class HcalGeometry:
         self.make_v14()
         self.make_v1_prototype()
         self.make_v2_prototype()
-        self.make_prototype_cosmics()
+        self.make_cosmic_prototype()
 
     def make_v13(self):
         """Create the HcalGeometry with the v13 geometry parameters
@@ -513,9 +511,9 @@ class HcalGeometry:
 #The HCal prototype that will be used to measure cosmic muons.
 #The HCal prototype has been assumed to be the top and bottom section of the side HCal since they share the same scintillator orientation.
 #More changes are required in the software to sucessfully digitize and reconstruct the data obtained when using this geometry.
-    def make_prototype_cosmics(self):
+    def make_cosmic_prototype(self):
 
-        self.prototype_cosmics = HcalReadoutGeometry()
+        self.cosmic_prototype= HcalReadoutGeometry()
         
         scint_thickness = 20.0
         scint_bar_width = 50.0
@@ -539,40 +537,40 @@ class HcalGeometry:
         num_bars = 8
         dy = (num_layers_top + num_layers_bottom) * layer_thickness + space_between_sections
 
-        self.prototype_cosmics.scint_thickness = scint_thickness
-        self.prototype_cosmics.scint_width = scint_bar_width
+        self.cosmic_prototype.scint_thickness = scint_thickness
+        self.cosmic_prototype.scint_width = scint_bar_width
         #Number of sections are hard-coded, each list index represents one section: [back, top, bottom, right, left]. 
-        self.prototype_cosmics.scint_length = [[0.0],
+        self.cosmic_prototype.scint_length = [[0.0],
                                                [scint_bar_length for layer in range(num_layers_top)],
                                                [scint_bar_length for layer in range(num_layers_bottom)]]
        
-        self.prototype_cosmics.num_strips = [[0],
+        self.cosmic_prototype.num_strips = [[0],
                                              [num_bars for i in range(num_layers_top)],
                                              [num_bars for i in range(num_layers_bottom)]]
         
-        self.prototype_cosmics.zero_strip = [[0.0],
+        self.cosmic_prototype.zero_strip = [[0.0],
                                              [-scint_bar_width*num_bars/2] * num_layers_top,
                                              [-scint_bar_width*num_bars/2] * num_layers_bottom]
         
-        self.prototype_cosmics.half_total_width = self.prototype_cosmics.zero_strip 
+        self.cosmic_prototype.half_total_width = self.cosmic_prototype.zero_strip 
        
-        self.prototype_cosmics.layer_thickness = [0.0, layer_thickness, layer_thickness]
+        self.cosmic_prototype.layer_thickness = [0.0, layer_thickness, layer_thickness]
         #3 due to hard-coding.
-        self.prototype_cosmics.num_sections = 3
-        self.prototype_cosmics.num_layers = [num_layers_back, num_layers_top, num_layers_bottom]
-        self.prototype_cosmics.zero_layer = [0.0,
+        self.cosmic_prototype.num_sections = 3
+        self.cosmic_prototype.num_layers = [num_layers_back, num_layers_top, num_layers_bottom]
+        self.cosmic_prototype.zero_layer = [0.0,
                                              dy / 2.0 - layer_thickness * num_layers_top ,
                                              -dy / 2.0]
        
-        self.prototype_cosmics.ecal_dx = 0.0
-        self.prototype_cosmics.ecal_dy = 0.0
-        self.prototype_cosmics.detectors_valid = [
+        self.cosmic_prototype.ecal_dx = 0.0
+        self.cosmic_prototype.ecal_dy = 0.0
+        self.cosmic_prototype.detectors_valid = [
             "ldmx-cosmic-hcal-prototype",
         ]
 
-        self.prototype_cosmics.back_horizontal_parity = 0
+        self.cosmic_prototype.back_horizontal_parity = 0
         #Side_3d_readout should probably not be 1. A new variable maybe needs to be defined and used throughout the software.
-        self.prototype_cosmics.side_3d_readout = 1
-        self.prototype_cosmics.y_offset = 0.
+        self.cosmic_prototype.side_3d_readout = 1
+        self.cosmic_prototype.y_offset = 0.
 
    
