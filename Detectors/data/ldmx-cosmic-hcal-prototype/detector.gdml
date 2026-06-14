@@ -28,7 +28,7 @@
 
   <solids>
     &hcal_solids;
-    <!-- - - - - - - - - Parent Solids - - - - - - - -->
+    <!-- Parent Solids -->
     <box lunit="mm" name="prototype_box" x="dx" y="prototype_box_dy" z="dz"/>
     <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
   </solids>
