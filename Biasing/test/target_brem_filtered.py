@@ -35,5 +35,6 @@ sim.actions.extend(
 p.sequence = [sim]
 #p.logger.custom("biasing::TargetBremFilter", level = -1)
 p.max_events = 100
-p.max_tries_per_event = 1000000
+p.max_tries_per_event = 1
+#p.max_tries_per_event = 1000000
 p.output_files = ["target_brem_filtered.root"]
