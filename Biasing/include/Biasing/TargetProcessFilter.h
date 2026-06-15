@@ -44,7 +44,7 @@ class TargetProcessFilter : public simcore::UserAction {
   /**
    * End of event action.
    */
-  void EndOfEventAction(const G4Event *) override;
+  void endOfEventAction(const G4Event *) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -52,7 +52,7 @@ class TargetProcessFilter : public simcore::UserAction {
    * @param aTrack The Geant4 track.
    * @param currentTrackClass The current track classification.
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
+  G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track *aTrack,
       const G4ClassificationOfNewTrack &currentTrackClass) override;
 

@@ -24,9 +24,10 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
     track_info->initialize(track);
 
     // Get the region info for where the track was created (could be NULL)
-    auto region_info = (UserRegionInformation*)track->GetLogicalVolumeAtVertex()
-                           ->GetRegion()
-                           ->GetUserInformation();
+    auto region_info = static_cast<UserRegionInformation*>(
+        track->GetLogicalVolumeAtVertex()
+             ->GetRegion()
+             ->GetUserInformation());
 
     // Get the gen status if track was primary
     int cur_gen_status = -1;
@@ -63,13 +64,13 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
 
   // Activate user tracking actions
   for (auto& tracking_action : tracking_actions_)
-    tracking_action->PreUserTrackingAction(track);
+    tracking_action->preUserTrackingAction(track);
 }
 
 void TrackingAction::PostUserTrackingAction(const G4Track* track) {
   // Activate user tracking actions
   for (auto& tracking_action : tracking_actions_)
-    tracking_action->PostUserTrackingAction(track);
+    tracking_action->postUserTrackingAction(track);
 
   /**
    * If a track is to-be saved and it is being killed,
