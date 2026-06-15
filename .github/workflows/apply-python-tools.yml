@@ -33,6 +33,7 @@ jobs:
     - name: format and lint all Python files
       if: github.ref == 'refs/heads/trunk'
       run: |
+        set -e
         just format-python
         just lint-python-fix
         git diff # fail job if format/lint made a change
