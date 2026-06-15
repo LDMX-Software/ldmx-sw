@@ -103,6 +103,8 @@
     <volume name="recoil_l14_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l14_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="RecoilRegionVis"/>
       <physvol name="recoil_l14_active_sensor">
         <volumeref ref="Recoil_l14_active_Sensor_vol"/>
         <position name="recoil_l14_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
@@ -116,6 +118,8 @@
     <volume name="recoil_l56_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="recoil_l56_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="RecoilRegionVis"/>
       <physvol name="recoil_l56_active_sensor">
         <volumeref ref="Recoil_l56_active_Sensor_vol"/>
         <position name="recoil_l56_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
@@ -124,6 +128,7 @@
     <volume name="recoil">
       <materialref ref="Air"/>
       <solidref ref="recoil_box_trimmed"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <loop for="i" from="1" to="2" step="1"> 
         <!-- Axial sensors --> 
         <physvol copynumber="20*i-10"> 
