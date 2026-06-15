@@ -6,7 +6,7 @@
 
 namespace trigscint {
 
-void ZCCMDecoder::configure(framework::config::Parameters &ps) {
+void ZCCMDecoder::configure(framework::config::Parameters& ps) {
   // Configure this instance of the encoder
   output_collection_ = ps.get<std::string>("output_collection");
   input_collection_ = ps.get<std::string>("input_collection");
@@ -82,7 +82,7 @@ void ZCCMDecoder::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void ZCCMDecoder::produce(framework::Event &event) {
+void ZCCMDecoder::produce(framework::Event& event) {
   ldmx_log(debug) << "ZCCMDecoder: produce() starts! Event number: "
                   << event.getEventHeader().getEventNumber();
 

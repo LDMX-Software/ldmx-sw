@@ -78,14 +78,14 @@ class Track {
     TrackStateType ts_type_;
   };
 
-  Track(){};
+  Track() {};
 
   /**
    * Destructor.
    *
    * Currently, the destructor does nothing.
    */
-  virtual ~Track(){};
+  virtual ~Track() {};
 
   /**
    * Print the string representation of this object.

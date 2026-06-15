@@ -59,7 +59,7 @@ class TrigEnergySum {
    * @param[in] d another digi to compare against
    * @returns true if this ID is less than the other ID
    */
-  bool operator<(const TrigEnergySum &sum) {
+  bool operator<(const TrigEnergySum& sum) {
     return hw_energy_ < sum.hw_energy_;
   }
 
@@ -96,7 +96,7 @@ class TrigEnergySum {
    * @param[in] d digi to write out
    * @returns modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &o, const TrigEnergySum &d);
+  friend std::ostream& operator<<(std::ostream& o, const TrigEnergySum& d);
 
   /**
    * Stream the input digi collection
@@ -108,8 +108,8 @@ class TrigEnergySum {
    * @param[in] c collection to write out
    * @returns modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &o,
-                                  const TrigEnergySumCollection &c);
+  friend std::ostream& operator<<(std::ostream& o,
+                                  const TrigEnergySumCollection& c);
 
  private:
   /// the raw ID for this trigger channel

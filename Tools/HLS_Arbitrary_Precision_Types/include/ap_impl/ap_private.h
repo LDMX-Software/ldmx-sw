@@ -2447,8 +2447,8 @@ ASSIGN_OP_FROM_INT(double)
 
 #define OP_ASSIGN_AP_2(Sym)                         \
   template <int _AP_W2, bool _AP_S2>                \
-  INLINE ap_private<_AP_W, _AP_S>& operator Sym##=( \
-      const ap_private<_AP_W2, _AP_S2>& op) {       \
+  INLINE ap_private<_AP_W, _AP_S>& operator Sym## = \
+      (const ap_private<_AP_W2, _AP_S2>& op) {      \
     *this = operator Sym(op);                       \
     return *this;                                   \
   }
@@ -2556,23 +2556,23 @@ ASSIGN_OP_FROM_INT(double)
   //   return *this;
   // }
 
-#define OP_ASSIGN_AP(Sym)                                                    \
-  template <int _AP_W2, bool _AP_S2>                                         \
-  INLINE ap_private& operator Sym##=(int op) {                               \
-    *this = operator Sym(op);                                                \
-    clearUnusedBits();                                                       \
-    return *this;                                                            \
-  }                                                                          \
-  INLINE ap_private& operator Sym##=(unsigned int op) {                      \
-    *this = operator Sym(op);                                                \
-    clearUnusedBits();                                                       \
-    return *this;                                                            \
-  }                                                                          \
-  template <int _AP_W2, bool _AP_S2>                                         \
-  INLINE ap_private& operator Sym##=(const ap_private<_AP_W2, _AP_S2>& op) { \
-    *this = operator Sym(op);                                                \
-    clearUnusedBits();                                                       \
-    return *this;                                                            \
+#define OP_ASSIGN_AP(Sym)                                                      \
+  template <int _AP_W2, bool _AP_S2>                                           \
+  INLINE ap_private& operator Sym## = (int op) {                               \
+    *this = operator Sym(op);                                                  \
+    clearUnusedBits();                                                         \
+    return *this;                                                              \
+  }                                                                            \
+  INLINE ap_private& operator Sym## = (unsigned int op) {                      \
+    *this = operator Sym(op);                                                  \
+    clearUnusedBits();                                                         \
+    return *this;                                                              \
+  }                                                                            \
+  template <int _AP_W2, bool _AP_S2>                                           \
+  INLINE ap_private& operator Sym## = (const ap_private<_AP_W2, _AP_S2>& op) { \
+    *this = operator Sym(op);                                                  \
+    clearUnusedBits();                                                         \
+    return *this;                                                              \
   }
 
   OP_ASSIGN_AP(>>)
@@ -3837,11 +3837,11 @@ class ap_private<_AP_W, _AP_S, false> {
     return *this;
   }
 
-#define OP_ASSIGN_AP(Sym)                                                    \
-  template <int _AP_W2, bool _AP_S2>                                         \
-  INLINE ap_private& operator Sym##=(const ap_private<_AP_W2, _AP_S2>& op) { \
-    *this = operator Sym(op);                                                \
-    return *this;                                                            \
+#define OP_ASSIGN_AP(Sym)                                                      \
+  template <int _AP_W2, bool _AP_S2>                                           \
+  INLINE ap_private& operator Sym## = (const ap_private<_AP_W2, _AP_S2>& op) { \
+    *this = operator Sym(op);                                                  \
+    return *this;                                                              \
   }
 
   OP_ASSIGN_AP(/)
@@ -4036,20 +4036,20 @@ class ap_private<_AP_W, _AP_S, false> {
   /// Shift assign
   //------------------------------------------------------------------
   // TODO call clearUnusedBits ?
-#define OP_ASSIGN_AP(Sym)                                                    \
-  template <int _AP_W2, bool _AP_S2>                                         \
-  INLINE ap_private& operator Sym##=(int op) {                               \
-    *this = operator Sym(op);                                                \
-    return *this;                                                            \
-  }                                                                          \
-  INLINE ap_private& operator Sym##=(unsigned int op) {                      \
-    *this = operator Sym(op);                                                \
-    return *this;                                                            \
-  }                                                                          \
-  template <int _AP_W2, bool _AP_S2>                                         \
-  INLINE ap_private& operator Sym##=(const ap_private<_AP_W2, _AP_S2>& op) { \
-    *this = operator Sym(op);                                                \
-    return *this;                                                            \
+#define OP_ASSIGN_AP(Sym)                                                      \
+  template <int _AP_W2, bool _AP_S2>                                           \
+  INLINE ap_private& operator Sym## = (int op) {                               \
+    *this = operator Sym(op);                                                  \
+    return *this;                                                              \
+  }                                                                            \
+  INLINE ap_private& operator Sym## = (unsigned int op) {                      \
+    *this = operator Sym(op);                                                  \
+    return *this;                                                              \
+  }                                                                            \
+  template <int _AP_W2, bool _AP_S2>                                           \
+  INLINE ap_private& operator Sym## = (const ap_private<_AP_W2, _AP_S2>& op) { \
+    *this = operator Sym(op);                                                  \
+    return *this;                                                              \
   }
   OP_ASSIGN_AP(>>)
   OP_ASSIGN_AP(<<)
@@ -6800,14 +6800,14 @@ struct _private_bit_ref {
 // avoid ambiguous errors
 #define OP_BIN_MIX_PTR(BIN_OP)                                           \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                    \
-  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE * i_op,                      \
+  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE* i_op,                       \
                                    const ap_private<_AP_W, _AP_S>& op) { \
     typename ap_private<_AP_W, _AP_S>::ValType op2 = op;                 \
     return i_op BIN_OP op2;                                              \
   }                                                                      \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                    \
   INLINE PTR_TYPE* operator BIN_OP(const ap_private<_AP_W, _AP_S>& op,   \
-                                   PTR_TYPE * i_op) {                    \
+                                   PTR_TYPE* i_op) {                     \
     typename ap_private<_AP_W, _AP_S>::ValType op2 = op;                 \
     return op2 BIN_OP i_op;                                              \
   }

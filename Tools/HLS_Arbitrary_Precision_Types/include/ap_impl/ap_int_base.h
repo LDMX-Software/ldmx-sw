@@ -1036,7 +1036,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       t.V = _AP_ROOT_op_set_range(t.V, 0, _AP_W - 1, x.V);
       return __builtin_ctzll(t.V);  // count trailing zeros.
     } else {
-      enum {__N = (_AP_W + 63) / 64};
+      enum { __N = (_AP_W + 63) / 64 };
       int NZeros = 0;
       int i = 0;
       bool hitNonZero = false;
@@ -1050,7 +1050,7 @@ struct ap_int_base : public _AP_ROOT_TYPE<_AP_W, _AP_S> {
       }
       if (!hitNonZero) {
         ap_int_base<64, false> t(-1ULL);
-        enum {REST = (_AP_W - 1) % 64};
+        enum { REST = (_AP_W - 1) % 64 };
         ap_int_base<64, false> x;
         x.V = _AP_ROOT_op_get_range(this->V, 0, REST);
         t.V = _AP_ROOT_op_set_range(t.V, 63 - REST, 63, x.V);
@@ -1361,14 +1361,14 @@ OP_BIN_AP2(%, mod)
  */
 #define OP_BIN_WITH_PTR(BIN_OP)                                           \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                     \
-  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE * i_op,                       \
+  INLINE PTR_TYPE* operator BIN_OP(PTR_TYPE* i_op,                        \
                                    const ap_int_base<_AP_W, _AP_S>& op) { \
     ap_slong op2 = op.to_int64(); /* Not all implementation */            \
     return i_op BIN_OP op2;                                               \
   }                                                                       \
   template <typename PTR_TYPE, int _AP_W, bool _AP_S>                     \
   INLINE PTR_TYPE* operator BIN_OP(const ap_int_base<_AP_W, _AP_S>& op,   \
-                                   PTR_TYPE * i_op) {                     \
+                                   PTR_TYPE* i_op) {                      \
     ap_slong op2 = op.to_int64(); /* Not all implementation */            \
     return op2 BIN_OP i_op;                                               \
   }

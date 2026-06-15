@@ -36,7 +36,7 @@ class SimTrackerHit {
   /**
    * Print a description of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const SimTrackerHit &d);
+  friend std::ostream& operator<<(std::ostream& o, const SimTrackerHit& d);
 
   /**
    * Reset the SimTrackerHit object.
@@ -189,7 +189,7 @@ class SimTrackerHit {
   /**
    * Sort by time of hit
    */
-  bool operator<(const ldmx::SimTrackerHit &rhs) const {
+  bool operator<(const ldmx::SimTrackerHit& rhs) const {
     return this->getTime() < rhs.getTime();
   }
 

@@ -5,7 +5,7 @@
 
 namespace tracking::geo {
 
-DetectorElement::~DetectorElement(){};
+DetectorElement::~DetectorElement() {};
 
 const Acts::Transform3& DetectorElement::transform(
     const Acts::GeometryContext& gctx) const {

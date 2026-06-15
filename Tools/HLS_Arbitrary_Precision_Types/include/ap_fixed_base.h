@@ -952,7 +952,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
     _AP_WARNING(std::fegetround() != FE_TONEAREST,
                 "Only FE_TONEAREST is supported");
 #endif
-    enum {BITS = HALF_MAN + HALF_EXP + 1};
+    enum { BITS = HALF_MAN + HALF_EXP + 1 };
     if (!Base::V) return 0.0f;
     bool s = _AP_S && _AP_ROOT_op_get_bit(Base::V, _AP_W - 1);  ///< sign.
     ap_int_base<_AP_W, false> tmp;
@@ -1058,7 +1058,7 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       t.range(_AP_W - 1, 0) = this->range(0, _AP_W - 1);
       return __builtin_ctzll(t.V);
     } else {
-      enum {__N = (_AP_W + 63) / 64};
+      enum { __N = (_AP_W + 63) / 64 };
       int NZeros = 0;
       int i = 0;
       bool hitNonZero = false;
@@ -1103,9 +1103,11 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
       const {
     typename RType<_AP_W2, _AP_I2, _AP_S2>::div_base r;
 #ifndef __SYNTHESIS__
-    enum {F2 = _AP_W2 - _AP_I2,
-          _W1 = AP_MAX(_AP_W + AP_MAX(F2, 0) + ((_AP_S2 && !_AP_S) ? 1 : 0),
-                       _AP_W2 + ((_AP_S && !_AP_S2) ? 1 : 0))};
+    enum {
+      F2 = _AP_W2 - _AP_I2,
+      _W1 = AP_MAX(_AP_W + AP_MAX(F2, 0) + ((_AP_S2 && !_AP_S) ? 1 : 0),
+                   _AP_W2 + ((_AP_S && !_AP_S2) ? 1 : 0))
+    };
     ap_int_base<_W1, _AP_S || _AP_S2> dividend, divisior;
     ap_int_base<_W1, _AP_S> tmp1;
     ap_int_base<_W1, _AP_S2> tmp2;
@@ -1177,14 +1179,14 @@ struct ap_fixed_base : _AP_ROOT_TYPE<_AP_W, _AP_S> {
 
 // Arithmetic : assign
 // -------------------------------------------------------------------------
-#define OP_ASSIGN_AF(Sym)                                                  \
-  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,         \
-            ap_o_mode _AP_O2, int _AP_N2>                                  \
-  INLINE ap_fixed_base& operator Sym##=(                                   \
-      const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& \
-          op2) {                                                           \
-    *this = operator Sym(op2);                                             \
-    return *this;                                                          \
+#define OP_ASSIGN_AF(Sym)                                                   \
+  template <int _AP_W2, int _AP_I2, bool _AP_S2, ap_q_mode _AP_Q2,          \
+            ap_o_mode _AP_O2, int _AP_N2>                                   \
+  INLINE ap_fixed_base& operator Sym## =                                    \
+      (const ap_fixed_base<_AP_W2, _AP_I2, _AP_S2, _AP_Q2, _AP_O2, _AP_N2>& \
+           op2) {                                                           \
+    *this = operator Sym(op2);                                              \
+    return *this;                                                           \
   }
 
   OP_ASSIGN_AF(*)

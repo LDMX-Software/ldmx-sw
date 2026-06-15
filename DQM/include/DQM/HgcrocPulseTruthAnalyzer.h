@@ -15,7 +15,7 @@ namespace dqm {
 class HgcrocPulseTruthAnalyzer : public framework::Analyzer {
  public:
   HgcrocPulseTruthAnalyzer(const std::string& name, framework::Process& process)
-      : framework::Analyzer(name, process){};
+      : framework::Analyzer(name, process) {};
 
   void configure(framework::config::Parameters& parameters) override;
 

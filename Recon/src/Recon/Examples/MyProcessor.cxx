@@ -3,10 +3,10 @@
 
 namespace recon {
 
-MyProcessor::MyProcessor(const std::string &name, framework::Process &process)
+MyProcessor::MyProcessor(const std::string& name, framework::Process& process)
     : framework::Producer(name, process) {}
 
-void MyProcessor::configure(framework::config::Parameters &parameters) {
+void MyProcessor::configure(framework::config::Parameters& parameters) {
   /**
    * You access configuration parameters set in the python
    * by asking for the parameter with the same name as the
@@ -23,7 +23,7 @@ void MyProcessor::configure(framework::config::Parameters &parameters) {
       parameters.get<std::string>("ecal_rec_hits_event_passname");
 }
 
-void MyProcessor::produce(framework::Event &event) {
+void MyProcessor::produce(framework::Event& event) {
   // Check if the collection of reconstructed ECal hits_ exist.  If not,
   // don't bother processing the event.
   if (!event.exists("EcalRecHits", ecal_rec_hits_event_passname_)) return;
@@ -33,7 +33,7 @@ void MyProcessor::produce(framework::Event &event) {
       event.getCollection<ldmx::EcalHit>("EcalRecHits", ecal_rechits_passname_);
 
   // Loop over the collection of hits_ and print the hit details
-  for (const auto &hit : hits) {
+  for (const auto& hit : hits) {
     // Print the hit
     ldmx_log(info) << hit;
   }

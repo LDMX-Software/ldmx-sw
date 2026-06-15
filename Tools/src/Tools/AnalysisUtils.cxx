@@ -25,10 +25,10 @@
 
 namespace analysis {
 
-std::tuple<int, const ldmx::SimParticle *> getRecoil(
-    const std::map<int, ldmx::SimParticle> &particleMap) {
+std::tuple<int, const ldmx::SimParticle*> getRecoil(
+    const std::map<int, ldmx::SimParticle>& particleMap) {
   // The recoil electron is "produced" in the dark brem geneartion
-  for (const auto &[trackID, particle] : particleMap) {
+  for (const auto& [trackID, particle] : particleMap) {
     if (particle.getPdgID() == 11 and
         particle.getProcessType() ==
             ldmx::SimParticle::ProcessType::eDarkBrem) {
@@ -55,8 +55,8 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
 //
 
 bool doesParticleHavePNDaughters(
-    const ldmx::SimParticle &gamma,
-    const std::map<int, ldmx::SimParticle> &particleMap) {
+    const ldmx::SimParticle& gamma,
+    const std::map<int, ldmx::SimParticle>& particleMap) {
   for (auto daughter_id : gamma.getDaughters()) {
     if (particleMap.find(daughter_id) != std::end(particleMap)) {
       const auto daughter{particleMap.at(daughter_id)};
@@ -70,9 +70,9 @@ bool doesParticleHavePNDaughters(
   return false;
 }
 
-const ldmx::SimParticle *getPNGamma(
-    const std::map<int, ldmx::SimParticle> &particleMap,
-    const ldmx::SimParticle *recoil, const float &energyThreshold) {
+const ldmx::SimParticle* getPNGamma(
+    const std::map<int, ldmx::SimParticle>& particleMap,
+    const ldmx::SimParticle* recoil, const float& energyThreshold) {
   auto recoil_daughters{recoil->getDaughters()};
   for (auto recoil_daughter_id : recoil_daughters) {
     // Have we stored the recoil daughter?

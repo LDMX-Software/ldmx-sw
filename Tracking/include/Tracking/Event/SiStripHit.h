@@ -74,7 +74,7 @@ class SiStripHit {
    * @return True if the timestamp of this hit is less than the hit being
    *    compared against.
    */
-  bool operator<(const SiStripHit &rhs) const {
+  bool operator<(const SiStripHit& rhs) const {
     return getTime() < rhs.getTime();
   }
 

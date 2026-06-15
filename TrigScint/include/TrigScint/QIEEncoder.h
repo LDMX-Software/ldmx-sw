@@ -14,7 +14,7 @@ namespace trigscint {
 
 class QIEEncoder : public framework::Producer {
  public:
-  QIEEncoder(const std::string &name, framework::Process &process)
+  QIEEncoder(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
   /**
@@ -26,9 +26,9 @@ class QIEEncoder : public framework::Producer {
    * Configure our converter based off the configuration parameters
    * decoded from the passed python script
    */
-  void configure(framework::config::Parameters &ps) override;
+  void configure(framework::config::Parameters& ps) override;
 
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
   void onProcessStart() override;
 

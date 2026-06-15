@@ -32,7 +32,7 @@ class BeamElectronLocator : public framework::Producer {
    * @param process The Process class associated with EventProcessor,
    * provided by the framework.
    */
-  BeamElectronLocator(const std::string &name, framework::Process &process);
+  BeamElectronLocator(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~BeamElectronLocator();
@@ -46,7 +46,7 @@ class BeamElectronLocator : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Prints the configuration to log in debug mode
@@ -58,7 +58,7 @@ class BeamElectronLocator : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   /**

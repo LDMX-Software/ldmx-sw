@@ -33,19 +33,19 @@ class QIEStream {
   /**
    * Print ifo about the class
    */
-  friend std::ostream &operator<<(std::ostream &o, const QIEStream &d);
+  friend std::ostream& operator<<(std::ostream& o, const QIEStream& d);
 
   /**
    * A dummy function
    * @note required by Event/include/Event/EventDef.h
    */
-  void clear(Option_t *option = "");
+  void clear(Option_t* option = "");
 
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
-  bool operator<(const QIEStream &rhs) const {
+  bool operator<(const QIEStream& rhs) const {
     return this->chan_id_ < rhs.chan_id_;
   }
 

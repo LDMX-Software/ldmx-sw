@@ -36,12 +36,12 @@ class TestBeamHit : public ldmx::TrigScintHit {
   /**
    * Clear the data in the object.
    */
-  void clear(Option_t *option = "");
+  void clear(Option_t* option = "");
 
   /**
    * Print out the object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const TestBeamHit &d);
+  friend std::ostream& operator<<(std::ostream& o, const TestBeamHit& d);
 
   /**
    * Set channel (linearized. charge) pedestal
@@ -165,7 +165,7 @@ class TestBeamHit : public ldmx::TrigScintHit {
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
-  bool operator<(const TestBeamHit &rhs) const {
+  bool operator<(const TestBeamHit& rhs) const {
     return this->pulse_q_ < rhs.pulse_q_;
   }
 
