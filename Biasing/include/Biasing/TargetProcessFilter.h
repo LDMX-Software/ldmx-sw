@@ -29,8 +29,8 @@ class TargetProcessFilter : public simcore::UserAction {
   /**
    * Class constructor.
    */
-  TargetProcessFilter(const std::string &name,
-                      framework::config::Parameters &parameters);
+  TargetProcessFilter(const std::string& name,
+                      framework::config::Parameters& parameters);
 
   /// Destructor
   virtual ~TargetProcessFilter() = default;
@@ -39,12 +39,12 @@ class TargetProcessFilter : public simcore::UserAction {
    * Implementmthe stepping action which performs the target volume biasing.
    * @param step The Geant4 step.
    */
-  void stepping(const G4Step *step) override;
+  void stepping(const G4Step* step) override;
 
   /**
    * End of event action.
    */
-  void endOfEventAction(const G4Event *) override;
+  void endOfEventAction(const G4Event*) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -53,8 +53,8 @@ class TargetProcessFilter : public simcore::UserAction {
    * @param currentTrackClass The current track classification.
    */
   G4ClassificationOfNewTrack classifyNewTrack(
-      const G4Track *aTrack,
-      const G4ClassificationOfNewTrack &currentTrackClass) override;
+      const G4Track* aTrack,
+      const G4ClassificationOfNewTrack& currentTrackClass) override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {
@@ -64,7 +64,7 @@ class TargetProcessFilter : public simcore::UserAction {
 
  private:
   /** Pointer to the current track being processed. */
-  G4Track *current_track_{nullptr};
+  G4Track* current_track_{nullptr};
 
   /// The process to bias
   std::string process_{""};

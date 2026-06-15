@@ -25,9 +25,7 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
 
     // Get the region info for where the track was created (could be NULL)
     auto region_info = static_cast<UserRegionInformation*>(
-        track->GetLogicalVolumeAtVertex()
-             ->GetRegion()
-             ->GetUserInformation());
+        track->GetLogicalVolumeAtVertex()->GetRegion()->GetUserInformation());
 
     // Get the gen status if track was primary
     int cur_gen_status = -1;

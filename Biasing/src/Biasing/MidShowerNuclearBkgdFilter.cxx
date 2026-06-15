@@ -52,7 +52,7 @@ void MidShowerNuclearBkgdFilter::stepping(const G4Step* step) {
      */
     // make sure this track is saved
     save(track);
-  } else if (const G4Track * track{step->GetTrack()};
+  } else if (const G4Track* track{step->GetTrack()};
              track->GetCurrentStepNumber() == 1 and
              isNuclearProcess(track->GetCreatorProcess())) {
     save(track);
