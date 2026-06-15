@@ -115,7 +115,7 @@ def full_tracking_sequence(
         p_cut=0.05,
         pz_cut=0.03,
         p_cut_ecal=0.0,
-        )
+    )
 
     # ------------------------------------------------------------------
     # Truth tracker
@@ -131,7 +131,6 @@ def full_tracking_sequence(
         input_recoil_truth_collection=tagged("InputRecoilTruthTracks"),
         input_beam_electrons_collection=tagged("InputBeamElectrons"),
     )
-
 
     # ------------------------------------------------------------------
     # Digitization
@@ -234,9 +233,12 @@ def full_tracking_sequence(
         tagger_meas_collection = cluster_tagger.out_collection
         recoil_meas_collection = cluster_recoil.out_collection
         digi_sequence = [
-            digi_tagger,    digi_recoil,
-            fit_tagger,     fit_recoil,
-            cluster_tagger, cluster_recoil,
+            digi_tagger,
+            digi_recoil,
+            fit_tagger,
+            fit_recoil,
+            cluster_tagger,
+            cluster_recoil,
         ]
         charge_digi_processors = {
             "fit_tagger": fit_tagger,
@@ -554,8 +556,9 @@ def recoil_sequence(
         full.dqm_digi_recoil,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 
@@ -612,8 +615,9 @@ def tagger_sequence(
         full.dqm_digi_tagger,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 
