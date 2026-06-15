@@ -34,6 +34,13 @@ TargetBremFilter::TargetBremFilter(const std::string& name,
   dral_min_ = parameters.get<double>("dral_min");
   dral_max_ = parameters.get<double>("dral_max");
   kill_recoil_ = parameters.get<bool>("kill_recoil_track");
+
+  ldmx_log(info) << "TargetBremFilter configured:"
+                 << " recoil_max_p_threshold=" << recoil_max_p_threshold_
+                 << " brem_min_energy_threshold=" << brem_energy_threshold_
+                 << " brem_theta=[" << brem_theta_min_ << ", "
+                 << brem_theta_max_ << "]"
+                 << " dral=[" << dral_min_ << ", " << dral_max_ << "]";
 }
 
 TargetBremFilter::~TargetBremFilter() {}
@@ -58,8 +65,8 @@ G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
 }
 
 void TargetBremFilter::stepping(const G4Step* step) {
-      double last_dral = -1;
-      double last_theta = -1;
+  double last_dral = -1;
+  double last_theta = -1;
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
@@ -116,21 +123,26 @@ void TargetBremFilter::stepping(const G4Step* step) {
   auto track_volume = track->GetNextVolume();
   if (track_volume == recoil_physical_volume or
       track_volume == world_physical_volume) {
-    // If the recoil electron
+    // If the recoil electron momentum is too high, abort
     if (track->GetMomentum().mag() >= recoil_max_p_threshold_) {
+      ldmx_log(trace) << "Abort: recoil p=" << track->GetMomentum().mag()
+                      << " MeV >= threshold=" << recoil_max_p_threshold_;
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
-    // Get the electron secondries
+    // Get the electron secondaries
     bool has_brem_candidate = false;
     if (auto secondaries = step->GetSecondary(); secondaries->size() == 0) {
+      ldmx_log(trace) << "Abort: no secondaries produced";
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     } else {
-
+      ldmx_log(trace) << "Exiting target: recoil p ="
+                      << track->GetMomentum().mag() << " MeV, "
+                      << secondaries->size() << " secondaries";
 
       for (auto& secondary_track : *secondaries) {
         auto electron = G4Electron::Definition();
@@ -140,10 +152,11 @@ void TargetBremFilter::stepping(const G4Step* step) {
           ldmx_log(warn) << "Process 'eBrem' not found in Geant4 process store";
         }
 
-        if (ebrem_process && secondary_track->GetKineticEnergy() > brem_energy_threshold_){
-
-	  //Check if secondary is photon
-	  auto secondary_pdg_id = secondary_track->GetParticleDefinition()->GetPDGEncoding();
+        if (ebrem_process &&
+            secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
+          // Check if secondary is photon
+          auto secondary_pdg_id =
+              secondary_track->GetParticleDefinition()->GetPDGEncoding();
           if (secondary_pdg_id != 22) continue;
 
           // Brem angle
@@ -170,8 +183,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
                                   dphi * dphi);
           bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
 
-	  last_theta = theta;
-	  last_dral = dral;
+          last_theta = theta;
+          last_dral = dral;
+
+          ldmx_log(trace) << "  photon E="
+                          << secondary_track->GetKineticEnergy()
+                          << " MeV, theta=" << theta
+                          << " (pass=" << pass_brem_theta << ")"
+                          << ", dR=" << dral << " (pass=" << pass_dral << ")";
 
           if (pass_brem_theta && pass_dral) {
             auto track_info{
@@ -187,16 +206,14 @@ void TargetBremFilter::stepping(const G4Step* step) {
     }
 
     if (!has_brem_candidate) {
+      ldmx_log(trace) << "Abort: no brem candidate passed cuts";
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
-      ldmx_log(trace) << "not a candidate, returning";
       return;
     }
 
-    //std::cout << "[TargetBremFilter] : Found brem candidate" << std::endl;
-    ldmx_log(trace) << "[TargetBremFilter] : Found brem candidate";
-    ldmx_log(trace) << "Passed theta = " << last_theta;
-    ldmx_log(trace) << "Passed dral = " << last_dral;
+    ldmx_log(info) << "ACCEPTED: brem candidate with theta=" << last_theta
+                   << ", dR=" << last_dral;
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.
