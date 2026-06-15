@@ -327,7 +327,7 @@ _clang-tool-impl file_list_cmd *tool_cmd_and_args:
 
 
 # format the C++ source code of ldmx-sw
-format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
+format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files | grep -v HLS_Arbitrary_Precision_Types" "clang-format" ARGS)
 
 # formatting is quick enough that the format-cpp shortcut can be used
 format-cpp: format-cpp-all
