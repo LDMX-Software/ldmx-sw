@@ -363,7 +363,7 @@ lint-python-fix:
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
-default_tidy_args := '-p build --fix -fix-errors --quiet'
+default_tidy_args := '-p build --fix-notes --fix-errors --quiet'
 
 # tidy all C++ files of ldmx-sw
 tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-tidy" args)
