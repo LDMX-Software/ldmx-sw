@@ -106,18 +106,12 @@ EventFile::EventFile(const framework::config::Parameters& params,
 
 EventFile::~EventFile() {
   // Before an output file, the Event tree needs to be written.
-  if (is_output_file_) {
+  if (tree_ && is_output_file_) {
     // make sure we are in output file before writing
     file_->cd();
     tree_->Write();
+    file_->Close();
   }
-
-  // detach objects that may/may not be out of scope already
-  // by resetting branch addresses immediately before closing
-  // this is a HACK that I'm embarrased by
-  tree_->ResetBranchAddresses();
-  // Close the file
-  file_->Close();
 }
 
 bool EventFile::isCorrupted() const {
