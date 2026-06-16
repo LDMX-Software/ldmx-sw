@@ -39,7 +39,7 @@ class HcalGeometry : public framework::ConditionsObject {
    * (Hcal/python/HcalGeometry.py) needs to match the CONDITIONS_OBJECT_NAME
    * exactly.
    */
-  static constexpr const char *CONDITIONS_OBJECT_NAME{"hcal_geometry"};
+  static constexpr const char* CONDITIONS_OBJECT_NAME{"hcal_geometry"};
 
   /**
    * Encodes the orientation of a bar.
@@ -194,7 +194,7 @@ class HcalGeometry : public framework::ConditionsObject {
    * as a vector of floats (which is what is used by SimCalorimeterHit)
    **/
   std::vector<double> rotateGlobalToLocalBarPosition(
-      const std::vector<double> &globalPosition, const ldmx::HcalID &id) const;
+      const std::vector<double>& globalPosition, const ldmx::HcalID& id) const;
 
  private:
   /**
@@ -202,7 +202,7 @@ class HcalGeometry : public framework::ConditionsObject {
    *
    * @param ps Parameters to configure the HcalGeometry
    */
-  HcalGeometry(const framework::config::Parameters &ps);
+  HcalGeometry(const framework::config::Parameters& ps);
   friend class hcal::HcalGeometryProvider;
 
   /**

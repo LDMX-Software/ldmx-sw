@@ -19,8 +19,8 @@
 
 // Propagator
 
-#include "Tracking/EigenStepper.h"
 #include "Acts/Propagator/Propagator.hpp"
+#include "Tracking/EigenStepper.h"
 // #include "Acts/Propagator/Navigator.hpp"
 // #include "Acts/Propagator/StandardAborters.hpp"
 
@@ -35,7 +35,6 @@
 #include "Acts/MagneticField/ConstantBField.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
-
 
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"

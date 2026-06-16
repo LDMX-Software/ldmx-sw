@@ -6,7 +6,7 @@
 
 namespace dqm {
 
-void EcalMipTrackingFeatures::configure(framework::config::Parameters &ps) {
+void EcalMipTrackingFeatures::configure(framework::config::Parameters& ps) {
   ecal_mip_name_ = ps.get<std::string>("ecal_mip_name");
   ecal_mip_pass_ = ps.get<std::string>("ecal_mip_pass");
   // Maybe create two objects for the second recoil information
@@ -16,10 +16,10 @@ void EcalMipTrackingFeatures::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void EcalMipTrackingFeatures::analyze(const framework::Event &event) {
-  const auto &mip_result{
+void EcalMipTrackingFeatures::analyze(const framework::Event& event) {
+  const auto& mip_result{
       event.getObject<ldmx::EcalMipResult>(ecal_mip_name_, ecal_mip_pass_)};
-  const auto &veto{
+  const auto& veto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
   histograms_.fill("n_straight_tracks", mip_result.getNStraightTracks());

@@ -38,7 +38,7 @@ class TrackerVetoResult {
   /**
    * Print the TrackerVetoResult object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const TrackerVetoResult &d);
+  friend std::ostream& operator<<(std::ostream& o, const TrackerVetoResult& d);
 
   /** Checks if the event passes the Tracker veto. */
   bool passesVeto() const { return passes_veto_; };

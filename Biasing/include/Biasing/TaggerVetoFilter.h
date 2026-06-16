@@ -36,8 +36,8 @@ class TaggerVetoFilter : public simcore::UserAction {
    * @param[in] parameters the parameters used to configure this
    *      UserAction.
    */
-  TaggerVetoFilter(const std::string &name,
-                   framework::config::Parameters &parameters);
+  TaggerVetoFilter(const std::string& name,
+                   framework::config::Parameters& parameters);
 
   /// Destructor
   ~TaggerVetoFilter();
@@ -47,7 +47,7 @@ class TaggerVetoFilter : public simcore::UserAction {
    * Action called at the start of an event to reset
    *
    */
-  void BeginOfEventAction(const G4Event *) override;
+  void BeginOfEventAction(const G4Event*) override;
   /**
    *
    * Action called at the end of an event to veto events where the primary
@@ -55,14 +55,14 @@ class TaggerVetoFilter : public simcore::UserAction {
    *
    */
 
-  void EndOfEventAction(const G4Event *) override;
+  void EndOfEventAction(const G4Event*) override;
   /**
    * Stepping action called when a step is taken during tracking of
    * a particle.
    *
    * @param[in] step Geant4 step
    */
-  void stepping(const G4Step *step) override;
+  void stepping(const G4Step* step) override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {

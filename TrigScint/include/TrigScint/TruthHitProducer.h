@@ -29,7 +29,7 @@ class TruthHitProducer : public framework::Producer {
    * @param process The Process class associated with EventProcessor,
    * provided by the framework.
    */
-  TruthHitProducer(const std::string &name, framework::Process &process);
+  TruthHitProducer(const std::string& name, framework::Process& process);
 
   /// Destructor
   ~TruthHitProducer() = default;
@@ -43,14 +43,14 @@ class TruthHitProducer : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Process the event and put new data products into it.
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   /// Name of the input collection containing the sim hits

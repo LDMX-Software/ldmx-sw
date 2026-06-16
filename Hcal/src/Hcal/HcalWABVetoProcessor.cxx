@@ -15,12 +15,12 @@
 using namespace std;
 namespace hcal {
 
-HcalWABVetoProcessor::HcalWABVetoProcessor(const std::string &name,
-                                           framework::Process &process)
+HcalWABVetoProcessor::HcalWABVetoProcessor(const std::string& name,
+                                           framework::Process& process)
     : Producer(name, process) {}
 
 void HcalWABVetoProcessor::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   maxtotal_energy_compare_ = parameters.get<double>("max_total_energy_compare");
   mintotal_energy_compare_ = parameters.get<double>("min_total_energy_compare");
   maxn_clusters_ = parameters.get<double>("n_clusters");
@@ -39,7 +39,7 @@ void HcalWABVetoProcessor::configure(
   hcal_cluster_passname_ = parameters.get<std::string>("hcal_cluster_passname");
 }
 
-void HcalWABVetoProcessor::produce(framework::Event &event) {
+void HcalWABVetoProcessor::produce(framework::Event& event) {
   // Get the collection of sim particles from the event
   // HCAL:
   const std::vector<ldmx::HcalHit> hcal_rec_hits =
@@ -60,8 +60,8 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
   float total_hcal_energy{0};
   float total_ecal_energy{0};
   float max_pe{-1000};
-  const ldmx::HcalHit *max_pe_hit = nullptr;
-  for (const ldmx::HcalHit &hcal_hit : hcal_rec_hits) {
+  const ldmx::HcalHit* max_pe_hit = nullptr;
+  for (const ldmx::HcalHit& hcal_hit : hcal_rec_hits) {
     if (hcal_hit.isNoise() == 0) {
       total_hcal_energy += hcal_hit.getPE();
     }
@@ -69,11 +69,11 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
     // Find the maximum PE in the list
     if (max_pe < hcal_hit.getPE()) {
       max_pe = hcal_hit.getPE();
-      max_pe_hit = const_cast<ldmx::HcalHit *>(&hcal_hit);
+      max_pe_hit = const_cast<ldmx::HcalHit*>(&hcal_hit);
     }
   }
 
-  for (const ldmx::EcalHit &ecal_hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& ecal_hit : ecal_rec_hits) {
     if (ecal_hit.isNoise() == 0) {
       total_ecal_energy += ecal_hit.getEnergy();
     }
@@ -81,7 +81,7 @@ void HcalWABVetoProcessor::produce(framework::Event &event) {
   std::vector<double> nhits;
   std::vector<double> energies;
   unsigned int n_clusters = 0;
-  for (const ldmx::HcalCluster &hcal_cluster : hcal_clusters) {
+  for (const ldmx::HcalCluster& hcal_cluster : hcal_clusters) {
     n_clusters += 1;
     energies.push_back(hcal_cluster.getEnergy());
     nhits.push_back(hcal_cluster.getNHits());

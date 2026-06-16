@@ -89,8 +89,8 @@ class RawSiStripHit : public SiStripHit {
    * @return An ostream object with the string representation of
    *    RawSiStripHit inserted.
    */
-  friend std::ostream &operator<<(std::ostream &output,
-                                  const RawSiStripHit &hit);
+  friend std::ostream& operator<<(std::ostream& output,
+                                  const RawSiStripHit& hit);
 
  protected:
   uint8_t channel_{0};

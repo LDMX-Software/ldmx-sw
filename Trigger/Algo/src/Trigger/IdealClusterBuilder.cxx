@@ -21,7 +21,7 @@ void ClusterGeometry::addNeighbor(int id1, int id2) {
 }
 bool ClusterGeometry::checkNeighbor(int id1, int id2) {
   // true if neighbors
-  auto &ns = neighbors_[id1];
+  auto& ns = neighbors_[id1];
   return std::find(ns.begin(), ns.end(), id2) != ns.end();
 }
 void ClusterGeometry::initialize() {
@@ -30,10 +30,10 @@ void ClusterGeometry::initialize() {
   for (auto pair1 = id_map_.begin(); pair1 != id_map_.end(); pair1++) {
     for (auto pair2 = pair1; pair2 != id_map_.end(); pair2++) {
       if (pair1 == pair2) continue;
-      auto &id1 = pair1->first;
-      auto &id2 = pair2->first;
-      auto &xy1 = positions_[id1];
-      auto &xy2 = positions_[id2];
+      auto& id1 = pair1->first;
+      auto& id2 = pair2->first;
+      auto& xy1 = positions_[id1];
+      auto& xy2 = positions_[id2];
       float d =
           sqrt(pow(xy1.first - xy2.first, 2) + pow(xy1.second - xy2.second, 2));
       distances_[std::make_pair(id1, id2)] = d;
@@ -56,17 +56,17 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
     std::vector<Hit> hits) {
   // Re-index by id
   std::map<int, Hit> hits_by_id;
-  for (auto &hit : hits) hits_by_id[hit.id_] = hit;
+  for (auto& hit : hits) hits_by_id[hit.id_] = hit;
 
   if (debug_) {
     cout << "--------\nBuild2dClustersLayer Input Hits" << endl;
-    for (auto &hitpair : hits_by_id) hitpair.second.print();
+    for (auto& hitpair : hits_by_id) hitpair.second.print();
   }
 
   // Find seeds
   std::vector<Cluster> clusters;
-  for (auto &hitpair : hits_by_id) {
-    auto &hit = hitpair.second;
+  for (auto& hitpair : hits_by_id) {
+    auto& hit = hitpair.second;
     bool is_local_max = true;
     for (auto n : g_->neighbors_[hit.id_]) {
       if (hits_by_id.count(n) && hits_by_id[n].e_ > hit.e_)
@@ -89,8 +89,8 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
 
   if (debug_) {
     cout << "--------\nAfter seed-finding" << endl;
-    for (auto &hitpair : hits_by_id) hitpair.second.print();
-    for (auto &c : clusters) c.print();
+    for (auto& hitpair : hits_by_id) hitpair.second.print();
+    for (auto& c : clusters) c.print();
   }
 
   // Add neighbors up to the specified limit
@@ -99,9 +99,9 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
     // find (unused) neighbors for all clusters
     std::map<int, std::vector<int> > assoc_clus2hit_i_ds;
     for (int iclus = 0; iclus < clusters.size(); iclus++) {
-      auto &clus = clusters[iclus];
+      auto& clus = clusters[iclus];
       std::vector<int> neighbors;
-      for (const auto &hit : clus.hits_) {
+      for (const auto& hit : clus.hits_) {
         for (auto n : g_->neighbors_[hit.id_]) {
           if (hits_by_id.count(n) && !hits_by_id[n].used_ &&
               hits_by_id[n].e_ > neighb_thresh_) {
@@ -116,8 +116,8 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
     std::map<int, std::vector<int> > assoc_hit_i_d2clusters;
     for (auto clus2hit_id : assoc_clus2hit_i_ds) {
       auto iclus = clus2hit_id.first;
-      auto &hit_i_ds = clus2hit_id.second;
-      for (const auto &hit_id : hit_i_ds) {
+      auto& hit_i_ds = clus2hit_id.second;
+      for (const auto& hit_id : hit_i_ds) {
         if (assoc_hit_i_d2clusters.count(hit_id))
           assoc_hit_i_d2clusters[hit_id].push_back(iclus);
         else
@@ -132,13 +132,13 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
       auto iclusters = hit_i_d2clusters.second;
       if (iclusters.size() == 1) {
         // simply add cell to the cluster
-        auto &hit = hits_by_id[hit_id];
+        auto& hit = hits_by_id[hit_id];
         auto iclus = iclusters[0];
         hit.used_ = true;
         clusters[iclus].hits_.push_back(hit);
         clusters[iclus].e_ += hit.e_;
       } else {
-        auto &hit = hits_by_id[hit_id];
+        auto& hit = hits_by_id[hit_id];
         hit.used_ = true;
         float esum = 0;
         for (auto iclus : iclusters) {
@@ -154,7 +154,7 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
     }
 
     // rebuild the clusters and return
-    for (auto &c : clusters) {
+    for (auto& c : clusters) {
       c.e_ = 0;
       c.x_ = 0;
       c.y_ = 0;
@@ -191,8 +191,8 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
 
     if (debug_) {
       cout << "--------\nAfter " << i_neighbor << " neighbors" << endl;
-      for (auto &hitpair : hits_by_id) hitpair.second.print();
-      for (auto &c : clusters) c.print();
+      for (auto& hitpair : hits_by_id) hitpair.second.print();
+      for (auto& c : clusters) c.print();
     }
   }
 
@@ -207,7 +207,7 @@ void IdealClusterBuilder::build2dClusters() {
   }
 
   // run clustering in each layer and add to the list
-  for (auto &pair : layer_hits) {
+  for (auto& pair : layer_hits) {
     if (debug_) {
       cout << "Found " << pair.second.size() << " hits in layer " << pair.first
            << endl;
@@ -225,17 +225,17 @@ void IdealClusterBuilder::build3dClusters() {
   // first partition 2d clusters by layer
   std::vector<std::vector<Cluster> > layer_clusters;
   layer_clusters.resize(LAYER_MAX);  // first 20 layers
-  for (auto &clus : all_clusters_) {
+  for (auto& clus : all_clusters_) {
     layer_clusters[clus.layer_].push_back(clus);
   }
 
   // sort by layer
-  for (auto &clusters : layer_clusters) eSort(clusters);
+  for (auto& clusters : layer_clusters) eSort(clusters);
 
   if (debug_) {
     cout << "--------\n3d: sorted 2d inputs" << endl;
-    for (auto &clusters : layer_clusters)
-      for (auto &c : clusters) c.print(g_);
+    for (auto& clusters : layer_clusters)
+      for (auto& c : clusters) c.print(g_);
   }
 
   // Pass through clusters from layer 0 to last,
@@ -258,7 +258,7 @@ void IdealClusterBuilder::build3dClusters() {
         test_layer = LAYER_MAX - ilayer - 1;  // 20-13-1=6,5,4,...
       }
 
-      auto &clusters2d = layer_clusters[test_layer];
+      auto& clusters2d = layer_clusters[test_layer];
 
       // still must find the 3d seed
       if (cluster3d.depth_ == 0) {
@@ -282,7 +282,7 @@ void IdealClusterBuilder::build3dClusters() {
         // looking to extend the 3d seed
         // grow if 2d seed is a neighbor
         // auto &last_seed2d = clusters3d.back().seed_;
-        auto &last_seed2d = cluster3d.clusters2d_.back().seed_;
+        auto& last_seed2d = cluster3d.clusters2d_.back().seed_;
         // case where we begin extending cluster backward->forward
         if (test_layer == LAYER_SHOWERMAX - 1)
           last_seed2d = cluster3d.clusters2d_.front().seed_;
@@ -298,7 +298,7 @@ void IdealClusterBuilder::build3dClusters() {
             //     clusters2d[iclus2d].print(g_);
             // cout << "  check ext " << seed2d << endl;
           }
-          auto &seed2d = clusters2d[iclus2d].seed_;
+          auto& seed2d = clusters2d[iclus2d].seed_;
           if (last_seed2d == seed2d || g_->checkNeighbor(last_seed2d, seed2d)) {
             // if(debug_){
             // 	cout << " extend: ";
@@ -329,7 +329,7 @@ void IdealClusterBuilder::build3dClusters() {
   }
 
   // post-process 3d clusters here
-  for (auto &c : clusters3d) {
+  for (auto& c : clusters3d) {
     c.e_ = 0;
     c.x_ = 0;
     c.y_ = 0;
@@ -338,7 +338,7 @@ void IdealClusterBuilder::build3dClusters() {
     c.yy_ = 0;
     c.zz_ = 0;
     float sumw = 0;
-    for (auto &c2 : c.clusters2d_) {
+    for (auto& c2 : c.clusters2d_) {
       c.e_ += c2.e_;
       // cout << "3d: " << c2.e << " " << log(c2.e/MIN_TP_ENERGY) << endl;
       float w = std::max(0., log(c2.e_ / MIN_TP_ENERGY));  // use log-e wgt
@@ -367,7 +367,7 @@ void IdealClusterBuilder::build3dClusters() {
 
   if (debug_) {
     cout << "--------\nFound 3d clusters" << endl;
-    for (auto &c : clusters3d) c.print3d();
+    for (auto& c : clusters3d) c.print3d();
   }
 
   // std::map<int, std::vector<Cluster> > layer_clusters; // id(xy) to Hit
@@ -402,7 +402,7 @@ void IdealClusterBuilder::build3dClusters() {
 void IdealClusterBuilder::buildClusters() {
   if (debug_) {
     cout << "--------\nAll hits" << endl;
-    for (auto &hit : all_hits_) hit.print();
+    for (auto& hit : all_hits_) hit.print();
   }
 
   if (use_towers_) {
@@ -424,7 +424,7 @@ void IdealClusterBuilder::buildClusters() {
 
     if (debug_) {
       cout << "--------\nHits after towers" << endl;
-      for (auto &hit : all_hits_) hit.print();
+      for (auto& hit : all_hits_) hit.print();
     }
   }
 
@@ -437,7 +437,7 @@ void IdealClusterBuilder::buildClusters() {
   eSort(all_clusters_);
 };
 
-void IdealClusterBuilder::fit(Cluster &c3) {
+void IdealClusterBuilder::fit(Cluster& c3) {
   // TODO: think about whether to incorporate uncertainties
   //   into the fit (RMSs), or weight each layer in the fit.
 
@@ -448,7 +448,7 @@ void IdealClusterBuilder::fit(Cluster &c3) {
   std::vector<float> x;
   std::vector<float> y;
   std::vector<float> z;
-  for (const auto &c2 : c3.clusters2d_) {
+  for (const auto& c2 : c3.clusters2d_) {
     // logE.push_back( log(c2.e) );
     x.push_back(c2.x_);
     y.push_back(c2.y_);

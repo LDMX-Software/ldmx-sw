@@ -10,7 +10,7 @@
 namespace trigscint {
 
 void TrigScintFirmwareHitProducer::configure(
-    framework::config::Parameters &ps) {
+    framework::config::Parameters& ps) {
   pedestal_ = ps.get<double>("pedestal");
   gain_ = ps.get<double>("gain");
   mev_per_mip_ = ps.get<double>("mev_per_mip");
@@ -32,7 +32,7 @@ void TrigScintFirmwareHitProducer::configure(
   return;
 }
 
-void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
+void TrigScintFirmwareHitProducer::produce(framework::Event& event) {
   // This processor takes in TS QIE digis and outputs a rec hit collection. It
   // does so using hitproducerHw, which is a validated piece of HLS code whose
   // purpose is to emulate existing reconstruction software in firmware for
@@ -40,7 +40,7 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
   // hitproducerHw in hitproducerHw
   const auto rechits{event.getCollection<ldmx::TrigScintHit>(test_collection_,
                                                              input_pass_name_)};
-  for (const auto &hit : rechits) {
+  for (const auto& hit : rechits) {
     ldmx_log(debug) << "Analysis barID: " << hit.getBarID()
                     << ", PE Number: " << hit.getPE();
   }
@@ -57,11 +57,12 @@ void TrigScintFirmwareHitProducer::produce(framework::Event &event) {
     fifo[i][3] = (peds[i] << 6) + 63;
     fifo[i][4] = (peds[i] << 6) + 63;
   }
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     std::vector<int> adcs = digi.getADC();
     std::vector<int> tdcs = digi.getTDC();
     for (int i = 0; i < NTIMES; i++) {
-      fifo[digi.getChanID()][i] = static_cast<ap_uint<14>>((adcs.at(i) << 6) + (tdcs.at(i)));
+      fifo[digi.getChanID()][i] =
+          static_cast<ap_uint<14>>((adcs.at(i) << 6) + (tdcs.at(i)));
     }
   }
   hitproducerHw(fifo, out_hit, peds);

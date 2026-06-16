@@ -31,8 +31,8 @@ namespace analysis {
  * @return[out] Pointer to sim particle labeled as recoil electron (nullptr if
  * not found)
  */
-std::tuple<int, const ldmx::SimParticle *> getRecoil(
-    const std::map<int, ldmx::SimParticle> &particleMap);
+std::tuple<int, const ldmx::SimParticle*> getRecoil(
+    const std::map<int, ldmx::SimParticle>& particleMap);
 
 /**
  * Helper function to getPNGamma. Checks if a particle has daughter particles
@@ -42,8 +42,8 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
  * */
 
 bool doesParticleHavePNDaughters(
-    const ldmx::SimParticle &gamma,
-    const std::map<int, ldmx::SimParticle> &particleMap);
+    const ldmx::SimParticle& gamma,
+    const std::map<int, ldmx::SimParticle>& particleMap);
 
 /**
  * Get a pointer to the sim particle associated with the photon that
@@ -61,9 +61,9 @@ bool doesParticleHavePNDaughters(
  * @return[out] Pointer to sim particle labeled as PN Gamma photon (nullptr if
  * not found)
  */
-const ldmx::SimParticle *getPNGamma(
-    const std::map<int, ldmx::SimParticle> &particleMap,
-    const ldmx::SimParticle *recoil, const float &energyThreshold);
+const ldmx::SimParticle* getPNGamma(
+    const std::map<int, ldmx::SimParticle>& particleMap,
+    const ldmx::SimParticle* recoil, const float& energyThreshold);
 
 }  // namespace analysis
 

@@ -3,8 +3,8 @@
 namespace simcore {
 namespace geo {
 
-GDMLParser::GDMLParser(framework::config::Parameters &parameters,
-                       simcore::ConditionsInterface &ci) {
+GDMLParser::GDMLParser(framework::config::Parameters& parameters,
+                       simcore::ConditionsInterface& ci) {
   detector_ = parameters.get<std::string>("detector");
   validate_ = parameters.get<bool>("validate_detector");
   parser_ = std::make_unique<G4GDMLParser>();
@@ -13,7 +13,7 @@ GDMLParser::GDMLParser(framework::config::Parameters &parameters,
       std::make_unique<simcore::geo::AuxInfoReader>(parser_.get(), parameters);
 }
 
-G4VPhysicalVolume *GDMLParser::getWorldVolume() {
+G4VPhysicalVolume* GDMLParser::getWorldVolume() {
   return parser_->GetWorldVolume();
 }
 

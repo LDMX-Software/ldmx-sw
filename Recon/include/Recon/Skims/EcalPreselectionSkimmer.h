@@ -20,20 +20,20 @@ namespace recon {
 class EcalPreselectionSkimmer : public framework::Producer {
  public:
   /** Constructor */
-  EcalPreselectionSkimmer(const std::string &name, framework::Process &process);
+  EcalPreselectionSkimmer(const std::string& name, framework::Process& process);
 
   /** Destructor */
   virtual ~EcalPreselectionSkimmer() = default;
 
   // Configure this processor with a set of parameters passed
-  virtual void configure(framework::config::Parameters &) final;
+  virtual void configure(framework::config::Parameters&) final;
 
   /**
    * Run the processor and select events that pass pre-selection in ECAL
    *
    * @param event The event to process.
    */
-  virtual void produce(framework::Event &event) final;
+  virtual void produce(framework::Event& event) final;
 
  private:
   /// Use rechit-based preselection (if false, use veto-based)

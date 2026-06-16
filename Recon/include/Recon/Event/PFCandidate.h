@@ -21,9 +21,9 @@ class PFCandidate {
   PFCandidate() = default;
   virtual ~PFCandidate() {}
 
-  friend std::ostream &operator<<(std::ostream &o, const PFCandidate &d);
+  friend std::ostream& operator<<(std::ostream& o, const PFCandidate& d);
 
-  bool operator<(const PFCandidate &rhs) const {
+  bool operator<(const PFCandidate& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 

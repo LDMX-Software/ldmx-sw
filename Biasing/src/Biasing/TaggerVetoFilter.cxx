@@ -16,8 +16,8 @@
 
 namespace biasing {
 
-TaggerVetoFilter::TaggerVetoFilter(const std::string &name,
-                                   framework::config::Parameters &parameters)
+TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
+                                   framework::config::Parameters& parameters)
     : simcore::UserAction(name, parameters) {
   threshold_ = parameters.get<double>("threshold");
   reject_primaries_missing_tagger_ =
@@ -26,15 +26,15 @@ TaggerVetoFilter::TaggerVetoFilter(const std::string &name,
 
 TaggerVetoFilter::~TaggerVetoFilter() {}
 
-void TaggerVetoFilter::BeginOfEventAction(const G4Event *) {
+void TaggerVetoFilter::BeginOfEventAction(const G4Event*) {
   primary_entered_tagger_region_ = false;
 }
-void TaggerVetoFilter::EndOfEventAction(const G4Event *) {
+void TaggerVetoFilter::EndOfEventAction(const G4Event*) {
   if (reject_primaries_missing_tagger_ && !primary_entered_tagger_region_) {
     G4RunManager::GetRunManager()->AbortEvent();
   }
 }
-void TaggerVetoFilter::stepping(const G4Step *step) {
+void TaggerVetoFilter::stepping(const G4Step* step) {
   // Get the track associated with this step
   auto track{step->GetTrack()};
 

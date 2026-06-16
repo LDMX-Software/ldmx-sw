@@ -62,8 +62,8 @@ class AbortEventException : public framework::exception::Exception {
 class EventProcessor {
  public:
   /// declare that we have a factory for this class
-  DECLARE_FACTORY(EventProcessor, EventProcessor *, const std::string &,
-                  Process &);
+  DECLARE_FACTORY(EventProcessor, EventProcessor*, const std::string&,
+                  Process&);
 
   /**
    * Class constructor.
@@ -77,7 +77,7 @@ class EventProcessor {
    * into a Process with different parameters.  Names should not include
    * whitespace or special characters.
    */
-  EventProcessor(const std::string &name, Process &process);
+  EventProcessor(const std::string& name, Process& process);
 
   /**
    * Class destructor.
@@ -96,20 +96,20 @@ class EventProcessor {
    *
    * @param parameters Parameters for configuration.
    */
-  virtual void configure(framework::config::Parameters &parameters) {}
+  virtual void configure(framework::config::Parameters& parameters) {}
 
   /**
    * Callback for Producers to add parameters to the run header before
    * conditions are initialized.
    */
-  virtual void beforeNewRun(ldmx::RunHeader &run_header) {}
+  virtual void beforeNewRun(ldmx::RunHeader& run_header) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
    * action when the run being processed changes.
    * @param run_header The RunHeader containing run information.
    */
-  virtual void onNewRun(const ldmx::RunHeader &run_header) {}
+  virtual void onNewRun(const ldmx::RunHeader& run_header) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -117,7 +117,7 @@ class EventProcessor {
    * @param filename Input event ROOT file name.
    * @note This callback is rarely used.
    */
-  virtual void onFileOpen(EventFile &event_file) {}
+  virtual void onFileOpen(EventFile& event_file) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -125,7 +125,7 @@ class EventProcessor {
    * @param filename Input event ROOT file name
    * @note This callback is rarely used.
    */
-  virtual void onFileClose(EventFile &event_file) {}
+  virtual void onFileClose(EventFile& event_file) {}
 
   /**
    * Callback for the EventProcessor to take any necessary
@@ -146,13 +146,13 @@ class EventProcessor {
    * This becomes Producer::produce or Analyzer::analyze
    * depending on which one the user inherits from.
    */
-  virtual void process(Event &event) = 0;
+  virtual void process(Event& event) = 0;
 
   /**
    * Access a conditions object for the current event
    */
   template <class T>
-  const T &getCondition(const std::string &condition_name) {
+  const T& getCondition(const std::string& condition_name) {
     return getConditions().getCondition<T>(condition_name);
   }
 
@@ -165,7 +165,7 @@ class EventProcessor {
    *
    * @return TDirectory* reference to directory in histogram file
    */
-  TDirectory *getHistoDirectory();
+  TDirectory* getHistoDirectory();
 
   /** Mark the current event as having the given storage control hint from this
    * module_
@@ -182,7 +182,7 @@ class EventProcessor {
    * configuration
    */
   void setStorageHint(framework::StorageControl::Hint hint,
-                      const std::string &purposeString);
+                      const std::string& purposeString);
 
   /**
    * Get the current logging frequency from the process
@@ -207,7 +207,7 @@ class EventProcessor {
    * @parma histos vector of Parameters that configure histograms to create
    */
   void createHistograms(
-      const std::vector<framework::config::Parameters> &histos);
+      const std::vector<framework::config::Parameters>& histos);
 
  protected:
   /**
@@ -221,7 +221,7 @@ class EventProcessor {
   HistogramPool histograms_;
 
   /// Manager for any ntuples
-  NtupleManager &ntuple_{NtupleManager::getInstance()};
+  NtupleManager& ntuple_{NtupleManager::getInstance()};
 
   /// The logger for this EventProcessor
   logging::logger the_log_;
@@ -230,21 +230,21 @@ class EventProcessor {
   /**
    * Internal getter for conditions without exposing all of Process
    */
-  Conditions &getConditions() const;
+  Conditions& getConditions() const;
 
   /**
    * Internal getter for EventHeader without exposing all of Process
    */
-  const ldmx::EventHeader &getEventHeader() const;
+  const ldmx::EventHeader& getEventHeader() const;
 
   /** Handle to the Process. */
-  Process &process_;
+  Process& process_;
 
   /** The name of the EventProcessor. */
   std::string name_;
 
   /** Histogram directory */
-  TDirectory *histo_dir_{0};
+  TDirectory* histo_dir_{0};
 };
 
 /**
@@ -270,18 +270,18 @@ class Producer : public EventProcessor {
    * class can be loaded into a Process with different parameters.  Names should
    * not include whitespace or special characters.
    */
-  Producer(const std::string &name, Process &process);
+  Producer(const std::string& name, Process& process);
 
   /**
    * Processing an event for a Producer is calling produce
    */
-  virtual void process(Event &event) final { produce(event); }
+  virtual void process(Event& event) final { produce(event); }
 
   /**
    * Process the event and put new data products into it.
    * @param event The Event to process.
    */
-  virtual void produce(Event &event) = 0;
+  virtual void produce(Event& event) = 0;
 };
 
 /**
@@ -308,12 +308,12 @@ class Analyzer : public EventProcessor {
    * class can be loaded into a Process with different parameters.  Names should
    * not include whitespace or special characters.
    */
-  Analyzer(const std::string &name, Process &process);
+  Analyzer(const std::string& name, Process& process);
 
   /**
    * Processing an event for an Analyzer is calling analyze
    */
-  virtual void process(Event &event) final { analyze(event); }
+  virtual void process(Event& event) final { analyze(event); }
 
   /**
    * Don't allow Analyzers to add parameters to the run header
@@ -322,13 +322,13 @@ class Analyzer : public EventProcessor {
    * that any derived Analyzer will not be able to compile an
    * override of the beforeNewRun callback.
    */
-  virtual void beforeNewRun(ldmx::RunHeader &run_header) final {}
+  virtual void beforeNewRun(ldmx::RunHeader& run_header) final {}
 
   /**
    * Process the event and make histograms or summaries
    * @param event The Event to analyze
    */
-  virtual void analyze(const Event &event) = 0;
+  virtual void analyze(const Event& event) = 0;
 };
 
 }  // namespace framework

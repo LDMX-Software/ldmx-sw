@@ -58,7 +58,7 @@ class CaloTrigPrim {
    * @param[in] c another CaloTP to compare against
    * @returns true if this ID is less than the other ID
    */
-  bool operator<(const CaloTrigPrim &c) { return tid_ < c.tid_; }
+  bool operator<(const CaloTrigPrim& c) { return tid_ < c.tid_; }
 
   /**
    * Get the id of the CaloTP
@@ -88,7 +88,7 @@ class CaloTrigPrim {
    * @param[in] d tp to write out
    * @returns modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &s, const CaloTrigPrim &c);
+  friend std::ostream& operator<<(std::ostream& s, const CaloTrigPrim& c);
 
   /**
    * Stream the input tp collection
@@ -100,8 +100,8 @@ class CaloTrigPrim {
    * @param[in] c collection to write out
    * @returns modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &s,
-                                  const CaloTrigPrimCollection &c);
+  friend std::ostream& operator<<(std::ostream& s,
+                                  const CaloTrigPrimCollection& c);
 
  private:
   /// the raw ID for this trigger channel

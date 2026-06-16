@@ -9,7 +9,7 @@
 namespace recon {
 
 void RecoilFiducialityProcessor::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   min_p_mag_ = parameters.get<double>("min_p_mag");
   min_tracker_hits_ = parameters.get<int>("min_tracker_hits");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
@@ -20,7 +20,7 @@ void RecoilFiducialityProcessor::configure(
   inverse_skim_ = parameters.get<bool>("inverse_skim");
 }
 
-void RecoilFiducialityProcessor::produce(framework::Event &event) {
+void RecoilFiducialityProcessor::produce(framework::Event& event) {
   // Get the collection of simulated particles from the event
   auto particle_map{
       event.getMap<int, ldmx::SimParticle>("SimParticles", input_pass_name_)};
@@ -47,7 +47,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // associated with any of them.
   bool has_ecal_hit = false;
   int ecal_hit_id = -1;
-  for (const ldmx::SimCalorimeterHit &sim_hit : ecal_sim_hits) {
+  for (const ldmx::SimCalorimeterHit& sim_hit : ecal_sim_hits) {
     for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
          ++i_contrib) {
       ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
@@ -63,7 +63,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // associated with any of them.
   bool has_hcal_hit = false;
   int hcal_hit_id = -1;
-  for (const ldmx::SimCalorimeterHit &sim_hit : hcal_sim_hits) {
+  for (const ldmx::SimCalorimeterHit& sim_hit : hcal_sim_hits) {
     for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
          ++i_contrib) {
       ldmx::SimCalorimeterHit::Contrib contrib = sim_hit.getContrib(i_contrib);
@@ -78,7 +78,7 @@ void RecoilFiducialityProcessor::produce(framework::Event &event) {
   // Loop through the recoil tracker hits_ and count how many
   // the recoil electron is associated with
   std::set<int> layers_hit;
-  for (const ldmx::SimTrackerHit &sim_hit : recoil_sim_hits) {
+  for (const ldmx::SimTrackerHit& sim_hit : recoil_sim_hits) {
     if (sim_hit.getTrackID() == recoil_track_id) {
       // int sensorID = tracking::sim::utils::getSensorID(sim_hit);
       if ((sim_hit.getTime() < 0.8) && (sim_hit.getMomentum()[2] > 0)) {

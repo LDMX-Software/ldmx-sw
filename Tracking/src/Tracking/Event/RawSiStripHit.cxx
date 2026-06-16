@@ -22,7 +22,7 @@ void RawSiStripHit::clear() {
   filter_ = 0;
 }
 
-std::ostream &operator<<(std::ostream &output, const RawSiStripHit &hit) {
+std::ostream& operator<<(std::ostream& output, const RawSiStripHit& hit) {
   output << "[ RawSiStripHit ]: Samples: { ";
   for (auto isample{0}; isample < (hit.samples_.size() - 1); ++isample)
     output << hit.samples_[isample] << ", ";

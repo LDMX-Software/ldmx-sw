@@ -5,14 +5,14 @@
 
 namespace dqm {
 
-void EcalWABRecResults::configure(framework::config::Parameters &ps) {
+void EcalWABRecResults::configure(framework::config::Parameters& ps) {
   ecal_wab_rec_name_ = ps.get<std::string>("ecal_wab_rec_name");
   ecal_wab_rec_pass_ = ps.get<std::string>("ecal_wab_rec_pass");
 
   return;
 }
 
-void EcalWABRecResults::analyze(const framework::Event &event) {
+void EcalWABRecResults::analyze(const framework::Event& event) {
   auto wab_rec{event.getObject<ldmx::EcalWABResult>(ecal_wab_rec_name_,
                                                     ecal_wab_rec_pass_)};
 

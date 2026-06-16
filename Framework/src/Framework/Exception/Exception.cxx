@@ -7,7 +7,7 @@
 
 /// @brief Invokes addr2line utility to determine the function name
 /// and the line information from an address in the code segment.
-static char *addr2line(const char *image, void *addr, bool color_output) {
+static char* addr2line(const char* image, void* addr, bool color_output) {
   static char exename[4096] = {0};
   static char result[4096] = {0};
 
@@ -30,14 +30,14 @@ static char *addr2line(const char *image, void *addr, bool color_output) {
     dup2(pipefd[1], STDOUT_FILENO);
     dup2(pipefd[1], STDERR_FILENO);
     if (execlp("addr2line", "addr2line", exename, "-f", "-C", "-e", image,
-               reinterpret_cast<void *>(NULL)) == -1) {
+               reinterpret_cast<void*>(NULL)) == -1) {
       exit(0);
     }
   }
 
   close(pipefd[1]);
   const int line_max_length = 4096;
-  char *line = result;
+  char* line = result;
   ssize_t len = read(pipefd[0], line, line_max_length);
   close(pipefd[0]);
   if (len == 0) {
@@ -111,11 +111,11 @@ static char *addr2line(const char *image, void *addr, bool color_output) {
 // This function produces a stack backtrace with demangled function & method
 // names.
 static std::string backtrace(int skip = 1) throw() {
-  void *callstack[128];
+  void* callstack[128];
   const int n_max_frames = sizeof(callstack) / sizeof(callstack[0]);
   char buf[1024];
   int n_frames = backtrace(callstack, n_max_frames);
-  char **symbols = backtrace_symbols(callstack, n_frames);
+  char** symbols = backtrace_symbols(callstack, n_frames);
 
   std::ostringstream trace_buf;
   for (int i = skip; i < n_frames - 2; i++) {
@@ -123,18 +123,18 @@ static std::string backtrace(int skip = 1) throw() {
 
     Dl_info info;
     if (dladdr(callstack[i], &info) && info.dli_sname) {
-      char *demangled = NULL;
+      char* demangled = NULL;
       int status = -1;
       if (info.dli_sname[0] == '_')
         demangled = abi::__cxa_demangle(info.dli_sname, NULL, 0, &status);
-      char *line = addr2line(info.dli_fname, callstack[i], false);
+      char* line = addr2line(info.dli_fname, callstack[i], false);
 
       snprintf(buf, sizeof(buf), "%5d %s + %zd %s\n",
                i - skip,  // int(2 + sizeof(void*) * 2), callstack[i],
                status == 0           ? demangled
                : info.dli_sname == 0 ? symbols[i]
                                      : info.dli_sname,
-               (char *)callstack[i] - (char *)info.dli_saddr, line);
+               (char*)callstack[i] - (char*)info.dli_saddr, line);
 
       free(demangled);
     } else {

@@ -35,7 +35,7 @@ jobs:
       run: | 
         just install-denv init configure-clang-lto-fail-on-warning
         just build
-        just test
+        just test --output-on-failure
 
     # always upload the last test log unless the
     # workflow was cancelled by a user on github
