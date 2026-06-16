@@ -26,10 +26,10 @@ TaggerVetoFilter::TaggerVetoFilter(const std::string& name,
 
 TaggerVetoFilter::~TaggerVetoFilter() {}
 
-void TaggerVetoFilter::BeginOfEventAction(const G4Event*) {
+void TaggerVetoFilter::beginOfEventAction(const G4Event*) {
   primary_entered_tagger_region_ = false;
 }
-void TaggerVetoFilter::EndOfEventAction(const G4Event*) {
+void TaggerVetoFilter::endOfEventAction(const G4Event*) {
   if (reject_primaries_missing_tagger_ && !primary_entered_tagger_region_) {
     G4RunManager::GetRunManager()->AbortEvent();
   }

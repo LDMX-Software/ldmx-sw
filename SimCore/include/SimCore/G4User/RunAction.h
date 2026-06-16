@@ -47,13 +47,13 @@ class RunAction : public G4UserRunAction {
    * Implementation of begin run hook.
    * @param run The current Geant4 run info.
    */
-  void BeginOfRunAction(const G4Run* run);
+  void BeginOfRunAction(const G4Run* run) override;
 
   /**
    * Implementation of end run hook.
    * @param run The current Geant4 run info.
    */
-  void EndOfRunAction(const G4Run* run);
+  void EndOfRunAction(const G4Run* run) override;
 
   /**
    * Register a user action of type RunAction with this class.

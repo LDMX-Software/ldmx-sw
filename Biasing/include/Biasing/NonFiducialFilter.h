@@ -52,7 +52,7 @@ class NonFiducialFilter : public simcore::UserAction {
    * Method called at the end of every event.
    * @param event Geant4 event object.
    */
-  void EndOfEventAction(const G4Event*) override;
+  void endOfEventAction(const G4Event*) override;
 
   /// Retrieve the type of actions this class defines
   std::vector<simcore::TYPE> getTypes() override {
