@@ -44,7 +44,7 @@ class TrigScintTrackProducer : public framework::Producer {
   // in the next pad tolerated to form a track
   double max_delta_{0.};
 
-  double max_delta_vert{0.};
+  double max_delta_vert_{0.};
   double bar_length_y_{30.};
 
   // producer specific verbosity
