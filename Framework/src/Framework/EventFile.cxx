@@ -106,18 +106,28 @@ EventFile::EventFile(const framework::config::Parameters& params,
 
 EventFile::~EventFile() {
   // Before an output file, the Event tree needs to be written.
-  if (is_output_file_) {
+  if (tree_ && is_output_file_) {
     // make sure we are in output file before writing
     file_->cd();
     tree_->Write();
   }
 
-  // detach objects that may/may not be out of scope already
-  // by resetting branch addresses immediately before closing
-  // this is a HACK that I'm embarrased by
-  tree_->ResetBranchAddresses();
-  // Close the file
+  if (tree_) {
+    tree_->ResetBranchAddresses();
+    // Detach the tree from the file so that file_->Close() does not
+    // destroy it.  This avoids a crash in TTree::~TTree() where ROOT
+    // tries to CopyAddresses to clone trees that may already have been
+    // destroyed (e.g. cross-file clone relationships from CloneTree /
+    // CopyAddresses used in the multi-input-file merge path).
+    tree_->SetDirectory(nullptr);
+  }
+
   file_->Close();
+
+  // Now safe to delete the tree — it is no longer in any file's object
+  // list and its branch addresses have been reset.
+  delete tree_;
+  tree_ = nullptr;
 }
 
 bool EventFile::isCorrupted() const {
