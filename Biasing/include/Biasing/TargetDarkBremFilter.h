@@ -79,7 +79,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] e event being started, unused
    */
-  void BeginOfEventAction(const G4Event* e) override;
+  void beginOfEventAction(const G4Event* e) override;
 
   /**
    * Looking for A' while primary is stepping.
@@ -100,7 +100,7 @@ class TargetDarkBremFilter : public simcore::UserAction {
    *
    * @param[in] event being ended, check if it is already aborted
    */
-  void EndOfEventAction(const G4Event* event) override;
+  void endOfEventAction(const G4Event* event) override;
 
  private:
   /**
@@ -133,16 +133,6 @@ class TargetDarkBremFilter : public simcore::UserAction {
     auto region = vol->GetRegion();
     return region ? (region != target_region) : true;
   }
-
-  /**
-   * Helper to abort an event with a message
-   *
-   * Tells the RunManger to abort the current event
-   * after displaying the input message.
-   *
-   * @param[in] reason reason for aborting the event
-   */
-  void AbortEvent(const std::string& reason) const;
 
  private:
   /**

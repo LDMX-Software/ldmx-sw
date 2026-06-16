@@ -47,7 +47,7 @@ class TaggerVetoFilter : public simcore::UserAction {
    * Action called at the start of an event to reset
    *
    */
-  void BeginOfEventAction(const G4Event*) override;
+  void beginOfEventAction(const G4Event*) override;
   /**
    *
    * Action called at the end of an event to veto events where the primary
@@ -55,7 +55,7 @@ class TaggerVetoFilter : public simcore::UserAction {
    *
    */
 
-  void EndOfEventAction(const G4Event*) override;
+  void endOfEventAction(const G4Event*) override;
   /**
    * Stepping action called when a step is taken during tracking of
    * a particle.
@@ -80,7 +80,7 @@ class TaggerVetoFilter : public simcore::UserAction {
   /// Energy below which an incident electron should be vetoed.
   double threshold_{0};
 
-  // Should the EndOfEventAction reject events where the primary particle never
+  // Should the endOfEventAction reject events where the primary particle never
   // entered the tagger region?
   bool reject_primaries_missing_tagger_{true};
 

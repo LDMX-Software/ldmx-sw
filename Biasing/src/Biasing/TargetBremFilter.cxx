@@ -45,7 +45,7 @@ TargetBremFilter::TargetBremFilter(const std::string& name,
 
 TargetBremFilter::~TargetBremFilter() {}
 
-G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
+G4ClassificationOfNewTrack TargetBremFilter::classifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // get the PDGID of the track.
   G4int pdg_id = track->GetParticleDefinition()->GetPDGEncoding();
@@ -229,7 +229,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
   }
 }
 
-void TargetBremFilter::EndOfEventAction(const G4Event*) {}
+void TargetBremFilter::endOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
 DECLARE_ACTION(biasing::TargetBremFilter)

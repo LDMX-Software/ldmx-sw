@@ -36,16 +36,6 @@ namespace simcore::g4user {
 class TrackingAction : public G4UserTrackingAction {
  public:
   /**
-   * Class constructor.
-   */
-  TrackingAction() {}
-
-  /**
-   * Class destructor.
-   */
-  virtual ~TrackingAction() {}
-
-  /**
    * Implementation of pre-tracking action.
    *
    * This is called whenever a track is going to start
@@ -82,7 +72,7 @@ class TrackingAction : public G4UserTrackingAction {
    *
    * @param aTrack The Geant4 track.
    */
-  void PreUserTrackingAction(const G4Track* aTrack);
+  void PreUserTrackingAction(const G4Track* aTrack) override;
 
   /**
    * Implementation of post-tracking action.
@@ -101,7 +91,7 @@ class TrackingAction : public G4UserTrackingAction {
    *
    * @param aTrack The Geant4 track.
    */
-  void PostUserTrackingAction(const G4Track* aTrack);
+  void PostUserTrackingAction(const G4Track* aTrack) override;
 
   /**
    * Get a handle to the current TrackMap for the event.

@@ -22,7 +22,7 @@ TrackProcessFilter::TrackProcessFilter(
 
 TrackProcessFilter::~TrackProcessFilter() {}
 
-void TrackProcessFilter::PostUserTrackingAction(const G4Track* track) {
+void TrackProcessFilter::postUserTrackingAction(const G4Track* track) {
   if (const G4VProcess* process{track->GetCreatorProcess()}; process) {
     auto name{process->GetProcessName()};
     auto track_info{simcore::UserTrackInformation::get(track)};
