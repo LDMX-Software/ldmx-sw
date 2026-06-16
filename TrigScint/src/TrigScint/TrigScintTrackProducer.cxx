@@ -9,7 +9,7 @@ namespace trigscint {
 void TrigScintTrackProducer::configure(framework::config::Parameters& ps) {
   max_delta_ = ps.get<double>(
       "delta_max");  // max distance to consider adding in a cluster to track
-  max_delta_vert = ps.get<double>(
+  max_delta_vert_ = ps.get<double>(
       "delta_vert_max");  // max distance between pad 1/2 and 3 along the x axis
   // to consider make a track using the vertical bars
   seeding_collection_ = ps.get<std::string>(
@@ -203,7 +203,7 @@ void TrigScintTrackProducer::produce(framework::Event& event) {
                 (centroid >= vert_bar_start_idx_ &&
                  cluster2.getCentroid() >= vert_bar_start_idx_ &&
                  fabs(seed.getCentroidX() - cluster2.getCentroidX()) <=
-                     max_delta_vert)) {
+                     max_delta_vert_)) {
               // use geometry y overlap scheme to see if this is really a match
               // in x
 
@@ -342,7 +342,7 @@ break;
              (track.getCentroid() <
               vert_bar_start_idx_))  // for the horizontal bars
             || ((fabs(track.getCentroidX() - next_track.getCentroidX()) <
-                 2 * max_delta_vert) &&
+                 2 * max_delta_vert_) &&
                 (track.getCentroidY() == next_track.getCentroidY()) &&
                 (track.getCentroid() >= vert_bar_start_idx_))) {
           // and for the vertical bars, check if they are in the same quad and
