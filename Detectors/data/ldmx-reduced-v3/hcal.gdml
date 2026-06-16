@@ -49,11 +49,15 @@
      <volume name="scint_box">
       <materialref ref="Scintillator" />
       <solidref ref="quadbarbox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
     </volume>
 
     <volume name="plastichousing_xy">
       <materialref ref="AcrylicPMMA" />
       <solidref ref="plastichousing_xybox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
     </volume>
 
     
@@ -61,6 +65,7 @@
     <volume name="hadronic_calorimeter">
       <materialref ref="Air" />
       <solidref ref="hcal_envelope" />
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
 
       <physvol copynumber="quadlayers+1">
 	<volumeref ref="plastichousing_xy"/>

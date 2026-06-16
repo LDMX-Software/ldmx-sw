@@ -105,8 +105,8 @@ class SimSiStripHit : public SiStripHit {
    * @return An ostream object with the string representation of
    *    SimSiStripHit inserted.
    */
-  friend std::ostream &operator<<(std::ostream &output,
-                                  const SimSiStripHit &hit);
+  friend std::ostream& operator<<(std::ostream& output,
+                                  const SimSiStripHit& hit);
 
  protected:
   /// Sensor layer identifier (from tracking geometry).

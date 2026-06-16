@@ -26,11 +26,11 @@ class DBScanClusterBuilder {
                        float clusterZBias,
                        float minClusterHitMult);  // overloaded constructor
 
-  std::vector<std::vector<const ldmx::CalorimeterHit *> > runDBSCAN(
-      const std::vector<const ldmx::CalorimeterHit *> &hits_);
+  std::vector<std::vector<const ldmx::CalorimeterHit*> > runDBSCAN(
+      const std::vector<const ldmx::CalorimeterHit*>& hits_);
 
-  void fillClusterInfoFromHits(ldmx::CaloCluster *cl,
-                               std::vector<const ldmx::CalorimeterHit *> hits_,
+  void fillClusterInfoFromHits(ldmx::CaloCluster* cl,
+                               std::vector<const ldmx::CalorimeterHit*> hits_,
                                bool logEnergyWeight,
                                bool saveHitContribs = true);
 
@@ -54,7 +54,7 @@ class DBScanClusterBuilder {
   bool isIn(unsigned int i, const std::vector<unsigned int>& l) {
     return std::find(l.begin(), l.end(), i) != l.end();
   }
-  float dist(const ldmx::CalorimeterHit *a, const ldmx::CalorimeterHit *b) {
+  float dist(const ldmx::CalorimeterHit* a, const ldmx::CalorimeterHit* b) {
     return sqrt(pow(a->getXPos() - b->getXPos(), 2)  // distance
                 + pow(a->getYPos() - b->getYPos(), 2) +
                 pow((a->getZPos() - b->getZPos()) / cluster_z_bias_,

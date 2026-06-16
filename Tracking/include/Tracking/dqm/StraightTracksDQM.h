@@ -12,7 +12,7 @@ namespace tracking::dqm {
 class StraightTracksDQM : public framework::Analyzer {
  public:
   StraightTracksDQM(const std::string& name, framework::Process& process)
-      : framework::Analyzer(name, process){};
+      : framework::Analyzer(name, process) {};
 
   /// Destructor
   ~StraightTracksDQM() = default;

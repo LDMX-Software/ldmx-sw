@@ -31,12 +31,12 @@ class BeamElectronTruth {
   /**
    * Class destructor.
    */
-  virtual ~BeamElectronTruth(){};
+  virtual ~BeamElectronTruth() {};
 
   /**
    * Print a description of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const BeamElectronTruth &d);
+  friend std::ostream& operator<<(std::ostream& o, const BeamElectronTruth& d);
 
   /**
    * Clear the data in the object.
@@ -196,7 +196,7 @@ class BeamElectronTruth {
    * some sorting operator is mandatory
    * sort on hit Z coordinate
    */
-  bool operator<(BeamElectronTruth &rhs) { return this->getZ() < rhs.getZ(); }
+  bool operator<(BeamElectronTruth& rhs) { return this->getZ() < rhs.getZ(); }
 
  private:
   /* Algorithm variable results from simhit associations. */

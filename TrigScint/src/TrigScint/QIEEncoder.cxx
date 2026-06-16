@@ -5,7 +5,7 @@
 
 namespace trigscint {
 
-void QIEEncoder::configure(framework::config::Parameters &ps) {
+void QIEEncoder::configure(framework::config::Parameters& ps) {
   // Configure this instance of the encoder
   output_collection_ = ps.get<std::string>("output_collection");
   input_collection_ = ps.get<std::string>("input_collection");
@@ -55,7 +55,7 @@ void QIEEncoder::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void QIEEncoder::produce(framework::Event &event) {
+void QIEEncoder::produce(framework::Event& event) {
   ldmx_log(debug) << "QIEEncoder: produce() starts! Event number: "
                   << event.getEventHeader().getEventNumber();
 
@@ -91,7 +91,7 @@ void QIEEncoder::produce(framework::Event &event) {
 
   int first_cid = -1;
   ldmx_log(debug) << "entering loop over digis ";
-  for (auto &digi : digis) {
+  for (auto& digi : digis) {
     int bar = digi.getChanID();
     auto itr = channel_map_.find(bar);
     if (itr == channel_map_.end()) {  // yikes! didn't find the bar in the map

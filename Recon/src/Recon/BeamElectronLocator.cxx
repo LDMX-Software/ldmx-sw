@@ -2,13 +2,13 @@
 
 namespace recon {
 
-BeamElectronLocator::BeamElectronLocator(const std::string &name,
-                                         framework::Process &process)
+BeamElectronLocator::BeamElectronLocator(const std::string& name,
+                                         framework::Process& process)
     : framework::Producer(name, process) {}
 
 BeamElectronLocator::~BeamElectronLocator() {}
 
-void BeamElectronLocator::configure(framework::config::Parameters &parameters) {
+void BeamElectronLocator::configure(framework::config::Parameters& parameters) {
   input_coll_ = parameters.get<std::string>("input_collection");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
   output_coll_ = parameters.get<std::string>("output_collection");
@@ -36,7 +36,7 @@ void BeamElectronLocator::onProcessStart() {
                   << " \n\tverbose = " << verbose_;
 }
 
-void BeamElectronLocator::produce(framework::Event &event) {
+void BeamElectronLocator::produce(framework::Event& event) {
   // Check if the input collection exists. If not,
   // don't bother processing the event.
   if (!event.exists(input_coll_, input_pass_name_)) {
@@ -55,7 +55,7 @@ void BeamElectronLocator::produce(framework::Event &event) {
                    << event.getEventNumber() << ".";
   }
 
-  for (const auto &sim_hit : sim_hits) {
+  for (const auto& sim_hit : sim_hits) {
     // check if we already caught this position, else, add it
     bool is_matched = false;
     std::vector<float> pos = sim_hit.getPosition();

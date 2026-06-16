@@ -27,7 +27,7 @@ void SimSiStripHit::clear() {
   edep_ = 0.f;
 }
 
-std::ostream &operator<<(std::ostream &output, const SimSiStripHit &hit) {
+std::ostream& operator<<(std::ostream& output, const SimSiStripHit& hit) {
   output << "[ SimSiStripHit ]: layer=" << hit.layer_id_
          << " strip=" << hit.strip_id_ << " Samples: { ";
   for (auto isample{0}; isample < (int)(hit.samples_.size() - 1); ++isample)

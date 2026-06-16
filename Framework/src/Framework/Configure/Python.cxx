@@ -17,7 +17,7 @@
 #include "Python.h"
 
 #if PY_MAJOR_VERSION != 3
-#error("Framework requires compiling with Python3")
+#error ("Framework requires compiling with Python3")
 #endif
 
 #undef DEV_IMAGE_MAJOR
@@ -32,7 +32,7 @@
 #endif
 
 #ifndef DEV_IMAGE_MAJOR
-#warning("Unrecognized Python3 minor version. The usage of the Python C API is untested!")
+#warning ("Unrecognized Python3 minor version. The usage of the Python C API is untested!")
 #endif
 
 /*~~~~~~~~~~~~~~~~*/

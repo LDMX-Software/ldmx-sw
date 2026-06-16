@@ -92,13 +92,13 @@ class SimCalorimeterHit {
   /**
    * Print out the object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const SimCalorimeterHit &d);
+  friend std::ostream& operator<<(std::ostream& o, const SimCalorimeterHit& d);
 
   /*
    * Print out a contributor.
    */
-  friend std::ostream &operator<<(std::ostream &o,
-                                  const SimCalorimeterHit::Contrib &contrib);
+  friend std::ostream& operator<<(std::ostream& o,
+                                  const SimCalorimeterHit::Contrib& contrib);
 
   /**
    * Get the detector ID.
@@ -294,7 +294,7 @@ class SimCalorimeterHit {
   /**
    * Sort by time of hit
    */
-  bool operator<(const SimCalorimeterHit &rhs) const {
+  bool operator<(const SimCalorimeterHit& rhs) const {
     return this->getTime() < rhs.getTime();
   }
 

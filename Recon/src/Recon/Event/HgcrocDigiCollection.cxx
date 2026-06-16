@@ -47,7 +47,7 @@ void HgcrocDigiCollection::clear() {
   return;
 }
 
-std::ostream &operator<<(std::ostream &o, const HgcrocDigiCollection &c) {
+std::ostream& operator<<(std::ostream& o, const HgcrocDigiCollection& c) {
   return o << "HgcrocDigiCollection { Num Channel IDs: "
            << c.channel_ids_.size() << ", Num Samples: " << c.samples_.size()
            << ", Samples Per Digi: " << c.num_samples_per_digi_
@@ -62,7 +62,7 @@ const HgcrocDigiCollection::HgcrocDigi HgcrocDigiCollection::getDigi(
 }
 
 void HgcrocDigiCollection::addDigi(
-    unsigned int id, const std::vector<HgcrocDigiCollection::Sample> &digi) {
+    unsigned int id, const std::vector<HgcrocDigiCollection::Sample>& digi) {
   if (digi.size() != this->getNumSamplesPerDigi()) {
     std::cerr << "[ WARN ] [ HgcrocDigiCollection ] Input list of samples "
                  "has size '"
@@ -73,13 +73,13 @@ void HgcrocDigiCollection::addDigi(
   }
 
   channel_ids_.push_back(id);
-  for (auto const &s : digi) samples_.push_back(s.raw());
+  for (auto const& s : digi) samples_.push_back(s.raw());
 
   return;
 }
 
 void HgcrocDigiCollection::addDigi(unsigned int id,
-                                   const std::vector<uint32_t> &digi) {
+                                   const std::vector<uint32_t>& digi) {
   if (digi.size() != this->getNumSamplesPerDigi()) {
     std::cerr << "[ WARN ] [ HgcrocDigiCollection ] Input list of samples "
                  "has size '"
@@ -90,14 +90,14 @@ void HgcrocDigiCollection::addDigi(unsigned int id,
   }
 
   channel_ids_.push_back(id);
-  for (auto const &s : digi) samples_.push_back(s);
+  for (auto const& s : digi) samples_.push_back(s);
 
   return;
 }
 }  // namespace ldmx
 
-std::ostream &operator<<(std::ostream &s,
-                         const ldmx::HgcrocDigiCollection::Sample &sample) {
+std::ostream& operator<<(std::ostream& s,
+                         const ldmx::HgcrocDigiCollection::Sample& sample) {
   s << "Sample { " << "tot prog: " << sample.isTOTinProgress() << ", "
     << "tot comp: " << sample.isTOTComplete() << ", ";
   if (sample.isTOTComplete() and sample.isTOTinProgress())
@@ -113,8 +113,8 @@ std::ostream &operator<<(std::ostream &s,
   return s;
 }
 
-std::ostream &operator<<(std::ostream &s,
-                         const ldmx::HgcrocDigiCollection::HgcrocDigi &digi) {
+std::ostream& operator<<(std::ostream& s,
+                         const ldmx::HgcrocDigiCollection::HgcrocDigi& digi) {
   s << "HgcrocDigi { ";
 
   s << " Id: 0x" << std::hex << digi.id() << std::dec << " ";
@@ -127,8 +127,8 @@ std::ostream &operator<<(std::ostream &s,
   return s;
 }
 
-std::ostream &operator<<(std::ostream &s,
-                         const ldmx::HgcrocDigiCollection &col) {
+std::ostream& operator<<(std::ostream& s,
+                         const ldmx::HgcrocDigiCollection& col) {
   s << "HgcrocDigiCollection { " << std::endl;
   for (unsigned int i_digi = 0; i_digi < col.getNumDigis(); i_digi++)
     s << "  " << col.getDigi(i_digi) << std::endl;

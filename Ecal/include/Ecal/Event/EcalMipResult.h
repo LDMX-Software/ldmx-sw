@@ -30,7 +30,7 @@ class EcalMipResult {
   /** Destructor */
   virtual ~EcalMipResult();
 
-  friend std::ostream &operator<<(std::ostream &o, const EcalMipResult &d);
+  friend std::ostream& operator<<(std::ostream& o, const EcalMipResult& d);
 
   void clear();
 
