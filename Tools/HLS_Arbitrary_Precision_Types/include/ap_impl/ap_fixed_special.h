@@ -70,21 +70,21 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   complex() : _M_real(_Tp()), _M_imag(_Tp()) {}
   // Constructor with ap_fixed.
   // Zero initialize image part when not specified, so that `C(1) == C(1,0)`
-  complex(const _Tp& __r, const _Tp& __i = _Tp(0))
+  complex(const _Tp &__r, const _Tp &__i = _Tp(0))
       : _M_real(__r), _M_imag(__i) {}
 
   // Constructor with another complex number
   template <typename _Up>
-  complex(const complex<_Up>& __z) : _M_real(__z.real()), _M_imag(__z.imag()) {}
+  complex(const complex<_Up> &__z) : _M_real(__z.real()), _M_imag(__z.imag()) {}
 
 #if __cplusplus >= 201103L
-  const _Tp& real() const { return _M_real; }
-  const _Tp& imag() const { return _M_imag; }
+  const _Tp &real() const { return _M_real; }
+  const _Tp &imag() const { return _M_imag; }
 #else
-  _Tp& real() { return _M_real; }
-  const _Tp& real() const { return _M_real; }
-  _Tp& imag() { return _M_imag; }
-  const _Tp& imag() const { return _M_imag; }
+  _Tp &real() { return _M_real; }
+  const _Tp &real() const { return _M_real; }
+  _Tp &imag() { return _M_imag; }
+  const _Tp &imag() const { return _M_imag; }
 #endif
 
   void real(_Tp __val) { _M_real = __val; }
@@ -93,7 +93,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
 
   // Assign this complex number with ap_fixed.
   // Zero initialize image poarrt, so that `C c; c = 1; c == C(1,0);`
-  complex<_Tp>& operator=(const _Tp __t) {
+  complex<_Tp> &operator=(const _Tp __t) {
     _M_real = __t;
     _M_imag = _Tp(0);
     return *this;
@@ -101,21 +101,21 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
 
   // 26.2.5/1
   // Add ap_fixed to this complex number.
-  complex<_Tp>& operator+=(const _Tp& __t) {
+  complex<_Tp> &operator+=(const _Tp &__t) {
     _M_real += __t;
     return *this;
   }
 
   // 26.2.5/3
   // Subtract ap_fixed from this complex number.
-  complex<_Tp>& operator-=(const _Tp& __t) {
+  complex<_Tp> &operator-=(const _Tp &__t) {
     _M_real -= __t;
     return *this;
   }
 
   // 26.2.5/5
   // Multiply this complex number by ap_fixed.
-  complex<_Tp>& operator*=(const _Tp& __t) {
+  complex<_Tp> &operator*=(const _Tp &__t) {
     _M_real *= __t;
     _M_imag *= __t;
     return *this;
@@ -123,7 +123,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
 
   // 26.2.5/7
   // Divide this complex number by ap_fixed.
-  complex<_Tp>& operator/=(const _Tp& __t) {
+  complex<_Tp> &operator/=(const _Tp &__t) {
     _M_real /= __t;
     _M_imag /= __t;
     return *this;
@@ -131,7 +131,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
 
   // Assign complex number to this complex number.
   template <typename _Up>
-  complex<_Tp>& operator=(const complex<_Up>& __z) {
+  complex<_Tp> &operator=(const complex<_Up> &__z) {
     _M_real = __z.real();
     _M_imag = __z.imag();
     return *this;
@@ -140,7 +140,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   // 26.2.5/9
   // Add complex number to this.
   template <typename _Up>
-  complex<_Tp>& operator+=(const complex<_Up>& __z) {
+  complex<_Tp> &operator+=(const complex<_Up> &__z) {
     _M_real += __z.real();
     _M_imag += __z.imag();
     return *this;
@@ -149,7 +149,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   // 26.2.5/11
   // Subtract complex number from this.
   template <typename _Up>
-  complex<_Tp>& operator-=(const complex<_Up>& __z) {
+  complex<_Tp> &operator-=(const complex<_Up> &__z) {
     _M_real -= __z.real();
     _M_imag -= __z.imag();
     return *this;
@@ -158,7 +158,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   // 26.2.5/13
   // Multiply this by complex number.
   template <typename _Up>
-  complex<_Tp>& operator*=(const complex<_Up>& __z) {
+  complex<_Tp> &operator*=(const complex<_Up> &__z) {
     const _Tp __r = _M_real * __z.real() - _M_imag * __z.imag();
     _M_imag = _M_real * __z.imag() + _M_imag * __z.real();
     _M_real = __r;
@@ -168,7 +168,7 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
   // 26.2.5/15
   // Divide this by complex number.
   template <typename _Up>
-  complex<_Tp>& operator/=(const complex<_Up>& __z) {
+  complex<_Tp> &operator/=(const complex<_Up> &__z) {
     complex<_Tp> cj(__z.real(), -__z.imag());
     complex<_Tp> a = (*this) * cj;
     complex<_Tp> b = cj * __z;
@@ -192,32 +192,32 @@ class complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > {
 // Compare complex number with ap_fixed.
 template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator==(
-    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> >& __x,
-    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N>& __y) {
+    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__x,
+    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__y) {
   return __x.real() == __y && __x.imag() == 0;
 }
 
 // Compare ap_fixed with complex number.
 template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator==(
-    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N>& __x,
-    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> >& __y) {
+    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__x,
+    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__y) {
   return __x == __y.real() && 0 == __y.imag();
 }
 
 // Compare complex number with ap_fixed.
 template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator!=(
-    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> >& __x,
-    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N>& __y) {
+    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__x,
+    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__y) {
   return __x.real() != __y || __x.imag() != 0;
 }
 
 // Compare ap_fixed with complex number.
 template <int _AP_W, int _AP_I, ap_q_mode _AP_Q, ap_o_mode _AP_O, int _AP_N>
 inline bool operator!=(
-    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N>& __x,
-    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> >& __y) {
+    const ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> &__x,
+    const complex<ap_fixed<_AP_W, _AP_I, _AP_Q, _AP_O, _AP_N> > &__y) {
   return __x != __y.real() || 0 != __y.imag();
 }
 
