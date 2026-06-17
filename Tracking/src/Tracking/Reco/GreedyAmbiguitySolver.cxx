@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "Acts/EventData/SourceLink.hpp"
-#include "Acts/EventData/TrackHelpers.hpp"
+#include "Acts/Utilities/TrackHelpers.hpp"
 
 namespace tracking {
 namespace reco {

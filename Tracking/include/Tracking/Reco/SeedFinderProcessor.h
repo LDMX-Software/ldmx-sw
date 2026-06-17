@@ -22,7 +22,7 @@
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Seeding/Seed.hpp"
+#include "Acts/EventData/Seed.hpp"
 #include "Acts/Seeding/SeedFilter.hpp"
 #include "Acts/Seeding/SpacePointGrid.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
@@ -87,8 +87,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
                           const Acts::Vector3& perigee_location,
                           const ldmx::Measurements& pmeas_tgt);
 
-  void lineParabolaToHelix(const Acts::ActsVector<5> parameters,
-                           Acts::ActsVector<5>& helix_parameters,
+  void lineParabolaToHelix(const Acts::Vector<5> parameters,
+                           Acts::Vector<5>& helix_parameters,
                            Acts::Vector3 ref);
 
   Acts::Vector3 b_field_;

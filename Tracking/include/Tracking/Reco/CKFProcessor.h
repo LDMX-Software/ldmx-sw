@@ -35,12 +35,12 @@
 
 // propagation testing
 #include "Acts/MagneticField/ConstantBField.hpp"
-#include "Acts/Propagator/AbortList.hpp"
-#include "Acts/Propagator/ActionList.hpp"
-#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
+#include "Acts/Propagator/ActorList.hpp"
+#include "Acts/Propagator/EigenStepperDenseExtension.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
+#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -55,7 +55,7 @@
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
 #include "Acts/TrackFinding/MeasurementSelector.hpp"
-#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
+#include "Acts/TrackFinding/TrackStateCreator.hpp"
 #include "Acts/TrackFitting/GainMatrixUpdater.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 
@@ -78,13 +78,13 @@
 #include "Tracking/Sim/BFieldXYZUtils.h"
 // mg Aug 2024 not sure if these are needed...
 using Updater = Acts::GainMatrixUpdater;
-using Smoother = Acts::GainMatrixSmoother;
 
-using ActionList =
-    Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
-using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
+using ActionList = Acts::ActorList<Acts::detail::SteppingLogger,
+                                   Acts::MaterialInteractor,
+                                   Acts::EndOfWorldReached>;
 
 using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+using ExtrapPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer,
                                             Acts::VectorMultiTrajectory>;
 
@@ -222,8 +222,9 @@ class CKFProcessor final : public TrackingGeometryUser {
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_;
 
-  // Track Extrapolator Tool
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+  // Track Extrapolator Tool (uses VoidNavigator to propagate freely to any surface)
+  std::unique_ptr<const ExtrapPropagator> propagator_extrap_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_;
 
   // Zero-B CKF as fallback
@@ -231,7 +232,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_zero_b_;
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+  std::unique_ptr<const ExtrapPropagator> propagator_extrap_zero_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_zero_b_;
 
   // Const-B (1.5T) CKF as fallback for tagger
@@ -239,7 +241,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_const_b_;
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+  std::unique_ptr<const ExtrapPropagator> propagator_extrap_const_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_const_b_;
 
   /// n seeds and n tracks

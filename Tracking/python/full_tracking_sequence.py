@@ -68,7 +68,7 @@ class TrackingSequence:
 
 
 def full_tracking_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
 ):
@@ -164,7 +164,7 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("TaggerSimHits"),
+            out_raw_collection=tagged("TaggerSimSiStripHits"),
         )
 
         digi_recoil = tracking.DigitizationProcessor(
@@ -178,7 +178,7 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("RecoilSimHits"),
+            out_raw_collection=tagged("RecoilSimSiStripHits"),
         )
 
         fit_tagger = tracking.StripFitProcessor(
@@ -238,6 +238,9 @@ def full_tracking_sequence(
         instance_name=tagged("SeedTagger"),
         input_hits_collection=tagger_meas_collection,
         out_seed_collection=tagged("TaggerRecoSeeds"),
+        # Perigee upstream of all tagger sensors (ACTS x from -12.5 to -615.5 mm).
+        # World boundary is at ACTS x = -650 mm.
+        perigee_location=[-617.0, 0.0, 0.0],
         pmin=0.03,
         pmax=63.0,
         d0min=-36.9,

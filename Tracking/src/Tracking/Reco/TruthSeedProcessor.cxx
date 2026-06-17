@@ -190,8 +190,7 @@ void TruthSeedProcessor::createTruthTrack(
       Acts::transformFreeToBoundParameters(free_params, *gen_surface, gctx_)
           .value()};
   // Create a particle hypothesis
-  auto part{Acts::GenericParticleHypothesis(
-      Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
+  auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
   Acts::BoundTrackParameters bound_trk_pars(gen_surface, bound_params,
                                             std::nullopt, part);
 
@@ -265,10 +264,9 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
     auto ecal_bound =
         Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, gctx_);
     if (ecal_bound.ok()) {
-      auto part{Acts::GenericParticleHypothesis(
-          Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_)))};
+      auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
       Acts::BoundTrackParameters ecal_pars(ecal_surface, ecal_bound.value(),
-                                           Acts::BoundSquareMatrix::Identity(),
+                                           Acts::BoundMatrix::Identity(),
                                            part);
       smeared_truth_track.addTrackState(tracking::sim::utils::makeTrackState(
           geometryContext(), ecal_pars, ldmx::AtECAL));
@@ -432,7 +430,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
         (bound_params).data(),
         bound_params.data() + bound_params.rows() * bound_params.cols());
 
-    Acts::BoundSquareMatrix bound_cov =
+    Acts::BoundMatrix bound_cov =
         stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
@@ -458,7 +456,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTheta] = 5 * Acts::UnitConstants::degree;
     stddev[Acts::eBoundQOverP] = (1. / p) * (1. / p) * sigma_p;
 
-    Acts::BoundSquareMatrix bound_cov =
+    Acts::BoundMatrix bound_cov =
         stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
@@ -797,11 +795,10 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         auto ecal_bound = Acts::transformFreeToBoundParameters(
             ecal_free, *ecal_surface, gctx_);
         if (ecal_bound.ok()) {
-          auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
-              Acts::PdgParticle(particle_hypothesis_)))};
+          auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
           Acts::BoundTrackParameters ecal_pars(
               ecal_surface, ecal_bound.value(),
-              Acts::BoundSquareMatrix::Identity(), part);
+              Acts::BoundMatrix::Identity(), part);
           truth_recoil_track.addTrackState(tracking::sim::utils::makeTrackState(
               geometryContext(), ecal_pars, ldmx::AtECAL));
         }

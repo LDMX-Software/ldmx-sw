@@ -67,7 +67,7 @@ void DigitizationProcessor::onProcessStart() {
     std::ofstream csv(dump_geo_csv_);
     csv << "layer_id,cx,cy,cz,Ux,Uy,Uz,Vx,Vy,Vz,Wx,Wy,Wz\n";
     for (const auto& [layer_id, surface] : geometry().layer_surface_map_) {
-      const auto& xf = surface->transform(geometryContext());
+      const auto& xf = surface->localToGlobalTransform(geometryContext());
       const auto ctr = xf.translation();  // centre [mm in Acts units]
       const auto r = xf.rotation();
       const auto u = r.col(0);
@@ -162,7 +162,7 @@ void DigitizationProcessor::buildLorentzCache() {
 
     // Sensor W-normal = 3rd column of the rotation matrix
     const Acts::Vector3 w_hat =
-        surface->transform(geometryContext()).rotation().col(2);
+        surface->localToGlobalTransform(geometryContext()).rotation().col(2);
 
     const double bw = b_t.dot(w_hat);  // [T]
 
@@ -357,9 +357,9 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     if (!hit_surface) continue;
 
     ldmx_log(trace) << "Local to global\n"
-                    << hit_surface->transform(geometryContext()).rotation()
+                    << hit_surface->localToGlobalTransform(geometryContext()).rotation()
                     << "\n"
-                    << hit_surface->transform(geometryContext()).translation();
+                    << hit_surface->localToGlobalTransform(geometryContext()).translation();
 
     // -----------------------------------------------------------------------
     // Project global hit position onto the surface (2D local coords)
@@ -392,18 +392,20 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     // -----------------------------------------------------------------------
     if (use_charge_digitization_) {
       // Read sensor thickness from the geometry.
-      const auto* det_el = hit_surface->associatedDetectorElement();
-      if (!det_el) {
+      const auto* placement = hit_surface->surfacePlacement();
+      if (!placement) {
         ldmx_log(warn) << "No detector element for layer_id=" << layer_id
                        << " — skipping hit";
         continue;
       }
-      const double thickness = det_el->thickness();
+      const double thickness =
+          static_cast<const tracking::geo::DetectorElement*>(placement)
+              ->thickness();
       strip_digitizer_->setThickness(thickness);
 
       // Build the full 3D local position and direction for charge simulation.
       const Acts::Transform3 surf_transform =
-          hit_surface->transform(geometryContext());
+          hit_surface->localToGlobalTransform(geometryContext());
 
       // 3D local position: apply the inverse surface transform to the global
       // hit position so that we know the depth (W) coordinate.

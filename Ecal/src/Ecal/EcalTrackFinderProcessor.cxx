@@ -23,8 +23,7 @@
 #include "Acts/Geometry/TrackingGeometryBuilder.hpp"
 #include "Acts/Geometry/TrackingVolume.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Propagator/AbortList.hpp"
-#include "Acts/Propagator/ActionList.hpp"
+#include "Acts/Propagator/ActorList.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
@@ -143,7 +142,7 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   ecal_vol_cfg.name = "EcalVolume";
   ecal_vol_cfg.layerCfg = layer_configs;
   ecal_vol_cfg.volumeMaterial =
-      std::make_shared<Acts::HomogeneousVolumeMaterial>(Acts::Material());
+      std::make_shared<Acts::HomogeneousVolumeMaterial>(Acts::Material::Vacuum());
 
   // Build the tracking geometry
   Acts::CuboidVolumeBuilder cvb;
@@ -240,9 +239,8 @@ void EcalTrackFinderProcessor::createEcalSurfaces() {
         Acts::Surface::makeShared<Acts::PlaneSurface>(transform, bounds);
 
     // Assign a geometry ID (use layer as volume, 0 as layer in ACTS sense)
-    Acts::GeometryIdentifier geo_id;
-    geo_id.setVolume(layer);
-    geo_id.setLayer(0);
+    Acts::GeometryIdentifier geo_id =
+        Acts::GeometryIdentifier().withVolume(layer).withLayer(0);
     surface->assignGeometryId(geo_id);
 
     layer_surfaces_[layer] = surface;
@@ -404,7 +402,7 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   // For a plane surface, normal is the third column of rotation (z-direction in
   // local frame)
   Acts::Vector3 ref_normal =
-      reference_surface_->transform(gctx).rotation().col(2);
+      reference_surface_->localToGlobalTransform(gctx).rotation().col(2);
   Acts::Vector3 ref_center = reference_surface_->center(gctx);
 
   double t =
@@ -416,7 +414,7 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   Acts::Vector3 seed_mom = p_estimate * direction;
 
   // Charge (assume positive)
-  Acts::ActsScalar q = Acts::UnitConstants::e;
+  double q = Acts::UnitConstants::e;
 
   // Convert to bound parameters at reference surface
   Acts::FreeVector seed_free =
@@ -441,7 +439,7 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   stddev[Acts::eBoundQOverP] = 0.5 / p_estimate;  // 50% uncertainty
   stddev[Acts::eBoundTime] = 10.0 * Acts::UnitConstants::ns;
 
-  Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+  Acts::BoundMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
 
   // Create ldmx::Track seed
   ldmx::Track seed;
@@ -568,18 +566,7 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
   tracking::sim::LdmxMeasurementCalibrator calibrator{measurements};
 
-  Acts::CombinatorialKalmanFilterExtensions<TrackContainer> ckf_extensions;
-  ckf_extensions.calibrator
-      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate<
-          Acts::VectorMultiTrajectory>>(&calibrator);
-  ckf_extensions.updater.connect<
-      &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
-      &kf_updater);
-  ckf_extensions.measurementSelector
-      .connect<&Acts::MeasurementSelector::select<Acts::VectorMultiTrajectory>>(
-          &meas_sel);
-
-  // Setup source link accessor
+  // Setup source link accessor iterator type and lambda
   struct SourceLinkAccIt {
     using BaseIt = decltype(geo_id_sl_map.begin());
     BaseIt it_;
@@ -613,11 +600,26 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
     return {SourceLinkAccIt{begin}, SourceLinkAccIt{end}};
   };
 
-  Acts::SourceLinkAccessorDelegate<SourceLinkAccIt>
-      source_link_accessor_delegate;
-  source_link_accessor_delegate
+  // v46: calibrator and measurementSelector moved to TrackStateCreator
+  Acts::TrackStateCreator<SourceLinkAccIt, TrackContainer> track_state_creator;
+  track_state_creator.sourceLinkAccessor
       .connect<&decltype(source_link_accessor)::operator(),
                decltype(source_link_accessor)>(&source_link_accessor);
+  track_state_creator.calibrator
+      .connect<&tracking::sim::LdmxMeasurementCalibrator::calibrate<
+          Acts::VectorMultiTrajectory>>(&calibrator);
+  track_state_creator.measurementSelector
+      .connect<&Acts::MeasurementSelector::select<Acts::VectorMultiTrajectory>>(
+          &meas_sel);
+
+  Acts::CombinatorialKalmanFilterExtensions<TrackContainer> ckf_extensions;
+  ckf_extensions.updater.connect<
+      &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
+      &kf_updater);
+  ckf_extensions.createTrackStates
+      .connect<&Acts::TrackStateCreator<SourceLinkAccIt,
+                                        TrackContainer>::createTrackStates>(
+          &track_state_creator);
 
   // Create track container
   Acts::VectorTrackContainer vtc;
@@ -640,18 +642,16 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
                     << " loc1=" << param_vec[1] << " phi=" << param_vec[2]
                     << " theta=" << param_vec[3] << " qop=" << param_vec[4];
 
-    Acts::BoundSquareMatrix cov_mat =
+    Acts::BoundMatrix cov_mat =
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
-    auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
+    auto part_hypo{Acts::ParticleHypothesis::electron()};
     Acts::BoundTrackParameters start_params(reference_surface_, param_vec,
                                             cov_mat, part_hypo);
 
     // Setup CKF options
-    const Acts::CombinatorialKalmanFilterOptions<SourceLinkAccIt,
-                                                 TrackContainer>
-        ckf_options(gctx, mctx, cctx, source_link_accessor_delegate,
-                    ckf_extensions, propagator_options);
+    const Acts::CombinatorialKalmanFilterOptions<TrackContainer>
+        ckf_options(gctx, mctx, cctx, ckf_extensions, propagator_options);
 
     // Run CKF
     auto results = ckf_->findTracks(start_params, ckf_options, tc);
@@ -766,11 +766,11 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
       // Add measurement indices
       for (const auto ts : track.trackStatesReversed()) {
-        if (ts.typeFlags().test(Acts::TrackStateFlag::MeasurementFlag) &&
+        if (ts.typeFlags().isMeasurement() &&
             ts.hasUncalibratedSourceLink()) {
-          const acts_examples::IndexSourceLink sl =
-              ts.getUncalibratedSourceLink()
-                  .template get<acts_examples::IndexSourceLink>();
+          Acts::SourceLink usl = ts.getUncalibratedSourceLink();
+          const acts_examples::IndexSourceLink& sl =
+              usl.get<acts_examples::IndexSourceLink>();
           trk.addMeasurementIndex(sl.index());
         }
       }
@@ -832,11 +832,11 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       } else {
         // Fallback: sum on-track hit energies only
         for (const auto ts : track.trackStatesReversed()) {
-          if (ts.typeFlags().test(Acts::TrackStateFlag::MeasurementFlag) &&
+          if (ts.typeFlags().isMeasurement() &&
               ts.hasUncalibratedSourceLink()) {
-            const acts_examples::IndexSourceLink sl =
-                ts.getUncalibratedSourceLink()
-                    .template get<acts_examples::IndexSourceLink>();
+            Acts::SourceLink usl = ts.getUncalibratedSourceLink();
+            const acts_examples::IndexSourceLink& sl =
+                usl.get<acts_examples::IndexSourceLink>();
             track_energy += measurement_energies[sl.index()];
           }
         }

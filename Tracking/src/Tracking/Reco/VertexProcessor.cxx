@@ -63,28 +63,9 @@ void VertexProcessor::produce(framework::Event& event) {
   // Set up propagator with void navigator
   propagator_ = std::make_shared<VoidPropagator>(stepper);
 
-  // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer;
-  Linearizer::Config linearizer_config;
-  linearizer_config.bField = sp_interpolated_b_field_;
-  linearizer_config.propagator = propagator_;
-  Linearizer linearizer(linearizer_config);
-
-  // Set up Billoir Vertex Fitter
-  using VertexFitter = Acts::FullBilloirVertexFitter;
-
-  VertexFitter::Config vertex_fitter_cfg;
-
-  VertexFitter billoir_fitter(vertex_fitter_cfg);
-
-  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
-
-  // Unconstrained fit
-  // See
-  // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
-  // For constraint implementation
-
-  Acts::VertexingOptions vf_options(gctx_, bctx_);
+  // Note: FullBilloirVertexFitter setup commented out — fit() is not called yet
+  // and v46 Config now requires extractParameters/trackLinearizer delegates.
+  // Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrieve the track collection
   const auto& tracks =
@@ -115,10 +96,9 @@ void VertexProcessor::produce(framework::Event& event) {
         tracks.at(i_track).getPhi(), tracks.at(i_track).getTheta(),
         tracks.at(i_track).getQoP(), tracks.at(i_track).getT();
 
-    Acts::BoundSquareMatrix cov_mat =
+    Acts::BoundMatrix cov_mat =
         tracking::sim::utils::unpackCov(tracks.at(i_track).getPerigeeCov());
-    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
-        Acts::PdgParticle(tracks.at(i_track).getPdgID())))};
+    auto part{Acts::ParticleHypothesis(Acts::PdgParticle(tracks.at(i_track).getPdgID()))};
     billoir_tracks.push_back(Acts::BoundTrackParameters(
         perigee_surface, param_vec, std::move(cov_mat), part));
   }
@@ -158,13 +138,12 @@ void VertexProcessor::produce(framework::Event& event) {
           seeds.at(i_seed).getPhi(), seeds.at(i_seed).getTheta(),
           seeds.at(i_seed).getQoP(), seeds.at(i_seed).getT();
 
-      Acts::BoundSquareMatrix cov_mat =
+      Acts::BoundMatrix cov_mat =
           tracking::sim::utils::unpackCov(seeds.at(i_seed).getPerigeeCov());
       int pion_pdg_id = 211;  // pi+
       if (seeds.at(i_seed).getCharge() < 0) pion_pdg_id = -211;
       // BoundTrackParameters needs the particle hypothesis
-      auto part{Acts::GenericParticleHypothesis(
-          Acts::ParticleHypothesis(Acts::PdgParticle(pion_pdg_id)))};
+      auto part{Acts::ParticleHypothesis(Acts::PdgParticle(pion_pdg_id))};
       auto bound_seed_params = Acts::BoundTrackParameters(
           perigee_surface, param_vec, std::move(cov_mat), part);
 

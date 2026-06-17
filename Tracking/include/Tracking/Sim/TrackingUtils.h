@@ -61,9 +61,9 @@ ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
 // BoundSymMatrix doesn't exist in v36  .. use BoundSquareMatrix
 //   have to change this everywhere ..  I think using BoundSysMatrix was defined
 //  exactly the same as BoundSquareMatrix is now in ACTs
-void flatCov(Acts::BoundSquareMatrix cov, std::vector<double>& v_cov);
+void flatCov(Acts::BoundMatrix cov, std::vector<double>& v_cov);
 
-Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov);
+Acts::BoundMatrix unpackCov(const std::vector<double>& v_cov);
 
 // Rotate LDMX global -> ACTS frame: z_ldmx->x_acts, x_ldmx->y_acts,
 // y_ldmx->z_acts (0 0 1) * (x,y,z)_ldmx = x_acts (1 0 0) * (x,y,z)_ldmx =
@@ -80,7 +80,7 @@ Acts::Vector3 acts2Ldmx(Acts::Vector3 acts_v);
 
 // Transform position, momentum and charge to free parameters
 Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
-                                  Acts::ActsScalar q);
+                                  double q);
 
 // Pack the acts track parameters into something that is serializable for the
 // event bus

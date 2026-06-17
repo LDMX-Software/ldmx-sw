@@ -56,7 +56,8 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       GsfPropagator(std::move(multi_stepper), std::move(navigator),
                     Acts::getDefaultLogger("GSF_PROP", acts_logging_level));
 
-  BetheHeitlerApprox bethe_heitler = Acts::makeDefaultBetheHeitlerApprox();
+  auto bethe_heitler = std::make_shared<Acts::AtlasBetheHeitlerApprox>(
+      Acts::makeDefaultBetheHeitlerApprox());
 
   gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
       std::move(gsf_propagator), std::move(bethe_heitler),
@@ -67,8 +68,10 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       stepper, navigator,
       Acts::getDefaultLogger("GSF_EXTRAP", acts_logging_level));
 
+  propagator_extrap_ = std::make_unique<GsfExtrapPropagator>(
+      Acts::EigenStepper<>{map}, Acts::VoidNavigator{});
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
-      *propagator_, geometryContext(), magneticFieldContext());
+      *propagator_extrap_, geometryContext(), magneticFieldContext());
 }
 
 void GSFProcessor::configure(framework::config::Parameters& parameters) {
@@ -154,7 +157,7 @@ void GSFProcessor::produce(framework::Event& event) {
 
   // Move this at the start of the producer
   Acts::PropagatorOptions<Acts::StepperPlainOptions,
-                          Acts::NavigatorPlainOptions, ActionList, AbortList>
+                          Acts::NavigatorPlainOptions, ActionList>
       propagator_options(geometryContext(), magneticFieldContext());
 
   propagator_options.pathLimit = std::numeric_limits<double>::max();
@@ -165,14 +168,14 @@ void GSFProcessor::produce(framework::Event& event) {
 
   // Switch the material interaction on/off & eventually into logging mode
   auto& m_interactor =
-      propagator_options.actionList.get<Acts::MaterialInteractor>();
+      propagator_options.actorList.get<Acts::MaterialInteractor>();
   m_interactor.multipleScattering = true;
   m_interactor.energyLoss = true;
   m_interactor.recordInteractions = false;
 
   // The logger can be switched to sterile, e.g. for timing logging
   auto& s_logger =
-      propagator_options.actionList.get<Acts::detail::SteppingLogger>();
+      propagator_options.actorList.get<Acts::detail::SteppingLogger>();
   s_logger.sterile = true;
   // Set a maximum step size
   propagator_options.stepping.maxStepSize =
@@ -187,7 +190,8 @@ void GSFProcessor::produce(framework::Event& event) {
   Acts::GsfOptions<Acts::VectorMultiTrajectory> gsf_options{
       geometryContext(), magneticFieldContext(), calibrationContext()};
   gsf_options.extensions = gsf_extensions;
-  gsf_options.propagatorPlainOptions = propagator_options;
+  gsf_options.propagatorPlainOptions =
+      static_cast<Acts::PropagatorPlainOptions>(propagator_options);
   gsf_options.maxComponents = max_components_;
   gsf_options.weightCutoff = weight_cutoff_;
   gsf_options.abortOnError = abort_on_error_;
@@ -318,9 +322,9 @@ void GSFProcessor::produce(framework::Event& event) {
 
     ldmx_log(debug)
         << "    Reference Surface (acts-x, acts-y, acts-z) = ("
-        << perigee_surface.transform(geometryContext()).translation()(0) << ", "
-        << perigee_surface.transform(geometryContext()).translation()(1) << ", "
-        << perigee_surface.transform(geometryContext()).translation()(2) << ")";
+        << perigee_surface.localToGlobalTransform(geometryContext()).translation()(0) << ", "
+        << perigee_surface.localToGlobalTransform(geometryContext()).translation()(1) << ", "
+        << perigee_surface.localToGlobalTransform(geometryContext()).translation()(2) << ")";
 
     ldmx_log(debug) << "    Found track has " << gsftrk.nTrackStates()
                     << " track states";
@@ -351,7 +355,7 @@ void GSFProcessor::produce(framework::Event& event) {
         trk.setPerigeeCov(cov_vec);
       }
       Acts::Vector3 target_loc_ldmx = tracking::sim::utils::acts2Ldmx(
-          target_surface_->transform(geometryContext()).translation());
+          target_surface_->localToGlobalTransform(geometryContext()).translation());
       trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
                              target_loc_ldmx[2]);
 
