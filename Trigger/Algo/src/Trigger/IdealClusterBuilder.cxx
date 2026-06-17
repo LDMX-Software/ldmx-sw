@@ -9,14 +9,8 @@ void ClusterGeometry::addTp(int tid, int cell_id, int module_id, float x,
   positions_[tid] = std::make_pair(x, y);
 }
 void ClusterGeometry::addNeighbor(int id1, int id2) {
-  if (neighbors_.count(id1))
-    neighbors_[id1].push_back(id2);
-  else
-    neighbors_[id1] = {id2};
-  if (neighbors_.count(id2))
-    neighbors_[id2].push_back(id1);
-  else
-    neighbors_[id2] = {id1};
+  neighbors_[id1].push_back(id2);
+  neighbors_[id2].push_back(id1);
   // cout << "Nbs: " << id1 << " " << id2 << endl;
 }
 bool ClusterGeometry::checkNeighbor(int id1, int id2) {
@@ -118,10 +112,7 @@ std::vector<Cluster> IdealClusterBuilder::build2dClustersLayer(
       auto iclus = clus2hit_id.first;
       auto& hit_i_ds = clus2hit_id.second;
       for (const auto& hit_id : hit_i_ds) {
-        if (assoc_hit_i_d2clusters.count(hit_id))
-          assoc_hit_i_d2clusters[hit_id].push_back(iclus);
-        else
-          assoc_hit_i_d2clusters[hit_id] = {iclus};
+        assoc_hit_i_d2clusters[hit_id].push_back(iclus);
       }
     }
 
@@ -271,7 +262,8 @@ void IdealClusterBuilder::build3dClusters() {
           }
           // cout << "got seed" << endl;
           //  found seed
-          cluster3d.clusters2d_ = {clusters2d[0]};
+          cluster3d.clusters2d_.clear();
+          cluster3d.clusters2d_.push_back(clusters2d[0]);
           cluster3d.first_layer_ = test_layer;
           cluster3d.last_layer_ = test_layer;
           cluster3d.depth_ = 1;
