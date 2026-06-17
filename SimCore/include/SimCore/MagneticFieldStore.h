@@ -8,8 +8,9 @@
 #define SIMCORE_MAGNETICFIELDSTORE_H_
 
 // Geant4
-#include "G4MagneticField.hh"
 #include <map>
+
+#include "G4MagneticField.hh"
 
 namespace simcore {
 
@@ -39,8 +40,8 @@ class MagneticFieldStore {
    * Cleans up all stored G4MagneticFields
    */
   ~MagneticFieldStore() {
-    for (auto& nameField : mag_fields_) {
-      delete nameField.second;
+    for (auto& name_field : mag_fields_) {
+      delete name_field.second;
     }
     mag_fields_.clear();
   }
