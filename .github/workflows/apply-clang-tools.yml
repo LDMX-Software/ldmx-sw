@@ -1,5 +1,6 @@
 name: Apply clang tools
 on:
+  push: # TEMP, do not merge
   pull_request:
       types: [opened, ready_for_review]
   workflow_dispatch:
@@ -30,18 +31,6 @@ jobs:
       run: |
         just format-cpp-diff
         just tidy-cpp-diff
-    - name: run clang-format and clang-tidy on all C++ files
-      if: github.ref == 'refs/heads/trunk'
-      run: |
-        set -e
-        just format-cpp
-        just tidy-cpp-all
-        git diff # fail job if format/tidy made a change
-    - name: auto-commit changes
-      if: github.ref != 'refs/heads/trunk'
-      run: |
-        git config user.name 'github-actions[bot]'
-        git config user.email 'github-actions[bot]@users.noreply.github.com'
-        git add .
-        git commit -m "Apply clang-format and clang-tidy" || exit 0
-        git push origin HEAD:${GITHUB_HEAD_REF}
+        echo $?
+        git diff
+        echo $?
