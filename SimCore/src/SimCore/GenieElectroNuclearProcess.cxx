@@ -77,14 +77,14 @@ GenieElectroNuclearProcess::GenieElectroNuclearProcess(
   }
 
   ldmx_log(info) << "GenieElectroNuclearProcess configured with "
-                  << targets_.size() << " target(s), tune=" << tune_;
+                 << targets_.size() << " target(s), tune=" << tune_;
 }
 
 GenieElectroNuclearProcess::~GenieElectroNuclearProcess() {
   std::cout << "--- GENIE Process Summary ---" << std::endl;
   for (size_t i = 0; i < targets_.size(); ++i) {
-    std::cout << "  Target=" << targets_[i]
-              << "  Abundance=" << abundances_[i] << std::endl;
+    std::cout << "  Target=" << targets_[i] << "  Abundance=" << abundances_[i]
+              << std::endl;
   }
   std::cout << "--- GENIE Process Summary END ---" << std::endl;
 }
@@ -125,8 +125,7 @@ void GenieElectroNuclearProcess::setupDrivers() {
   }
 }
 
-G4bool GenieElectroNuclearProcess::IsApplicable(
-    const G4ParticleDefinition& p) {
+G4bool GenieElectroNuclearProcess::IsApplicable(const G4ParticleDefinition& p) {
   return &p == G4Electron::Definition();
 }
 
@@ -146,8 +145,8 @@ G4double GenieElectroNuclearProcess::GetMeanFreePath(
 
   // Build electron 4-momentum for GENIE
   double electron_mass_gev = 0.000510999;
-  double elec_p =
-      std::sqrt(energy_gev * energy_gev - electron_mass_gev * electron_mass_gev);
+  double elec_p = std::sqrt(energy_gev * energy_gev -
+                            electron_mass_gev * electron_mass_gev);
   if (elec_p <= 0) return DBL_MAX;
 
   TLorentzVector e_p4(elec_p * dir.x(), elec_p * dir.y(), elec_p * dir.z(),
@@ -210,8 +209,7 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
   }
 
   // Get electron energy at the post-step point
-  G4double energy_geant4 =
-      step.GetPostStepPoint()->GetTotalEnergy();
+  G4double energy_geant4 = step.GetPostStepPoint()->GetTotalEnergy();
   double energy_gev = energy_geant4 / CLHEP::GeV;
 
   G4ThreeVector dir = track.GetMomentumDirection();
@@ -221,8 +219,8 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
 
   // Build electron 4-momentum for GENIE
   double electron_mass_gev = 0.000510999;
-  double elec_p =
-      std::sqrt(energy_gev * energy_gev - electron_mass_gev * electron_mass_gev);
+  double elec_p = std::sqrt(energy_gev * energy_gev -
+                            electron_mass_gev * electron_mass_gev);
   TLorentzVector e_p4(elec_p * dir.x(), elec_p * dir.y(), elec_p * dir.z(),
                       energy_gev);
 
@@ -352,13 +350,12 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
       int ion_A = (pdg / 10) % 1000;
       particle_def = G4IonTable::GetIonTable()->GetIon(ion_Z, ion_A, 0.);
     } else {
-      particle_def =
-          G4ParticleTable::GetParticleTable()->FindParticle(pdg);
+      particle_def = G4ParticleTable::GetParticleTable()->FindParticle(pdg);
     }
 
     if (!particle_def) {
       ldmx_log(warn) << "Could not find G4ParticleDefinition for PDG=" << pdg
-                      << " — skipping this secondary";
+                     << " — skipping this secondary";
       continue;
     }
 

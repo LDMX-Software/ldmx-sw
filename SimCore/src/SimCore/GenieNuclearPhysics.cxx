@@ -5,11 +5,10 @@
 
 #include "SimCore/GenieNuclearPhysics.h"
 
-#include "SimCore/GenieElectroNuclearProcess.h"
-
 #include "G4Electron.hh"
 #include "G4ProcessManager.hh"
 #include "G4ProcessTable.hh"
+#include "SimCore/GenieElectroNuclearProcess.h"
 
 namespace simcore {
 
@@ -56,8 +55,8 @@ void GenieNuclearPhysics::ConstructProcess() {
   process_manager->AddDiscreteProcess(genie_process);
 
   // Set ordering to first so biasing framework always sees it
-  process_manager->SetProcessOrderingToFirst(
-      genie_process, G4ProcessVectorDoItIndex::idxAll);
+  process_manager->SetProcessOrderingToFirst(genie_process,
+                                             G4ProcessVectorDoItIndex::idxAll);
 
   ldmx_log(info) << "GENIE electronuclear process registered successfully";
 }

@@ -92,14 +92,7 @@ void TrackMap::save(const G4Track* track) {
     particle.setProcessType(ldmx::SimParticle::findProcessType(name));
   } else {
     if (track->GetParentID() == 0) {
-      // genStatus==2 indicates a GENIE EN product generated alongside
-      // an upstream beam electron; label these as electronNuclear
-      if (particle.getGenStatus() == 2) {
-        particle.setProcessType(
-            ldmx::SimParticle::ProcessType::electronNuclear);
-      } else {
-        particle.setProcessType(ldmx::SimParticle::ProcessType::Primary);
-      }
+      particle.setProcessType(ldmx::SimParticle::ProcessType::Primary);
     } else {
       particle.setProcessType(ldmx::SimParticle::ProcessType::unknown);
     }
@@ -116,32 +109,8 @@ void TrackMap::save(const G4Track* track) {
 }
 
 void TrackMap::traceAncestry() {
-  // When GENIE is used with an upstream beam electron, the GENIE EN products
-  // (genStatus==2) should be parented to the beam electron (genStatus==1,
-  // PDG==11) rather than having parentID 0 (no parent).
-  int beam_electron_id = 0;
-  bool has_genie_products = false;
   for (auto& [id, particle] : particle_map_) {
-    if (particle.getGenStatus() == 2) {
-      has_genie_products = true;
-    }
-    if (beam_electron_id == 0 && particle.getGenStatus() == 1 &&
-        particle.getPdgID() == 11 && ancestry_.at(id).first == 0) {
-      beam_electron_id = id;
-    }
-  }
-
-  for (auto& [id, particle] : particle_map_) {
-    int parent_id = ancestry_.at(id).first;
-
-    // Re-parent GENIE EN products to the beam electron
-    if (has_genie_products && particle.getGenStatus() == 2 &&
-        beam_electron_id > 0 && parent_id == 0) {
-      particle.addParent(beam_electron_id);
-      particle_map_[beam_electron_id].addDaughter(id);
-    } else {
-      particle.addParent(parent_id);
-    }
+    particle.addParent(ancestry_.at(id).first);
 
     /**
      * Use [] instead of at() for descendents_

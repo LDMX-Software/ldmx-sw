@@ -4,7 +4,6 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process("test")
 import os
 
-
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
 from LDMX.SimCore.bias_operators import ElectroNuclear
@@ -17,7 +16,7 @@ my_sim.set_detector(det, include_scoring_planes_minimal=True)
 # Beam electron as primary — tracked through tagger with natural energy loss
 my_sim.generators = [gen.single_8gev_e_upstream_tagger()]
 
-# Enable GENIE as a physics process (replaces built-in electronNuclear).
+# Enable GENIE as a physics process.
 # The electron is tracked normally; when Geant4 selects the process to fire,
 # GENIE generates the interaction at the electron's actual energy.
 my_sim.genie_nuclear.enable = True
@@ -31,8 +30,6 @@ my_sim.genie_nuclear.message_threshold_file = "Messenger_ErrorOnly.xml"
 
 # Bias EN cross-section in target region so interactions occur at usable rate
 my_sim.biasing_operators = [ElectroNuclear(volume="target_region", factor=1e6)]
-
-# No GenieBeamElectronKiller needed — the process kills the electron when it fires
 
 from LDMX.SimCore import genie_reweight
 
@@ -78,9 +75,12 @@ hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
 # Load the TS modules — now enabled since we have an upstream beam electron
-from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
-from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
-from LDMX.TrigScint.trig_scint import trig_scint_track
+from LDMX.TrigScint.trig_scint import (
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trig_scint_track,
+)
+
 
 ts_digis = [
     TrigScintDigiProducer.pad1(),

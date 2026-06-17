@@ -41,7 +41,7 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
 
     /**
      * Always save a particle if any of the following are true
-     *    it has gen status == 1 (or ==2 for GENIE EN product)
+     *    it has gen status == 1 (primary)
      *    it is in a region without region info
      *    it is in a region that is marked to store secondaries
      * DON'T change the save-status even if these are false
@@ -50,11 +50,8 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track) {
      *  user action **prior** to the track being processed for the first time.
      *  For example, this happens if the user wants to save the
      *  secondaries of a particular track.
-     *
-     * genStatus==2 is used for GENIE EN products when an upstream beam
-     * electron is present; these must also be saved.
      */
-    if (cur_gen_status == 1 or cur_gen_status == 2 or !region_info or
+    if (cur_gen_status == 1 or !region_info or
         region_info->getStoreSecondaries()) {
       track_info->setSaveFlag(true);
     }

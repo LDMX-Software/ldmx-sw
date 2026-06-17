@@ -9,8 +9,8 @@ from LDMX.Framework import Processor, field, parameter_set, processor
 from .bias_operators import XsecBiasingOperator
 from .dark_brem import DarkBrem
 from .fcp_physics import FCPPhysics
-from .genie_physics import GenieNuclearPhysics
 from .generators import PrimaryGenerator
+from .genie_physics import GenieNuclearPhysics
 from .kaon_physics import KaonPhysics
 from .photonuclear_models import BertiniModel, PhotoNuclearModel
 from .sensitive_detectors import SensitiveDetector

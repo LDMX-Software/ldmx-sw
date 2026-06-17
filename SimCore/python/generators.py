@@ -197,18 +197,6 @@ class Genie(PrimaryGenerator):
         Thickness of target [mm] to use for generation
     beam_size : list of double
         uniform beam size width to use
-    include_beam_electron : bool
-        If True, generate an upstream beam electron primary that traverses
-        the tagger before the GENIE interaction at the target. The GENIE
-        products will be labeled with processType electronNuclear and
-        parented to the beam electron. Requires the GenieBeamElectronKiller
-        user action to be added to the simulator.
-    beam_electron_position : list of float
-        Starting position of the upstream beam electron [mm]
-    beam_electron_direction : list of float
-        Direction vector of the upstream beam electron (will be normalized)
-    beam_electron_energy : float
-        Energy of the upstream beam electron [GeV]
 
     Examples
     --------
@@ -233,10 +221,6 @@ class Genie(PrimaryGenerator):
     tune: str = "default"
     spline_file: str = ""
     message_threshold_file: str = "/usr/local/GENIE/Generator/config/Messenger.xml"
-    include_beam_electron: bool = False
-    beam_electron_position: list[float] = []
-    beam_electron_direction: list[float] = []
-    beam_electron_energy: float = 0.0
 
 
 def _single_e_upstream_tagger(position, momentum, energy):
@@ -379,53 +363,6 @@ def single_e_beam_pipe(ene=8.0):
         [434.59663056485, 0.0, 7988.698356992288],
         ene,
     )
-
-
-def genie_with_upstream_electron(genie_config, beam_electron_gun=None):
-    """Configure a GENIE generator with an upstream beam electron.
-
-    The beam electron will be generated upstream of the tagger and tracked
-    through the magnetic field to the target. At the target, the GENIE
-    interaction products are generated. The GENIE products are labeled with
-    processType electronNuclear and parented to the beam electron in the
-    SimParticle map.
-
-    Note: The GenieBeamElectronKiller user action must be added to the
-    simulator's actions list to kill the beam electron at the target.
-
-    Parameters
-    ----------
-    genie_config : Genie
-        The GENIE generator configuration
-    beam_electron_gun : Gun, optional
-        The beam electron gun configuration. If not provided, defaults to
-        single_8gev_e_upstream_tagger().
-
-    Returns
-    -------
-    Genie
-        Modified GENIE configuration with beam electron included
-
-    Examples
-    --------
-        genie = gen.Genie(
-            instance_name="my_genie",
-            energy=8.0,
-            targets=[1000741820],
-            abundances=[1.0],
-            tune="G18_02a_02_11b",
-            spline_file="path/to/splines.xml",
-        )
-        genie = gen.genie_with_upstream_electron(genie)
-    """
-    if beam_electron_gun is None:
-        beam_electron_gun = single_8gev_e_upstream_tagger()
-
-    genie_config.include_beam_electron = True
-    genie_config.beam_electron_position = beam_electron_gun.position
-    genie_config.beam_electron_direction = beam_electron_gun.direction
-    genie_config.beam_electron_energy = beam_electron_gun.energy
-    return genie_config
 
 
 def single_backwards_positron(energy: float):

@@ -151,23 +151,22 @@ void GenieReweightProducer::reconfigureGenieReweight(size_t i_w) {
 }
 
 void GenieReweightProducer::produce(framework::Event& event) {
-  // Check if the HepMC3 collection exists — when GENIE runs as a
-  // G4VDiscreteProcess rather than a PrimaryGenerator, not every event will
-  // have an electronuclear interaction.
   // When GENIE runs as a G4VDiscreteProcess rather than a PrimaryGenerator,
   // not every event will have an electronuclear interaction.  Guard against
   // a missing or empty HepMC3 collection.
-  bool has_hepmc3 =
-      event.exists(hepmc3_coll_name_, hepmc3_pass_name_);
-
-  std::vector<ldmx::HepMC3GenEvent> hepmc3_col;
-  if (has_hepmc3) {
-    hepmc3_col = event.getObject<std::vector<ldmx::HepMC3GenEvent> >(
-        hepmc3_coll_name_, hepmc3_pass_name_);
+  if (!event.exists(hepmc3_coll_name_, hepmc3_pass_name_)) {
+    ldmx::EventWeights ev_weights(variation_map_);
+    for (size_t i_w = 0; i_w < n_weights_; ++i_w) {
+      ev_weights.addWeight(1.0);
+    }
+    event.add(event_weights_coll_name_, ev_weights);
+    return;
   }
 
-  if (!has_hepmc3 || hepmc3_col.empty()) {
-    // No GENIE interaction in this event — store unit weights
+  const auto& hepmc3_col = event.getObject<std::vector<ldmx::HepMC3GenEvent> >(
+      hepmc3_coll_name_, hepmc3_pass_name_);
+
+  if (hepmc3_col.empty()) {
     ldmx::EventWeights ev_weights(variation_map_);
     for (size_t i_w = 0; i_w < n_weights_; ++i_w) {
       ev_weights.addWeight(1.0);
