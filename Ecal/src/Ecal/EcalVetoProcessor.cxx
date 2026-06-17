@@ -29,17 +29,20 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdt_features_.push_back(result.getDeepestLayerHit());
   bdt_features_.push_back(result.getEcalBackEnergy());
   // MIP tracking
-
-  bdt_features_.push_back(-1.);  // NStraight
-  bdt_features_.push_back(-1.);  // FirstNearPHLayer
-  bdt_features_.push_back(-1.);  // NNearPHHits
-  bdt_features_.push_back(-1.);  // PhotonTerritoryHits
+  if (bdt_feature_config_ == "segmip") {
+    bdt_features_.push_back(-1.);  // NStraight
+    bdt_features_.push_back(-1.);  // FirstNearPHLayer
+    bdt_features_.push_back(-1.);  // NNearPHHits
+    bdt_features_.push_back(-1.);  // PhotonTerritoryHits
+  }
 
   // bdt_features_.push_back(result.getNStraightTracks());
   // bdt_features_.push_back(result.getFirstNearPhLayer());
   // bdt_features_.push_back(result.getNNearPhHits());
   // bdt_features_.push_back(result.getPhotonTerritoryHits());
-  // bdt_features_.push_back(result.getNTrackingHits());
+  if (bdt_feature_config_ == "wab_recrem") {
+    bdt_features_.push_back(result.getNTrackingHits());
+  }
   bdt_features_.push_back(result.getEPSep());
   bdt_features_.push_back(result.getEPDot());
   // Longitudinal segment variables
@@ -80,6 +83,7 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 
 void EcalVetoProcessor::configure(framework::config::Parameters& parameters) {
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
+  bdt_feature_config_ = parameters.get<std::string>("bdt_feature_config");
 
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");

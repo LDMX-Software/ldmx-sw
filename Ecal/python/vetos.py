@@ -9,6 +9,7 @@ class EcalVetoProcessor(Processor):
     verbose: bool = False
     feature_list_name: str = "input"
     bdt_file: str = make_bdt_path("segmip")
+    bdt_feature_config: str = "segmip"
     roc_file: str = make_roc_path("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
@@ -97,7 +98,8 @@ class EcalRecoilRemovalProcessor(Processor):
     n_electrons: int = 1
 
 recrem_ecalveto = EcalVetoProcessor(
-    bdt_file = make_bdt_path( "2e_wab_vs_signal10mev_v15_1RoC_68" ),
+    bdt_file = make_bdt_path( "2e_wab_vs_signal10mev_v15_1RoC_68_recrem" ),
+    bdt_feature_config = "wab_recrem",
     disc_cut = 0.9913983,
     rec_coll_name = "EcalRecHitsInc",
     collection_name = "EcalVetoInc",
