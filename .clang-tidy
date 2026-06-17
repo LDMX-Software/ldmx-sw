@@ -9,7 +9,6 @@ CheckOptions:
   readability-identifier-naming.StructCase: CamelCase
   readability-identifier-naming.VariableCase: lower_case
   readability-identifier-naming.GlobalConstantCase: UPPER_CASE
-  readability-identifier-naming.ClassMemberCase: lower_case
-  readability-identifier-naming.ClassMemberSuffix: "_"
-  readability-identifier-naming.StructMemberCase: lower_case
+  readability-identifier-naming.MemberCase: lower_case
+  readability-identifier-naming.MemberSuffix: "_"
   readability-identifier-naming.ConstantMemberCase: UPPER_CASE
