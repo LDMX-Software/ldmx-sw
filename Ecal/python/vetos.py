@@ -84,7 +84,7 @@ class EcalRecoilRemovalProcessor(Processor):
     with the recoil electron."""
     beam_energy: float = 8000.0
     num_ecal_layers: int = 32
-    rem_dist_file: str = make_roc_path("RoC_v14_8gev_0.95")
+    rem_dist_file: str = make_roc_path("RoC_v14_8gev_95")
     collection_name_included: str = "EcalRecHitsInc"
     collection_name_excluded: str = "EcalRecHitsExc"
     rec_coll_name: str = "EcalRecHits"
@@ -97,7 +97,7 @@ class EcalRecoilRemovalProcessor(Processor):
     n_electrons: int = 1
 
 recrem_ecalveto = EcalVetoProcessor(
-    bdt_file = make_bdt_path( "wab_bdt_1RoC_0.95" ),
+    bdt_file = make_bdt_path( "2e_wab_vs_signal10mev_v15_1RoC_68" ),
     disc_cut = 0.9913983,
     rec_coll_name = "EcalRecHitsInc",
     collection_name = "EcalVetoInc",
