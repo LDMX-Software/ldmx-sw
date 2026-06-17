@@ -5,42 +5,34 @@ p = ldmxcfg.Process("test")
 import os
 
 
-p.max_tries_per_event = 10000
-
-from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
+from LDMX.SimCore.bias_operators import ElectroNuclear
 
 
 det = "ldmx-det-v15-8gev"
 my_sim = sim.Simulator(instance_name="sim")
 my_sim.set_detector(det, include_scoring_planes_minimal=True)
-genie = gen.Genie(
-    instance_name="genie_G18_02a_02_11b",
-    energy=8.0,
-    targets=[1000741820, 1000741830, 1000741840, 1000741860],
-    target_thickness=0.3504,
-    abundances=[0.2650, 0.1431, 0.3064, 0.2843],
-    time=0.0,
-    position=[0.0, 0.0, 0.0],
-    beam_size=[20.0, 80.0],
-    direction=[0.0, 0.0, 1.0],
-    tune="G18_02a_02_11b",
-    spline_file=f"{os.environ['CI_DATA']}/target_genie/gxspl_emode_GENIE_v3_04_00.xml",
-    message_threshold_file="Messenger_ErrorOnly.xml",
+
+# Beam electron as primary — tracked through tagger with natural energy loss
+my_sim.generators = [gen.single_8gev_e_upstream_tagger()]
+
+# Enable GENIE as a physics process (replaces built-in electronNuclear).
+# The electron is tracked normally; when Geant4 selects the process to fire,
+# GENIE generates the interaction at the electron's actual energy.
+my_sim.genie_nuclear.enable = True
+my_sim.genie_nuclear.targets = [1000741820, 1000741830, 1000741840, 1000741860]
+my_sim.genie_nuclear.abundances = [0.2650, 0.1431, 0.3064, 0.2843]
+my_sim.genie_nuclear.tune = "G18_02a_02_11b"
+my_sim.genie_nuclear.spline_file = (
+    f"{os.environ['CI_DATA']}/target_genie/gxspl_emode_GENIE_v3_04_00.xml"
 )
+my_sim.genie_nuclear.message_threshold_file = "Messenger_ErrorOnly.xml"
 
-# Add upstream beam electron: the electron traverses the tagger and is killed
-# at the target. GENIE products are labeled as electronNuclear and parented
-# to the beam electron.
-genie = gen.genie_with_upstream_electron(genie, gen.single_8gev_e_upstream_tagger())
+# Bias EN cross-section in target region so interactions occur at usable rate
+my_sim.biasing_operators = [ElectroNuclear(volume="target_region", factor=1e6)]
 
-my_sim.generators = [genie]
-
-# Stepping action to kill the beam electron when it reaches the target
-from LDMX.SimCore.user_actions import GenieBeamElectronKiller
-
-my_sim.actions.append(GenieBeamElectronKiller())
+# No GenieBeamElectronKiller needed — the process kills the electron when it fires
 
 from LDMX.SimCore import genie_reweight
 
@@ -49,6 +41,7 @@ genie_rw = genie_reweight.GenieReweightProducer(instance_name="genie_reweight")
 genie_rw.hepmc3_coll_name = "SimHepMC3Events"
 genie_rw.hepmc3_pass_name = ""
 genie_rw.var_types = ["GENIE_INukeTwkDial_MFP_pi", "GENIE_INukeTwkDial_MFP_N"]
+genie_rw.message_threshold_file = "Messenger_ErrorOnly.xml"
 
 
 p.sequence = [my_sim, genie_rw]
@@ -224,3 +217,4 @@ almost_all_dqm = [
 ]
 
 p.sequence.extend(*almost_all_dqm)
+p.sequence.append(dqm.ElectroNuclearDQM())

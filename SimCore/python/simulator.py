@@ -9,6 +9,7 @@ from LDMX.Framework import Processor, field, parameter_set, processor
 from .bias_operators import XsecBiasingOperator
 from .dark_brem import DarkBrem
 from .fcp_physics import FCPPhysics
+from .genie_physics import GenieNuclearPhysics
 from .generators import PrimaryGenerator
 from .kaon_physics import KaonPhysics
 from .photonuclear_models import BertiniModel, PhotoNuclearModel
@@ -72,6 +73,7 @@ class ReSimulator(Processor):
     photonuclear_model: PhotoNuclearModel = field(default_factory=BertiniModel)
     kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
     fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
+    genie_nuclear: GenieNuclearPhysics = field(default_factory=GenieNuclearPhysics)
     resimulate_all_events: bool = True
     care_about_run: bool = False
     events_to_resimulate: list[_EventToReSim] = []
@@ -145,6 +147,7 @@ class Simulator(Processor):
     photonuclear_model: PhotoNuclearModel = field(default_factory=BertiniModel)
     kaon_parameters: KaonPhysics = field(default_factory=KaonPhysics)
     fcp_physics: FCPPhysics = field(default_factory=FCPPhysics)
+    genie_nuclear: GenieNuclearPhysics = field(default_factory=GenieNuclearPhysics)
 
     def set_detector(
         self,

@@ -101,6 +101,7 @@ setup_library(module SimCore
               dependencies ROOT::Physics
                            ROOT::MathMore
                            HepMC3
+                           GENIE::GENIE
                            SimCore::G4User
                            SimCore::Geo
                            SimCore::PhotoNuclearModels

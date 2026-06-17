@@ -62,13 +62,13 @@ namespace generators {
 void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
   energy_ = p.get<double>("energy");  // * GeV;
 
-  targets_ = p.get<std::vector<int> >("targets");
-  abundances_ = p.get<std::vector<double> >("abundances");
+  targets_ = p.get<std::vector<int>>("targets");
+  abundances_ = p.get<std::vector<double>>("abundances");
 
-  time_ = p.get<double>("time");                          // * ns;
-  position_ = p.get<std::vector<double> >("position");    // mm
-  beam_size_ = p.get<std::vector<double> >("beam_size");  // mm
-  direction_ = p.get<std::vector<double> >("direction");
+  time_ = p.get<double>("time");                         // * ns;
+  position_ = p.get<std::vector<double>>("position");    // mm
+  beam_size_ = p.get<std::vector<double>>("beam_size");  // mm
+  direction_ = p.get<std::vector<double>>("direction");
   target_thickness_ = p.get<double>("target_thickness");  // mm
 
   tune_ = p.get<std::string>("tune");
@@ -379,9 +379,10 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
     double electron_mass_gev = 0.000510999;
     double beam_p = std::sqrt(beam_electron_energy_ * beam_electron_energy_ -
                               electron_mass_gev * electron_mass_gev);
-    beam_electron->SetMomentum(beam_p * beam_electron_direction_[0] * CLHEP::GeV,
-                               beam_p * beam_electron_direction_[1] * CLHEP::GeV,
-                               beam_p * beam_electron_direction_[2] * CLHEP::GeV);
+    beam_electron->SetMomentum(
+        beam_p * beam_electron_direction_[0] * CLHEP::GeV,
+        beam_p * beam_electron_direction_[1] * CLHEP::GeV,
+        beam_p * beam_electron_direction_[2] * CLHEP::GeV);
 
     UserPrimaryParticleInformation* beam_info =
         new UserPrimaryParticleInformation();
@@ -394,8 +395,8 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
     ldmx_log(debug) << "Added upstream beam electron at ("
                     << beam_electron_position_[0] << ","
                     << beam_electron_position_[1] << ","
-                    << beam_electron_position_[2]
-                    << ") with energy " << beam_electron_energy_ << " GeV";
+                    << beam_electron_position_[2] << ") with energy "
+                    << beam_electron_energy_ << " GeV";
   }
 
   // setup the GENIE primary vertex at the target

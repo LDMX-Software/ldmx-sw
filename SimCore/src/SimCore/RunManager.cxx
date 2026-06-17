@@ -11,6 +11,8 @@
 //-------------//
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"  //for process name
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/GenieElectroNuclearProcess.h"  //for process name
+#include "SimCore/GenieNuclearPhysics.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/FCPPhysics.h"
@@ -67,6 +69,8 @@ void RunManager::setupPhysics() {
   p_list->RegisterPhysics(new FCPPhysics(
       "FCPPhysics",
       parameters_.get<framework::config::Parameters>("fcp_physics")));
+  p_list->RegisterPhysics(new GenieNuclearPhysics(
+      parameters_.get<framework::config::Parameters>("genie_nuclear")));
 
   auto biasing_operators{
       parameters_.get<std::vector<framework::config::Parameters>>(
@@ -197,6 +201,21 @@ void RunManager::TerminateOneEvent() {
   };
 
   reactivate_dark_brem(G4Electron::Definition()->GetProcessManager());
+
+  // Reactivate GENIE electronNuclear process if it was deactivated
+  // (only_one_per_event mode) — same pattern as DarkBrem above
+  static auto reactivate_genie_en = [](G4ProcessManager* pman) {
+    for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
+      G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
+      if (p->GetProcessName().contains(
+              GenieElectroNuclearProcess::PROCESS_NAME)) {
+        pman->SetProcessActivation(p, true);
+        break;
+      }
+    }
+  };
+
+  reactivate_genie_en(G4Electron::Definition()->GetProcessManager());
 }
 
 DetectorConstruction* RunManager::getDetectorConstruction() {
