@@ -130,10 +130,10 @@ std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
     float total_momentum =
         std::sqrt(ecal_track_state.mom_[0] * ecal_track_state.mom_[0] +
                   ecal_track_state.mom_[1] * ecal_track_state.mom_[1] +
-                  ecal_track_state.mom_[2] * ecal_track_state.mom_[2])
+                  ecal_track_state.mom_[2] * ecal_track_state.mom_[2]);
 
-        // store state variables
-        track_state_vars.push_back(ecal_track_state.pos_[0]);
+    // store state variables
+    track_state_vars.push_back(ecal_track_state.pos_[0]);
     track_state_vars.push_back(ecal_track_state.pos_[1]);
     track_state_vars.push_back(ecal_track_state.pos_[2]);
     track_state_vars.push_back(ecal_track_state.mom_[0]);
