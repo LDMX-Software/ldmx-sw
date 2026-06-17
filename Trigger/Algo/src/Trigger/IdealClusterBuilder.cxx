@@ -262,6 +262,7 @@ void IdealClusterBuilder::build3dClusters() {
           }
           // cout << "got seed" << endl;
           //  found seed
+          cluster3d.clusters2d_.clear();
           cluster3d.clusters2d_.push_back(clusters2d[0]);
           cluster3d.first_layer_ = test_layer;
           cluster3d.last_layer_ = test_layer;
