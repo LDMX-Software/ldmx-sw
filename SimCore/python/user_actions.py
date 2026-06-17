@@ -29,3 +29,17 @@ class PhotonuclearTracker(UserAction):
     """
 
     pass
+
+
+@user_action("simcore::GenieBeamElectronKiller")
+class GenieBeamElectronKiller(UserAction):
+    """Stepping action that kills the primary beam electron at the target.
+
+    When using the GENIE generator with an upstream beam electron
+    (include_beam_electron=True), this action must be added to the
+    simulator to kill the beam electron when it enters the target region.
+    The GENIE interaction products replace the electron's nuclear
+    interaction at the target.
+    """
+
+    pass

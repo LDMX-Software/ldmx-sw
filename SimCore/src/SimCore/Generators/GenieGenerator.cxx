@@ -75,6 +75,13 @@ void GenieGenerator::fillConfig(const framework::config::Parameters& p) {
   spline_file_ = p.get<std::string>("spline_file");
 
   message_threshold_file_ = p.get<std::string>("message_threshold_file");
+
+  include_beam_electron_ = p.get<bool>("include_beam_electron");
+  beam_electron_position_ =
+      p.get<std::vector<double>>("beam_electron_position");
+  beam_electron_direction_ =
+      p.get<std::vector<double>>("beam_electron_direction");
+  beam_electron_energy_ = p.get<double>("beam_electron_energy");
 }
 
 bool GenieGenerator::validateConfig() {
@@ -159,6 +166,35 @@ bool GenieGenerator::validateConfig() {
 
   xsec_by_target_.resize(targets_.size(), -999.);
   n_events_by_target_.resize(targets_.size(), 0);
+
+  if (include_beam_electron_) {
+    if (beam_electron_position_.size() != 3) {
+      ldmx_log(error) << "beam_electron_position must have 3 elements, got "
+                      << beam_electron_position_.size();
+      ret = false;
+    }
+    if (beam_electron_direction_.size() != 3) {
+      ldmx_log(error) << "beam_electron_direction must have 3 elements, got "
+                      << beam_electron_direction_.size();
+      ret = false;
+    }
+    if (beam_electron_energy_ <= 0) {
+      ldmx_log(error) << "beam_electron_energy must be positive, got "
+                      << beam_electron_energy_;
+      ret = false;
+    }
+
+    // normalize beam electron direction
+    float be_dir_sq = 0;
+    for (auto d : beam_electron_direction_) be_dir_sq += d * d;
+    if (be_dir_sq < 1e-6) {
+      ldmx_log(error) << "beam_electron_direction vector is zero";
+      ret = false;
+    } else {
+      for (size_t i = 0; i < beam_electron_direction_.size(); ++i)
+        beam_electron_direction_[i] /= std::sqrt(be_dir_sq);
+    }
+  }
 
   return ret;
 }
@@ -327,11 +363,51 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
   ev_info->addHepMC3GenEvent(hepmc3_ldmx_genie);
   event->SetUserInformation(ev_info);
 
-  // setup the primary vertex now
+  // If configured, generate an upstream beam electron as a separate primary
+  // vertex. This electron will traverse the tagger and be killed at the target
+  // by the GenieBeamElectronKiller stepping action.
+  if (include_beam_electron_) {
+    G4PrimaryVertex* beam_vertex = new G4PrimaryVertex();
+    beam_vertex->SetPosition(beam_electron_position_[0],
+                             beam_electron_position_[1],
+                             beam_electron_position_[2]);
+    beam_vertex->SetT0(0.0);
+
+    G4PrimaryParticle* beam_electron = new G4PrimaryParticle();
+    beam_electron->SetPDGcode(11);
+
+    double electron_mass_gev = 0.000510999;
+    double beam_p = std::sqrt(beam_electron_energy_ * beam_electron_energy_ -
+                              electron_mass_gev * electron_mass_gev);
+    beam_electron->SetMomentum(beam_p * beam_electron_direction_[0] * CLHEP::GeV,
+                               beam_p * beam_electron_direction_[1] * CLHEP::GeV,
+                               beam_p * beam_electron_direction_[2] * CLHEP::GeV);
+
+    UserPrimaryParticleInformation* beam_info =
+        new UserPrimaryParticleInformation();
+    beam_info->setHepEvtStatus(1);
+    beam_electron->SetUserInformation(beam_info);
+
+    beam_vertex->SetPrimary(beam_electron);
+    event->AddPrimaryVertex(beam_vertex);
+
+    ldmx_log(debug) << "Added upstream beam electron at ("
+                    << beam_electron_position_[0] << ","
+                    << beam_electron_position_[1] << ","
+                    << beam_electron_position_[2]
+                    << ") with energy " << beam_electron_energy_ << " GeV";
+  }
+
+  // setup the GENIE primary vertex at the target
 
   G4PrimaryVertex* vertex = new G4PrimaryVertex();
   vertex->SetPosition(x_pos, y_pos, z_pos);
   vertex->SetWeight(genie_event->Weight());
+
+  // The gen status for GENIE products: use 2 when a beam electron is present
+  // so that downstream code can label them as electronNuclear secondaries
+  // rather than primaries.
+  int genie_gen_status = include_beam_electron_ ? 2 : 1;
 
   // loop over the entries and add to the G4Event
   int n_entries = genie_event->GetEntries();
@@ -364,7 +440,7 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
 
     UserPrimaryParticleInformation* primary_info =
         new UserPrimaryParticleInformation();
-    primary_info->setHepEvtStatus(1);
+    primary_info->setHepEvtStatus(genie_gen_status);
     primary->SetUserInformation(primary_info);
 
     vertex->SetPrimary(primary);
@@ -385,6 +461,11 @@ void GenieGenerator::GeneratePrimaryVertex(G4Event* event) {
 void GenieGenerator::RecordConfig(const std::string& id, ldmx::RunHeader& rh) {
   rh.setStringParameter(id + " Class", "simcore::generators::GenieGenerator");
   rh.setStringParameter(id + "GenieTune", tune_);
+  rh.setIntParameter(id + "IncludeBeamElectron",
+                     include_beam_electron_ ? 1 : 0);
+  if (include_beam_electron_) {
+    rh.setFloatParameter(id + "BeamElectronEnergy", beam_electron_energy_);
+  }
 }
 
 }  // namespace generators

@@ -94,6 +94,15 @@ class GenieGenerator : public simcore::PrimaryGenerator {
 
   std::string message_threshold_file_;
 
+  /// Whether to include an upstream beam electron primary
+  bool include_beam_electron_;
+  /// Starting position of the beam electron [mm]
+  std::vector<double> beam_electron_position_;
+  /// Unit direction of the beam electron
+  std::vector<double> beam_electron_direction_;
+  /// Energy of the beam electron [GeV]
+  double beam_electron_energy_;
+
   std::vector<float> ev_weighting_integral_;
   size_t n_events_generated_;
   std::vector<size_t> n_events_by_target_;

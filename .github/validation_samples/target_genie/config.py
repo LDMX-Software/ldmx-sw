@@ -30,8 +30,17 @@ genie = gen.Genie(
     message_threshold_file="Messenger_ErrorOnly.xml",
 )
 
+# Add upstream beam electron: the electron traverses the tagger and is killed
+# at the target. GENIE products are labeled as electronNuclear and parented
+# to the beam electron.
+genie = gen.genie_with_upstream_electron(genie, gen.single_8gev_e_upstream_tagger())
 
 my_sim.generators = [genie]
+
+# Stepping action to kill the beam electron when it reaches the target
+from LDMX.SimCore.user_actions import GenieBeamElectronKiller
+
+my_sim.actions.append(GenieBeamElectronKiller())
 
 from LDMX.SimCore import genie_reweight
 
@@ -75,24 +84,22 @@ from LDMX.Tracking import full_tracking_sequence
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
-# Load the TS modules
-# Cant run this until we figure out how to have
-# an upstream tagger track (GENIE starts at target)
+# Load the TS modules — now enabled since we have an upstream beam electron
+from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
+from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
+from LDMX.TrigScint.trig_scint import trig_scint_track
 
-# from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
-# from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
-# from LDMX.TrigScint.trig_scint import trig_scint_track
-# ts_digis = [
-#         TrigScintDigiProducer.pad1(),
-#         TrigScintDigiProducer.pad2(),
-#         TrigScintDigiProducer.pad3(),
-#         ]
+ts_digis = [
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
 
-# ts_clusters = [
-#         TrigScintClusterProducer.pad1(),
-#         TrigScintClusterProducer.pad2(),
-#         TrigScintClusterProducer.pad3(),
-#         ]
+ts_clusters = [
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 # Load electron counting and trigger
 from LDMX.Ecal import ecal_trig_digi
@@ -154,8 +161,16 @@ p.logger.term_level = 10
 # Example to show trace level logging for ecal veto (only)
 p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level=-1)
 
-# Add full tracking for both recoil trackers:
-# digi, seeds, CFK, ambiguity resolution, GSF, DQM
+# Add full tracking for both tagger and recoil trackers:
+# digi, seeds, CKF, ambiguity resolution, GSF, DQM
+tagger_tracking = [
+    full_tracking_sequence.digi_tagger,
+    full_tracking_sequence.seeder_tagger,
+    full_tracking_sequence.tracking_tagger,
+    full_tracking_sequence.greedy_solver_tagger,
+    full_tracking_sequence.gsf_tagger,
+]
+
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
     full_tracking_sequence.truth_tracking,
@@ -163,6 +178,10 @@ recoil_tracking = [
     full_tracking_sequence.tracking_recoil,
     full_tracking_sequence.greedy_solver_recoil,
     full_tracking_sequence.gsf_recoil,
+]
+
+tagger_tracker_dqm = [
+    full_tracking_sequence.dqm_tagger_ckf,
 ]
 
 recoil_tracker_dqm = [
@@ -173,7 +192,10 @@ recoil_tracker_dqm = [
 
 p.sequence.extend(
     [
+        *tagger_tracking,
         *recoil_tracking,
+        *ts_digis,
+        *ts_clusters,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_cluster.EcalClusterProducer(),
@@ -190,14 +212,15 @@ p.sequence.extend(
     ]
 )
 
-# Remove TS DQM
 almost_all_dqm = [
     dqm.sample_validation_dqm
+    + tagger_tracker_dqm
     + recoil_tracker_dqm
     + dqm.ecal_dqm
     + dqm.hcal_dqm
     + dqm.trigger_dqm
     + dqm.dedx_dqm
+    + dqm.trig_scint_dqm
 ]
 
 p.sequence.extend(*almost_all_dqm)
