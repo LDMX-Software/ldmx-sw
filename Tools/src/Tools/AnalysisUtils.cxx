@@ -32,7 +32,7 @@ std::tuple<int, const ldmx::SimParticle*> getRecoil(
     if (particle.getPdgID() == 11 and
         particle.getProcessType() ==
             ldmx::SimParticle::ProcessType::eDarkBrem) {
-      return {trackID, &particle};
+      return {trackID, &particleMap.at(trackID)};
     }
   }
   // only get here if recoil electron was not "produced" by dark brem
@@ -47,6 +47,28 @@ std::tuple<int, const ldmx::SimParticle*> getRecoil(
     // this code right now is decidedly NOT future proof and only handles a
     // single encoding version
     return {134217729, &(particleMap.at(134217729))};
+  }
+}
+
+std::tuple<int, const ldmx::SimParticle *> getBremPhoton(
+    const std::map<int, ldmx::SimParticle> &particleMap) {
+  int bremTrackID = -1;
+  double bremEnergy = -9999.0;
+  for (const auto &[trackID, particle] : particleMap) {
+    // find the highest energy photon generated at the target
+    if (particle.getEnergy() > bremEnergy  // if the energy is greatest yet
+        && particle.getVertex()[2] > -5.0  
+        && particle.getVertex()[2] < 5.0 // if the particle originates near the target
+        && particle.getPdgID() == 22) {  // and the particle is a photon
+      bremTrackID = trackID;
+      bremEnergy = particle.getEnergy();
+    }
+  }  //
+  if (bremTrackID != -1 && bremEnergy != -9999.0) {
+    return {bremTrackID, &particleMap.at(bremTrackID)};
+  } else {
+    // if no brem photon is found
+    return {1, nullptr};
   }
 }
 
