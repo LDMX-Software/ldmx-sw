@@ -39,6 +39,9 @@ namespace tracking::digitization {
  */
 class StripPulseFitter {
  public:
+  // I like not having underscores for struct members,
+  // but that's not settable until a later version of clang-tidy
+  // NOLINTBEGIN(readability-identifier-naming)
   struct FitResult {
     double amplitude{
         0};          ///< Fitted peak amplitude [ADC counts], ped-subtracted.
@@ -47,6 +50,7 @@ class StripPulseFitter {
     int ndf{0};      ///< Degrees of freedom = n_samples − 2.
     bool converged{false};  ///< False if no above-pedestal samples found.
   };
+  // NOLINTEND(readability-identifier-naming)
 
   /**
    * @param shape               Pulse shape function (owned externally).
