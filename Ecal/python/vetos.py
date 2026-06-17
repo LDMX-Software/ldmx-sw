@@ -76,3 +76,30 @@ class EcalTrackFinderProcessor(Processor):
     max_momentum: float = 10000.0  # MeV
     use_roc_energy: bool = True
     roc_file: str = make_roc_path("RoC_v14_8gev")
+
+
+@processor("ecal::EcalRecoilRemovalProcessor", "Ecal")
+class EcalRecoilRemovalProcessor(Processor):
+    """Configuration for the ECal processor which removes hits likely associated
+    with the recoil electron."""
+    beam_energy: float = 8000.0
+    num_ecal_layers: int = 32
+    rem_dist_file: str = make_roc_path("RoC_v14_8gev_0.95")
+    collection_name_included: str = "EcalRecHitsInc"
+    collection_name_excluded: str = "EcalRecHitsExc"
+    rec_coll_name: str = "EcalRecHits"
+    rec_pass_name: str = ""
+    ecal_sim_pass_name: str = ""
+    ecal_sp_hits_pass_name: str = ""
+    recoil_from_tracking: bool = True
+    track_coll_name: str = "RecoilTracksClean"
+    track_pass_name: str = ""
+    n_electrons: int = 1
+
+recrem_ecalveto = EcalVetoProcessor(
+    bdt_file = make_bdt_path( "wab_bdt_1RoC_0.95" ),
+    disc_cut = 0.9913983,
+    rec_coll_name = "EcalRecHitsInc",
+    collection_name = "EcalVetoInc",
+)
+recrem_processing = [EcalRecoilRemovalProcessor(), recrem_ecalveto]

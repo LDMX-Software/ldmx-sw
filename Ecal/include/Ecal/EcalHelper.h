@@ -31,6 +31,26 @@ std::vector<float> trackProp(const ldmx::Tracks& tracks,
                              ldmx::TrackStateType ts_type,
                              const std::string& ts_title);
 
+/**
+ * Return a vector of `ele_count` valid track states with the greatest transverse
+ * momentum
+ * @param[in] tracks The track collection
+ * @param[in] ele_count The recorded number of electrons in the event
+ * @returns Vector of valid track states with the greatest transverse momentum
+ */
+std::vector<float> pTTrackProp(const ldmx::Tracks& tracks, int ele_count);
+
+/**
+ * Return a vector of `ele_count` valid track states with the greatest total
+ * momentum
+ * @param[in] tracks The track collection
+ * @param[in] ele_count The recorded number of electrons in the event
+ * @returns Vector of valid track states with the greatest total momentum
+ */
+std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks& tracks,
+                                               int ele_count);
+
+
 // MIP tracking
 /**
  * Returns the distance between the lines v and w, with v defined to pass
