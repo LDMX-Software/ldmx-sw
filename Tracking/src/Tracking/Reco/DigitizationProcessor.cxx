@@ -25,18 +25,18 @@ void DigitizationProcessor::onProcessStart() {
                    << "  sense_pitch=" << tracking::digitization::SENSE_PITCH_MM
                    << " mm" << "  readout_pitch="
                    << tracking::digitization::READOUT_PITCH_MM << " mm"
-                   << "  Vbias=" << sensor_params_.bias_voltage_ << " V"
-                   << "  Vdep=" << sensor_params_.depletion_voltage_ << " V"
-                   << "  bulk=" << (sensor_params_.is_n_type_ ? "n" : "p")
+                   << "  Vbias=" << sensor_params_.bias_voltage << " V"
+                   << "  Vdep=" << sensor_params_.depletion_voltage << " V"
+                   << "  bulk=" << (sensor_params_.is_n_type ? "n" : "p")
                    << "-type" << "  e_lorentz_tan="
-                   << sensor_params_.electron_lorentz_tangent_
-                   << "  h_lorentz_tan=" << sensor_params_.hole_lorentz_tangent_
-                   << "  trapping=" << sensor_params_.trapping_
-                   << "  noise=" << sensor_params_.noise_electrons_ << " e-"
-                   << "  threshold=" << sensor_params_.threshold_electrons_
+                   << sensor_params_.electron_lorentz_tangent
+                   << "  h_lorentz_tan=" << sensor_params_.hole_lorentz_tangent
+                   << "  trapping=" << sensor_params_.trapping
+                   << "  noise=" << sensor_params_.noise_electrons << " e-"
+                   << "  threshold=" << sensor_params_.threshold_electrons
                    << " e-"
-                   << "  n_segments_min=" << sensor_params_.n_segments_min_
-                   << "  granularity=" << sensor_params_.deposition_granularity_;
+                   << "  n_segments_min=" << sensor_params_.n_segments_min
+                   << "  granularity=" << sensor_params_.deposition_granularity;
 
     pulse_shape_ = tracking::digitization::PulseShape::make(
         std::string(tracking::digitization::PULSE_SHAPE_NAME),
@@ -103,28 +103,28 @@ void DigitizationProcessor::configure(
       parameters.get<bool>("use_charge_digitization", false);
 
   if (use_charge_digitization_) {
-    sensor_params_.bias_voltage_ = parameters.get<double>("bias_voltage", 200.0);
-    sensor_params_.depletion_voltage_ =
+    sensor_params_.bias_voltage = parameters.get<double>("bias_voltage", 200.0);
+    sensor_params_.depletion_voltage =
         parameters.get<double>("depletion_voltage", 70.0);
-    sensor_params_.temperature_ = parameters.get<double>("temperature", 300.0);
-    sensor_params_.noise_electrons_ =
+    sensor_params_.temperature = parameters.get<double>("temperature", 300.0);
+    sensor_params_.noise_electrons =
         parameters.get<double>("noise_electrons", 1000.0);
-    sensor_params_.threshold_electrons_ =
+    sensor_params_.threshold_electrons =
         parameters.get<double>("threshold_electrons", 3000.0);
     // Fixed sensor properties — not user-configurable.
     // LDMX (and HPS) use n-type bulk with hole-side readout.
-    sensor_params_.is_n_type_ = true;
-    sensor_params_.electron_side_readout_ = false;
-    sensor_params_.hole_side_readout_ = true;
+    sensor_params_.is_n_type = true;
+    sensor_params_.electron_side_readout = false;
+    sensor_params_.hole_side_readout = true;
     use_lorentz_ = parameters.get<bool>("use_lorentz", true);
-    sensor_params_.electron_lorentz_tangent_ =
+    sensor_params_.electron_lorentz_tangent =
         parameters.get<double>("electron_lorentz_tangent", 0.0);
-    sensor_params_.hole_lorentz_tangent_ =
+    sensor_params_.hole_lorentz_tangent =
         parameters.get<double>("hole_lorentz_tangent", 0.0);
-    sensor_params_.trapping_ = parameters.get<double>("trapping", 0.0);
-    sensor_params_.deposition_granularity_ =
+    sensor_params_.trapping = parameters.get<double>("trapping", 0.0);
+    sensor_params_.deposition_granularity =
         parameters.get<double>("deposition_granularity", 0.10);
-    sensor_params_.n_segments_min_ = parameters.get<int>("n_segments_min", 5);
+    sensor_params_.n_segments_min = parameters.get<int>("n_segments_min", 5);
     // n_readout_strips is fixed by the sensor geometry constant
     // N_READOUT_STRIPS.
 
@@ -144,7 +144,7 @@ void DigitizationProcessor::buildLorentzCache() {
     loadBField(field_map_);
 
   // Low-field (Hall) mobility from the Canali model [cm²/(V·s)] → [m²/(V·s)]
-  const double t = sensor_params_.temperature_;
+  const double t = sensor_params_.temperature;
   auto carrier_e = tracking::digitization::getCarrier(-1);
   auto carrier_h = tracking::digitization::getCarrier(1);
   const double mu_e = carrier_e.mu0(t) * 1.0e-4;  // m²/(V·s)
@@ -438,9 +438,9 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
       if (use_lorentz_) {
         auto lorentz_it = lorentz_tan_cache_.find(layer_id);
         if (lorentz_it != lorentz_tan_cache_.end()) {
-          strip_digitizer_->mutableParams().electron_lorentz_tangent_ =
+          strip_digitizer_->mutableParams().electron_lorentz_tangent =
               lorentz_it->second.first;
-          strip_digitizer_->mutableParams().hole_lorentz_tangent_ =
+          strip_digitizer_->mutableParams().hole_lorentz_tangent =
               lorentz_it->second.second;
         }
       }

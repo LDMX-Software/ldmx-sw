@@ -38,26 +38,26 @@ class TrackComparisonProcessor : public framework::Analyzer {
 
  private:
   struct PairVars {
-    int track_id_{-1};
-    float truth_prob_s_{-1}, truth_prob_d_{-1};
-    int nhits_s_{-1}, nhits_d_{-1};
-    float chi2ndf_s_{-999}, chi2ndf_d_{-999};
-    float d0_s_{-999}, d0_d_{-999};
-    float z0_s_{-999}, z0_d_{-999};
-    float phi_s_{-999}, phi_d_{-999};
-    float theta_s_{-999}, theta_d_{-999};
-    float qop_s_{-999}, qop_d_{-999};
-    float p_s_{-999}, p_d_{-999};
-    float delta_d0_{-999}, delta_z0_{-999};
-    float delta_phi_{-999}, delta_theta_{-999};
-    float delta_p_over_p_{-999};
-    float px_s_{-999}, py_s_{-999}, pz_s_{-999};
-    float px_d_{-999}, py_d_{-999}, pz_d_{-999};
+    int track_id{-1};
+    float truth_prob_s{-1}, truth_prob_d{-1};
+    int nhits_s{-1}, nhits_d{-1};
+    float chi2ndf_s{-999}, chi2ndf_d{-999};
+    float d0_s{-999}, d0_d{-999};
+    float z0_s{-999}, z0_d{-999};
+    float phi_s{-999}, phi_d{-999};
+    float theta_s{-999}, theta_d{-999};
+    float qop_s{-999}, qop_d{-999};
+    float p_s{-999}, p_d{-999};
+    float delta_d0{-999}, delta_z0{-999};
+    float delta_phi{-999}, delta_theta{-999};
+    float delta_p_over_p{-999};
+    float px_s{-999}, py_s{-999}, pz_s{-999};
+    float px_d{-999}, py_d{-999}, pz_d{-999};
     // truth (SimParticle)
-    float px_t_{-999}, py_t_{-999}, pz_t_{-999};
-    float p_t_{-999};
-    float vx_t_{-999}, vy_t_{-999}, vz_t_{-999};
-    float delta_p_over_p_s_{-999}, delta_p_over_p_d_{-999};
+    float px_t{-999}, py_t{-999}, pz_t{-999};
+    float p_t{-999};
+    float vx_t{-999}, vy_t{-999}, vz_t{-999};
+    float delta_p_over_p_s{-999}, delta_p_over_p_d{-999};
   };
 
   void setupTree(TTree* tree, PairVars& v);

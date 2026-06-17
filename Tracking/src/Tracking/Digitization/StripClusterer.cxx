@@ -120,7 +120,7 @@ std::vector<StripClusterer::ClusterCandidate> StripClusterer::findClusters(
       const double amp = hit.getAmplitude();
 
       // Accumulate cluster quantities.
-      cand.strip_ids_.push_back(cur_ch);
+      cand.strip_ids.push_back(cur_ch);
       cluster_total_amp += amp;
       cluster_weighted_t += amp * hit.getT0();
       cluster_noise_sq += noise_sigma_adc_ * noise_sigma_adc_;
@@ -151,14 +151,14 @@ std::vector<StripClusterer::ClusterCandidate> StripClusterer::findClusters(
     // Compute the charge-weighted centroid strip and timing.
     // -----------------------------------------------------------------------
     double sum_amp_strip = 0.0;
-    for (int ch : cand.strip_ids_) {
+    for (int ch : cand.strip_ids) {
       sum_amp_strip += channel_map.at(ch)->getAmplitude() * ch;
     }
 
-    cand.centroid_strip_ = sum_amp_strip / cluster_total_amp;
-    cand.total_amplitude_ = cluster_total_amp;
-    cand.time_ns_ = cluster_weighted_t / cluster_total_amp;
-    cand.n_strips_ = static_cast<int>(cand.strip_ids_.size());
+    cand.centroid_strip = sum_amp_strip / cluster_total_amp;
+    cand.total_amplitude = cluster_total_amp;
+    cand.time_ns = cluster_weighted_t / cluster_total_amp;
+    cand.n_strips = static_cast<int>(cand.strip_ids.size());
 
     // Charge-weighted RMS around the centroid [strips].
     // For multi-strip clusters this uses the actual charge-sharing profile,
@@ -166,14 +166,14 @@ std::vector<StripClusterer::ClusterCandidate> StripClusterer::findClusters(
     // For single-strip clusters the RMS is zero, so we floor at the binary
     // single-strip uncertainty 1/√12.
     double sum_amp_dsq = 0.0;
-    for (int ch : cand.strip_ids_) {
-      double d = ch - cand.centroid_strip_;
+    for (int ch : cand.strip_ids) {
+      double d = ch - cand.centroid_strip;
       sum_amp_dsq += channel_map.at(ch)->getAmplitude() * d * d;
     }
     constexpr double k_single_strip_sigma = 1.0 / 3.4641;  // 1/√12
     const double rms = std::sqrt(sum_amp_dsq / cluster_total_amp);
-    cand.sigma_strip_ = (rms > 0.0) ? rms : k_single_strip_sigma;
-    cand.layer_id_ = channel_map.at(seed_ch)->getLayerID();
+    cand.sigma_strip = (rms > 0.0) ? rms : k_single_strip_sigma;
+    cand.layer_id = channel_map.at(seed_ch)->getLayerID();
 
     clusters.push_back(std::move(cand));
   }

@@ -40,12 +40,12 @@ namespace tracking::digitization {
 class StripPulseFitter {
  public:
   struct FitResult {
-    double amplitude_{
-        0};           ///< Fitted peak amplitude [ADC counts], ped-subtracted.
-    double t0_{0};    ///< Fitted hit arrival time T [ns].
-    double chi2_{0};  ///< Chi-squared value at the minimum.
-    int ndf_{0};      ///< Degrees of freedom = n_samples − 2.
-    bool converged_{false};  ///< False if no above-pedestal samples found.
+    double amplitude{
+        0};          ///< Fitted peak amplitude [ADC counts], ped-subtracted.
+    double t0{0};    ///< Fitted hit arrival time T [ns].
+    double chi2{0};  ///< Chi-squared value at the minimum.
+    int ndf{0};      ///< Degrees of freedom = n_samples − 2.
+    bool converged{false};  ///< False if no above-pedestal samples found.
   };
 
   /**

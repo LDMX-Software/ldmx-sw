@@ -36,45 +36,45 @@ void TrackComparisonProcessor::configure(
 }
 
 void TrackComparisonProcessor::setupTree(TTree* tree, PairVars& v) {
-  tree->Branch("track_id", &v.track_id_);
-  tree->Branch("truth_prob_s", &v.truth_prob_s_);
-  tree->Branch("truth_prob_d", &v.truth_prob_d_);
-  tree->Branch("nhits_s", &v.nhits_s_);
-  tree->Branch("nhits_d", &v.nhits_d_);
-  tree->Branch("chi2ndf_s", &v.chi2ndf_s_);
-  tree->Branch("chi2ndf_d", &v.chi2ndf_d_);
-  tree->Branch("d0_s", &v.d0_s_);
-  tree->Branch("d0_d", &v.d0_d_);
-  tree->Branch("z0_s", &v.z0_s_);
-  tree->Branch("z0_d", &v.z0_d_);
-  tree->Branch("phi_s", &v.phi_s_);
-  tree->Branch("phi_d", &v.phi_d_);
-  tree->Branch("theta_s", &v.theta_s_);
-  tree->Branch("theta_d", &v.theta_d_);
-  tree->Branch("qop_s", &v.qop_s_);
-  tree->Branch("qop_d", &v.qop_d_);
-  tree->Branch("p_s", &v.p_s_);
-  tree->Branch("p_d", &v.p_d_);
-  tree->Branch("delta_d0", &v.delta_d0_);
-  tree->Branch("delta_z0", &v.delta_z0_);
-  tree->Branch("delta_phi", &v.delta_phi_);
-  tree->Branch("delta_theta", &v.delta_theta_);
-  tree->Branch("delta_p_over_p", &v.delta_p_over_p_);
-  tree->Branch("px_s", &v.px_s_);
-  tree->Branch("py_s", &v.py_s_);
-  tree->Branch("pz_s", &v.pz_s_);
-  tree->Branch("px_d", &v.px_d_);
-  tree->Branch("py_d", &v.py_d_);
-  tree->Branch("pz_d", &v.pz_d_);
-  tree->Branch("px_t", &v.px_t_);
-  tree->Branch("py_t", &v.py_t_);
-  tree->Branch("pz_t", &v.pz_t_);
-  tree->Branch("p_t", &v.p_t_);
-  tree->Branch("vx_t", &v.vx_t_);
-  tree->Branch("vy_t", &v.vy_t_);
-  tree->Branch("vz_t", &v.vz_t_);
-  tree->Branch("delta_p_over_p_s", &v.delta_p_over_p_s_);
-  tree->Branch("delta_p_over_p_d", &v.delta_p_over_p_d_);
+  tree->Branch("track_id", &v.track_id);
+  tree->Branch("truth_prob_s", &v.truth_prob_s);
+  tree->Branch("truth_prob_d", &v.truth_prob_d);
+  tree->Branch("nhits_s", &v.nhits_s);
+  tree->Branch("nhits_d", &v.nhits_d);
+  tree->Branch("chi2ndf_s", &v.chi2ndf_s);
+  tree->Branch("chi2ndf_d", &v.chi2ndf_d);
+  tree->Branch("d0_s", &v.d0_s);
+  tree->Branch("d0_d", &v.d0_d);
+  tree->Branch("z0_s", &v.z0_s);
+  tree->Branch("z0_d", &v.z0_d);
+  tree->Branch("phi_s", &v.phi_s);
+  tree->Branch("phi_d", &v.phi_d);
+  tree->Branch("theta_s", &v.theta_s);
+  tree->Branch("theta_d", &v.theta_d);
+  tree->Branch("qop_s", &v.qop_s);
+  tree->Branch("qop_d", &v.qop_d);
+  tree->Branch("p_s", &v.p_s);
+  tree->Branch("p_d", &v.p_d);
+  tree->Branch("delta_d0", &v.delta_d0);
+  tree->Branch("delta_z0", &v.delta_z0);
+  tree->Branch("delta_phi", &v.delta_phi);
+  tree->Branch("delta_theta", &v.delta_theta);
+  tree->Branch("delta_p_over_p", &v.delta_p_over_p);
+  tree->Branch("px_s", &v.px_s);
+  tree->Branch("py_s", &v.py_s);
+  tree->Branch("pz_s", &v.pz_s);
+  tree->Branch("px_d", &v.px_d);
+  tree->Branch("py_d", &v.py_d);
+  tree->Branch("pz_d", &v.pz_d);
+  tree->Branch("px_t", &v.px_t);
+  tree->Branch("py_t", &v.py_t);
+  tree->Branch("pz_t", &v.pz_t);
+  tree->Branch("p_t", &v.p_t);
+  tree->Branch("vx_t", &v.vx_t);
+  tree->Branch("vy_t", &v.vy_t);
+  tree->Branch("vz_t", &v.vz_t);
+  tree->Branch("delta_p_over_p_s", &v.delta_p_over_p_s);
+  tree->Branch("delta_p_over_p_d", &v.delta_p_over_p_d);
 }
 
 void TrackComparisonProcessor::onProcessStart() {
@@ -145,73 +145,73 @@ void TrackComparisonProcessor::fillPair(const ldmx::Track& smear,
                                         const ldmx::SimParticle& truth,
                                         PairVars& v,
                                         const std::string& prefix) {
-  v.track_id_ = smear.getTrackID();
-  v.truth_prob_s_ = smear.getTruthProb();
-  v.truth_prob_d_ = digi.getTruthProb();
-  v.nhits_s_ = smear.getNhits();
-  v.nhits_d_ = digi.getNhits();
-  v.chi2ndf_s_ = (smear.getNdf() > 0) ? smear.getChi2() / smear.getNdf() : -1;
-  v.chi2ndf_d_ = (digi.getNdf() > 0) ? digi.getChi2() / digi.getNdf() : -1;
-  v.d0_s_ = smear.getD0();
-  v.d0_d_ = digi.getD0();
-  v.z0_s_ = smear.getZ0();
-  v.z0_d_ = digi.getZ0();
-  v.phi_s_ = smear.getPhi();
-  v.phi_d_ = digi.getPhi();
-  v.theta_s_ = smear.getTheta();
-  v.theta_d_ = digi.getTheta();
-  v.qop_s_ = smear.getQoP();
-  v.qop_d_ = digi.getQoP();
+  v.track_id = smear.getTrackID();
+  v.truth_prob_s = smear.getTruthProb();
+  v.truth_prob_d = digi.getTruthProb();
+  v.nhits_s = smear.getNhits();
+  v.nhits_d = digi.getNhits();
+  v.chi2ndf_s = (smear.getNdf() > 0) ? smear.getChi2() / smear.getNdf() : -1;
+  v.chi2ndf_d = (digi.getNdf() > 0) ? digi.getChi2() / digi.getNdf() : -1;
+  v.d0_s = smear.getD0();
+  v.d0_d = digi.getD0();
+  v.z0_s = smear.getZ0();
+  v.z0_d = digi.getZ0();
+  v.phi_s = smear.getPhi();
+  v.phi_d = digi.getPhi();
+  v.theta_s = smear.getTheta();
+  v.theta_d = digi.getTheta();
+  v.qop_s = smear.getQoP();
+  v.qop_d = digi.getQoP();
   // QoP is in e/GeV (ACTS units); convert to MeV so p_s/p_d match SimParticle
   // units.
-  v.p_s_ = (v.qop_s_ != 0) ? std::abs(1000.0 / v.qop_s_) : -1;
-  v.p_d_ = (v.qop_d_ != 0) ? std::abs(1000.0 / v.qop_d_) : -1;
-  v.delta_d0_ = v.d0_d_ - v.d0_s_;
-  v.delta_z0_ = v.z0_d_ - v.z0_s_;
-  v.delta_phi_ = v.phi_d_ - v.phi_s_;
-  v.delta_theta_ = v.theta_d_ - v.theta_s_;
-  v.delta_p_over_p_ = (v.p_s_ > 0) ? (v.p_d_ - v.p_s_) / v.p_s_ : -999;
+  v.p_s = (v.qop_s != 0) ? std::abs(1000.0 / v.qop_s) : -1;
+  v.p_d = (v.qop_d != 0) ? std::abs(1000.0 / v.qop_d) : -1;
+  v.delta_d0 = v.d0_d - v.d0_s;
+  v.delta_z0 = v.z0_d - v.z0_s;
+  v.delta_phi = v.phi_d - v.phi_s;
+  v.delta_theta = v.theta_d - v.theta_s;
+  v.delta_p_over_p = (v.p_s > 0) ? (v.p_d - v.p_s) / v.p_s : -999;
 
   auto mom_s = smear.getMomentumAtTarget();
   if (mom_s.size() == 3) {
-    v.px_s_ = mom_s[0];
-    v.py_s_ = mom_s[1];
-    v.pz_s_ = mom_s[2];
+    v.px_s = mom_s[0];
+    v.py_s = mom_s[1];
+    v.pz_s = mom_s[2];
   }
   auto mom_d = digi.getMomentumAtTarget();
   if (mom_d.size() == 3) {
-    v.px_d_ = mom_d[0];
-    v.py_d_ = mom_d[1];
-    v.pz_d_ = mom_d[2];
+    v.px_d = mom_d[0];
+    v.py_d = mom_d[1];
+    v.pz_d = mom_d[2];
   }
 
   auto mom_t = truth.getMomentum();
-  v.px_t_ = mom_t[0];
-  v.py_t_ = mom_t[1];
-  v.pz_t_ = mom_t[2];
-  v.p_t_ = std::sqrt(v.px_t_ * v.px_t_ + v.py_t_ * v.py_t_ + v.pz_t_ * v.pz_t_);
+  v.px_t = mom_t[0];
+  v.py_t = mom_t[1];
+  v.pz_t = mom_t[2];
+  v.p_t = std::sqrt(v.px_t * v.px_t + v.py_t * v.py_t + v.pz_t * v.pz_t);
   auto vtx = truth.getVertex();
-  v.vx_t_ = vtx[0];
-  v.vy_t_ = vtx[1];
-  v.vz_t_ = vtx[2];
+  v.vx_t = vtx[0];
+  v.vy_t = vtx[1];
+  v.vz_t = vtx[2];
 
-  v.delta_p_over_p_s_ = (v.p_t_ > 0) ? (v.p_s_ - v.p_t_) / v.p_t_ : -999;
-  v.delta_p_over_p_d_ = (v.p_t_ > 0) ? (v.p_d_ - v.p_t_) / v.p_t_ : -999;
+  v.delta_p_over_p_s = (v.p_t > 0) ? (v.p_s - v.p_t) / v.p_t : -999;
+  v.delta_p_over_p_d = (v.p_t > 0) ? (v.p_d - v.p_t) / v.p_t : -999;
 
-  histograms_.fill(prefix + "delta_d0", v.delta_d0_);
-  histograms_.fill(prefix + "delta_z0", v.delta_z0_);
-  histograms_.fill(prefix + "delta_phi", v.delta_phi_);
-  histograms_.fill(prefix + "delta_theta", v.delta_theta_);
-  histograms_.fill(prefix + "delta_p_over_p", v.delta_p_over_p_);
-  histograms_.fill(prefix + "nhits_s", v.nhits_s_);
-  histograms_.fill(prefix + "nhits_d", v.nhits_d_);
-  histograms_.fill(prefix + "chi2ndf_s", v.chi2ndf_s_);
-  histograms_.fill(prefix + "chi2ndf_d", v.chi2ndf_d_);
-  histograms_.fill(prefix + "p_s", v.p_s_);
-  histograms_.fill(prefix + "p_d", v.p_d_);
-  histograms_.fill(prefix + "p_t", v.p_t_);
-  histograms_.fill(prefix + "delta_p_over_p_s", v.delta_p_over_p_s_);
-  histograms_.fill(prefix + "delta_p_over_p_d", v.delta_p_over_p_d_);
+  histograms_.fill(prefix + "delta_d0", v.delta_d0);
+  histograms_.fill(prefix + "delta_z0", v.delta_z0);
+  histograms_.fill(prefix + "delta_phi", v.delta_phi);
+  histograms_.fill(prefix + "delta_theta", v.delta_theta);
+  histograms_.fill(prefix + "delta_p_over_p", v.delta_p_over_p);
+  histograms_.fill(prefix + "nhits_s", v.nhits_s);
+  histograms_.fill(prefix + "nhits_d", v.nhits_d);
+  histograms_.fill(prefix + "chi2ndf_s", v.chi2ndf_s);
+  histograms_.fill(prefix + "chi2ndf_d", v.chi2ndf_d);
+  histograms_.fill(prefix + "p_s", v.p_s);
+  histograms_.fill(prefix + "p_d", v.p_d);
+  histograms_.fill(prefix + "p_t", v.p_t);
+  histograms_.fill(prefix + "delta_p_over_p_s", v.delta_p_over_p_s);
+  histograms_.fill(prefix + "delta_p_over_p_d", v.delta_p_over_p_d);
 }
 
 void TrackComparisonProcessor::processTracker(const framework::Event& event,

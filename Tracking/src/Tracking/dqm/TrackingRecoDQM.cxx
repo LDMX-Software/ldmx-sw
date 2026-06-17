@@ -353,12 +353,12 @@ void TrackingRecoDQM::trackMonitoring(
         const auto& meas = measurements.at(measurement_idxs[i]);
         int layer = meas.getLayer();
         float meas_u = meas.getLocalPosition()[0];
-        float v = meas.getLocalCovariance()[0];  // cov_uu
-        float c = sm_cov[i];                     // smoothed cov[loc0, loc0]
-        float denom = v - c;
+        float V = meas.getLocalCovariance()[0];  // cov_uu
+        float C = sm_cov[i];                     // smoothed cov[loc0, loc0]
+        float denom = V - C;
         if (denom <= 0.f) continue;  // degenerate — skip
         float r_smooth = meas_u - sm_loc0[i];
-        float res_ubs = r_smooth * v / denom;
+        float res_ubs = r_smooth * V / denom;
         float pull_ubs = r_smooth / std::sqrt(denom);
         histograms_.fill(title_ + "unbiased_res_u_l" + std::to_string(layer),
                          res_ubs);

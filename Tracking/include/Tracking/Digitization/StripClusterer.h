@@ -48,13 +48,13 @@ namespace tracking::digitization {
 class StripClusterer {
  public:
   struct ClusterCandidate {
-    double centroid_strip_{0};   ///< Charge-weighted mean strip index.
-    double total_amplitude_{0};  ///< Total cluster amplitude [ADC counts].
-    double time_ns_{0};          ///< Amplitude-weighted mean hit time [ns].
-    double sigma_strip_{0};      ///< Position uncertainty [strips].
-    int n_strips_{0};
-    int layer_id_{-1};
-    std::vector<int> strip_ids_;
+    double centroid_strip{0};   ///< Charge-weighted mean strip index.
+    double total_amplitude{0};  ///< Total cluster amplitude [ADC counts].
+    double time_ns{0};          ///< Amplitude-weighted mean hit time [ns].
+    double sigma_strip{0};      ///< Position uncertainty [strips].
+    int n_strips{0};
+    int layer_id{-1};
+    std::vector<int> strip_ids;
   };
 
   /**

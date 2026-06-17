@@ -67,7 +67,7 @@ std::pair<double, double> StripPulseFitter::evalAtT(
 StripPulseFitter::FitResult StripPulseFitter::fit(
     const std::vector<short>& samples) const {
   FitResult result;
-  result.ndf_ = static_cast<int>(samples.size()) - 2;
+  result.ndf = static_cast<int>(samples.size()) - 2;
 
   // Quick sanity: check that at least one sample is above pedestal.
   bool any_signal = false;
@@ -85,45 +85,45 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
   // Coarse scan over T to find the approximate minimum.
   // -------------------------------------------------------------------
   double best_chi2 = std::numeric_limits<double>::max();
-  double best_t = t_scan_min_ns_;
+  double best_T = t_scan_min_ns_;
   double best_amp = 0.0;
 
   // Keep track of the three-point neighbourhood for parabolic refinement.
-  double t_lo = t_scan_min_ns_, chi2_lo = std::numeric_limits<double>::max();
-  double t_hi = t_scan_min_ns_, chi2_hi = std::numeric_limits<double>::max();
+  double T_lo = t_scan_min_ns_, chi2_lo = std::numeric_limits<double>::max();
+  double T_hi = t_scan_min_ns_, chi2_hi = std::numeric_limits<double>::max();
 
-  double t_prev = t_scan_min_ns_;
+  double T_prev = t_scan_min_ns_;
   double chi2_prev = std::numeric_limits<double>::max();
 
-  for (double t = t_scan_min_ns_; t <= t_scan_max_ns_; t += t_scan_step_ns_) {
-    auto [chi2, amp] = evalAtT(samples, t);
+  for (double T = t_scan_min_ns_; T <= t_scan_max_ns_; T += t_scan_step_ns_) {
+    auto [chi2, amp] = evalAtT(samples, T);
 
     if (chi2 < best_chi2) {
       // Update neighbourhood: the previous point becomes T_lo.
-      t_lo = t_prev;
+      T_lo = T_prev;
       chi2_lo = chi2_prev;
       best_chi2 = chi2;
-      best_t = t;
+      best_T = T;
       best_amp = amp;
-    } else if (t > best_t && chi2_hi > best_chi2) {
+    } else if (T > best_T && chi2_hi > best_chi2) {
       // First point to the right of the minimum.
-      t_hi = t;
+      T_hi = T;
       chi2_hi = chi2;
     }
 
-    t_prev = t;
+    T_prev = T;
     chi2_prev = chi2;
   }
 
   // -------------------------------------------------------------------
   // Parabolic refinement around the minimum if neighbours are available.
   // -------------------------------------------------------------------
-  if (t_lo < best_t && t_hi > best_t && chi2_lo > best_chi2 &&
+  if (T_lo < best_T && T_hi > best_T && chi2_lo > best_chi2 &&
       chi2_hi > best_chi2) {
     // Fit a parabola through (T_lo, chi2_lo), (best_T, best_chi2), (T_hi,
     // chi2_hi).
-    const double d1 = best_t - t_lo;
-    const double d2 = t_hi - best_t;
+    const double d1 = best_T - T_lo;
+    const double d2 = T_hi - best_T;
     const double dc1 = best_chi2 - chi2_lo;
     const double dc2 = chi2_hi - best_chi2;
     // Vertex of parabola: ΔT = (d1²·dc2 - d2²·dc1) / (2·(d1·dc2 + d2·dc1))
@@ -132,10 +132,10 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
       const double delta = (d1 * d1 * dc2 - d2 * d2 * dc1) / denom;
       // Only accept the refinement if it stays within the bracket.
       if (std::abs(delta) < std::max(d1, d2)) {
-        const double t_refined = best_t + delta;
-        auto [chi2_ref, amp_ref] = evalAtT(samples, t_refined);
+        const double T_refined = best_T + delta;
+        auto [chi2_ref, amp_ref] = evalAtT(samples, T_refined);
         if (chi2_ref < best_chi2) {
-          best_t = t_refined;
+          best_T = T_refined;
           best_amp = amp_ref;
           best_chi2 = chi2_ref;
         }
@@ -143,10 +143,10 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
     }
   }
 
-  result.amplitude_ = best_amp;
-  result.t0_ = best_t;
-  result.chi2_ = best_chi2;
-  result.converged_ = true;
+  result.amplitude = best_amp;
+  result.t0 = best_T;
+  result.chi2 = best_chi2;
+  result.converged = true;
   return result;
 }
 

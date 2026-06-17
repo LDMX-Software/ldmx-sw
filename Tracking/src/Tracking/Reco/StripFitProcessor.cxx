@@ -56,14 +56,14 @@ void StripFitProcessor::produce(framework::Event& event) {
   for (const auto& raw : raw_hits) {
     const auto result = fitter_->fit(raw.getSamples());
 
-    if (!result.converged_) {
+    if (!result.converged) {
       ldmx_log(trace) << "Fit did not converge for layer=" << raw.getLayerID()
                       << " strip=" << raw.getStripID() << " — skipping";
       continue;
     }
 
-    if (max_chi2_ndf_ > 0.0 && result.ndf_ > 0) {
-      const double reduced_chi2 = result.chi2_ / result.ndf_;
+    if (max_chi2_ndf_ > 0.0 && result.ndf > 0) {
+      const double reduced_chi2 = result.chi2 / result.ndf;
       if (reduced_chi2 > max_chi2_ndf_) {
         ldmx_log(trace) << "χ²/ndf=" << reduced_chi2
                         << " exceeds cut=" << max_chi2_ndf_ << " — skipping";
@@ -73,15 +73,15 @@ void StripFitProcessor::produce(framework::Event& event) {
 
     fitted_hits.emplace_back(
         raw.getLayerID(), raw.getStripID(),
-        static_cast<float>(result.amplitude_), static_cast<float>(result.t0_),
-        static_cast<float>(result.chi2_), result.ndf_, raw.getTrackID(),
+        static_cast<float>(result.amplitude), static_cast<float>(result.t0),
+        static_cast<float>(result.chi2), result.ndf, raw.getTrackID(),
         raw.getPdgID(), raw.getSimHitID(), raw.getEdep());
 
     ldmx_log(trace) << "Fitted: layer=" << raw.getLayerID()
                     << " strip=" << raw.getStripID()
-                    << " amp=" << result.amplitude_ << " t0=" << result.t0_
-                    << " ns" << " chi2/ndf=" << result.chi2_ << "/"
-                    << result.ndf_;
+                    << " amp=" << result.amplitude << " t0=" << result.t0
+                    << " ns" << " chi2/ndf=" << result.chi2 << "/"
+                    << result.ndf;
   }
 
   ldmx_log(debug) << "Produced " << fitted_hits.size() << " FittedSiStripHits";

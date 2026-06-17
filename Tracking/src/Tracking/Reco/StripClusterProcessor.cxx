@@ -102,15 +102,15 @@ void StripClusterProcessor::produce(framework::Event& event) {
       // µm, etc.
       // -------------------------------------------------------------------
       using namespace tracking::digitization;
-      const int n_int = N_READOUT_STRIPS / 2;  // integer division = 383
-      const double offset = static_cast<double>(n_int);
-      const double local_u = (cl.centroid_strip_ - offset) * READOUT_PITCH_MM;
+      const int n_int_ = N_READOUT_STRIPS / 2;  // integer division = 383
+      const double offset_ = static_cast<double>(n_int_);
+      const double local_u = (cl.centroid_strip - offset_) * READOUT_PITCH_MM;
 
       // Cluster-size-dependent position uncertainty using sense pitch (30 µm).
       // Divisors follow the HPS convention: 1/√12 for single-strip (binary
       // resolution), 1/5 for 2-strip (best charge-sharing), then degrading.
       double sigma_u;
-      switch (cl.n_strips_) {
+      switch (cl.n_strips) {
         case 1:
           sigma_u = SENSE_PITCH_MM / std::sqrt(12.0);
           break;  // 8.7 µm
@@ -150,9 +150,9 @@ void StripClusterProcessor::produce(framework::Event& event) {
       meas.setGlobalPosition(static_cast<float>(global_pos[0]),
                              static_cast<float>(global_pos[1]),
                              static_cast<float>(global_pos[2]));
-      meas.setTime(static_cast<float>(cl.time_ns_));
-      meas.setNStrips(cl.n_strips_);
-      meas.setClusterAmplitude(static_cast<float>(cl.total_amplitude_));
+      meas.setTime(static_cast<float>(cl.time_ns));
+      meas.setNStrips(cl.n_strips);
+      meas.setClusterAmplitude(static_cast<float>(cl.total_amplitude));
 
       // -------------------------------------------------------------------
       // Reconstructed energy: convert total cluster amplitude to edep using
@@ -161,14 +161,14 @@ void StripClusterProcessor::produce(framework::Event& event) {
       //                                × ENERGY_PER_EHP_MEV [MeV/e]
       // -------------------------------------------------------------------
       const float reco_edep = static_cast<float>(
-          cl.total_amplitude_ * ADC_ELECTRONS_PER_COUNT * ENERGY_PER_EHP_MEV);
+          cl.total_amplitude * ADC_ELECTRONS_PER_COUNT * ENERGY_PER_EHP_MEV);
       meas.setEdep(reco_edep);
 
       // -------------------------------------------------------------------
       // Truth matching: collect unique track IDs from constituent strips.
       // -------------------------------------------------------------------
       std::unordered_set<int> seen_track_ids;
-      for (const int strip : cl.strip_ids_) {
+      for (const int strip : cl.strip_ids) {
         auto it = strip_hit_map.find(strip);
         if (it != strip_hit_map.end()) {
           const int tid = it->second->getTrackID();
@@ -179,9 +179,9 @@ void StripClusterProcessor::produce(framework::Event& event) {
       }
 
       ldmx_log(trace) << "  cluster: layer=" << layer_id
-                      << " strips=" << cl.n_strips_ << " u=" << local_u << " mm"
-                      << " sigma_u=" << sigma_u << " mm" << " t=" << cl.time_ns_
-                      << " ns" << " amp=" << cl.total_amplitude_ << " ADC"
+                      << " strips=" << cl.n_strips << " u=" << local_u << " mm"
+                      << " sigma_u=" << sigma_u << " mm" << " t=" << cl.time_ns
+                      << " ns" << " amp=" << cl.total_amplitude << " ADC"
                       << " n_track_ids=" << seen_track_ids.size();
 
       measurements.push_back(meas);
