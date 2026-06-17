@@ -32,8 +32,8 @@ std::vector<float> trackProp(const ldmx::Tracks& tracks,
                              const std::string& ts_title);
 
 /**
- * Return a vector of `ele_count` valid track states with the greatest transverse
- * momentum
+ * Return a vector of `ele_count` valid track states with the greatest
+ * transverse momentum
  * @param[in] tracks The track collection
  * @param[in] ele_count The recorded number of electrons in the event
  * @returns Vector of valid track states with the greatest transverse momentum
@@ -48,8 +48,7 @@ std::vector<float> pTTrackProp(const ldmx::Tracks& tracks, int ele_count);
  * @returns Vector of valid track states with the greatest total momentum
  */
 std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks& tracks,
-                                               int ele_count);
-
+                                             int ele_count);
 
 // MIP tracking
 /**

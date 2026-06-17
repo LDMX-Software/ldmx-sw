@@ -2,9 +2,9 @@
 
 namespace ecal {
 
-std::vector<float> trackProp(const ldmx::Tracks& tracks,
+std::vector<float> trackProp(const ldmx::Tracks &tracks,
                              ldmx::TrackStateType ts_type,
-                             const std::string& ts_title) {
+                             const std::string &ts_title) {
   // Vector to hold the new track state variables
   std::vector<float> new_track_states;
 
@@ -12,7 +12,7 @@ std::vector<float> trackProp(const ldmx::Tracks& tracks,
   if (tracks.empty()) return new_track_states;
 
   // Otherwise loop on the tracks
-  for (auto& track : tracks) {
+  for (auto &track : tracks) {
     // Get track state for ts_type
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
@@ -42,7 +42,8 @@ std::vector<float> trackProp(const ldmx::Tracks& tracks,
 
 // Returns 'ele_count' tracks with the greatest transverse momentum that is also
 // valid at the Ecal face
-std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks, int ele_count) {
+std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks,
+                                            int ele_count) {
   // Vector to hold the new track state variables, indexed by pT
   std::vector<std::pair<float, std::vector<float>>> new_track_states;
 
@@ -66,7 +67,8 @@ std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks, int ele_
 
     // Calculate transverse momentum
     float transverse_momentum =
-        sqrt((ecal_track_state.mom_[0] * ecal_track_state.mom_[0]) + (ecal_track_state.mom_[1] * ecal_track_state.mom_[1]));
+        sqrt((ecal_track_state.mom_[0] * ecal_track_state.mom_[0]) +
+             (ecal_track_state.mom_[1] * ecal_track_state.mom_[1]));
 
     // store state variables
     track_state_vars.push_back(ecal_track_state.pos_[0]);
@@ -100,11 +102,10 @@ std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks, int ele_
   return max_pT_track_states;
 }
 
-
 // Returns a specified number `ele_count` of highest momentum tracks which are
 // valid at the Ecal face
 std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
-                                               int ele_count) {
+                                             int ele_count) {
   // Vector variable to hold track state parameters, indexed by total momentum
   std::vector<std::pair<float, std::vector<float>>> new_track_states;
 
@@ -126,12 +127,13 @@ std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
     if (ecal_track_state.pos_.size() < 3 || ecal_track_state.mom_.size() < 3)
       continue;
 
-    float total_momentum = std::sqrt(
-      ecal_track_state.mom_[0]*ecal_track_state.mom_[0] + ecal_track_state.mom_[1]*ecal_track_state.mom_[1] + ecal_track_state.mom_[2]*ecal_track_state.mom_[2]
-    )
+    float total_momentum =
+        std::sqrt(ecal_track_state.mom_[0] * ecal_track_state.mom_[0] +
+                  ecal_track_state.mom_[1] * ecal_track_state.mom_[1] +
+                  ecal_track_state.mom_[2] * ecal_track_state.mom_[2])
 
-    // store state variables
-    track_state_vars.push_back(ecal_track_state.pos_[0]);
+        // store state variables
+        track_state_vars.push_back(ecal_track_state.pos_[0]);
     track_state_vars.push_back(ecal_track_state.pos_[1]);
     track_state_vars.push_back(ecal_track_state.pos_[2]);
     track_state_vars.push_back(ecal_track_state.mom_[0]);
@@ -160,7 +162,6 @@ std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
 
   return max_p_track_states;
 }
-
 
 // MIP tracking functions:
 

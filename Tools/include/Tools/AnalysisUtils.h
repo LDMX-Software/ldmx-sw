@@ -44,9 +44,8 @@ std::tuple<int, const ldmx::SimParticle*> getRecoil(
  * @return[out] Pointer to sim particle labeled as brem photon (nullptr if
  * not found)
  */
-std::tuple<int, const ldmx::SimParticle *> getBremPhoton(
-    const std::map<int, ldmx::SimParticle> &particleMap);
-
+std::tuple<int, const ldmx::SimParticle*> getBremPhoton(
+    const std::map<int, ldmx::SimParticle>& particleMap);
 
 /**
  * Helper function to getPNGamma. Checks if a particle has daughter particles
