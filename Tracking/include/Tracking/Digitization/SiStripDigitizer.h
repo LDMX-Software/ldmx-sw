@@ -62,55 +62,55 @@ class SiStripDigitizer {
   /// All parameters describing one silicon strip sensor layer.
   struct SensorParams {
     /// Sensor thickness [mm].  Must be set from the geometry before use.
-    double thickness{0.0};
+    double thickness_{0.0};
     /// Sense (inner) electrode pitch [mm].
-    double sense_pitch{SENSE_PITCH_MM};
+    double sense_pitch_{SENSE_PITCH_MM};
     /// Readout strip pitch [mm].  Must be an integer multiple of sense_pitch.
-    double readout_pitch{READOUT_PITCH_MM};
+    double readout_pitch_{READOUT_PITCH_MM};
     /// Applied reverse-bias voltage [V].
-    double bias_voltage{BIAS_VOLTAGE_V};
+    double bias_voltage_{BIAS_VOLTAGE_V};
     /// Full-depletion voltage [V].
-    double depletion_voltage{DEPLETION_VOLTAGE_V};
+    double depletion_voltage_{DEPLETION_VOLTAGE_V};
     /// Operating temperature [K].
-    double temperature{TEMPERATURE_K};
+    double temperature_{TEMPERATURE_K};
     /// Electronic noise sigma [electrons ENC].
-    double noise_electrons{NOISE_ELECTRONS};
+    double noise_electrons_{NOISE_ELECTRONS};
     /// Readout threshold [electrons].  Strips below this are suppressed.
-    double threshold_electrons{THRESHOLD_ELECTRONS};
+    double threshold_electrons_{THRESHOLD_ELECTRONS};
     /// true = n-type bulk; false = p-type bulk. LDMX (and HPS) use n-type bulk.
-    bool is_n_type{true};
+    bool is_n_type_{true};
     /// Simulate and read out the electron-collection side (n-strips).
-    bool electron_side_readout{false};
+    bool electron_side_readout_{false};
     /// Simulate and read out the hole-collection side (p-strips / backplane).
-    bool hole_side_readout{true};
+    bool hole_side_readout_{true};
     /*****   lorentz angles should be calculated from sensor geometry  and
      * bfield  *********/
     /// tan(θ_Lorentz) for electrons.  Sign encodes U-shift direction.
-    double electron_lorentz_tangent{0.0};
+    double electron_lorentz_tangent_{0.0};
     /// tan(θ_Lorentz) for holes.
-    double hole_lorentz_tangent{0.0};
+    double hole_lorentz_tangent_{0.0};
     /////////////////////////////////////////////////////////////////////////////////////////
     /// Charge-trapping fraction lost per 100 µm of drift.
     /// 0.0 for unirradiated; ~0.2 is typical at 1×10¹⁵ n_eq/cm².
-    double trapping{0.0};
+    double trapping_{0.0};
     /// Adaptive segmentation granularity: max U-step as fraction of
     /// sense_pitch.  Number of segments = max(n_segments_min,
     ///   ceil(|path_length · dir_u| / (granularity · sense_pitch))).
-    double deposition_granularity{0.10};
+    double deposition_granularity_{0.10};
     /// Minimum number of track sub-segments (used when the track is close to
     /// normal incidence so the adaptive formula gives a very small count).
-    int n_segments_min{5};
+    int n_segments_min_{5};
     /// Total number of readout strips.  Strip index 0 is at the most-negative
     /// U edge; strip N−1 at the most-positive edge.
-    int n_readout_strips{N_READOUT_STRIPS};
+    int n_readout_strips_{N_READOUT_STRIPS};
     /// AC-coupling transfer efficiency from a paired sense strip (physically
     /// under a readout strip, even index within its group) to its readout
     /// strip.
-    double readout_transfer_efficiency{READOUT_TRANSFER_EFFICIENCY};
+    double readout_transfer_efficiency_{READOUT_TRANSFER_EFFICIENCY};
     /// AC-coupling transfer efficiency from an unpaired sense strip (between
     /// two readout strips, odd index within its group) to each of its two
     /// adjacent readout strips.  Applied to both neighbours independently.
-    double sense_transfer_efficiency{SENSE_TRANSFER_EFFICIENCY};
+    double sense_transfer_efficiency_{SENSE_TRANSFER_EFFICIENCY};
   };
 
   SiStripDigitizer() = default;
@@ -154,7 +154,7 @@ class SiStripDigitizer {
   SensorParams& mutableParams() { return params_; }
 
   /// Set the sensor thickness [mm] from the geometry before processing hits.
-  void setThickness(double thickness) { params_.thickness = thickness; }
+  void setThickness(double thickness) { params_.thickness_ = thickness; }
 
  private:
   /**
