@@ -9,6 +9,7 @@ class EcalVetoProcessor(Processor):
     verbose: bool = False
     feature_list_name: str = "input"
     bdt_file: str = make_bdt_path("segmip")
+    bdt_feature_config: str = "segmip"
     roc_file: str = make_roc_path("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
@@ -76,3 +77,31 @@ class EcalTrackFinderProcessor(Processor):
     max_momentum: float = 10000.0  # MeV
     use_roc_energy: bool = True
     roc_file: str = make_roc_path("RoC_v14_8gev")
+
+
+@processor("ecal::EcalRecoilRemovalProcessor", "Ecal")
+class EcalRecoilRemovalProcessor(Processor):
+    """Configuration for the ECal processor which removes hits likely associated
+    with the recoil electron."""
+    beam_energy: float = 8000.0
+    num_ecal_layers: int = 32
+    rem_dist_file: str = make_roc_path("RoC_v14_8gev_95")
+    collection_name_included: str = "EcalRecHitsInc"
+    collection_name_excluded: str = "EcalRecHitsExc"
+    rec_coll_name: str = "EcalRecHits"
+    rec_pass_name: str = ""
+    ecal_sim_pass_name: str = ""
+    ecal_sp_hits_pass_name: str = ""
+    recoil_from_tracking: bool = True
+    track_coll_name: str = "RecoilTracksClean"
+    track_pass_name: str = ""
+    n_electrons: int = 1
+
+recrem_ecalveto = EcalVetoProcessor(
+    bdt_file = make_bdt_path( "2e_wab_vs_signal10mev_v15_1RoC_68_recrem" ),
+    bdt_feature_config = "wab_recrem",
+    disc_cut = 0.9913983,
+    rec_coll_name = "EcalRecHitsInc",
+    collection_name = "EcalVetoInc",
+)
+recrem_processing = [EcalRecoilRemovalProcessor(), recrem_ecalveto]

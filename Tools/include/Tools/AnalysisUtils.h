@@ -35,6 +35,19 @@ std::tuple<int, const ldmx::SimParticle*> getRecoil(
     const std::map<int, ldmx::SimParticle>& particleMap);
 
 /**
+ * Find and return the sim particle associated with the brem photon, if any.
+ * If multiple, will return the first brem photon in the list of sim
+ * particles.
+ *
+ * @param[in] particleMap map of sim particles
+ *
+ * @return[out] Pointer to sim particle labeled as brem photon (nullptr if
+ * not found)
+ */
+std::tuple<int, const ldmx::SimParticle*> getBremPhoton(
+    const std::map<int, ldmx::SimParticle>& particleMap);
+
+/**
  * Helper function to getPNGamma. Checks if a particle has daughter particles
  * produced by the photonNuclear process type that are present in the particle
  * map.
