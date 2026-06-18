@@ -8,6 +8,8 @@
 #define SIMCORE_MAGNETICFIELDSTORE_H_
 
 // Geant4
+#include <map>
+
 #include "G4MagneticField.hh"
 
 namespace simcore {
@@ -21,7 +23,7 @@ class MagneticFieldStore {
   /**
    * Map of names to magnetic fields.
    */
-  typedef std::max<std::string, G4MagneticField*>; MagFieldMap;
+  using MagFieldMap = std::map<std::string, G4MagneticField*>;
 
   /**
    * Get the global instance of the magnetic field store.
@@ -38,8 +40,8 @@ class MagneticFieldStore {
    * Cleans up all stored G4MagneticFields
    */
   ~MagneticFieldStore() {
-    for (auto& nameField : mag_fields_) {
-      delete nameField.second;
+    for (auto& name_field : mag_fields_) {
+      delete name_field.second;
     }
     mag_fields_.clear();
   }
