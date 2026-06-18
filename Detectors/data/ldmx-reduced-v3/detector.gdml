@@ -46,9 +46,9 @@
     <!-- the ecal support box is asymmetric in the vertical direction causing an additional
     shift relative to the origin at the target -->
     <position name="hadron_calorimeter_pos"
-		  x="0.0" 
+		  x="0.0"
 		  y="support_box_shift"
-		  z="1000.0"/>
+		  z="590.0"/>
     <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
 	
   </define>
