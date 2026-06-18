@@ -96,7 +96,8 @@ class GenieElectroNuclearProcess : public G4VDiscreteProcess {
 
   /**
    * @return true if a cross-section spline is available for @p target_code,
-   *         or if the available-target list could not be determined (fail open).
+   *         or if the available-target list could not be determined (fail
+   * open).
    */
   bool splineAvailable(int target_code) const;
 

@@ -45,7 +45,6 @@
 #include <cfloat>
 #include <cmath>
 #include <fstream>
-#include <iostream>
 
 namespace simcore {
 
@@ -59,7 +58,8 @@ GenieElectroNuclearProcess::GenieElectroNuclearProcess(
   // subtype (63).
   SetProcessSubType(64);
 
-  // Read configuration (targets/abundances are optional — empty means auto-discover)
+  // Read configuration (targets/abundances are optional — empty means
+  // auto-discover)
   static const std::vector<int> no_targets;
   static const std::vector<double> no_abundances;
   targets_ = params.get<std::vector<int>>("targets", no_targets);
@@ -101,21 +101,23 @@ GenieElectroNuclearProcess::GenieElectroNuclearProcess(
           "GenieElectroNuclearProcess is in auto-discovery mode (no manual "
           "'targets') but 'discover_volume' is empty.  Set genie_nuclear."
           "discover_volume to the volume to discover targets from (e.g. "
-          "\"target_region\"), or specify 'targets' and 'abundances' manually.");
+          "\"target_region\"), or specify 'targets' and 'abundances' "
+          "manually.");
     }
     auto_discover_ = true;
     ldmx_log(info) << "GenieElectroNuclearProcess configured for auto-discovery"
-                   << " from volume '" << discover_volume_ << "', tune=" << tune_;
+                   << " from volume '" << discover_volume_
+                   << "', tune=" << tune_;
   }
 }
 
 GenieElectroNuclearProcess::~GenieElectroNuclearProcess() {
-  std::cout << "--- GENIE Process Summary ---" << std::endl;
+  ldmx_log(info) << "--- GENIE Process Summary ---";
   for (size_t i = 0; i < targets_.size(); ++i) {
-    std::cout << "  Target=" << targets_[i] << "  Abundance=" << abundances_[i]
-              << std::endl;
+    ldmx_log(info) << "  Target=" << targets_[i]
+                   << "  Abundance=" << abundances_[i];
   }
-  std::cout << "--- GENIE Process Summary END ---" << std::endl;
+  ldmx_log(info) << "--- GENIE Process Summary END ---";
 }
 
 void GenieElectroNuclearProcess::initializeGENIE() {
@@ -172,8 +174,9 @@ void GenieElectroNuclearProcess::loadAvailableTargets() {
     }
   }
 
-  ldmx_log(info) << "Found cross-section splines for " << available_targets_.size()
-                 << " target nuclei in " << spline_file_;
+  ldmx_log(info) << "Found cross-section splines for "
+                 << available_targets_.size() << " target nuclei in "
+                 << spline_file_;
 }
 
 bool GenieElectroNuclearProcess::splineAvailable(int target_code) const {
@@ -186,8 +189,8 @@ void GenieElectroNuclearProcess::setupDrivers() {
   for (size_t i = 0; i < targets_.size(); ++i) {
     if (!splineAvailable(targets_[i])) {
       ldmx_log(error) << "No cross-section spline available for manually "
-                      << "specified target " << targets_[i] << " in spline file "
-                      << spline_file_;
+                      << "specified target " << targets_[i]
+                      << " in spline file " << spline_file_;
       EXCEPTION_RAISE(
           "GenieSplineMissing",
           "No GENIE cross-section spline for target " +
@@ -198,8 +201,7 @@ void GenieElectroNuclearProcess::setupDrivers() {
     genie::InitialState initial_state(targets_[i], 11);  // electron probe
     driver->SetEventGeneratorList(
         genie::RunOpt::Instance()->EventGeneratorList());
-    driver->SetUnphysEventMask(
-        *genie::RunOpt::Instance()->UnphysEventMask());
+    driver->SetUnphysEventMask(*genie::RunOpt::Instance()->UnphysEventMask());
     driver->Configure(initial_state);
     driver->UseSplines();
     evg_drivers_.push_back(std::move(driver));
@@ -246,8 +248,7 @@ void GenieElectroNuclearProcess::discoverIsotopesForElement(
       genie::InitialState initial_state(target_code, 11);
       driver->SetEventGeneratorList(
           genie::RunOpt::Instance()->EventGeneratorList());
-      driver->SetUnphysEventMask(
-          *genie::RunOpt::Instance()->UnphysEventMask());
+      driver->SetUnphysEventMask(*genie::RunOpt::Instance()->UnphysEventMask());
       driver->Configure(initial_state);
       driver->UseSplines();
       evg_drivers_.push_back(std::move(driver));
@@ -280,8 +281,7 @@ void GenieElectroNuclearProcess::discoverIsotopesForElement(
     genie::InitialState initial_state(target_code, 11);
     driver->SetEventGeneratorList(
         genie::RunOpt::Instance()->EventGeneratorList());
-    driver->SetUnphysEventMask(
-        *genie::RunOpt::Instance()->UnphysEventMask());
+    driver->SetUnphysEventMask(*genie::RunOpt::Instance()->UnphysEventMask());
     driver->Configure(initial_state);
     driver->UseSplines();
     evg_drivers_.push_back(std::move(driver));
