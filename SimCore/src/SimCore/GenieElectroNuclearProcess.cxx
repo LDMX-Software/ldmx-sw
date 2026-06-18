@@ -86,8 +86,8 @@ GenieElectroNuclearProcess::GenieElectroNuclearProcess(
 
     // Build the Z -> targets lookup map
     for (size_t i = 0; i < targets_.size(); ++i) {
-      int Z = (targets_[i] / 10000) % 1000;
-      z_to_targets_[Z].emplace_back(static_cast<int>(i), abundances_[i]);
+      int z = (targets_[i] / 10000) % 1000;
+      z_to_targets_[z].emplace_back(static_cast<int>(i), abundances_[i]);
     }
 
     ldmx_log(info) << "GenieElectroNuclearProcess configured with "
@@ -210,10 +210,10 @@ void GenieElectroNuclearProcess::setupDrivers() {
 
 void GenieElectroNuclearProcess::discoverIsotopesForElement(
     const G4Element* element) {
-  int Z = static_cast<int>(element->GetZ());
+  int z = static_cast<int>(element->GetZ());
 
   // Already checked this element
-  if (!discovered_z_.insert(Z).second) return;
+  if (!discovered_z_.insert(z).second) return;
 
   size_t n_isotopes = element->GetNumberOfIsotopes();
 
@@ -223,16 +223,16 @@ void GenieElectroNuclearProcess::discoverIsotopesForElement(
     const G4double* rel_ab = element->GetRelativeAbundanceVector();
 
     for (size_t j = 0; j < n_isotopes; ++j) {
-      int iso_Z = (*isotopes)[j]->GetZ();
-      int A = (*isotopes)[j]->GetN();
+      int iso_z = (*isotopes)[j]->GetZ();
+      int a = (*isotopes)[j]->GetN();
       double abundance = rel_ab[j];
       if (abundance <= 0) continue;
 
-      int target_code = 1000000000 + iso_Z * 10000 + A * 10;
+      int target_code = 1000000000 + iso_z * 10000 + a * 10;
 
       if (!splineAvailable(target_code)) {
         ldmx_log(warn) << "No cross-section spline available for target "
-                       << target_code << " (Z=" << iso_Z << ", A=" << A
+                       << target_code << " (Z=" << iso_z << ", A=" << a
                        << ") from element " << element->GetName()
                        << " — skipping it (computing on the fly would be "
                        << "prohibitively slow).";
@@ -253,19 +253,19 @@ void GenieElectroNuclearProcess::discoverIsotopesForElement(
       driver->UseSplines();
       evg_drivers_.push_back(std::move(driver));
 
-      z_to_targets_[Z].emplace_back(driver_idx, abundance);
+      z_to_targets_[z].emplace_back(driver_idx, abundance);
 
-      ldmx_log(info) << "Auto-discovered target " << target_code << " (Z=" << Z
-                     << ", A=" << A << ", abundance=" << abundance << ")";
+      ldmx_log(info) << "Auto-discovered target " << target_code << " (Z=" << z
+                     << ", A=" << a << ", abundance=" << abundance << ")";
     }
   } else {
     // No explicit isotopes — use Z and rounded atomic mass as single target
-    int A = static_cast<int>(std::round(element->GetAtomicMassAmu()));
-    int target_code = 1000000000 + Z * 10000 + A * 10;
+    int a = static_cast<int>(std::round(element->GetAtomicMassAmu()));
+    int target_code = 1000000000 + z * 10000 + a * 10;
 
     if (!splineAvailable(target_code)) {
       ldmx_log(warn) << "No cross-section spline available for target "
-                     << target_code << " (Z=" << Z << ", A=" << A
+                     << target_code << " (Z=" << z << ", A=" << a
                      << ") from element " << element->GetName()
                      << " — skipping it (computing on the fly would be "
                      << "prohibitively slow).";
@@ -286,10 +286,10 @@ void GenieElectroNuclearProcess::discoverIsotopesForElement(
     driver->UseSplines();
     evg_drivers_.push_back(std::move(driver));
 
-    z_to_targets_[Z].emplace_back(driver_idx, 1.0);
+    z_to_targets_[z].emplace_back(driver_idx, 1.0);
 
-    ldmx_log(info) << "Auto-discovered target " << target_code << " (Z=" << Z
-                   << ", A=" << A << ") from element " << element->GetName();
+    ldmx_log(info) << "Auto-discovered target " << target_code << " (Z=" << z
+                   << ", A=" << a << ") from element " << element->GetName();
   }
 }
 
@@ -377,17 +377,17 @@ G4double GenieElectroNuclearProcess::GetMeanFreePath(
 
   G4Material* material = track.GetMaterial();
   const G4ElementVector* elements = material->GetElementVector();
-  const G4double* atomDensity = material->GetVecNbOfAtomsPerVolume();
+  const G4double* atom_density = material->GetVecNbOfAtomsPerVolume();
   size_t n_elements = material->GetNumberOfElements();
 
-  G4double SIGMA = 0;
+  G4double sigma = 0;
   partial_sum_sigma_.resize(n_elements);
 
   for (size_t i = 0; i < n_elements; ++i) {
-    int Z = static_cast<int>((*elements)[i]->GetZ());
+    int z = static_cast<int>((*elements)[i]->GetZ());
 
     G4double element_sigma = 0;
-    auto it = z_to_targets_.find(Z);
+    auto it = z_to_targets_.find(z);
     if (it != z_to_targets_.end()) {
       for (const auto& [driver_idx, abundance] : it->second) {
         // Query GENIE for this target's cross section
@@ -400,11 +400,11 @@ G4double GenieElectroNuclearProcess::GetMeanFreePath(
     }
     // else: no GENIE target for this Z, contributes 0
 
-    SIGMA += atomDensity[i] * element_sigma;
-    partial_sum_sigma_[i] = SIGMA;
+    sigma += atom_density[i] * element_sigma;
+    partial_sum_sigma_[i] = sigma;
   }
 
-  return SIGMA > DBL_MIN ? 1.0 / SIGMA : DBL_MAX;
+  return sigma > DBL_MIN ? 1.0 / sigma : DBL_MAX;
 }
 
 G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
@@ -456,8 +456,8 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
 
   if (n_elements == 1) {
     // Only one element — pick from matching GENIE targets by abundance
-    int Z = static_cast<int>((*elements)[0]->GetZ());
-    auto it = z_to_targets_.find(Z);
+    int z = static_cast<int>((*elements)[0]->GetZ());
+    auto it = z_to_targets_.find(z);
     if (it != z_to_targets_.end() && !it->second.empty()) {
       if (it->second.size() == 1) {
         selected_driver = it->second[0].first;
@@ -489,8 +489,8 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
       }
     }
 
-    int Z = static_cast<int>((*elements)[selected_element]->GetZ());
-    auto it = z_to_targets_.find(Z);
+    int z = static_cast<int>((*elements)[selected_element]->GetZ());
+    auto it = z_to_targets_.find(z);
     if (it != z_to_targets_.end() && !it->second.empty()) {
       if (it->second.size() == 1) {
         selected_driver = it->second[0].first;
@@ -569,9 +569,9 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
 
     // Handle nuclear fragments / ions
     if (pdg > 1000000000) {
-      int ion_Z = (pdg / 10000) % 1000;
-      int ion_A = (pdg / 10) % 1000;
-      particle_def = G4IonTable::GetIonTable()->GetIon(ion_Z, ion_A, 0.);
+      int ion_z = (pdg / 10000) % 1000;
+      int ion_a = (pdg / 10) % 1000;
+      particle_def = G4IonTable::GetIonTable()->GetIon(ion_z, ion_a, 0.);
     } else {
       particle_def = G4ParticleTable::GetParticleTable()->FindParticle(pdg);
     }
