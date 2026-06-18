@@ -387,7 +387,7 @@ them in the bilayer loop
 <variable name="GlueThick_dz" value="0.2"/>
 <variable name="CarbonBasePlate_dz" value="0.0"/>
 <!-- thickness of motherboard assembly, must match what is extracted -->
-<!-- Aug-2025 test beam: motherboard modeled as a single 0.9mm FR4 board
+<!-- 2025 Winter test beam: motherboard modeled as a single 0.9mm FR4 board
      (was 8.166 for the full-ECAL tessellated assembly). -->
 <variable name="MotherBoardAssembly_dz" value="0.9"/>
 <!-- bilayer mounting plate: 89015K18 aluminum plate is 1/8 inch = 3.2mm thick -->

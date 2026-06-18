@@ -215,7 +215,7 @@
     </loop>
 
     <!--
-      Aug-2025 test beam: each bilayer mounts on a 12in x 12in x 1/8in 6061
+      2025 Winter test beam: each bilayer mounts on a 12in x 12in x 1/8in 6061
       aluminum plate (McMaster 89015K18), NOT the full-ECAL carbon cooling
       "curtain". The plate plays the same structural role (the two sensitive
       modules of a bilayer straddle it), so we keep the CarbonCoolingPlane
@@ -225,7 +225,7 @@
     <box name="CarbonCoolingPlane" x="304.8" y="304.8" z="CarbonCoolingPlane_dz" lunit="mm" />
 
     <!--
-      Single-module motherboard, modeled as a simple FR4 box (the Aug-2025
+      Single-module motherboard, modeled as a simple FR4 box (the 2025 Winter
       test beam uses one module per layer, not the full-ECAL flower boards).
       Transverse footprint from the CAD single_module_motherboard_PCB bounding
       box (~237 x 245 mm), 0.9 mm thick PCB.
@@ -285,7 +285,7 @@
     -->
     <box lunit="mm" name="ECal_box" x="ecal_envelope_x" y="ecal_envelope_y" z="ecal_envelope_z"/>
 
-    <!-- ECAL support-box part solids (Aug-2025 test beam) -->
+    <!-- ECAL support-box part solids (2025 Winter test beam) -->
     &support_box_solids;
   </solids>
 
@@ -469,7 +469,7 @@
       </physvol>
 
       <!--
-       Strongback bar removed for the Aug-2025 test beam: it is a full-ECAL
+       Strongback bar removed for the 2025 Winter test beam: it is a full-ECAL
        aluminum support bar (~837mm wide) that juts well outside the test-beam
        support box. The module supports here are the support box's PlaneBracket
        bars instead.
@@ -588,7 +588,7 @@
       </physvol>
 
       <!--
-        Strongback bar removed for the Aug-2025 test beam (see note above).
+        Strongback bar removed for the 2025 Winter test beam (see note above).
       <physvol>
         <volumeref ref="strongback_bar_volume_1"/>
         <position name="strongback_bar_volume_Spos" unit="mm"
