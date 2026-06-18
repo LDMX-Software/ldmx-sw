@@ -387,9 +387,11 @@ them in the bilayer loop
 <variable name="GlueThick_dz" value="0.2"/>
 <variable name="CarbonBasePlate_dz" value="0.0"/>
 <!-- thickness of motherboard assembly, must match what is extracted -->
-<variable name="MotherBoardAssembly_dz" value="8.166"/>
-<!-- the carbon cooling plane is 1mm+3/16 inch thick (about) -->
-<variable name="CarbonCoolingPlane_dz" value="3.18"/>
+<!-- Aug-2025 test beam: motherboard modeled as a single 0.9mm FR4 board
+     (was 8.166 for the full-ECAL tessellated assembly). -->
+<variable name="MotherBoardAssembly_dz" value="0.9"/>
+<!-- bilayer mounting plate: 89015K18 aluminum plate is 1/8 inch = 3.2mm thick -->
+<variable name="CarbonCoolingPlane_dz" value="3.2"/>
 <variable name="CarbonCoolingPlane_dy" value="495.3"/>
 <variable name="CarbonCoolingPlane_dx" value="673.1"/>
 <!-- vertical dimension of the strong back bar -->

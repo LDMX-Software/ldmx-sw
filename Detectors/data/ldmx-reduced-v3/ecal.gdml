@@ -41,16 +41,21 @@
                       0.00 199.34"/>
 
     <!--
-      The position of the support box
+      The position of the support box.
 
-      the support box is not symmetric in the vertical direction so
-      center on the central cavern with
-        y="-520.7/2.-support_box_shift"
+      The support box GDML is now rebuilt parametrically and centered on the
+      box geometric center (LDMX-oriented), so this places that center inside
+      em_calorimeters. Derived from the common CAD->LDMX transform that also
+      positions the ECAL stack (both come from ECal_testBeam_Aug2025.STEP):
+        em_x = CAD_x + 206   (plate/module center CAD_x=-206 -> em_x=0)
+        em_y = -CAD_z - 228.6 - support_box_shift
+        em_z = CAD_y - 71.1  (middle plate CAD_y=-114.3 -> em_z=-185.5)
+      Box center CAD(-228.6,-114.3,-228.6) -> em(-22.6, -support_box_shift, -185.485).
     -->
-    <position name="support_box_pos" unit="mm" 
-      x="-880.6815/2." 
-      y="-520.7/2.-support_box_shift"
-      z="-300-102.616"/>
+    <position name="support_box_pos" unit="mm"
+      x="-22.6"
+      y="-support_box_shift"
+      z="-185.485"/>
 
     <!--
       The transverse position of the strongbacks.
@@ -208,11 +213,22 @@
     </loop>
 
     <!--
-      The carbon cooling layer spans the entire ECal box since it is the suport "curtain" for each
-      bi-layer. Right now, the CarbonCoolingPlane is modeled by a large rectangle filled with
-      a carbon+epoxy composite material.
+      Aug-2025 test beam: each bilayer mounts on a 12in x 12in x 1/8in 6061
+      aluminum plate (McMaster 89015K18), NOT the full-ECAL carbon cooling
+      "curtain". The plate plays the same structural role (the two sensitive
+      modules of a bilayer straddle it), so we keep the CarbonCoolingPlane
+      name/placement but resize to the 304.8 x 304.8 mm plate and switch its
+      material to Aluminum (see C_volume_CarbonCoolingPlane below).
     -->
-    <box name="CarbonCoolingPlane" x="673.1" y="495.3" z="CarbonCoolingPlane_dz" lunit="mm" />
+    <box name="CarbonCoolingPlane" x="304.8" y="304.8" z="CarbonCoolingPlane_dz" lunit="mm" />
+
+    <!--
+      Single-module motherboard, modeled as a simple FR4 box (the Aug-2025
+      test beam uses one module per layer, not the full-ECAL flower boards).
+      Transverse footprint from the CAD single_module_motherboard_PCB bounding
+      box (~237 x 245 mm), 0.9 mm thick PCB.
+    -->
+    <box name="single_module_motherboard" x="237.0" y="245.0" z="0.9" lunit="mm" />
 
     <!--
       The sensitive hexagons stack
@@ -275,25 +291,27 @@
       This first section is defining some logical volumes
       for use later in construction of the detector.
     -->
+    <!--
+      The bilayer mounting plate. Now the 89015K18 aluminum test-beam plate
+      (resized solid above); material switched from carbon to Aluminum.
+    -->
     <volume name="C_volume_CarbonCoolingPlane">
-      <materialref ref="CarbonEpoxyComposite"/>
+      <materialref ref="Aluminum"/>
       <solidref ref="CarbonCoolingPlane"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="CarbonEpoxyCompositeMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AluminumMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
     </volume>
 
-    <assembly name="PCB_motherboard_volume">
-      <physvol>
-        <file name="ecal_motherboard5_assembly.gdml" />
-        <positionref ref="motherboard5_position_rel_to_layer" />
-        <rotationref ref="motherboard5_rotation" />
-      </physvol>
-      <physvol>
-        <file name="ecal_motherboard6_assembly.gdml" />
-        <positionref ref="motherboard6_position_rel_to_layer" />
-        <rotationref ref="motherboard6_rotation" />
-      </physvol>
-    </assembly>
+    <!--
+      Single-module motherboard as a simple FR4 box, centered on the module
+      (replaces the full-ECAL ecal_motherboard5/6 tessellated assemblies).
+    -->
+    <volume name="PCB_motherboard_volume">
+      <materialref ref="FR4"/>
+      <solidref ref="single_module_motherboard"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="FR4MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
+    </volume>
 
     <volume name="PCB_volume">
       <materialref ref="FR4"/>
@@ -442,21 +460,21 @@
           z="bilayer_start + testModuleTolerance + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
       </physvol>
 
-      <!-- 
-       center strong back bar over the center of the carbon cooling plane
-        and put it just above the carbon cooling plane
-       assume PreShower layer uses the same strongback as the first bilayer
-        with absorber
-      --> 
+      <!--
+       Strongback bar removed for the Aug-2025 test beam: it is a full-ECAL
+       aluminum support bar (~837mm wide) that juts well outside the test-beam
+       support box. The module supports here are the support box's PlaneBracket
+       bars instead.
       <physvol>
         <volumeref ref="strongback_bar_volume_0"/>
-        <position name="strongback_bar_volume_PSpos" unit="mm" 
+        <position name="strongback_bar_volume_PSpos" unit="mm"
           x="strongback_pos_x"
           y="strongback_pos_y"
-          z="bilayer_start + testModuleTolerance + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz 
+          z="bilayer_start + testModuleTolerance + FrontTolerance + PCB_dz + PCB_Motherboard_Gap + Flower_dz
             + CarbonCoolingPlane_dz/2."/>
       </physvol>
-      
+      -->
+
       <!--
       Without the additional tungsten layer to allow for more longitudinal space,
         the cooling plane is too close to the motherboard to allow room for the 
@@ -561,21 +579,20 @@
             + PCB_dz + PCB_Motherboard_Gap + PCB_dz + Glue_dz + Si_dz"/>
       </physvol>
 
-      <!-- 
-        center strong back bar over the center of the carbon cooling plane
-        and put it just above the carbon cooling plane
-      --> 
+      <!--
+        Strongback bar removed for the Aug-2025 test beam (see note above).
       <physvol>
         <volumeref ref="strongback_bar_volume_1"/>
-        <position name="strongback_bar_volume_Spos" unit="mm" 
+        <position name="strongback_bar_volume_Spos" unit="mm"
           x="strongback_pos_x"
           y="strongback_pos_y"
           z="bilayer_start + testModuleTolerance + sampling_section_offset
             + bilayer_noabsorber_thickness
-            + BackTolerance + samplingSectionTolerance + moduleTwoTolerance + FrontTolerance 
+            + BackTolerance + samplingSectionTolerance + moduleTwoTolerance + FrontTolerance
             + PCB_dz + PCB_Motherboard_Gap + Flower_dz
            + CarbonCoolingPlane_dz/2."/>
       </physvol>
+      -->
 
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
