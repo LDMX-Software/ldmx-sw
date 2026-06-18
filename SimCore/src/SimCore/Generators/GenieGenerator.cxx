@@ -250,9 +250,9 @@ GenieGenerator::~GenieGenerator() {
   double total_xsec = 0;
   for (size_t i_t = 0; i_t < targets_.size(); ++i_t) {
     ldmx_log(info) << "Target=" << targets_[i_t]
-                   << "\tAbundance=" << abundances_[i_t]
-                   << "\tXSEC=" << xsec_by_target_[i_t] / genie::units::millibarn
-                   << " mb" << "\tEvents=" << n_events_by_target_[i_t];
+                   << "\tAbundance=" << abundances_[i_t] << "\tXSEC="
+                   << xsec_by_target_[i_t] / genie::units::millibarn << " mb"
+                   << "\tEvents=" << n_events_by_target_[i_t];
     if (n_events_by_target_[i_t] > 0)
       total_xsec += xsec_by_target_[i_t] * abundances_[i_t];
   }
