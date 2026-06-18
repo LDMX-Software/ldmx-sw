@@ -6,6 +6,7 @@
 #include "SimCore/GenieElectroNuclearProcess.h"
 
 #include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/G4User/VolumeChecks.h"
 
 // GENIE
 #include "Framework/Conventions/Units.h"
@@ -22,8 +23,13 @@
 // Geant4
 #include "G4DynamicParticle.hh"
 #include "G4Electron.hh"
+#include "G4Element.hh"
 #include "G4EventManager.hh"
 #include "G4IonTable.hh"
+#include "G4Isotope.hh"
+#include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4Material.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessTable.hh"
 #include "G4SystemOfUnits.hh"
@@ -35,8 +41,10 @@
 #include <TParticle.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cfloat>
 #include <cmath>
+#include <fstream>
 #include <iostream>
 
 namespace simcore {
@@ -51,33 +59,54 @@ GenieElectroNuclearProcess::GenieElectroNuclearProcess(
   // subtype (63).
   SetProcessSubType(64);
 
-  // Read configuration
-  targets_ = params.get<std::vector<int>>("targets");
-  abundances_ = params.get<std::vector<double>>("abundances");
+  // Read configuration (targets/abundances are optional — empty means auto-discover)
+  static const std::vector<int> no_targets;
+  static const std::vector<double> no_abundances;
+  targets_ = params.get<std::vector<int>>("targets", no_targets);
+  abundances_ = params.get<std::vector<double>>("abundances", no_abundances);
+  discover_volume_ = params.get<std::string>("discover_volume", "");
   tune_ = params.get<std::string>("tune");
   spline_file_ = params.get<std::string>("spline_file");
   message_threshold_file_ = params.get<std::string>("message_threshold_file");
   only_one_per_event_ = params.get<bool>("only_one_per_event");
 
-  // Normalize abundances
-  double abundance_sum = 0;
-  for (auto a : abundances_) abundance_sum += a;
-  if (abundance_sum > 0) {
-    for (auto& a : abundances_) a /= abundance_sum;
-  }
-
-  // Initialize GENIE and set up drivers
+  // Initialize GENIE framework (tune, splines) — independent of targets
   initializeGENIE();
-  setupDrivers();
 
-  // Build the Z -> targets lookup map
-  for (size_t i = 0; i < targets_.size(); ++i) {
-    int Z = (targets_[i] / 10000) % 1000;
-    z_to_targets_[Z].emplace_back(static_cast<int>(i), abundances_[i]);
+  if (!targets_.empty()) {
+    // Manual mode: user-specified targets and abundances
+    // Normalize abundances
+    double abundance_sum = 0;
+    for (auto a : abundances_) abundance_sum += a;
+    if (abundance_sum > 0) {
+      for (auto& a : abundances_) a /= abundance_sum;
+    }
+
+    setupDrivers();
+
+    // Build the Z -> targets lookup map
+    for (size_t i = 0; i < targets_.size(); ++i) {
+      int Z = (targets_[i] / 10000) % 1000;
+      z_to_targets_[Z].emplace_back(static_cast<int>(i), abundances_[i]);
+    }
+
+    ldmx_log(info) << "GenieElectroNuclearProcess configured with "
+                   << targets_.size() << " manual target(s), tune=" << tune_;
+  } else {
+    // Auto-discovery mode: targets are discovered once from the configured
+    // volume on the first GetMeanFreePath call (geometry exists by then).
+    if (discover_volume_.empty()) {
+      EXCEPTION_RAISE(
+          "ConfigurationException",
+          "GenieElectroNuclearProcess is in auto-discovery mode (no manual "
+          "'targets') but 'discover_volume' is empty.  Set genie_nuclear."
+          "discover_volume to the volume to discover targets from (e.g. "
+          "\"target_region\"), or specify 'targets' and 'abundances' manually.");
+    }
+    auto_discover_ = true;
+    ldmx_log(info) << "GenieElectroNuclearProcess configured for auto-discovery"
+                   << " from volume '" << discover_volume_ << "', tune=" << tune_;
   }
-
-  ldmx_log(info) << "GenieElectroNuclearProcess configured with "
-                 << targets_.size() << " target(s), tune=" << tune_;
 }
 
 GenieElectroNuclearProcess::~GenieElectroNuclearProcess() {
@@ -109,19 +138,205 @@ void GenieElectroNuclearProcess::initializeGENIE() {
   // Load cross-section spline file
   genie::utils::app_init::XSecTable(spline_file_, true);
 
+  // Record which target nuclei actually have splines so we can skip the rest
+  loadAvailableTargets();
+
   genie::GHepRecord::SetPrintLevel(0);
 }
 
+void GenieElectroNuclearProcess::loadAvailableTargets() {
+  std::ifstream in(spline_file_);
+  if (!in) {
+    ldmx_log(warn) << "Could not open spline file '" << spline_file_
+                   << "' to determine available targets; all discovered "
+                   << "isotopes will be attempted.";
+    return;
+  }
+
+  // Spline keys embed the target nucleus as a "tgt:<10-digit-code>" token.
+  const std::string token = "tgt:";
+  std::string line;
+  while (std::getline(in, line)) {
+    size_t pos = 0;
+    while ((pos = line.find(token, pos)) != std::string::npos) {
+      pos += token.size();
+      size_t end = pos;
+      while (end < line.size() &&
+             std::isdigit(static_cast<unsigned char>(line[end]))) {
+        ++end;
+      }
+      if (end > pos) {
+        available_targets_.insert(std::stoi(line.substr(pos, end - pos)));
+      }
+      pos = end;
+    }
+  }
+
+  ldmx_log(info) << "Found cross-section splines for " << available_targets_.size()
+                 << " target nuclei in " << spline_file_;
+}
+
+bool GenieElectroNuclearProcess::splineAvailable(int target_code) const {
+  // Fail open: if we could not parse the spline file, don't filter anything.
+  if (available_targets_.empty()) return true;
+  return available_targets_.count(target_code) > 0;
+}
+
 void GenieElectroNuclearProcess::setupDrivers() {
-  evg_drivers_.resize(targets_.size());
   for (size_t i = 0; i < targets_.size(); ++i) {
+    if (!splineAvailable(targets_[i])) {
+      ldmx_log(error) << "No cross-section spline available for manually "
+                      << "specified target " << targets_[i] << " in spline file "
+                      << spline_file_;
+      EXCEPTION_RAISE(
+          "GenieSplineMissing",
+          "No GENIE cross-section spline for target " +
+              std::to_string(targets_[i]) +
+              ". Add it to the spline file or remove it from 'targets'.");
+    }
+    auto driver = std::make_unique<genie::GEVGDriver>();
     genie::InitialState initial_state(targets_[i], 11);  // electron probe
-    evg_drivers_[i].SetEventGeneratorList(
+    driver->SetEventGeneratorList(
         genie::RunOpt::Instance()->EventGeneratorList());
-    evg_drivers_[i].SetUnphysEventMask(
+    driver->SetUnphysEventMask(
         *genie::RunOpt::Instance()->UnphysEventMask());
-    evg_drivers_[i].Configure(initial_state);
-    evg_drivers_[i].UseSplines();
+    driver->Configure(initial_state);
+    driver->UseSplines();
+    evg_drivers_.push_back(std::move(driver));
+  }
+}
+
+void GenieElectroNuclearProcess::discoverIsotopesForElement(
+    const G4Element* element) {
+  int Z = static_cast<int>(element->GetZ());
+
+  // Already checked this element
+  if (!discovered_z_.insert(Z).second) return;
+
+  size_t n_isotopes = element->GetNumberOfIsotopes();
+
+  if (n_isotopes > 0) {
+    // Element has explicit isotope data — use it
+    const G4IsotopeVector* isotopes = element->GetIsotopeVector();
+    const G4double* rel_ab = element->GetRelativeAbundanceVector();
+
+    for (size_t j = 0; j < n_isotopes; ++j) {
+      int iso_Z = (*isotopes)[j]->GetZ();
+      int A = (*isotopes)[j]->GetN();
+      double abundance = rel_ab[j];
+      if (abundance <= 0) continue;
+
+      int target_code = 1000000000 + iso_Z * 10000 + A * 10;
+
+      if (!splineAvailable(target_code)) {
+        ldmx_log(warn) << "No cross-section spline available for target "
+                       << target_code << " (Z=" << iso_Z << ", A=" << A
+                       << ") from element " << element->GetName()
+                       << " — skipping it (computing on the fly would be "
+                       << "prohibitively slow).";
+        continue;
+      }
+
+      int driver_idx = static_cast<int>(evg_drivers_.size());
+
+      targets_.push_back(target_code);
+      abundances_.push_back(abundance);
+
+      auto driver = std::make_unique<genie::GEVGDriver>();
+      genie::InitialState initial_state(target_code, 11);
+      driver->SetEventGeneratorList(
+          genie::RunOpt::Instance()->EventGeneratorList());
+      driver->SetUnphysEventMask(
+          *genie::RunOpt::Instance()->UnphysEventMask());
+      driver->Configure(initial_state);
+      driver->UseSplines();
+      evg_drivers_.push_back(std::move(driver));
+
+      z_to_targets_[Z].emplace_back(driver_idx, abundance);
+
+      ldmx_log(info) << "Auto-discovered target " << target_code << " (Z=" << Z
+                     << ", A=" << A << ", abundance=" << abundance << ")";
+    }
+  } else {
+    // No explicit isotopes — use Z and rounded atomic mass as single target
+    int A = static_cast<int>(std::round(element->GetAtomicMassAmu()));
+    int target_code = 1000000000 + Z * 10000 + A * 10;
+
+    if (!splineAvailable(target_code)) {
+      ldmx_log(warn) << "No cross-section spline available for target "
+                     << target_code << " (Z=" << Z << ", A=" << A
+                     << ") from element " << element->GetName()
+                     << " — skipping it (computing on the fly would be "
+                     << "prohibitively slow).";
+      return;
+    }
+
+    int driver_idx = static_cast<int>(evg_drivers_.size());
+
+    targets_.push_back(target_code);
+    abundances_.push_back(1.0);
+
+    auto driver = std::make_unique<genie::GEVGDriver>();
+    genie::InitialState initial_state(target_code, 11);
+    driver->SetEventGeneratorList(
+        genie::RunOpt::Instance()->EventGeneratorList());
+    driver->SetUnphysEventMask(
+        *genie::RunOpt::Instance()->UnphysEventMask());
+    driver->Configure(initial_state);
+    driver->UseSplines();
+    evg_drivers_.push_back(std::move(driver));
+
+    z_to_targets_[Z].emplace_back(driver_idx, 1.0);
+
+    ldmx_log(info) << "Auto-discovered target " << target_code << " (Z=" << Z
+                   << ", A=" << A << ") from element " << element->GetName();
+  }
+}
+
+void GenieElectroNuclearProcess::discoverFromVolume() {
+  namespace vc = simcore::g4user::volumechecks;
+
+  // Select the same volume-matching test the ElectroNuclear bias operator
+  // uses, so the discovered targets correspond to the biased volume.
+  using Test = bool (*)(G4LogicalVolume*, const std::string&);
+  Test include_volume_test = nullptr;
+  if (discover_volume_ == "ecal") {
+    include_volume_test = &vc::isInEcal;
+  } else if (discover_volume_ == "old_ecal") {
+    include_volume_test = &vc::isInEcalOld;
+  } else if (discover_volume_ == "target") {
+    include_volume_test = &vc::isInTargetOnly;
+  } else if (discover_volume_ == "target_region") {
+    include_volume_test = &vc::isInTargetRegion;
+  } else if (discover_volume_ == "hcal") {
+    include_volume_test = &vc::isInHcal;
+  } else {
+    include_volume_test = &vc::nameContains;
+  }
+
+  int n_volumes = 0;
+  for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
+    if (!include_volume_test(volume, discover_volume_)) continue;
+    ++n_volumes;
+
+    G4Material* mat = volume->GetMaterial();
+    if (!mat) continue;
+    const G4ElementVector* els = mat->GetElementVector();
+    for (size_t i = 0; i < mat->GetNumberOfElements(); ++i) {
+      // discoverIsotopesForElement de-duplicates by Z internally
+      discoverIsotopesForElement((*els)[i]);
+    }
+  }
+
+  if (evg_drivers_.empty()) {
+    ldmx_log(warn) << "Auto-discovery found no target isotopes in volume(s) "
+                   << "matching '" << discover_volume_ << "' (" << n_volumes
+                   << " volume(s) matched). Electronuclear interactions will "
+                   << "not fire — check the discover_volume setting.";
+  } else {
+    ldmx_log(info) << "Auto-discovered " << evg_drivers_.size()
+                   << " target isotope(s) from " << n_volumes
+                   << " volume(s) matching '" << discover_volume_ << "'";
   }
 }
 
@@ -133,6 +348,14 @@ G4double GenieElectroNuclearProcess::GetMeanFreePath(
     const G4Track& track, G4double /*prevStepSize*/,
     G4ForceCondition* /*condition*/) {
   if (!IsApplicable(*track.GetParticleDefinition())) return DBL_MAX;
+
+  // One-shot auto-discovery: the geometry is guaranteed to be built by the
+  // first call to GetMeanFreePath, so we look up the configured volume's
+  // materials once and set up only the relevant GENIE drivers.
+  if (auto_discover_) {
+    discoverFromVolume();
+    auto_discover_ = false;
+  }
 
   // Get electron total energy in GeV (GENIE units)
   G4double energy_geant4 = track.GetDynamicParticle()->GetTotalEnergy();
@@ -168,7 +391,7 @@ G4double GenieElectroNuclearProcess::GetMeanFreePath(
     if (it != z_to_targets_.end()) {
       for (const auto& [driver_idx, abundance] : it->second) {
         // Query GENIE for this target's cross section
-        double xsec_genie = evg_drivers_[driver_idx].XSecSum(e_p4);
+        double xsec_genie = evg_drivers_[driver_idx]->XSecSum(e_p4);
         // Convert from GENIE internal units to Geant4 units
         double xsec_g4 =
             (xsec_genie / genie::units::millibarn) * CLHEP::millibarn;
@@ -277,7 +500,7 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
         std::vector<double> weights;
         double total_w = 0;
         for (const auto& [idx, ab] : it->second) {
-          double xsec = evg_drivers_[idx].XSecSum(e_p4);
+          double xsec = evg_drivers_[idx]->XSecSum(e_p4);
           double w = ab * xsec;
           weights.push_back(w);
           total_w += w;
@@ -306,7 +529,7 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
   // Generate the GENIE event
   genie::EventRecord* genie_event = nullptr;
   while (!genie_event) {
-    genie_event = evg_drivers_[selected_driver].GenerateEvent(e_p4);
+    genie_event = evg_drivers_[selected_driver]->GenerateEvent(e_p4);
   }
 
   // Store HepMC3 event record in UserEventInformation

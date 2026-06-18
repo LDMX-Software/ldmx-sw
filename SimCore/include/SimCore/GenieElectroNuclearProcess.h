@@ -8,6 +8,8 @@
 #define SIMCORE_GENIEELECTRONUCLEARPROCESS_H
 
 #include <map>
+#include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -16,6 +18,8 @@
 #include "G4VDiscreteProcess.hh"
 #include "GENIE/Framework/EventGen/GEVGDriver.h"
 #include "GENIE/Framework/EventGen/HepMC3Converter.h"
+
+class G4Element;
 
 namespace simcore {
 
@@ -83,11 +87,37 @@ class GenieElectroNuclearProcess : public G4VDiscreteProcess {
   /// Initialize the GENIE framework (tune, message thresholds, splines)
   void initializeGENIE();
 
-  /// Set up GEVGDrivers for each target isotope
+  /**
+   * Parse the spline file for the set of target nuclei that have cross-section
+   * splines available.  Used to skip discovered isotopes without splines, which
+   * GENIE would otherwise compute on the fly (prohibitively slow).
+   */
+  void loadAvailableTargets();
+
+  /**
+   * @return true if a cross-section spline is available for @p target_code,
+   *         or if the available-target list could not be determined (fail open).
+   */
+  bool splineAvailable(int target_code) const;
+
+  /// Set up GEVGDrivers for each target isotope (manual mode)
   void setupDrivers();
 
+  /// Discover isotopes from a G4Element and set up GENIE drivers (auto mode)
+  void discoverIsotopesForElement(const G4Element* element);
+
+  /**
+   * One-shot auto-discovery of target isotopes from the configured volume.
+   *
+   * Looks up every G4LogicalVolume matching @ref discover_volume_ (using the
+   * same name/region tests as the ElectroNuclear bias operator), and sets up
+   * GENIE drivers for the elements of their materials.  Called once on the
+   * first GetMeanFreePath, after the geometry has been built.
+   */
+  void discoverFromVolume();
+
   /// One GENIE event generator driver per target isotope
-  std::vector<genie::GEVGDriver> evg_drivers_;
+  std::vector<std::unique_ptr<genie::GEVGDriver>> evg_drivers_;
 
   /// Converter from GENIE EventRecord to HepMC3
   genie::HepMC3Converter hep_mc3_converter_;
@@ -112,6 +142,20 @@ class GenieElectroNuclearProcess : public G4VDiscreteProcess {
 
   /// Flag to lazily sync GENIE random seed on first event
   bool genie_initialized_{false};
+
+  /// Whether targets are auto-discovered from the Geant4 geometry
+  bool auto_discover_{false};
+
+  /// Name of the volume to auto-discover targets from (e.g. "target_region").
+  /// Uses the same naming convention as the ElectroNuclear bias operator.
+  std::string discover_volume_;
+
+  /// Z values already checked for isotope discovery
+  std::set<int> discovered_z_;
+
+  /// Target nuclei (10LZZZAAAI codes) that have splines in the spline file.
+  /// Empty if the spline file could not be parsed (then no filtering is done).
+  std::set<int> available_targets_;
 
   /**
    * Lookup map: element Z -> list of (driver_index, abundance).

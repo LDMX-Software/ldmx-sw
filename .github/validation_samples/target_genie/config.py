@@ -10,6 +10,7 @@ from LDMX.SimCore.bias_operators import ElectroNuclear
 
 
 det = "ldmx-det-v15-8gev"
+# det = "ldmx-ti-v15-8gev"
 my_sim = sim.Simulator(instance_name="sim")
 my_sim.set_detector(det, include_scoring_planes_minimal=True)
 
@@ -20,11 +21,18 @@ my_sim.generators = [gen.single_8gev_e_upstream_tagger()]
 # The electron is tracked normally; when Geant4 selects the process to fire,
 # GENIE generates the interaction at the electron's actual energy.
 my_sim.genie_nuclear.enable = True
-my_sim.genie_nuclear.targets = [1000741820, 1000741830, 1000741840, 1000741860]
-my_sim.genie_nuclear.abundances = [0.2650, 0.1431, 0.3064, 0.2843]
+# Targets and abundances are auto-discovered from the target region geometry.
+# Discovery runs once and only builds GENIE drivers for the elements actually
+# in this volume (matching the biased volume below), instead of every material
+# the electron traverses upstream.
+my_sim.genie_nuclear.discover_volume = "target_region"
 my_sim.genie_nuclear.tune = "G18_02a_02_11b"
+# Splines are stored one file per tune (gxspl_emode_<TUNE>.xml). Derive the
+# filename from the tune so the two can never disagree — a mismatch makes GENIE
+# silently recompute all cross sections on the fly and the job appears to hang.
+# See .github/validation_samples/target_genie/README.md.
 my_sim.genie_nuclear.spline_file = (
-    f"{os.environ['CI_DATA']}/target_genie/gxspl_emode_GENIE_v3_04_00.xml"
+    f"{os.environ['CI_DATA']}/target_genie/gxspl_emode_{my_sim.genie_nuclear.tune}.xml"
 )
 my_sim.genie_nuclear.message_threshold_file = "Messenger_ErrorOnly.xml"
 
@@ -152,7 +160,9 @@ hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.term_level = 10
 # Example to show trace level logging for ecal veto (only)
-p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level=-1)
+# p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level=-1)
+p.logger.custom("GenieElectroNuclearProcess", level=-1)
+
 
 # Add full tracking for both tagger and recoil trackers:
 # digi, seeds, CKF, ambiguity resolution, GSF, DQM
