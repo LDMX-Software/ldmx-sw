@@ -38,7 +38,8 @@ std::vector<float> trackProp(const ldmx::Tracks& tracks,
  * @param[in] ele_count The recorded number of electrons in the event
  * @returns Vector of valid track states with the greatest transverse momentum
  */
-std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks& tracks, int ele_count);
+std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks& tracks,
+                                            int ele_count);
 
 /**
  * Return a vector of `ele_count` valid track states with the greatest total

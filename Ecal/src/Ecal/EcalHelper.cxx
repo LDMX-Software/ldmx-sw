@@ -2,9 +2,9 @@
 
 namespace ecal {
 
-std::vector<float> trackProp(const ldmx::Tracks &tracks,
+std::vector<float> trackProp(const ldmx::Tracks& tracks,
                              ldmx::TrackStateType ts_type,
-                             const std::string &ts_title) {
+                             const std::string& ts_title) {
   // Vector to hold the new track state variables
   std::vector<float> new_track_states;
 
@@ -12,7 +12,7 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
   if (tracks.empty()) return new_track_states;
 
   // Otherwise loop on the tracks
-  for (auto &track : tracks) {
+  for (auto& track : tracks) {
     // Get track state for ts_type
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value
@@ -42,7 +42,7 @@ std::vector<float> trackProp(const ldmx::Tracks &tracks,
 
 // Returns 'ele_count' tracks with the greatest transverse momentum that is also
 // valid at the Ecal face
-std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks,
+std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks& tracks,
                                             int ele_count) {
   // Vector to hold the new track state variables, indexed by pT
   std::vector<std::pair<float, std::vector<float>>> new_track_states;
@@ -51,7 +51,7 @@ std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks,
   if (tracks.empty()) return {};
 
   // Otherwise loop on the tracks
-  for (auto &track : tracks) {
+  for (auto& track : tracks) {
     // Vector to hold track state parameters for a single track
     std::vector<float> track_state_vars;
     track_state_vars.reserve(6);
@@ -85,7 +85,7 @@ std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks,
 
   // filters to get only the [ele_count] number of highest pT tracks
   std::sort(new_track_states.begin(), new_track_states.end(),
-            [](const auto &a, const auto &b) {
+            [](const auto& a, const auto& b) {
               return a.first > b.first;
             });  // sort descending
   if (new_track_states.size() > ele_count) new_track_states.resize(ele_count);
@@ -97,14 +97,14 @@ std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks &tracks,
   std::transform(std::make_move_iterator(new_track_states.begin()),
                  std::make_move_iterator(new_track_states.end()),
                  std::back_inserter(max_pT_track_states),
-                 [](auto &&ts) { return std::move(ts.second); });
+                 [](auto&& ts) { return std::move(ts.second); });
 
   return max_pT_track_states;
 }
 
 // Returns a specified number `ele_count` of highest momentum tracks which are
 // valid at the Ecal face
-std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
+std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks& tracks,
                                              int ele_count) {
   // Vector variable to hold track state parameters, indexed by total momentum
   std::vector<std::pair<float, std::vector<float>>> new_track_states;
@@ -113,7 +113,7 @@ std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
   if (tracks.empty()) return {};
 
   // Otherwise loop on the tracks
-  for (auto &track : tracks) {
+  for (auto& track : tracks) {
     // Vector to hold track state parameters for a single track
     std::vector<float> track_state_vars;
     track_state_vars.reserve(6);
@@ -146,7 +146,7 @@ std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
 
   // filters to get only the [ele_count] number of highest momentum tracks
   std::sort(new_track_states.begin(), new_track_states.end(),
-            [](const auto &a, const auto &b) {
+            [](const auto& a, const auto& b) {
               return a.first > b.first;
             });  // sort descending
   if (new_track_states.size() > ele_count) new_track_states.resize(ele_count);
@@ -158,7 +158,7 @@ std::vector<std::vector<float>> momTrackProp(const ldmx::Tracks &tracks,
   std::transform(std::make_move_iterator(new_track_states.begin()),
                  std::make_move_iterator(new_track_states.end()),
                  std::back_inserter(max_p_track_states),
-                 [](auto &&ts) { return std::move(ts.second); });
+                 [](auto&& ts) { return std::move(ts.second); });
 
   return max_p_track_states;
 }

@@ -2,7 +2,7 @@
 
 namespace ecal {
 
-void EcalRecoilRemovalProcessor::onNewRun(const ldmx::RunHeader &rh) {
+void EcalRecoilRemovalProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["setup"] = 0.;
   profiling_map_["recoil_electron"] = 0.;
   profiling_map_["trajectories"] = 0.;
@@ -16,7 +16,7 @@ void EcalRecoilRemovalProcessor::onProcessEnd() {
                  << " ms";
   ldmx_log(info) << "Breakdown::";
 
-  for (const auto &[key, value] : profiling_map_) {
+  for (const auto& [key, value] : profiling_map_) {
     ldmx_log(info) << std::left << std::setw(20) << key
                    << "Avg Time/Event = " << std::fixed << std::setprecision(3)
                    << value / nevents_ << " ms";
@@ -24,7 +24,7 @@ void EcalRecoilRemovalProcessor::onProcessEnd() {
 }
 
 void EcalRecoilRemovalProcessor::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   beam_energy_mev_ = parameters.get<double>("beam_energy");
   num_ecal_layers_ = parameters.get<int>("num_ecal_layers");
   rem_dist_file_name_ = parameters.get<std::string>("rem_dist_file");
@@ -76,7 +76,7 @@ void EcalRecoilRemovalProcessor::configure(
   }
 }
 
-void EcalRecoilRemovalProcessor::produce(framework::Event &event) {
+void EcalRecoilRemovalProcessor::produce(framework::Event& event) {
   ///////////////////////////////////////////////////////
   //////////////////////// SETUP ////////////////////////
   ///////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ void EcalRecoilRemovalProcessor::produce(framework::Event &event) {
         ecal::pTTrackProp(recoil_tracks, n_electrons_);
     if (!ele_track_states.empty()) {
       for (int i = 0; i < ele_track_states.size(); ++i) {
-        std::vector<float> &recoil_track_states_ecal = ele_track_states[i];
+        std::vector<float>& recoil_track_states_ecal = ele_track_states[i];
         std::array<float, 3> recoil_pos;
         std::array<float, 3> recoil_p;
         // track_state_loc0 is recoil_pos[0] and track_state_loc1 is
@@ -216,8 +216,8 @@ void EcalRecoilRemovalProcessor::produce(framework::Event &event) {
 
   if (!ele_p.empty() && !ele_pos.empty()) {
     for (int i = 0; i < ele_p.size(); ++i) {
-      std::array<float, 3> &recoil_p = ele_p[i];
-      std::array<float, 3> &recoil_pos = ele_pos[i];
+      std::array<float, 3>& recoil_p = ele_p[i];
+      std::array<float, 3>& recoil_pos = ele_pos[i];
       std::vector<XYCoords> ele_trajectory;
 
       // Require that z-momentum is positive (which will also exclude the
@@ -268,8 +268,8 @@ void EcalRecoilRemovalProcessor::produce(framework::Event &event) {
       float theta_min, theta_max, p_min, p_max;
       bool inrange;
       std::vector<float> rec_rem_dists = rem_dist_values_bin_0;
-      float &recoil_p_mag = ele_p_mag[k];
-      float &recoil_theta = ele_theta[k];
+      float& recoil_p_mag = ele_p_mag[k];
+      float& recoil_theta = ele_theta[k];
 
       // Use the appropriate containment radii for the recoil electron
       for (int i = 0; i < rem_dist_values_.size(); i++) {
@@ -322,7 +322,7 @@ void EcalRecoilRemovalProcessor::produce(framework::Event &event) {
   if (!ele_trajectories.empty()) {
     ldmx_log(trace) << "      ======== EcalRecHitInc List (length"
                     << ecal_rec_hits_inc.size() << ") ========";
-    for (const ldmx::EcalHit &hit :
+    for (const ldmx::EcalHit& hit :
          ecal_rec_hits) {  // loops through reconstructed hits in the ecal and
                            // discards all those inside the electron's RoC
       ldmx::EcalID id(hit.getID());
@@ -331,8 +331,8 @@ void EcalRecoilRemovalProcessor::produce(framework::Event &event) {
 
       bool include = true;
       for (int i = 0; i < ele_trajectories.size(); ++i) {
-        std::vector<XYCoords> &ele_trajectory = ele_trajectories[i];
-        std::vector<float> &rec_rem_dists = removal_distances[i];
+        std::vector<XYCoords>& ele_trajectory = ele_trajectories[i];
+        std::vector<float>& rec_rem_dists = removal_distances[i];
 
         float dist_ele_traj =  // calculates distance between hit location and
                                // projected particle positions
