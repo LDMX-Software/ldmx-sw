@@ -47,7 +47,5 @@ class GenieNuclearPhysics:
     discover_volume: str = ""
     tune: str = "default"
     spline_file: str = ""
-    message_threshold_file: str = (
-        "/usr/local/GENIE/Generator/config/Messenger.xml"
-    )
+    message_threshold_file: str = "/usr/local/GENIE/Generator/config/Messenger.xml"
     only_one_per_event: bool = True
