@@ -25,7 +25,7 @@ class Tracker {
    * @param[in] storage_directory directory in-which to write data when closing
    * @param[in] names sequence of processor names we will be tracking
    */
-  Tracker(TDirectory *storage_directory, const std::vector<std::string> &names);
+  Tracker(TDirectory* storage_directory, const std::vector<std::string>& names);
   /**
    * Close up tracking and write all of the data collected to the storage
    * directory
@@ -51,9 +51,9 @@ class Tracker {
    */
   static const std::string ALL;
   /// handle to the destination for the data
-  TDirectory *storage_directory_;
+  TDirectory* storage_directory_;
   /// event-by-event perf info
-  TTree *event_data_;
+  TTree* event_data_;
   /// buffer for bool flag on if event completed
   bool event_completed_;
 

@@ -10,7 +10,7 @@
 
 namespace trigscint {
 
-void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
+void TrigScintFirmwareTracker::configure(framework::config::Parameters& ps) {
   min_thr_ = ps.get<double>("clustering_threshold");
   digis1_collection_ = ps.get<std::string>("digis1_collection");
   digis2_collection_ = ps.get<std::string>("digis2_collection");
@@ -37,7 +37,7 @@ void TrigScintFirmwareTracker::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void TrigScintFirmwareTracker::produce(framework::Event &event) {
+void TrigScintFirmwareTracker::produce(framework::Event& event) {
   // This processor takes in TS digis and outputs a track collection. It does so
   // using clusterproducer_sw and trackproducerHw, which are validated pieces
   // of HLS code (though clusterproducer_sw has had its instances of pragmas
@@ -121,11 +121,11 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     clearTrack(out_trk[j]);
   }
   // I am reading in the three digi collections
-  const auto &digis1{
+  const auto& digis1{
       event.getCollection<ldmx::TrigScintHit>(digis1_collection_, pass_name_)};
-  const auto &digis2{
+  const auto& digis2{
       event.getCollection<ldmx::TrigScintHit>(digis2_collection_, pass_name_)};
-  const auto &digis3{
+  const auto& digis3{
       event.getCollection<ldmx::TrigScintHit>(digis3_collection_, pass_name_)};
 
   if (verbose_) {
@@ -141,7 +141,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   int count = 0;
-  for (const auto &digi : digis1) {
+  for (const auto& digi : digis1) {
     if ((digi.getPE() > min_thr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> b_id = (ap_int<12>)(digi.getBarID());
@@ -171,7 +171,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   count = 0;
-  for (const auto &digi : digis2) {
+  for (const auto& digi : digis2) {
     if ((digi.getPE() > min_thr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> b_id = (ap_int<12>)(digi.getBarID());
@@ -200,7 +200,7 @@ void TrigScintFirmwareTracker::produce(framework::Event &event) {
     occupied[i] = -1;
   }
   count = 0;
-  for (const auto &digi : digis3) {
+  for (const auto& digi : digis3) {
     if ((digi.getPE() > min_thr_) and (digi.getBarID() <= NCHAN) and
         (digi.getBarID() >= 0)) {
       ap_int<12> b_id = (ap_int<12>)(digi.getBarID());

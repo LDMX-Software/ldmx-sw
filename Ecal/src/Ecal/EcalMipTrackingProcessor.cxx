@@ -2,14 +2,14 @@
 
 namespace ecal {
 
-void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader &rh) {
+void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["straight_tracks"] = 0.;
   profiling_map_["linreg_tracks"] = 0.;
   profiling_map_["processing_time_"] = 0;
 }
 
 void EcalMipTrackingProcessor::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   n_ecal_layers_ = parameters.get<int>("num_ecal_layers");
   linreg_radius_ = parameters.get<double>("linreg_radius");
   ecal_collection_name_ = parameters.get<std::string>("ecal_collection_name");
@@ -28,7 +28,7 @@ void EcalMipTrackingProcessor::clearProcessor() {
   photon_territory_hits_ = 0;
 }
 
-void EcalMipTrackingProcessor::produce(framework::Event &event) {
+void EcalMipTrackingProcessor::produce(framework::Event& event) {
   auto start = std::chrono::high_resolution_clock::now();
 
   ldmx::EcalMipResult mip_result;
@@ -122,7 +122,7 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
   ldmx_log(trace) << "Origin of photon territory: " << origin.X() << ", "
                   << origin.Y() << ", " << origin.Z();
   if (!ele_trajectory.empty()) {
-    for (auto &hit_data : tracking_hit_list) {
+    for (auto& hit_data : tracking_hit_list) {
       ROOT::Math::XYZVector hit_pos = hit_data.pos_;
       ROOT::Math::XYZVector hit_prime = hit_pos - origin;
       if (hit_prime.Dot(g_toe) <= 0) {
@@ -274,6 +274,11 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
     ldmx_log(trace) << "  Considering track " << track_i;
     for (int track_j = track_i + 1; track_j < track_list.size(); track_j++) {
       std::vector<ldmx::HitData> checking_track = track_list[track_j];
+      if (checking_track.empty()) {
+        ldmx_log(error) << "Broken logic: a straight ecal track had no hits in "
+                           "it during merge.";
+        continue;
+      }
       ldmx::HitData head_hitdata = checking_track.front();
       // if 1-2 layers behind, and xy within one cell...
       if ((head_hitdata.layer_ == tail_hitdata.layer_ + 1 ||
@@ -371,9 +376,9 @@ void EcalMipTrackingProcessor::produce(framework::Event &event) {
       for (int k_hit_reg = j_hit_in_reg + 1; k_hit_reg < hits_in_region.size();
            k_hit_reg++) {
         hit_nums[2] = hits_in_region[k_hit_reg];
-        const auto &p0 = tracking_hit_list[hit_nums[0]].pos_;
-        const auto &p1 = tracking_hit_list[hit_nums[1]].pos_;
-        const auto &p2 = tracking_hit_list[hit_nums[2]].pos_;
+        const auto& p0 = tracking_hit_list[hit_nums[0]].pos_;
+        const auto& p1 = tracking_hit_list[hit_nums[1]].pos_;
+        const auto& p2 = tracking_hit_list[hit_nums[2]].pos_;
 
         h_mean = (p0 + p1 + p2) / 3.0;
 

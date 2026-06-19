@@ -46,8 +46,8 @@ class TrackDeDxMassEstimate {
   /**
    * Print out the object.
    */
-  friend std::ostream &operator<<(std::ostream &o,
-                                  const TrackDeDxMassEstimate &d);
+  friend std::ostream& operator<<(std::ostream& o,
+                                  const TrackDeDxMassEstimate& d);
 
   /**
    * Set the momentum of the particle/track.

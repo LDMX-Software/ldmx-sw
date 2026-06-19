@@ -34,8 +34,8 @@ class Exception : public std::exception {
    * @param line Line in the source code where the exception occurred.
    * @param function Function in which the exception occurred.
    */
-  Exception(const std::string &name, const std::string &message,
-            const std::string &module, int line, const std::string &function)
+  Exception(const std::string& name, const std::string& message,
+            const std::string& module, int line, const std::string& function)
       : name_{name},
         message_{message},
         module_{module},
@@ -53,25 +53,25 @@ class Exception : public std::exception {
    * Get the name of the exception.
    * @return The name of the exception.
    */
-  const std::string &name() const throw() { return name_; }
+  const std::string& name() const throw() { return name_; }
 
   /**
    * Get the message of the exception.
    * @return The message of the exception.
    */
-  const std::string &message() const throw() { return message_; }
+  const std::string& message() const throw() { return message_; }
 
   /**
    * Get the source filename where the exception occurred.
    * @return The source filename where the exception occurred.
    */
-  const std::string &module() const throw() { return module_; }
+  const std::string& module() const throw() { return module_; }
 
   /**
    * Get the function name where the exception occurred.
    * @return The function name where the exception occurred.
    */
-  const std::string &function() const throw() { return function_; }
+  const std::string& function() const throw() { return function_; }
 
   /**
    * Get the source line number where the exception occurred.
@@ -83,12 +83,12 @@ class Exception : public std::exception {
    * The error message.
    * @return The error message.
    */
-  virtual const char *what() const throw() { return message_.c_str(); }
+  virtual const char* what() const throw() { return message_.c_str(); }
 
   /**
    * Get the full stack trace
    */
-  const std::string &stackTrace() const throw() { return stack_trace_; }
+  const std::string& stackTrace() const throw() { return stack_trace_; }
 
  private:
   void buildStackTrace() throw();

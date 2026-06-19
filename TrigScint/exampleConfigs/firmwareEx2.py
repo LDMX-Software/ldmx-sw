@@ -98,10 +98,10 @@ from LDMX.Hcal import hcal
 
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trig_scint_track
-from LDMX.TrigScint.trigScint import TrigScintFirmwareTracker
+from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
+from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
+from LDMX.TrigScint.trig_scint import trig_scint_track
+from LDMX.TrigScint.trig_scint import TrigScintFirmwareTracker
 
 ts_sim_colls = ["TriggerPad2SimHits", "TriggerPad3SimHits", "TriggerPad1SimHits"]
 
@@ -156,9 +156,9 @@ e_count = ElectronCounter(
     input_pass_name=pass_name,
 )
 
-from LDMX.TrigScint.trigScint import TrigScintFirmwareHitProducer
-from LDMX.TrigScint.trigScint import TrigScintQIEDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
+from LDMX.TrigScint.trig_scint import TrigScintFirmwareHitProducer
+from LDMX.TrigScint.trig_scint import TrigScintQIEDigiProducer
+from LDMX.TrigScint.trig_scint import TrigScintRecHitProducer
 
 qie_digi = TrigScintQIEDigiProducer.pad3()
 rechit = TrigScintRecHitProducer.pad3()

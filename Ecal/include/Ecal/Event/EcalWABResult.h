@@ -35,7 +35,7 @@ class EcalWABResult {
   /**
    * Print the string representation of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const EcalWABResult &d);
+  friend std::ostream& operator<<(std::ostream& o, const EcalWABResult& d);
 
   // To match the Framework Bus clear. It's doing nothing.
   void clear() {}

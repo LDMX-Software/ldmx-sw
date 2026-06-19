@@ -19,7 +19,7 @@ namespace dqm {
 class TrigScintClusterDQM : public framework::Analyzer {
  public:
   /** Constructor */
-  TrigScintClusterDQM(const std::string &name, framework::Process &process);
+  TrigScintClusterDQM(const std::string& name, framework::Process& process);
 
   /** Destructor */
   ~TrigScintClusterDQM() = default;
@@ -29,14 +29,14 @@ class TrigScintClusterDQM : public framework::Analyzer {
    *
    * @param pSet Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &pSet);
+  void configure(framework::config::Parameters& pSet);
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event &event);
+  void analyze(const framework::Event& event);
 
   /** Method executed before processing of events begins. */
   void onProcessStart();

@@ -371,8 +371,9 @@ class TrigScintClusterProducer(Processor):
 @processor("trigscint::TrigScintTrackProducer", "TrigScint")
 class TrigScintTrackProducer(Processor):
     """Configuration for track producer for Trigger Scintillators"""
-
+    horizontal_bar_length: float = 30.
     delta_max: float = 0.75
+    delta_vert_max: float = 0.
     tracking_threshold: float = 0.0
     seeding_collection: str = "TriggerPad1Clusters"
     further_input_collections: list[str] = [

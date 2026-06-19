@@ -42,7 +42,7 @@ class CalorimeterHit {
   /**
    * Print out the object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const CalorimeterHit &d);
+  friend std::ostream& operator<<(std::ostream& o, const CalorimeterHit& d);
 
   /**
    * Get the detector ID.
@@ -149,7 +149,7 @@ class CalorimeterHit {
   /**
    * Sort by time of hit
    */
-  bool operator<(const CalorimeterHit &rhs) const {
+  bool operator<(const CalorimeterHit& rhs) const {
     return this->getTime() < rhs.getTime();
   }
 

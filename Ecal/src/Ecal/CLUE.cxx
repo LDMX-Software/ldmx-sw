@@ -332,7 +332,8 @@ std::vector<std::vector<const ldmx::EcalHit*>> CLUE::clustering(
                       << "; Delta: " << density->delta_;
 
       bool is_seed;
-      if (delta_c_mod != deltac_ && merged_densities[density->cluster_id_] &&
+      if (delta_c_mod != deltac_ && density->cluster_id_ >= 0 &&
+          merged_densities[density->cluster_id_] &&
           dist(density->x_, density->y_, event_centroid_.centroidX(),
                event_centroid_.centroidY()) < centroid_radius) {
         // if energy has been overloaded and this density belongs to cluster

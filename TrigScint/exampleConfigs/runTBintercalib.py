@@ -24,8 +24,8 @@ p.output_files = [outname]
 print("Running over input file: " + p.input_files[0])
 print("Producing output file: " + p.output_files[0])
 
-from LDMX.TrigScint.trigScint import TrigScintRecHitProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
+from LDMX.TrigScint.trig_scint import TrigScintRecHitProducer
+from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
 
 
 # assume we have run linearizer, so we can and have derived the gains
@@ -80,7 +80,7 @@ print("Using this list of relative response correction factors:")
 print(response_list)
 
 
-from LDMX.TrigScint.trigScint import QIEAnalyzer
+from LDMX.TrigScint.trig_scint import QIEAnalyzer
 
 ts_ana = QIEAnalyzer("QIEplotMaker")
 ts_ana.input_pass_name = input_pass_name
@@ -92,7 +92,7 @@ outname = outname.replace(".root", "_plots.root")
 p.histogram_file = outname
 
 
-from LDMX.TrigScint.trigScint import TestBeamHitProducer
+from LDMX.TrigScint.trig_scint import TestBeamHitProducer
 
 tb_hits_up = TestBeamHitProducer("tb_hits")
 tb_hits_up.input_pass_name = input_pass_name
@@ -107,7 +107,7 @@ tb_hits_up.do_clean_hits = True
 tb_hits_up.n_instrumented_channels = 12
 
 
-from LDMX.TrigScint.trigScint import TestBeamClusterProducer
+from LDMX.TrigScint.trig_scint import TestBeamClusterProducer
 
 clean_clusters_up = TestBeamClusterProducer("cleanClusters")
 clean_clusters_up.input_pass_name = this_pass_name
@@ -121,7 +121,7 @@ clean_clusters_up.seed_threshold = 50.0
 clean_clusters_up.do_clean_hits = True
 
 
-from LDMX.TrigScint.trigScint import QualityFlagAnalyzer
+from LDMX.TrigScint.trig_scint import QualityFlagAnalyzer
 
 flag_ana = QualityFlagAnalyzer("plotMaker")
 flag_ana.input_event_pass_name = input_pass_name

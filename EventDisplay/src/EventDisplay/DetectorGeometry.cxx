@@ -268,7 +268,7 @@ DetectorGeometry::DetectorGeometry() {
   // TODO Trigger Pad
 }
 
-BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit &hit) const {
+BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit& hit) const {
   // pairs that will go into BoundingBox
   std::pair<double, double> X(0, 0), Y(0, 0), Z(0, 0);
 
@@ -370,12 +370,12 @@ BoundingBox DetectorGeometry::getBoundingBox(const ldmx::HcalHit &hit) const {
 }
 
 BoundingBox DetectorGeometry::getBoundingBox(
-    const std::vector<ldmx::HcalHit> &hitVec) const {
+    const std::vector<ldmx::HcalHit>& hitVec) const {
   std::vector<double> pointSum(3, 0.0);   // sums of weighted coordinates
   std::vector<double> weightSum(3, 0.0);  // sums of weights for each coordinate
 
   // calculate real space point for each hit
-  for (const ldmx::HcalHit &hit : hitVec) {
+  for (const ldmx::HcalHit& hit : hitVec) {
     BoundingBox box = getBoundingBox(hit);
 
     // Add weighted values to sums
@@ -470,7 +470,7 @@ BoundingBox DetectorGeometry::getBoundingBox(
   return boundingbox;
 }
 
-HexPrism DetectorGeometry::getHexPrism(const ldmx::EcalID &id) const {
+HexPrism DetectorGeometry::getHexPrism(const ldmx::EcalID& id) const {
   HexPrism hexpris;
   ecal_hex_reader_->getCellAbsolutePosition(id, hexpris.x, hexpris.y,
                                             hexpris.z);
@@ -543,7 +543,7 @@ BoundingBox DetectorGeometry::getBoundingBox(int layerID, int moduleID) const {
 }
 
 BoundingBox DetectorGeometry::getBoundingBox(
-    const ldmx::SimTrackerHit &recoilHit) const {
+    const ldmx::SimTrackerHit& recoilHit) const {
   int layerID = recoilHit.getLayerID();
   int moduleID = recoilHit.getModuleID();
   int combined = layerID * 10 + moduleID;

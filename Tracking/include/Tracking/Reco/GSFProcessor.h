@@ -37,7 +37,6 @@
 #include "Acts/Propagator/AbortList.hpp"
 #include "Acts/Propagator/ActionList.hpp"
 #include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-#include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
@@ -45,6 +44,7 @@
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
+#include "Tracking/EigenStepper.h"
 
 // Kalman Filter
 
@@ -107,7 +107,7 @@ class GSFProcessor final : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  GSFProcessor(const std::string &name, framework::Process &process);
+  GSFProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~GSFProcessor() = default;
@@ -123,7 +123,7 @@ class GSFProcessor final : public TrackingGeometryUser {
    * This is where you could create single-processors, multi-event
    * calculation objects.
    */
-  void onNewRun(const ldmx::RunHeader &rh) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -135,14 +135,14 @@ class GSFProcessor final : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   // Forms the layer to acts map
@@ -271,7 +271,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<const Propagator> propagator_;
 
   /// Layer ID to ACTS Surface mapping for hit surface lookup
-  std::unordered_map<unsigned int, const Acts::Surface *> layer_surface_map_;
+  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
   // Track Extrapolator Tool
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<Propagator>>

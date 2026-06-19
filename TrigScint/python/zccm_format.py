@@ -66,6 +66,7 @@ class ZCCMDecoder(Processor):
     """Configuration for ZCCM decoder"""
 
     channel_map_file: str = ""
+    module_map_file: str = ""
     input_pass_name: str = ""
     input_collection: str = "ZCCMoutput"
     output_collection: str = "decodedZCCM"

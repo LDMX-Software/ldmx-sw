@@ -78,14 +78,14 @@ class Track {
     TrackStateType ts_type_;
   };
 
-  Track(){};
+  Track() {};
 
   /**
    * Destructor.
    *
    * Currently, the destructor does nothing.
    */
-  virtual ~Track(){};
+  virtual ~Track() {};
 
   /**
    * Print the string representation of this object.
@@ -191,6 +191,7 @@ class Track {
     perigee_ = perigee;
   }
   void setPerigeeLocation(const double& x, const double& y, const double& z) {
+    perigee_.resize(3);
     perigee_[0] = x;
     perigee_[1] = y;
     perigee_[2] = z;

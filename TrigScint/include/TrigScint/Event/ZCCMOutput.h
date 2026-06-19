@@ -23,19 +23,19 @@ class ZCCMOutput {
   /**
    * Print ifo about the class
    */
-  friend std::ostream &operator<<(std::ostream &o, const ZCCMOutput &d);
+  friend std::ostream& operator<<(std::ostream& o, const ZCCMOutput& d);
 
   /**
    * A dummy function
    * @note required by Event/include/Event/EventDef.h
    */
-  void clear(Option_t *option = "");
+  void clear(Option_t* option = "");
 
   /**
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
-  bool operator<(const ZCCMOutput &rhs) const {
+  bool operator<(const ZCCMOutput& rhs) const {
     return this->chan_id_ < rhs.chan_id_;
   }
 

@@ -40,8 +40,8 @@ class EventFile {
    * @param[in] isSingleOutput true if only one output file is being written to
    * @param[in] isLoopable true for an input file where events can be reused
    */
-  EventFile(const framework::config::Parameters &params,
-            const std::string &filename, EventFile *parent, bool isOutputFile,
+  EventFile(const framework::config::Parameters& params,
+            const std::string& filename, EventFile* parent, bool isOutputFile,
             bool isSingleOutput, bool isLoopable);
 
   /**
@@ -56,8 +56,8 @@ class EventFile {
    * processing from the start when we hit the end of the event tree in
    * this input file (set in the call in the producer)
    */
-  EventFile(const framework::config::Parameters &param,
-            const std::string &fileName, bool isLoopable);
+  EventFile(const framework::config::Parameters& param,
+            const std::string& fileName, bool isLoopable);
 
   /**
    * Class constructor for cloning data from a "parent" file.
@@ -71,8 +71,8 @@ class EventFile {
    * @param[in] isSingleOutput boolean check if only one output file is being
    * written to
    */
-  EventFile(const framework::config::Parameters &param,
-            const std::string &fileName, EventFile *parent,
+  EventFile(const framework::config::Parameters& param,
+            const std::string& fileName, EventFile* parent,
             bool isSingleOutput = false);
 
   /**
@@ -86,8 +86,8 @@ class EventFile {
    * @param[in] params The parameters used to configure this EventFile.
    * @param[in] fileName The file name.
    */
-  EventFile(const framework::config::Parameters &params,
-            const std::string &fileName);
+  EventFile(const framework::config::Parameters& params,
+            const std::string& fileName);
 
   /**
    * Destructor
@@ -155,13 +155,13 @@ class EventFile {
    *
    * @param rule The rule for dropping collections.
    */
-  void addDrop(const std::string &rule);
+  void addDrop(const std::string& rule);
 
   /**
    * Set an Event object containing the event data to work with this file.
    * @param evt The Event object with event data.
    */
-  void setupEvent(Event *evt);
+  void setupEvent(Event* evt);
 
   /**
    * Change pointer to different parent file.
@@ -173,13 +173,13 @@ class EventFile {
    *
    * @param parent pointer to new parent file
    */
-  void updateParent(EventFile *parent);
+  void updateParent(EventFile* parent);
 
   /**
    * Get the Event object containing the event data.
    * @return The Event object containing event data.
    */
-  Event *getEvent() { return event_; };
+  Event* getEvent() { return event_; };
 
   /**
    * Prepare the next event.
@@ -227,7 +227,7 @@ class EventFile {
    * @param runHeader The run header to write into the map
    * @throw Exception if run number is already in run map
    */
-  void writeRunHeader(ldmx::RunHeader &runHeader);
+  void writeRunHeader(ldmx::RunHeader& runHeader);
 
   /**
    * Write the map of run headers to the file as a TTree of RunHeader.
@@ -244,7 +244,7 @@ class EventFile {
    * @return pointer to the header corresponding to the run number
    * @note the returned pointer will be nullptr if the run was not found
    */
-  ldmx::RunHeader *getRunHeaderPtr(int runNumber);
+  ldmx::RunHeader* getRunHeaderPtr(int runNumber);
 
   /**
    * Get the RunHeader for a given run, if it exists in the input file.
@@ -253,10 +253,10 @@ class EventFile {
    * @throw Exception if there is no RunHeader in the map with the given run
    * number.
    */
-  ldmx::RunHeader &getRunHeader(int runNumber);
+  ldmx::RunHeader& getRunHeader(int runNumber);
 
   /// @return the name of the ROOT file being managed.
-  const std::string &getFileName() { return file_name_; }
+  const std::string& getFileName() { return file_name_; }
 
  private:
   /**
@@ -297,16 +297,16 @@ class EventFile {
   bool is_loopable_{false};
 
   /// The backing TFile for this EventFile.
-  TFile *file_{nullptr};
+  TFile* file_{nullptr};
 
   /// The tree with event data.
-  TTree *tree_{nullptr};
+  TTree* tree_{nullptr};
 
   /// A parent file containing event data.
-  EventFile *parent_{nullptr};
+  EventFile* parent_{nullptr};
 
   /// The object containing the actual event data (trees and branches).
-  Event *event_{nullptr};
+  Event* event_{nullptr};
 
   /**
    * Pre-clone rules.
@@ -335,7 +335,7 @@ class EventFile {
    *     - This happens when the RunHeader is created by Process::run during
    * production
    */
-  std::map<int, std::pair<bool, ldmx::RunHeader *>> run_map_;
+  std::map<int, std::pair<bool, ldmx::RunHeader*>> run_map_;
 
   enableLogging("EventFile")
 };

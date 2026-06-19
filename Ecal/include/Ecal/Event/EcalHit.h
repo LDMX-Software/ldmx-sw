@@ -28,7 +28,7 @@ class EcalHit : public ldmx::CalorimeterHit {
   void clear();
 
   /** Print a text representation of this object. */
-  friend std::ostream &operator<<(std::ostream &o, const EcalHit &d);
+  friend std::ostream& operator<<(std::ostream& o, const EcalHit& d);
 
  private:
   /** The ROOT class definition. */

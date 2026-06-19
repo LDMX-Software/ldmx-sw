@@ -81,7 +81,7 @@ class PhotonuclearTracker : public UserAction {
    *
    * @param event Geant4 event object
    */
-  void BeginOfEventAction(const G4Event* event) override;
+  void beginOfEventAction(const G4Event* event) override;
 
   /**
    * Called at the end of each event
@@ -90,7 +90,7 @@ class PhotonuclearTracker : public UserAction {
    *
    * @param event Geant4 event object
    */
-  void EndOfEventAction(const G4Event* event) override;
+  void endOfEventAction(const G4Event* event) override;
 
   /**
    * Called after each simulation step
@@ -110,7 +110,7 @@ class PhotonuclearTracker : public UserAction {
    *
    * @param track Current Geant4 track
    */
-  void PreUserTrackingAction(const G4Track* track) override;
+  void preUserTrackingAction(const G4Track* track) override;
 
   /**
    * Called after tracking a track
@@ -120,7 +120,7 @@ class PhotonuclearTracker : public UserAction {
    *
    * @param track Current Geant4 track
    */
-  void PostUserTrackingAction(const G4Track* track) override;
+  void postUserTrackingAction(const G4Track* track) override;
 
   /**
    * Get the collection of PN interactions for this event

@@ -15,7 +15,7 @@ else:
 
 p.input_files = [in_file]
 
-from LDMX.TrigScint.trigScint import TestBeamClusterAnalyzer
+from LDMX.TrigScint.trig_scint import TestBeamClusterAnalyzer
 
 cl_ana_3hit = TestBeamClusterAnalyzer("3-hitClusters")
 cl_ana_3hit.input_collection = "TestBeamClustersPad1ThreeHits"

@@ -11,32 +11,27 @@ setup_test(dependencies DetDescr::DetDescr)
 
 option(BUILD_DETECTORID_BINDINGS "Build the python bindings for the the DetDescr/DetectorID components" ON)
 if(BUILD_DETECTORID_BINDINGS)
+  cmake_policy(SET CMP0167 NEW)
   find_package(Python COMPONENTS Development)
 
-  message("Looking for libboost_python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
-  find_package(Boost QUIET COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
+  message("Looking for libboost_python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+  find_package(Boost QUIET COMPONENTS python${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
   # libboost_python3 style libraries
   if (NOT Boost_FOUND)
-      message("Looking for libboost_python${PYTHON_VERSION_MAJOR}")
-      find_package(Boost QUIET COMPONENTS python${PYTHON_VERSION_MAJOR})
-  endif()
-
-  # libboost_python style libraries
-  if (NOT Boost_FOUND)
-      message("Looking for libboost_python")
-      find_package(Boost QUIET COMPONENTS system thread python)
+      message("Looking for libboost_python${Python_VERSION_MAJOR}")
+      find_package(Boost QUIET COMPONENTS python${Python_VERSION_MAJOR})
   endif()
 
   # libboost_python-py36 style libraries
   if (NOT Boost_FOUND)
-      message("Looking for libboost_python-py${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
-      find_package(Boost QUIET COMPONENTS python-py${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
+      message("Looking for libboost_python-py${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+      find_package(Boost QUIET COMPONENTS python-py${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
   endif()
 
   # libboost_python3-py36 style libraries
   if (NOT Boost_FOUND)
-      message("Looking for libboost_python3-py${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}")
-      find_package(Boost QUIET COMPONENTS python3-py${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
+      message("Looking for libboost_python3-py${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+      find_package(Boost QUIET COMPONENTS python3-py${Python_VERSION_MAJOR}${Python_VERSION_MINOR})
   endif()
 
   # Nothing worked

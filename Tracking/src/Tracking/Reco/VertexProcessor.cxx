@@ -9,8 +9,8 @@ using namespace framework;
 namespace tracking {
 namespace reco {
 
-VertexProcessor::VertexProcessor(const std::string &name,
-                                 framework::Process &process)
+VertexProcessor::VertexProcessor(const std::string& name,
+                                 framework::Process& process)
     : framework::Producer(name, process) {}
 
 void VertexProcessor::onProcessStart() {
@@ -40,7 +40,7 @@ void VertexProcessor::onProcessStart() {
   ldmx_log(info) << "Check if nullptr::" << sp_interpolated_b_field_.get();
 }
 
-void VertexProcessor::configure(framework::config::Parameters &parameters) {
+void VertexProcessor::configure(framework::config::Parameters& parameters) {
   // TODO:: the bfield map should be taken automatically
   field_map_ = parameters.get<std::string>("field_map");
 
@@ -52,13 +52,13 @@ void VertexProcessor::configure(framework::config::Parameters &parameters) {
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
-void VertexProcessor::produce(framework::Event &event) {
+void VertexProcessor::produce(framework::Event& event) {
   // TODO:: Move this to an external file
   // And move all this to a single time per processor not for each event!!
 
   nevents_++;
   auto start = std::chrono::high_resolution_clock::now();
-  auto &&stepper = Acts::EigenStepper<>{sp_interpolated_b_field_};
+  auto&& stepper = Acts::EigenStepper<>{sp_interpolated_b_field_};
 
   // Set up propagator with void navigator
   propagator_ = std::make_shared<VoidPropagator>(stepper);
@@ -87,11 +87,11 @@ void VertexProcessor::produce(framework::Event &event) {
   Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrieve the track collection
-  const auto &tracks =
+  const auto& tracks =
       event.getCollection<ldmx::Track>(trk_coll_name_, input_pass_name_);
 
   // Retrieve the truth seeds
-  const auto &seeds =
+  const auto& seeds =
       event.getCollection<ldmx::Track>(seeds_coll_name_, input_pass_name_);
 
   if (tracks.size() < 1) return;
@@ -196,7 +196,7 @@ void VertexProcessor::produce(framework::Event &event) {
 }
 
 void VertexProcessor::onProcessEnd() {
-  TFile *outfile = new TFile("VertexingResults.root", "RECREATE");
+  TFile* outfile = new TFile("VertexingResults.root", "RECREATE");
   outfile->cd();
 
   h_m_->Write();

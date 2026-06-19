@@ -19,9 +19,8 @@ my_sim = target.dark_brem(
     # validation is run
     # Will have to redo this -- future PR
     lhe=(
-        f"{os.environ['CI_DATA']}/signal/"
-        "v5.2.0_electron_tungsten_MaxE_8.0_MinE_4.0"
-        "_RelEStep_0.1_UndecayedAP_mA_0.01_run_1.csv"
+        f"{os.environ['CI_DATA']}/signal_target_al/"
+        "electron_aluminium_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_1.0_run_3000"
     ),
     detector=det,
     generator=generators.single_8gev_e_upstream_tagger(),

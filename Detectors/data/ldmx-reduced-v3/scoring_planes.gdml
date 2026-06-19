@@ -229,7 +229,7 @@
     <volume name="SP_World">
       <materialref ref="Vacuum" />
       <solidref ref="world_box" />
-      
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <loop for="x2" to="2" step="1">
         <physvol copynumber="x2">
           <volumeref ref="sp_target" />

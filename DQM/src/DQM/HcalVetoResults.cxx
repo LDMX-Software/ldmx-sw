@@ -4,13 +4,13 @@
 
 namespace dqm {
 
-void HcalVetoResults::configure(framework::config::Parameters &ps) {
+void HcalVetoResults::configure(framework::config::Parameters& ps) {
   hcal_veto_name_ = ps.get<std::string>("hcal_veto_name");
   hcal_veto_pass_ = ps.get<std::string>("hcal_veto_pass");
   hcal_veto_passname_ = ps.get<std::string>("hcal_veto_passname");
 }
 
-void HcalVetoResults::analyze(const framework::Event &event) {
+void HcalVetoResults::analyze(const framework::Event& event) {
   // Get the veto object
   auto hcal_veto{
       event.getObject<ldmx::HcalVetoResult>("HcalVeto", hcal_veto_passname_)};

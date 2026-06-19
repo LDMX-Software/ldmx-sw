@@ -622,6 +622,24 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
 
     }  // Analysis Mode
 
+    SECTION("Evolve Mode") {
+      // one input file to one output file
+      std::vector<std::string> input_file = {input_files.at(0)};
+      process.add("input_files", input_file);
+
+      std::string event_file_path = "test_evolvemode_events.root";
+      output_files = {event_file_path};
+      process.add("output_files", output_files);
+
+      SECTION("drop TestCollection") {
+        std::vector<std::string> keep = {"drop .*Collection.*"};
+        process.add("keep", keep);
+        REQUIRE(framework::test::runProcess(process));
+        CHECK_THAT(event_file_path, framework::test::IsGoodEventFile(
+                                        "makeInputs", 2, 1, false));
+      }
+    }
+
     SECTION("Merge Mode") {
       // many input files to one output file
 

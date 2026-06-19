@@ -11,7 +11,7 @@ n_ev = 200000
 start_sample = int(sys.argv[2]) if len(sys.argv) > 2 else 2
 
 
-from LDMX.TrigScint.trigScint import TestBeamHitAnalyzer
+from LDMX.TrigScint.trig_scint import TestBeamHitAnalyzer
 
 
 # ------------------- all set; setup in detail, and run with these settings

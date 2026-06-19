@@ -5,7 +5,7 @@ namespace dqm {
 
 void HcalInefficiencyAnalyzer::configure(
 
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   hcal_sim_hits_collection_ = parameters.get<std::string>("sim_coll_name");
   hcal_rec_hits_collection_ = parameters.get<std::string>("rec_coll_name");
   hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
@@ -14,7 +14,7 @@ void HcalInefficiencyAnalyzer::configure(
   max_hit_time_ = parameters.get<double>("max_hit_time");
 }
 
-void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
+void HcalInefficiencyAnalyzer::analyze(const framework::Event& event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
       hcal_sim_hits_collection_, hcal_sim_hits_pass_name_);
   const auto hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
@@ -27,7 +27,7 @@ void HcalInefficiencyAnalyzer::analyze(const framework::Event &event) {
 
   const std::vector<std::string> section_names{"back", "top", "bottom", "right",
                                                "left"};
-  for (const auto &hit : hcal_rec_hits) {
+  for (const auto& hit : hcal_rec_hits) {
     const ldmx::HcalID id{static_cast<ldmx::DetectorID::RawValue>(hit.getID())};
     const auto section{id.section()};
     const auto layer{id.layer()};
