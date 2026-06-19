@@ -2,6 +2,7 @@
 #define PACKING_UTILITY_CRC_H_
 
 #include <boost/crc.hpp>
+#include <vector>
 
 namespace packing {
 namespace utility {

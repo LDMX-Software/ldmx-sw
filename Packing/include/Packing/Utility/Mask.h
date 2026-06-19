@@ -1,6 +1,8 @@
 #ifndef PACKING_UTILITY_MASK_H_
 #define PACKING_UTILITY_MASK_H_
 
+#include <cstdint>
+
 namespace packing {
 namespace utility {
 

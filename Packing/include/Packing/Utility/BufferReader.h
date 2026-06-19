@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <cstdint>
 
 namespace packing {
 namespace utility {

@@ -5,6 +5,7 @@
 #include <iostream>  //debuggin
 #include <string>
 #include <type_traits>
+#include <vector>
 
 namespace packing {
 namespace utility {
