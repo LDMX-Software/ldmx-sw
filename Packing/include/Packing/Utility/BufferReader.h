@@ -1,9 +1,9 @@
 #ifndef PACKING_BUFFER_H_
 #define PACKING_BUFFER_H_
 
+#include <cstdint>
 #include <stdexcept>
 #include <vector>
-#include <cstdint>
 
 namespace packing {
 namespace utility {
