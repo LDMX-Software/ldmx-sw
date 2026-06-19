@@ -36,12 +36,6 @@
       <materialref ref="Vacuum"/>
       <solidref ref="target_area_box" />
 
-      <physvol>
-        <file name="tspad3_assembly.gdml"/>
-        <position name="tspad3_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0"
-		  z="trigger_pad3_z" />
-      </physvol>
-      
       <physvol copynumber="3">
         <volumeref ref="target"/>
         <positionref ref="center"/>

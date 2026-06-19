@@ -127,9 +127,9 @@
                             0 0 sp_trigger_pad3_l2_z" />
     
         
-    <!-- Place scoring planes at each of the recoil tracker layers -->
-    <variable name="sp_recoil_l1_z" 
-              value="9*mm + tracker_envelope_clearance" /> 
+    <!-- Place scoring planes at each of the recoil tracker layers. -->
+    <variable name="sp_recoil_l1_z"
+              value="9*mm + tracker_envelope_clearance" />
     <variable name="sp_recoil_l2_z" 
               value="sp_recoil_l1_z+recoil_delta_l14" /> 
     <variable name="sp_recoil_l3_z" 

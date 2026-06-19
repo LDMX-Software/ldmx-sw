@@ -184,8 +184,8 @@ subtracted here to make them positive lengths.
 <!-- Moved here due to dependence on other constants-->>
 <constant name="target_area_envelope_x" value="magnet_gap_dx - 5" />
 <constant name="target_area_envelope_y" value="magnet_gap_dy - 5" />
-<constant name="target_area_envelope_z" 
-          value="2*(target_thickness/2 + 2*clearance + + trigger_gap_from_target + trigger_pad_thickness)" />
+<constant name="target_area_envelope_z"
+          value="target_thickness + 4*clearance" />
 
 <!--
    HCal

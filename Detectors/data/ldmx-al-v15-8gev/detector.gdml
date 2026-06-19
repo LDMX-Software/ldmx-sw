@@ -12,12 +12,7 @@
 
     &constants;
 
-    <!--
-      Position of the tagger and recoil tracker envelopes with respect to
-      target.  The 9 mm offset was chosen such that the midpoints of the 
-      last (first) layer of the tagger (recoil) tracker are 25 mm apart.
-    -->
-    <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" /> 
+    <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" />
     <variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
 
     <!-- Position of the ECal and HCal parent volumes -->
@@ -52,7 +47,12 @@
 		  y="support_box_shift"
 		  z="hadron_calorimeter_pos_z"/>
     <position name="magnet_pos" x="0.0" y="0.0" z="magnet_pos_z" />
-	
+
+    <!-- tspad3 is upstream of the target; placed here since target_area_envelope
+         only spans the target itself (+/- target_thickness/2 + clearance) -->
+    <position name="tspad3_pos" unit="mm"
+              x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0" z="trigger_pad3_z"/>
+
   </define>
     
   <materials>
@@ -68,6 +68,11 @@
       <materialref ref="Air"/>
       <solidref ref="world_box"/>
       
+      <physvol copynumber="4">
+        <file name="tspad3_assembly.gdml"/>
+        <positionref ref="tspad3_pos"/>
+        <rotationref ref="identity"/>
+      </physvol>
       <physvol copynumber="1">
         <file name="tagger.gdml"/>
         <positionref ref="tagger_pos"/>
