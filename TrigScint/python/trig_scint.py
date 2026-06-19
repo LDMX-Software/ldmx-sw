@@ -509,23 +509,3 @@ class TestBeamClusterAnalyzer(Processor):
     start_sample: int = 2
     dead_channels: list[int] = [8]
 
-
-@processor("trigscint::ClusterTripletMaker", "TrigScint")
-class ClusterTripletMaker(Processor) :
-    """Configuration for cluster text file maker for Trigger Scintillators"""
-
-    cluster_input_collections: list[str] = ["TriggerPad1Clusters", "TriggerPad2Clusters","TriggerPad3Clusters"]
-    pass_name: str = ""
-    output_collection: str = "clusters.txt"
-    verbosity: int = 0
-
-
-@processor("trigscint::PatternLUTMaker", "TrigScint")
-class PatternLUTMaker(Processor) :
-    """Configuration for track-pattern LUT-writing analyzer for Trigger Scintillators"""
-
-    input_collection: str ="clusters.txt"
-    input_pass_name: str = ""
-    output_collection: str ="LUT.txt"
-    lut_threshold: float = 0.0008
-    verbosity: int = 0
