@@ -1,3 +1,9 @@
+/**
+ * @file ClusterTripletMaker.h
+ * @brief Writes cluster combinations to text file
+ * @author Lucia Kvarnstrom, Lund University
+ */
+
 #ifndef TRIGSCINT_CLUSTERTRIPLETMAKER_H
 #define TRIGSCINT_CLUSTERTRIPLETMAKER_H
 
@@ -7,11 +13,11 @@
 #include "Framework/EventProcessor.h"
 
 // TrigScint
-#include "TrigScint/Event/TrigScintCluster.h"
-
 #include <fstream>
 #include <string>
 #include <vector>
+
+#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace trigscint {
 
