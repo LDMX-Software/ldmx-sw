@@ -60,10 +60,8 @@ GenieElectroNuclearProcess::GenieElectroNuclearProcess(
 
   // Read configuration (targets/abundances are optional — empty means
   // auto-discover)
-  static const std::vector<int> no_targets;
-  static const std::vector<double> no_abundances;
-  targets_ = params.get<std::vector<int>>("targets", no_targets);
-  abundances_ = params.get<std::vector<double>>("abundances", no_abundances);
+  targets_ = params.get<std::vector<int>>("targets", {});
+  abundances_ = params.get<std::vector<double>>("abundances", {});
   discover_volume_ = params.get<std::string>("discover_volume", "");
   tune_ = params.get<std::string>("tune");
   spline_file_ = params.get<std::string>("spline_file");

@@ -187,35 +187,21 @@ void RunManager::TerminateOneEvent() {
   // have geant4 do its own thing
   G4RunManager::TerminateOneEvent();
 
-  // go through the processes attached to the electron and
-  // reactivate any process that contains the G4DarkBremmstrahlung name
-  // this covers both cases where the process is biased and not
-  static auto reactivate_dark_brem = [](G4ProcessManager* pman) {
-    for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
-      G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
-      if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
-        pman->SetProcessActivation(p, true);
-        break;
-      }
+  // A process may deactivate itself after firing so that it only happens once
+  // per event (dark brem and GENIE electronNuclear both do this). At most one
+  // of them is present in a given run, so find whichever it is, reactivate it
+  // so it can fire again next event, and stop. This covers both cases where the
+  // process is biased and not.
+  G4ProcessManager* pman = G4Electron::Definition()->GetProcessManager();
+  for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
+    G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
+    if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME) or
+        p->GetProcessName().contains(
+            GenieElectroNuclearProcess::PROCESS_NAME)) {
+      pman->SetProcessActivation(p, true);
+      break;
     }
-  };
-
-  reactivate_dark_brem(G4Electron::Definition()->GetProcessManager());
-
-  // Reactivate GENIE electronNuclear process if it was deactivated
-  // (only_one_per_event mode) — same pattern as DarkBrem above
-  static auto reactivate_genie_en = [](G4ProcessManager* pman) {
-    for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
-      G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
-      if (p->GetProcessName().contains(
-              GenieElectroNuclearProcess::PROCESS_NAME)) {
-        pman->SetProcessActivation(p, true);
-        break;
-      }
-    }
-  };
-
-  reactivate_genie_en(G4Electron::Definition()->GetProcessManager());
+  }
 }
 
 DetectorConstruction* RunManager::getDetectorConstruction() {
