@@ -38,12 +38,6 @@
          Note: The position of the target is defined at the center i.e. 
          x = y = z = 0 mm.     
     -->
-    <!--
-      The target-area envelope is asymmetric in z (more room upstream for the
-      trigger pad), so it is shifted upstream by target_within_area_offset to
-      keep the target itself at z=0.  See constants.gdml / issue 2088.
-    -->
-    <position name="target_area_pos" x="0.0" y="0.0" z="-target_within_area_offset"/>
     <position name="trig_scint_pos" x="0.0" y="0.0" z="trig_scint_pos_z"/>
     <position name="tagger_pos" x="0.0" y="0.0" z="tagger_pos_z"/>
     <position name="recoil_pos" x="0.0" y="0.0" z="recoil_pos_z"/>
@@ -81,7 +75,7 @@
       </physvol>
       <physvol copynumber="2">
         <file name="target.gdml"  />
-        <positionref ref="target_area_pos" />
+        <positionref ref="center" />
         <rotationref ref="identity"   />
       </physvol>
       <physvol copynumber="3">

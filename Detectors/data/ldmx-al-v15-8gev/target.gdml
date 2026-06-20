@@ -11,15 +11,6 @@
     &constants;
     <variable name="x" value="1"/>
 
-    <!--
-      The envelope is asymmetric about the target (more room upstream for the
-      trigger pad), so its centre is offset from the target.  Place the target
-      and tspad3 downstream of the envelope centre by target_within_area_offset
-      so they sit at the same world z as before; detector.gdml shifts the whole
-      envelope upstream by the same amount to keep the target at z=0.
-    -->
-    <position name="target_in_area_pos" x="0" y="0" z="target_within_area_offset"/>
-
   </define>
 
   <solids>
@@ -36,7 +27,7 @@
     <volume name="target">
       <materialref ref="Aluminum"/>
       <solidref ref="target_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AluminumMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>
@@ -48,12 +39,12 @@
       <physvol>
         <file name="tspad3_assembly.gdml"/>
         <position name="tspad3_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0"
-		  z="trigger_pad3_z + target_within_area_offset" />
+		  z="trigger_pad3_z" />
       </physvol>
       
       <physvol copynumber="3">
         <volumeref ref="target"/>
-        <positionref ref="target_in_area_pos"/>
+        <positionref ref="center"/>
         <rotationref ref="identity"/>
       </physvol>
 
