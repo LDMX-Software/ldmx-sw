@@ -1,0 +1,72 @@
+# Show ONLY the ENVELOPE mother boxes (no internal geometry) as coloured
+# wireframes, to inspect subdetector boundaries.  Two key points:
+#   - each volume is added with depth 0, so only the envelope box is drawn and
+#     not its daughters (otherwise the calorimeter internals flood the view);
+#   - all scenes are created first, then the viewers are opened and attached, so
+#     each viewer shows just its own region.
+# Regions:
+#   viewer-0 : whole-detector overview (all envelopes, ~6 m in z)
+#   viewer-1 : target + tracker region (tagger, target-area, recoil)
+#   viewer-2 : calorimeter region (recoil for context, ECal, HCal)
+# Colours: tagger green, target-area TS_trgt red, recoil cyan,
+#          ECal em_calorimeters magenta, HCal hadronic_calorimeter yellow.
+# All views look down the x-axis (z horizontal).
+
+# --- envelope appearance (logical volumes, global to all views) ---
+/vis/geometry/set/visibility    TS_trgt 0 true
+/vis/geometry/set/forceWireframe TS_trgt 0 true
+/vis/geometry/set/colour        TS_trgt 0 1 0 0 1
+/vis/geometry/set/visibility    tagger 0 true
+/vis/geometry/set/forceWireframe tagger 0 true
+/vis/geometry/set/colour        tagger 0 0 1 0 1
+/vis/geometry/set/visibility    recoil 0 true
+/vis/geometry/set/forceWireframe recoil 0 true
+/vis/geometry/set/colour        recoil 0 0 1 1 1
+/vis/geometry/set/visibility    em_calorimeters 0 true
+/vis/geometry/set/forceWireframe em_calorimeters 0 true
+/vis/geometry/set/colour        em_calorimeters 0 1 0 1 1
+/vis/geometry/set/visibility    hadronic_calorimeter 0 true
+/vis/geometry/set/forceWireframe hadronic_calorimeter 0 true
+/vis/geometry/set/colour        hadronic_calorimeter 0 1 1 0 1
+
+# --- create the scenes (depth 0 = envelope box only, no daughters) ---
+/vis/scene/create overview
+/vis/scene/add/volume tagger_PV -1 0
+/vis/scene/add/volume TS_trgt_PV -1 0
+/vis/scene/add/volume recoil_PV -1 0
+/vis/scene/add/volume em_calorimeters_PV -1 0
+/vis/scene/add/volume hadronic_calorimeter_PV -1 0
+
+/vis/scene/create trackers
+/vis/scene/add/volume tagger_PV -1 0
+/vis/scene/add/volume TS_trgt_PV -1 0
+/vis/scene/add/volume recoil_PV -1 0
+
+/vis/scene/create calorimeters
+/vis/scene/add/volume recoil_PV -1 0
+/vis/scene/add/volume em_calorimeters_PV -1 0
+/vis/scene/add/volume hadronic_calorimeter_PV -1 0
+
+# Scene for the overlap zoom: tagger + target-area envelopes (recoil for context).
+/vis/scene/create overlap
+/vis/scene/add/volume tagger_PV -1 0
+/vis/scene/add/volume TS_trgt_PV -1 0
+/vis/scene/add/volume recoil_PV -1 0
+
+# --- viewer-0 : whole-detector overview ---
+/vis/open OGLIX 700x700+0+0
+/vis/sceneHandler/attach overview
+/vis/viewer/set/viewpointThetaPhi 270 0
+/vis/viewer/zoom 1
+
+# --- viewer-1 : target + tracker region ---
+/vis/open OGLIX 700x700+400+150
+/vis/sceneHandler/attach trackers
+/vis/viewer/set/viewpointThetaPhi 270 0
+/vis/viewer/zoom 1
+
+# --- viewer-2 : calorimeter region (recoil shown for upstream context) ---
+/vis/open OGLIX 700x700-1+300
+/vis/sceneHandler/attach calorimeters
+/vis/viewer/set/viewpointThetaPhi 270 0
+/vis/viewer/zoom 1
