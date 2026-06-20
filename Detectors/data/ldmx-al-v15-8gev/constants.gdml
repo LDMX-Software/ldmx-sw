@@ -184,8 +184,27 @@ subtracted here to make them positive lengths.
 <!-- Moved here due to dependence on other constants-->>
 <constant name="target_area_envelope_x" value="magnet_gap_dx - 5" />
 <constant name="target_area_envelope_y" value="magnet_gap_dy - 5" />
-<constant name="target_area_envelope_z" 
-          value="2*(target_thickness/2 + 2*clearance + + trigger_gap_from_target + trigger_pad_thickness)" />
+<!--
+  The trigger pad (tspad3) sits only on the upstream side of the target, so the
+  envelope needs room for the pad upstream but only the target half-thickness
+  downstream.  Sizing it symmetrically (the old behaviour) made the downstream
+  half empty padding that poked into the recoil tracker once the thick aluminum
+  target enlarged it - see issue 2088.  The envelope is therefore asymmetric in z.
+-->
+<constant name="target_area_envelope_z_upstream"
+          value="target_thickness/2 + 2*clearance + trigger_gap_from_target + trigger_pad_thickness" />
+<constant name="target_area_envelope_z_downstream"
+          value="target_thickness/2 + 2*clearance" />
+<constant name="target_area_envelope_z"
+          value="target_area_envelope_z_upstream + target_area_envelope_z_downstream" />
+<!--
+  Offset of the target (the origin, z=0) relative to the centre of the asymmetric
+  envelope.  The envelope centre is this far upstream of the target, so inside the
+  envelope the target is placed this far downstream of the centre, and the whole
+  envelope is placed this far upstream in the world to keep the target at z=0.
+-->
+<constant name="target_within_area_offset"
+          value="(target_area_envelope_z_upstream - target_area_envelope_z_downstream)/2" />
 
 <!--
    HCal
