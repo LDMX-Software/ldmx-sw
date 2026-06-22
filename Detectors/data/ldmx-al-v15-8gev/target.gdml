@@ -8,7 +8,7 @@
 
   <define>
 
-    &constants;       
+    &constants;
     <variable name="x" value="1"/>
 
   </define>
@@ -27,7 +27,7 @@
     <volume name="target">
       <materialref ref="Aluminum"/>
       <solidref ref="target_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AluminumMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>

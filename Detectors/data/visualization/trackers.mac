@@ -1,0 +1,31 @@
+# Visualize the tagger and recoil trackers together with the target, to show how
+# the target region sits in the gap between the two trackers along the beam (z).
+#   tagger_PV  : tagger tracker, z < 0
+#   TS_trgt_PV : target region (target + tspad3), z ~ 0
+#   recoil_PV  : recoil tracker, z > 0
+# The scene is ~800 mm long in z (tagger to recoil), so the side view gives the
+# clearest picture of the layout along the beam.
+
+# Front view, looking down the beam (-z): sensors and target face-on (all layers
+# overlap in this projection, so it is zoomed in to fill the frame).
+/vis/open OGLIX 600x600+0+0
+/vis/scene/create
+/vis/scene/add/volume tagger_PV
+/vis/scene/add/volume TS_trgt_PV
+/vis/scene/add/volume recoil_PV
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 180 0
+/vis/viewer/zoom 5
+
+# Perspective view.
+/vis/open OGLIX 600x600+400+150
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointVector -1 1 -1
+/vis/viewer/zoom 1
+
+# Side view, looking down the x-axis: z horizontal, y vertical.  Shows the tagger
+# layers (z < 0), the target (z ~ 0) and the recoil layers (z > 0) along the beam.
+/vis/open OGLIX 600x600-1+300
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 270 0
+/vis/viewer/zoom 1
