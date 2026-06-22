@@ -20,6 +20,8 @@
 #include "SimCore/G4User/SteppingAction.h"
 #include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/GammaPhysics.h"
+#include "SimCore/GenieElectroNuclearProcess.h"  //for process name
+#include "SimCore/GenieNuclearPhysics.h"
 #include "SimCore/ParallelWorld.h"
 #include "SimCore/PrimaryGeneratorAction.h"
 
@@ -67,6 +69,8 @@ void RunManager::setupPhysics() {
   p_list->RegisterPhysics(new FCPPhysics(
       "FCPPhysics",
       parameters_.get<framework::config::Parameters>("fcp_physics")));
+  p_list->RegisterPhysics(new GenieNuclearPhysics(
+      parameters_.get<framework::config::Parameters>("genie_nuclear")));
 
   auto biasing_operators{
       parameters_.get<std::vector<framework::config::Parameters>>(
@@ -183,20 +187,21 @@ void RunManager::TerminateOneEvent() {
   // have geant4 do its own thing
   G4RunManager::TerminateOneEvent();
 
-  // go through the processes attached to the electron and
-  // reactivate any process that contains the G4DarkBremmstrahlung name
-  // this covers both cases where the process is biased and not
-  static auto reactivate_dark_brem = [](G4ProcessManager* pman) {
-    for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
-      G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
-      if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
-        pman->SetProcessActivation(p, true);
-        break;
-      }
+  // A process may deactivate itself after firing so that it only happens once
+  // per event (dark brem and GENIE electronNuclear both do this). At most one
+  // of them is present in a given run, so find whichever it is, reactivate it
+  // so it can fire again next event, and stop. This covers both cases where the
+  // process is biased and not.
+  G4ProcessManager* pman = G4Electron::Definition()->GetProcessManager();
+  for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
+    G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
+    if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME) or
+        p->GetProcessName().contains(
+            GenieElectroNuclearProcess::PROCESS_NAME)) {
+      pman->SetProcessActivation(p, true);
+      break;
     }
-  };
-
-  reactivate_dark_brem(G4Electron::Definition()->GetProcessManager());
+  }
 }
 
 DetectorConstruction* RunManager::getDetectorConstruction() {
