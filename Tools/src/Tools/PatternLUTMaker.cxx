@@ -2,7 +2,7 @@
 // in ClusterTripletMaker) containing only those cluster combination entries
 // which occur with a frequency above the lut_threshold parameter
 
-#include "TrigScint/PatternLUTMaker.h"
+#include "Tools/PatternLUTMaker.h"
 
 namespace trigscint {
 
@@ -38,24 +38,24 @@ void PatternLUTMaker::configure(framework::config::Parameters& ps) {
 }
 
 void PatternLUTMaker::onProcessStart() {
-  infile.open(input_collection_);
-  outfile.open(output_collection_);
+  infile_.open(input_collection_);
+  outfile_.open(output_collection_);
   return;
 }
 
 void PatternLUTMaker::analyze(const framework::Event& event) {
-  if (totalLines > 0) return;
+  if (total_lines_ > 0) return;
 
   int ev;
   float p1, p2, p3;
 
-  while (infile >> ev >> p1 >> p2 >> p3) {
+  while (infile_ >> ev >> p1 >> p2 >> p3) {
     float p12 = p2 - p1;
     float p23 = p3 - p2;
 
-    groups[{p12, p23}].push_back({ev, p1, p2, p3});
+    groups_[{p12, p23}].push_back({ev, p1, p2, p3});
 
-    totalLines++;
+    total_lines_++;
   }
 
   return;
@@ -66,18 +66,18 @@ void PatternLUTMaker::onProcessEnd() {
   int tracks = 0;
 
   if (verbose_) {
-    ldmx_log(info) << "Total number of track candidates: " << totalLines << "\n"
-                   << "Number of track candidate types: " << groups.size()
+    ldmx_log(info) << "Total number of track candidates: " << total_lines_ << "\n"
+                   << "Number of track candidate types: " << groups_.size()
                    << "\n"
                    << "LUT Threshold: " << lut_threshold_ * 100 << "%\n";
   }
 
-  for (auto& g : groups) {
+  for (auto& g : groups_) {
     float p12 = g.first.first;
     float p23 = g.first.second;
     int count = g.second.size();
 
-    double frac = static_cast<double>(count) / totalLines;
+    double frac = static_cast<double>(count) / total_lines_;
 
     if (verbose_) {
       ldmx_log(info) << "(" << p12 << "," << p23 << ") appears " << count
@@ -85,18 +85,18 @@ void PatternLUTMaker::onProcessEnd() {
     }
   }
 
-  for (auto& g : groups) {
+  for (auto& g : groups_) {
     int count = g.second.size();
 
-    double frac = static_cast<double>(count) / totalLines;
+    double frac = static_cast<double>(count) / total_lines_;
 
-    if (frac > lut_threshold_) {  // write to outfile if over threshold
+    if (frac > lut_threshold_) {  // write to outfile_ if over threshold
       combs++;
 
       for (auto& line : g.second) {
         tracks++;
 
-        outfile << line.p1 << " " << line.p2 << " " << line.p3 << "\n";
+        outfile_ << line.p1_ << " " << line.p2_ << " " << line.p3_ << "\n";
       }
     }
   }

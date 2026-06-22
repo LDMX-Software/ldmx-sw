@@ -248,7 +248,7 @@ void TrigScintTrackProducer::produce(framework::Event& event) {
                   (centroid >= vert_bar_start_idx_ &&
                    cluster2.getCentroid() >= vert_bar_start_idx_ &&
                    fabs(seed.getCentroidX() - cluster2.getCentroidX()) <=
-                       max_delta_vert)) {
+                       max_delta_vert_)) {
                 // use geometry y overlap scheme to see if this is really a
                 // match
                 // in x

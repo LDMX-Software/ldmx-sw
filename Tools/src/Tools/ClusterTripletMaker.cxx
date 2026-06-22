@@ -1,4 +1,4 @@
-#include "TrigScint/ClusterTripletMaker.h"
+#include "Tools/ClusterTripletMaker.h"
 
 #include <algorithm>
 
