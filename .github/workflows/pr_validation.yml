@@ -43,7 +43,7 @@ jobs:
         echo "HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge" >> $GITHUB_ENV
 
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -106,7 +106,7 @@ jobs:
 
     # need clone of ldmx-sw for getting gold tag
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -127,7 +127,7 @@ jobs:
         tar xf ldmx-sw-package.tar
 
     - name: Download CI Gold Data
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: LDMX-Software/ci-data
         path: ci-data
