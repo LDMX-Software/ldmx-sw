@@ -7,6 +7,8 @@
 #ifndef DETDESCR_DETECTORHEADER_H_
 #define DETDESCR_DETECTORHEADER_H_
 
+#include <string>
+
 namespace ldmx {
 
 /**

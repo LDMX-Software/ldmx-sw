@@ -102,9 +102,9 @@ void StripClusterProcessor::produce(framework::Event& event) {
       // µm, etc.
       // -------------------------------------------------------------------
       using namespace tracking::digitization;
-      const int n_int_ = N_READOUT_STRIPS / 2;  // integer division = 383
-      const double offset_ = static_cast<double>(n_int_);
-      const double local_u = (cl.centroid_strip - offset_) * READOUT_PITCH_MM;
+      const int n_int = N_READOUT_STRIPS / 2;  // integer division = 383
+      const double offset = static_cast<double>(n_int);
+      const double local_u = (cl.centroid_strip - offset) * READOUT_PITCH_MM;
 
       // Cluster-size-dependent position uncertainty using sense pitch (30 µm).
       // Divisors follow the HPS convention: 1/√12 for single-strip (binary
