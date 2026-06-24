@@ -38,35 +38,17 @@ void PatternLUTMaker::configure(framework::config::Parameters& ps) {
 }
 
 void PatternLUTMaker::onProcessStart() {
-<<<<<<< HEAD
-  infile.open(input_collection_);
-  outfile.open(output_collection_);
-=======
   infile_.open(input_collection_);
   outfile_.open(output_collection_);
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
   return;
 }
 
 void PatternLUTMaker::analyze(const framework::Event& event) {
-<<<<<<< HEAD
-  if (totalLines > 0) return;
-=======
   if (total_lines_ > 0) return;
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
 
   int ev;
   float p1, p2, p3;
 
-<<<<<<< HEAD
-  while (infile >> ev >> p1 >> p2 >> p3) {
-    float p12 = p2 - p1;
-    float p23 = p3 - p2;
-
-    groups[{p12, p23}].push_back({ev, p1, p2, p3});
-
-    totalLines++;
-=======
   while (infile_ >> ev >> p1 >> p2 >> p3) {
     float p12 = p2 - p1;
     float p23 = p3 - p2;
@@ -74,7 +56,6 @@ void PatternLUTMaker::analyze(const framework::Event& event) {
     groups_[{p12, p23}].push_back({ev, p1, p2, p3});
 
     total_lines_++;
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
   }
 
   return;
@@ -85,31 +66,18 @@ void PatternLUTMaker::onProcessEnd() {
   int tracks = 0;
 
   if (verbose_) {
-<<<<<<< HEAD
-    ldmx_log(info) << "Total number of track candidates: " << totalLines << "\n"
-                   << "Number of track candidate types: " << groups.size()
-=======
     ldmx_log(info) << "Total number of track candidates: " << total_lines_ << "\n"
                    << "Number of track candidate types: " << groups_.size()
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
                    << "\n"
                    << "LUT Threshold: " << lut_threshold_ * 100 << "%\n";
   }
 
-<<<<<<< HEAD
-  for (auto& g : groups) {
-=======
   for (auto& g : groups_) {
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
     float p12 = g.first.first;
     float p23 = g.first.second;
     int count = g.second.size();
 
-<<<<<<< HEAD
-    double frac = static_cast<double>(count) / totalLines;
-=======
     double frac = static_cast<double>(count) / total_lines_;
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
 
     if (verbose_) {
       ldmx_log(info) << "(" << p12 << "," << p23 << ") appears " << count
@@ -117,31 +85,18 @@ void PatternLUTMaker::onProcessEnd() {
     }
   }
 
-<<<<<<< HEAD
-  for (auto& g : groups) {
-    int count = g.second.size();
-
-    double frac = static_cast<double>(count) / totalLines;
-
-    if (frac > lut_threshold_) {  // write to outfile if over threshold
-=======
   for (auto& g : groups_) {
     int count = g.second.size();
 
     double frac = static_cast<double>(count) / total_lines_;
 
     if (frac > lut_threshold_) {  // write to outfile_ if over threshold
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
       combs++;
 
       for (auto& line : g.second) {
         tracks++;
 
-<<<<<<< HEAD
-        outfile << line.p1 << " " << line.p2 << " " << line.p3 << "\n";
-=======
         outfile_ << line.p1_ << " " << line.p2_ << " " << line.p3_ << "\n";
->>>>>>> 1091f5d5bfe2f3839fbc6deb4c75bc9ebad9d606
       }
     }
   }
