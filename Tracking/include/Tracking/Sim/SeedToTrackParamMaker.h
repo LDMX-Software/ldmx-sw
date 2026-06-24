@@ -14,7 +14,7 @@ namespace sim {
 
 class SeedToTrackParamMaker {
  public:
-  SeedToTrackParamMaker(){};
+  SeedToTrackParamMaker() {};
 
   template <typename external_spacepoint_t>
   bool karimakiFit(const std::vector<external_spacepoint_t*>& sp,

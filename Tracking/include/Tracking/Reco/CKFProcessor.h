@@ -11,6 +11,7 @@
 #include <random>
 
 //--- LDMX ---//
+#include "Tracking/EigenStepper.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 //--- ACTS ---//
@@ -37,7 +38,6 @@
 #include "Acts/Propagator/AbortList.hpp"
 #include "Acts/Propagator/ActionList.hpp"
 #include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-#include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
@@ -99,7 +99,7 @@ class CKFProcessor final : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  CKFProcessor(const std::string &name, framework::Process &process);
+  CKFProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~CKFProcessor() = default;
@@ -115,7 +115,7 @@ class CKFProcessor final : public TrackingGeometryUser {
    * This is where you could create single-processors, multi-event
    * calculation objects.
    */
-  void onNewRun(const ldmx::RunHeader &rh) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -127,19 +127,19 @@ class CKFProcessor final : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   // Make geoid -> source link map Measurements
-  auto makeGeoIdSourceLinkMap(const geo::TrackersTrackingGeometry &tg,
-                              const std::vector<ldmx::Measurement> &ldmxsps)
+  auto makeGeoIdSourceLinkMap(const geo::TrackersTrackingGeometry& tg,
+                              const std::vector<ldmx::Measurement>& ldmxsps)
       -> std::unordered_multimap<Acts::GeometryIdentifier,
                                  acts_examples::IndexSourceLink>;
 
@@ -147,8 +147,8 @@ class CKFProcessor final : public TrackingGeometryUser {
             typename source_link_equality_t>
   std::vector<std::vector<std::size_t>> computeSharedHits(
       std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
-      geometry_t &tg, source_link_hash_t &&sourceLinkHash,
-      source_link_equality_t &&sourceLinkEquality) const;
+      geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+      source_link_equality_t&& sourceLinkEquality) const;
 
   // If we want to dump the tracking geometry
   bool dumpobj_{false};

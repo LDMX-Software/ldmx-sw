@@ -2,8 +2,8 @@
 
 namespace dqm {
 
-TrigScintClusterDQM::TrigScintClusterDQM(const std::string &name,
-                                         framework::Process &process)
+TrigScintClusterDQM::TrigScintClusterDQM(const std::string& name,
+                                         framework::Process& process)
     : framework::Analyzer(name, process) {}
 
 void TrigScintClusterDQM::onProcessStart() {
@@ -29,7 +29,7 @@ void TrigScintClusterDQM::onProcessStart() {
   // through and set overflow boolean.
 }
 
-void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
+void TrigScintClusterDQM::configure(framework::config::Parameters& ps) {
   cluster_collection_name_ = ps.get<std::string>("cluster_collection");
   pad_name_ = ps.get<std::string>("pad").c_str();
   pass_name_ = ps.get<std::string>("pass_name").c_str();
@@ -38,7 +38,7 @@ void TrigScintClusterDQM::configure(framework::config::Parameters &ps) {
                   << ", pad = " << pad_name_ << ", pass = " << pass_name_;
 }
 
-void TrigScintClusterDQM::analyze(const framework::Event &event) {
+void TrigScintClusterDQM::analyze(const framework::Event& event) {
   if (not event.exists(cluster_collection_name_, pass_name_)) return;
   // Get the collection of TrigScintCluster digitized clusters if the exists
   const std::vector<ldmx::TrigScintCluster> trig_scint_clusters =
@@ -47,7 +47,7 @@ void TrigScintClusterDQM::analyze(const framework::Event &event) {
 
   double total_pe{0};
   // Loop through all TrigScint clusters in the event
-  for (const ldmx::TrigScintCluster &cluster : trig_scint_clusters) {
+  for (const ldmx::TrigScintCluster& cluster : trig_scint_clusters) {
     histograms_.fill("pe", cluster.getPE());
     histograms_.fill("energy", cluster.getEnergy());
     histograms_.fill("cluster_time", cluster.getTime());

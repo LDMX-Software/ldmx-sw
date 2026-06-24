@@ -6,7 +6,7 @@
 
 namespace trigscint {
 
-void QIEDecoder::configure(framework::config::Parameters &ps) {
+void QIEDecoder::configure(framework::config::Parameters& ps) {
   // Configure this instance of the encoder
   output_collection_ = ps.get<std::string>("output_collection");
   input_collection_ = ps.get<std::string>("input_collection");
@@ -57,7 +57,7 @@ void QIEDecoder::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void QIEDecoder::produce(framework::Event &event) {
+void QIEDecoder::produce(framework::Event& event) {
   ldmx_log(debug) << "QIEDecoder: produce() starts! Event number: "
                   << event.getEventHeader().getEventNumber();
 
@@ -124,7 +124,7 @@ void QIEDecoder::produce(framework::Event &event) {
                   << time_spill;
   event.getEventHeader().setIntParameter("timeSinceSpill", time_spill);
 
-  TTimeStamp *time_stamp = new TTimeStamp(time_epoch);
+  TTimeStamp* time_stamp = new TTimeStamp(time_epoch);
   event.getEventHeader().setTimestamp(*time_stamp);
 
   // trigger ID event number

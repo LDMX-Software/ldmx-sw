@@ -17,14 +17,14 @@ namespace g4user {
 void RunAction::BeginOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& run_action : run_actions_) {
-    run_action->BeginOfRunAction(run);
+    run_action->beginOfRunAction(run);
   }
 }
 
 void RunAction::EndOfRunAction(const G4Run* run) {
   // Call user run action
   for (auto& run_action : run_actions_) {
-    run_action->EndOfRunAction(run);
+    run_action->endOfRunAction(run);
   }
 }
 

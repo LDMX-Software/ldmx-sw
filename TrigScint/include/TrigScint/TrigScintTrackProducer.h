@@ -20,12 +20,12 @@ namespace trigscint {
  */
 class TrigScintTrackProducer : public framework::Producer {
  public:
-  TrigScintTrackProducer(const std::string &name, framework::Process &process)
+  TrigScintTrackProducer(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
-  void configure(framework::config::Parameters &ps) override;
+  void configure(framework::config::Parameters& ps) override;
 
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
   void onProcessStart() override;
   void onProcessEnd() override;
@@ -38,7 +38,7 @@ class TrigScintTrackProducer : public framework::Producer {
   ldmx::TrigScintTrack makeTrack(std::vector<ldmx::TrigScintCluster> clusters);
 
   // match x, y tracks and set their x,y spatial coordinates
-  void matchXYTracks(std::vector<ldmx::TrigScintTrack> &tracks);
+  void matchXYTracks(std::vector<ldmx::TrigScintTrack>& tracks);
   // std::vector<ldmx::TrigScintTrack> matchXYTracks(
   // std::vector<ldmx::TrigScintTrack> &tracks);
 

@@ -14,6 +14,7 @@ setup_library(module Tools
               dependencies Framework::Framework Recon::Event Conditions::Conditions
                            ONNXRuntime::Interface ROOT::Core ROOT::Physics Packing::Utility
                            SimCore::Event
+			   TrigScint::Event
 )
 target_include_directories(Tools SYSTEM PUBLIC HLS_Arbitrary_Precision_Types/include)
 

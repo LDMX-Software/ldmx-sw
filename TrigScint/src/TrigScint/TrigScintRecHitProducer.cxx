@@ -7,14 +7,14 @@
 
 namespace trigscint {
 
-TrigScintRecHitProducer::TrigScintRecHitProducer(const std::string &name,
-                                                 framework::Process &process)
+TrigScintRecHitProducer::TrigScintRecHitProducer(const std::string& name,
+                                                 framework::Process& process)
     : Producer(name, process) {}
 
 TrigScintRecHitProducer::~TrigScintRecHitProducer() {}
 
 void TrigScintRecHitProducer::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   // Configure this instance of the producer
   pedestal_ = parameters.get<double>("pedestal");
   gain_ = parameters.get<double>("gain");
@@ -26,7 +26,7 @@ void TrigScintRecHitProducer::configure(
   sample_of_interest_ = parameters.get<int>("sample_of_interest");
 }
 
-void TrigScintRecHitProducer::produce(framework::Event &event) {
+void TrigScintRecHitProducer::produce(framework::Event& event) {
   // Initialize QIE object for linearizing ADCs
   SimQIE qie;
 
@@ -37,7 +37,7 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   std::vector<ldmx::TrigScintHit> trig_scint_hits;
 
   // Loop over digis and process each one
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     ldmx::TrigScintHit hit;
     auto adc{digi.getADC()};
     auto tdc{digi.getTDC()};
@@ -60,7 +60,7 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
     float integrated_charge = 0;
 
     // Integrate pulse over all time samples and subtract pedestal
-    for (const auto &adc_val : adc) {
+    for (const auto& adc_val : adc) {
       integrated_charge += qie.adc2Q(adc_val);
     }
     uint n_samp = adc.size();

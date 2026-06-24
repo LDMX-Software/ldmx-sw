@@ -14,7 +14,7 @@
 namespace dqm {
 class HcalInefficiencyAnalyzer : public framework::Analyzer {
  public:
-  HcalInefficiencyAnalyzer(const std::string &name, framework::Process &process)
+  HcalInefficiencyAnalyzer(const std::string& name, framework::Process& process)
       : framework::Analyzer{name, process} {}
 
   enum vetoCategories {
@@ -29,9 +29,9 @@ class HcalInefficiencyAnalyzer : public framework::Analyzer {
     side_only = 8,
     neither = 9
   };
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
+  bool hitPassesVeto(const ldmx::HcalHit& hit, int section) {
     if (hit.getPE() < pe_veto_threshold_ || hit.getTime() > max_hit_time_) {
       return true;
     }
@@ -41,7 +41,7 @@ class HcalInefficiencyAnalyzer : public framework::Analyzer {
     return false;
   }
 
-  void analyze(const framework::Event &event) override;
+  void analyze(const framework::Event& event) override;
 
  private:
   std::string hcal_sim_hits_collection_{"HcalSimHits"};

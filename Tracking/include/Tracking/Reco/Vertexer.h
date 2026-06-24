@@ -17,6 +17,13 @@
 #include "Acts/Definitions/Common.hpp"
 #include "Acts/Definitions/Units.hpp"
 
+// Propagator
+
+#include "Acts/Propagator/Propagator.hpp"
+#include "Tracking/EigenStepper.h"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
+
 // Vertexing
 
 #include "Acts/Vertexing/FullBilloirVertexFitter.hpp"
@@ -28,13 +35,6 @@
 #include "Acts/MagneticField/ConstantBField.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
-
-// Propagator
-
-#include "Acts/Propagator/EigenStepper.hpp"
-#include "Acts/Propagator/Propagator.hpp"
-// #include "Acts/Propagator/Navigator.hpp"
-// #include "Acts/Propagator/StandardAborters.hpp"
 
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"

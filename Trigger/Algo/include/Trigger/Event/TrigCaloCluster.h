@@ -22,7 +22,7 @@ class TrigCaloCluster {
 
   virtual ~TrigCaloCluster() = default;
 
-  bool operator<(const TrigCaloCluster &h) { return e_ < h.e_; }
+  bool operator<(const TrigCaloCluster& h) { return e_ < h.e_; }
 
   void clear();
 

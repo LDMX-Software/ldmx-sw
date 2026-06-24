@@ -148,6 +148,7 @@ class EcalVetoProcessor : public framework::Producer {
   float beam_energy_mev_{0};
 
   std::string bdt_file_name_;
+  std::string bdt_feature_config_;
   std::string roc_file_name_;
   std::vector<float> bdt_features_;
   std::string feature_list_name_;

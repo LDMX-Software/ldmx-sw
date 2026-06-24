@@ -31,8 +31,8 @@ class GDMLParser : public Parser {
    * @param parameters The parameters used to configure this parser.
    * @param ci Interface that allows access to the conditions.
    */
-  GDMLParser(framework::config::Parameters &parameters,
-             simcore::ConditionsInterface &ci);
+  GDMLParser(framework::config::Parameters& parameters,
+             simcore::ConditionsInterface& ci);
 
   /// Default destructor
   virtual ~GDMLParser() = default;
@@ -43,7 +43,7 @@ class GDMLParser : public Parser {
    *
    * @return The world volume.
    */
-  G4VPhysicalVolume *getWorldVolume() override;
+  G4VPhysicalVolume* getWorldVolume() override;
 
   /**
    * Get the name of the parsed detector.

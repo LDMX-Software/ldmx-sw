@@ -1,4 +1,4 @@
-#example config which makes digis, clusters, and writes clusters 
+#example config which makes digis, clusters, and writes clusters
 #to .txt file using ClusterTripletMaker
 
 from LDMX.Framework import ldmxcfg
@@ -34,7 +34,8 @@ for cluster, digi in zip(clusters, digis):
     cluster.ampl_weighting = False
     cluster.clustering_threshold = 3.0
 
-from LDMX.TrigScint.trig_scint import ClusterTripletMaker
+from LDMX.Tools.lut_making import ClusterTripletMaker
+
 
 triplets = ClusterTripletMaker("tripletmaker")
 triplets.output_collection = "clusters.txt"

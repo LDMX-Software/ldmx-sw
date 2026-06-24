@@ -98,9 +98,9 @@ from LDMX.Hcal import hcal
 
 from LDMX.Recon.simple_trigger import TriggerProcessor
 
-from LDMX.TrigScint.trigScint import TrigScintDigiProducer
-from LDMX.TrigScint.trigScint import TrigScintClusterProducer
-from LDMX.TrigScint.trigScint import trig_scint_track
+from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
+from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
+from LDMX.TrigScint.trig_scint import trig_scint_track
 
 if "v12" in version:
     ts_sim_colls = [

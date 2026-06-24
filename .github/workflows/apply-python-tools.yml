@@ -30,16 +30,14 @@ jobs:
       run: |
         just format-python-diff
         just lint-python-fix
-    - name: format and lint all Python files
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+        git add .
+        git commit -m "apply ruff formatting and linting" || exit 0
+        git push origin HEAD:${GITHUB_HEAD_REF}
+    - name: check format and lint all Python files
       if: github.ref == 'refs/heads/trunk'
       run: |
         just format-python
         just lint-python-fix
-    - name: auto-commit changes
-      if: github.ref != 'refs/heads/trunk'
-      run: |
-        git config user.name 'github-actions[bot]'
-        git config user.email 'github-actions[bot]@users.noreply.github.com'
-        git add .
-        git commit -m "Apply ruff formatting and linting" || exit 0
-        git push origin HEAD:${GITHUB_HEAD_REF}
+        git diff --exit-code

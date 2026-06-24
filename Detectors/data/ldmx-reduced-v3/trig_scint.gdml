@@ -29,6 +29,7 @@
     <volume name="trigger_pad2_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
@@ -36,6 +37,7 @@
     <volume name="trigger_pad1_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
     </volume>
@@ -44,6 +46,7 @@
     <volume name="lp_pad2_bar_volume">
       <materialref ref="AcrylicPMMA"/>
       <solidref ref="light_pipe_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
     </volume>
@@ -51,6 +54,7 @@
     <volume name="lp_pad1_bar_volume">
       <materialref ref="AcrylicPMMA"/>
       <solidref ref="light_pipe_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem"       auxvalue="LightPipe"/>
     </volume>
@@ -58,6 +62,7 @@
     <volume name="trig_scint_tagger">
       <materialref ref="Air"/>
       <solidref ref="trigger_pad_box" />
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <loop for="x" from="1" to="number_of_bars" step="1">
         <physvol copynumber="2*x-2">  <!-- pad 2, layer 1-->
           <volumeref ref="trigger_pad2_bar_volume" />

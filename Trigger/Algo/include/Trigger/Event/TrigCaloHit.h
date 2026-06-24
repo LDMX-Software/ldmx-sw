@@ -19,7 +19,7 @@ class TrigCaloHit {
 
   virtual ~TrigCaloHit() = default;
 
-  bool operator<(const TrigCaloHit &h) { return energy_ < h.energy_; }
+  bool operator<(const TrigCaloHit& h) { return energy_ < h.energy_; }
 
   void clear() {
     position_x_ = 0;

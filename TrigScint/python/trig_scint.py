@@ -393,7 +393,8 @@ class TrigScintTrackProducer(Processor):
     verbosity: int = 0
     lut_tracking: bool = False
     lut_file: str = "LUT.txt"
-    
+
+
 
 trig_scint_track = TrigScintTrackProducer(instance_name="trig_scint_track")
 

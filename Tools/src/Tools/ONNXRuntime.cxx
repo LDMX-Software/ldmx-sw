@@ -115,7 +115,9 @@ FloatArrays ONNXRuntime::run(const std::vector<std::string>& input_names,
     }
     auto value = input_values.begin() + (iter - input_names.begin());
     auto input_dims = input_node_dims_.at(name);
-    input_dims[0] = batch_size;
+    if (input_dims.size() > 0) {
+      input_dims[0] = batch_size;
+    }
     auto expected_len = std::accumulate(input_dims.begin(), input_dims.end(), 1,
                                         std::multiplies<int64_t>());
     if (expected_len != (int64_t)value->size()) {

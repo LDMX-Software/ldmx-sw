@@ -37,7 +37,7 @@ class TriggerResult {
   /**
    * Print a description of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const TriggerResult &d);
+  friend std::ostream& operator<<(std::ostream& o, const TriggerResult& d);
 
   /**
    * Reset the TriggerResult object.
@@ -48,7 +48,7 @@ class TriggerResult {
    * Return the name of the trigger.
    * @return The name of the trigger.
    */
-  const TString &getName() const { return name_; }
+  const TString& getName() const { return name_; }
 
   /**
    * Return pass/fail status of the trigger.
@@ -114,7 +114,7 @@ class TriggerResult {
    * @param pass The pass/fail status of the trigger.
    * @param nvar The number of algorithm variables.
    */
-  void set(const TString &name, bool pass, int nvar);
+  void set(const TString& name, bool pass, int nvar);
 
   /**
    * Set an algorithm variable.

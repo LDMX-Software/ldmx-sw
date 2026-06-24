@@ -5,7 +5,7 @@
 
 namespace dqm {
 
-void Trigger::configure(framework::config::Parameters &ps) {
+void Trigger::configure(framework::config::Parameters& ps) {
   trigger_coll_name_ = ps.get<std::string>("trigger_name");
   trigger_pass_name_ = ps.get<std::string>("trigger_pass");
 
@@ -41,7 +41,7 @@ void Trigger::onProcessStart() {
                      n_bins_electrons, min_electrons, max_electrons);
 }
 
-void Trigger::analyze(const framework::Event &event) {
+void Trigger::analyze(const framework::Event& event) {
   auto trig_result{event.getObject<ldmx::TriggerResult>(trigger_coll_name_,
                                                         trigger_pass_name_)};
 

@@ -36,7 +36,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void TrigScintClusterProducer::produce(framework::Event &event) {
+void TrigScintClusterProducer::produce(framework::Event& event) {
   // parameters.
   // a cluster seeding threshold
   // a clustering threshold -- a lower boundary for being added at all (zero
@@ -143,7 +143,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
   // 1. store all the channel digi content in channel order
   auto i_digi{0};
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     // these are unordered hits, and this collection is zero-suppressed
     // map the index of the digi to the channel index
 
@@ -218,7 +218,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
     // non-existing indices. so while what i do below means that i don't need to
     // erase hits, i'd rather find a way to do that and skip this book keeping:
     bool has_used = false;
-    for (const auto &index : v_used_indices_) {
+    for (const auto& index : v_used_indices_) {
       if (index == itr->first) {
         if (verbose_ > 1) {
           ldmx_log(warn) << "Attempting to re-use hit at channel " << itr->first
@@ -278,7 +278,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
         // need to check again for backwards hits
         has_used = false;
-        for (const auto &index : v_used_indices_) {
+        for (const auto& index : v_used_indices_) {
           if (index == itr_back->first) {
             if (verbose_ > 1) {
               ldmx_log(warn) << "Attempting to re-use hit at channel "
@@ -404,10 +404,9 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }  // if adding another hit, going forward, was allowed
 
       // done adding hits to cluster. calculate centroid
-      centroid_ /=
-          sumw_;  // final weighting step: divide by total amplitude sum
 
-      centroid_ -= 1;  // shift back to actual channel center
+      centroid_ /= sumw_ ; // final weighting step: divide by total amplitude sum
+      centroid_ -= 1;     // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;
 
