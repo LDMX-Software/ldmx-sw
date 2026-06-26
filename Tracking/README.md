@@ -14,3 +14,11 @@ Tracks are stored in the output file. The EDM provides access to the parameters 
 #### Running reconstruction. 
 
 A jobOption `Tracking/python/reco.py` provides a standard flow for running track reconstruction within ldmx-sw
+
+#### Real-data (test-beam) waveform processing
+
+For reconstructing raw Rogue `.dat` data — decoding, pedestal subtraction, and
+per-channel waveform building — see
+[`Tracking/exampleConfigs/README.md`](exampleConfigs/README.md), which documents
+the full `RawTrackerDecoder → PedestalSubtractor → SiStripWaveformBuilder` chain
+and a standalone plotting script.
