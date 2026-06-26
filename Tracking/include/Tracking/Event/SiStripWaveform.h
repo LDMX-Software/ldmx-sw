@@ -25,7 +25,7 @@ class SiStripWaveform {
  public:
   SiStripWaveform() = default;
 
-  SiStripWaveform(std::vector<short> samples, float noise, int16_t pchannel,
+  SiStripWaveform(std::vector<short> samples, int16_t pchannel,
                   uint8_t hybrid_id, uint8_t feb_id, uint8_t n_triggers);
 
   virtual ~SiStripWaveform() {}
@@ -33,7 +33,6 @@ class SiStripWaveform {
   void clear();
 
   const std::vector<short>& getSamples()   const { return samples_; }
-  float                     getNoise()     const { return noise_; }
   int16_t                   getPchannel()  const { return pchannel_; }
   uint8_t                   getHybridId()  const { return hybrid_id_; }
   uint8_t                   getFebId()     const { return feb_id_; }
@@ -44,11 +43,12 @@ class SiStripWaveform {
     return samples_[t * 3 + s];
   }
 
-  /// Peak significance: max(samples) / noise across the full waveform.
-  float peakSigma() const {
-    if (noise_ <= 0 || samples_.empty()) return 0.f;
-    auto mx = *std::max_element(samples_.begin(), samples_.end());
-    return static_cast<float>(mx) / noise_;
+  /// Peak amplitude: the maximum (pedestal-subtracted) ADC sample.  Convert to
+  /// a significance downstream by dividing by the per-channel noise from the
+  /// TrackerPedestals conditions object.
+  short peakAmplitude() const {
+    if (samples_.empty()) return 0;
+    return *std::max_element(samples_.begin(), samples_.end());
   }
 
   /// Trigger index (0-based) of the sample with the maximum ADC value.
@@ -62,7 +62,6 @@ class SiStripWaveform {
 
  protected:
   std::vector<short> samples_;   ///< n_triggers * 3 pedestal-subtracted ADC samples
-  float   noise_{0};             ///< per-channel RMS noise from pedestal run
   int16_t pchannel_{0};          ///< physical strip number within hybrid [0, 639]
   uint8_t hybrid_id_{0};
   uint8_t feb_id_{0};

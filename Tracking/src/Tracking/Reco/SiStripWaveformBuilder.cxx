@@ -102,8 +102,8 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
     uint8_t n_trig   = static_cast<uint8_t>(
         std::min(static_cast<int>(ch.triggers.size()), 255));
 
-    waveforms.emplace_back(std::move(samples), ch.noise, pchannel,
-                           ch.hybrid_id, ch.feb_id, n_trig);
+    waveforms.emplace_back(std::move(samples), pchannel, ch.hybrid_id,
+                           ch.feb_id, n_trig);
   }
 
   std::cout << "[SiStripWaveformBuilder] Built " << waveforms.size()

@@ -9,7 +9,9 @@ This is step 3 of the real-data tracker waveform chain:
 Unlike the in-framework approach, this is a STANDALONE script: it reads the
 ldmx::SiStripWaveform collection directly out of the ROOT event tree with
 PyROOT (which deserializes the custom class via the Tracking Event dictionary)
-and uses the object getters -- no intermediate JSON and no C++ analyzer needed.
+and uses the object getters -- no C++ analyzer needed.  Noise is NOT stored on
+the waveform; for significance it reads the pedestal JSON (the same conditions
+source the framework uses) via --pedestal-file.
 
 Produces:
   <stem>_all.png          -- multi-panel overview of the top waveforms
@@ -27,6 +29,7 @@ library path) plus matplotlib + numpy.
 """
 
 import argparse
+import json
 import math
 import os
 import re
@@ -52,6 +55,10 @@ parser.add_argument("--collection", default="TrackerWaveforms",
                     help="SiStripWaveform collection name (default: TrackerWaveforms)")
 parser.add_argument("--max-waveforms", type=int, default=10,
                     help="Number of highest-significance waveforms to plot (default: 10)")
+parser.add_argument("--pedestal-file", default="pedestals.json",
+                    help="Pedestal JSON (the conditions source) used to recover "
+                         "per-channel noise for significance. If missing, raw ADC "
+                         "is plotted and waveforms are ranked by peak amplitude.")
 parser.add_argument("--output-dir", default="",
                     help="Directory for output PNGs (default: same as the ROOT file)")
 parser.add_argument("--cols", type=int, default=2,
@@ -93,10 +100,43 @@ print(f"Reading '{branch_name}' from '{args.tree}' in {args.root_file}")
 # Scan the tree: collect top-N waveforms by peak significance + occupancy
 # ---------------------------------------------------------------------------
 N_STRIPS = 640  # APV25 hybrid: 5 APVs * 128 channels
+CHANNELS_PER_APV = 128
 
 
 def hybrid_label(feb, hybrid):
     return f"F{feb}H{hybrid}"
+
+
+def pchannel(apv, channel):
+    """Physical strip number within a hybrid, matching channelmap::pchannel()."""
+    return (N_STRIPS - 1) - (apv * CHANNELS_PER_APV + (CHANNELS_PER_APV - 1) - channel)
+
+
+def load_pedestal_noise(path):
+    """Map (feb, hybrid, pchannel) -> scalar RMS noise from the pedestal JSON.
+
+    This is the same conditions source the framework's TrackerPedestalProvider
+    reads; the standalone plotter just reads it directly.  The scalar noise is
+    the mean of the three per-sample noises, matching TrackerPedestals::noise().
+    """
+    with open(path) as fh:
+        doc = json.load(fh)
+    noise_map = {}
+    for key, ch in doc["channels"].items():
+        feb, hybrid, apv, channel = (int(x) for x in key.split(":"))
+        noise = sum(ch["noise"]) / len(ch["noise"])
+        noise_map[(feb, hybrid, pchannel(apv, channel))] = noise
+    return noise_map
+
+
+ped_noise = {}
+if os.path.exists(args.pedestal_file):
+    ped_noise = load_pedestal_noise(args.pedestal_file)
+    print(f"Loaded noise for {len(ped_noise)} channels from '{args.pedestal_file}'")
+else:
+    print(f"WARNING: pedestal file '{args.pedestal_file}' not found; "
+          "plotting raw ADC and ranking by peak amplitude")
+have_noise = bool(ped_noise)
 
 
 top = []            # list of waveform record dicts
@@ -115,25 +155,32 @@ for ievt, entry in enumerate(tree):
         if 0 <= pch < N_STRIPS:
             counts[pch] += 1
 
+        noise = ped_noise.get((feb, hybrid, pch), 0.0)
+        peak_amp = max(samples) if samples else 0
+        peak_sigma = (peak_amp / noise) if noise > 0 else 0.0
+
         top.append({
             "event": ievt,
             "feb": feb,
             "hybrid": hybrid,
             "pchannel": pch,
             "n_triggers": int(wf.getNTriggers()),
-            "noise": float(wf.getNoise()),
-            "peak_sigma": float(wf.peakSigma()),
+            "noise": noise,
+            "peak_amp": peak_amp,
+            "peak_sigma": peak_sigma,
             "samples": samples,
             "label": hybrid_label(feb, hybrid),
         })
 
 tfile.Close()
 
-# Keep only the globally highest-significance waveforms.
-top.sort(key=lambda w: w["peak_sigma"], reverse=True)
+# Rank by significance when noise is available, otherwise by raw peak amplitude.
+rank = "peak_sigma" if have_noise else "peak_amp"
+top.sort(key=lambda w: w[rank], reverse=True)
 waveforms = top[:args.max_waveforms]
 
-print(f"Found {len(top)} waveforms; plotting the top {len(waveforms)} by peak significance")
+ranked_by = "peak significance" if have_noise else "peak amplitude"
+print(f"Found {len(top)} waveforms; plotting the top {len(waveforms)} by {ranked_by}")
 
 stem = os.path.splitext(os.path.basename(args.root_file))[0]
 out_dir = args.output_dir or os.path.dirname(os.path.abspath(args.root_file))
@@ -171,10 +218,12 @@ ZERO_COLOR    = "#aaaaaa"
 # Helper: draw a single waveform onto an axes object
 # ---------------------------------------------------------------------------
 def draw_waveform(ax, wf):
-    noise   = wf["noise"] if wf["noise"] > 0 else 1.0
     n_trig  = wf["n_triggers"]
-    # Plot in units of sigma so panels are comparable without calibration.
-    samples = np.array(wf["samples"], dtype=float) / noise
+    use_sigma = wf["noise"] > 0
+    # Plot in units of sigma when noise is known (panels comparable without
+    # calibration), otherwise fall back to raw pedestal-subtracted ADC.
+    scale   = wf["noise"] if use_sigma else 1.0
+    samples = np.array(wf["samples"], dtype=float) / scale
     xs      = np.arange(len(samples))
 
     for t in range(n_trig):
@@ -203,10 +252,16 @@ def draw_waveform(ax, wf):
     ax.yaxis.set_major_locator(mticker.MaxNLocator(5, integer=False))
 
     ax.set_xlabel("Trigger (3 APV25 samples each)", labelpad=2)
-    ax.set_ylabel("Signal / noise  (sigma)", labelpad=3)
+    ax.set_ylabel("Signal / noise  (sigma)" if use_sigma else "ADC (ped-subtracted)",
+                  labelpad=3)
 
-    title = (f"{wf['label']}  strip {wf['pchannel']}  |  evt {wf['event']}  "
-             f"|  peak {wf['peak_sigma']:.1f} sigma  |  noise {wf['noise']:.1f} ADC")
+    if use_sigma:
+        peak_str = (f"peak {wf['peak_sigma']:.1f} sigma  |  "
+                    f"noise {wf['noise']:.1f} ADC")
+    else:
+        peak_str = f"peak {wf['peak_amp']} ADC"
+    title = (f"{wf['label']}  strip {wf['pchannel']}  |  evt {wf['event']}  |  "
+             + peak_str)
     ax.set_title(title, pad=4)
     ax.grid(axis="y", which="major", zorder=0)
 
@@ -230,7 +285,7 @@ if waveforms:
     for ax in axes[len(waveforms):]:
         ax.set_visible(False)
 
-    fig.suptitle("Top waveforms by peak significance", fontsize=10, y=1.01)
+    fig.suptitle(f"Top waveforms by {ranked_by}", fontsize=10, y=1.01)
     path = out_path("all")
     fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
