@@ -28,13 +28,19 @@ class TrackerPedestalProvider : public framework::ConditionsObjectProvider {
                           framework::Process& process)
       : framework::ConditionsObjectProvider(TrackerPedestals::CONDITIONS_NAME,
                                             tagname, parameters, process) {
+    if (name != TrackerPedestals::CONDITIONS_NAME) {
+      EXCEPTION_RAISE("BadConfig",
+                      "The name provided to TrackerPedestalProvider '" + name +
+                          "' is not the expected '" +
+                          TrackerPedestals::CONDITIONS_NAME + "'.");
+    }
     pedestal_file_ = parameters.get<std::string>("pedestal_file");
     pedestal_format_ =
         parameters.get<std::string>("pedestal_format", pedestal_format_);
   }
 
   std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
-  getCondition(const ldmx::EventHeader& context) override {
+  getCondition(const ldmx::EventHeader& /*context*/) override {
     auto* peds = new TrackerPedestals();
 
     // Dispatch on the configured storage backend.  Only JSON is supported
