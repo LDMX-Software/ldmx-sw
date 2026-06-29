@@ -4,22 +4,40 @@
 from LDMX.Framework import ldmxcfg
 
 p = ldmxcfg.Process('nontruthclusters')
-p.input_files =  ["SimSamples.root"]
+p.input_files =  ["SimSamples.root"] #for a given simulation root file 
 p.output_files = ["Clusters.root"]
 #an additional output file called clusters.txt will be created as well
 
+from LDMX.TrigScint.truth_hits import TruthHitProducer
 from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
 
+truth_filtering = False #truth filtering using TruthHitProducer to isolate 
+                        #beam-originating hits/clusters, can help provide 
+                        #"answer-sheet" LUT
+
+truth_hits = [TruthHitProducer('beamElectronsPad1'),
+              TruthHitProducer('beamElectronsPad2'),
+              TruthHitProducer('beamElectronsPad3')
+              ]
+
 pad_num = 1
+
+for hits in truth_hits:
+    hits.input_collection=f"TriggerPad{pad_num}SimHits"
+    hits.output_collection=f"truthBeamElectronsPad{pad_num}"
+    pad_num+=1
 
 digis = [TrigScintDigiProducer.pad1(),
          TrigScintDigiProducer.pad2(),
          TrigScintDigiProducer.pad3()
          ]
 
-for digi in digis:
-    digi.input_collection = f"TriggerPad{pad_num}SimHits"
-    pad_num+=1
+if truth_filtering == True: 
+    for digi,hits in zip(digis, truth_hits):
+        digi.input_collection = hits.output_collection
+    p.sequence = [*truth_hits, *digis]
+if truth_filtering == False: 
+    p.sequence = [*digis]
 
 from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
 
@@ -31,20 +49,13 @@ clusters = [
 
 for cluster, digi in zip(clusters, digis):
     cluster.input_collection = digi.output_collection
-    cluster.ampl_weighting = False
-    cluster.clustering_threshold = 3.0
+    cluster.ampl_weighting = False #for LUT making
+    cluster.clustering_threshold = 3.0 #helps remove electronics noise
 
 from LDMX.Tools.lut_making import ClusterTripletMaker
 
+triplets = ClusterTripletMaker()
 
-triplets = ClusterTripletMaker("tripletmaker")
-triplets.output_collection = "clusters.txt"
-
-p.sequence = [
-             #*truth_hits,
-              *digis,
-              *clusters,
-              triplets
-              ]
-
-
+p.sequence.extend([*clusters,
+                   triplets,
+                   ])

@@ -2,11 +2,11 @@
  * @file PatternLUTMaker.h
  * @brief Writes LUT based on frequency of track propagation patterns for
  * LUT-based TS tracking.
- * @author Lucia Kvarnstrom, Lund University
+ * @author Lucia Kvarnström, Lund University
  */
 
-#ifndef TRIGSCINT_PATTERNLUTMAKER_H
-#define TRIGSCINT_PATTERNLUTMAKER_H
+#ifndef TOOLS_PATTERNLUTMAKER_H
+#define TOOLS_PATTERNLUTMAKER_H
 #include <fstream>
 #include <map>
 #include <string>
@@ -16,7 +16,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
-namespace trigscint {
+namespace tools {
 
 class PatternLUTMaker : public framework::Analyzer {
  public:
@@ -42,10 +42,10 @@ class PatternLUTMaker : public framework::Analyzer {
   int verbose_{0};
 
   // input text file of clusters
-  std::string input_collection_;
+  std::string input_file_;
 
   // output LUT file name
-  std::string output_collection_;
+  std::string output_file_;
 
   // minimum frequency of a specific pattern to be written to the LUT
   double lut_threshold_{0.0008};
@@ -56,9 +56,10 @@ class PatternLUTMaker : public framework::Analyzer {
   // to group cluster combinations by track pattern
   std::map<std::pair<float, float>, std::vector<Line>> groups_;
 
+  //total number of lines in input file
   int total_lines_{0};
 };
 
-}  // namespace trigscint
+}  // namespace tools
 
-#endif /* TRIGSCINT_PATTERNLUTMAKER_H */
+#endif /* TOOLS_PATTERNLUTMAKER_H */

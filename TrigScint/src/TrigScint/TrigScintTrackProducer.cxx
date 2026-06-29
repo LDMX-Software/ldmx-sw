@@ -215,13 +215,11 @@ void TrigScintTrackProducer::produce(framework::Event& event) {
             if (centroid >= vert_bar_start_idx_ &&
                 seed.getCentroidY() < cluster1.getCentroidY()) {
               // impossible combination
-              if (verbose_ > 1) {
-                ldmx_log(debug)
-                    << "\tSkipping impossible x cluster combination "
-                       "with y flags (tag up) ("
-                    << seed.getCentroidY() << " " << cluster1.getCentroidY()
-                    << ")";
-              }
+              ldmx_log(warn)
+                  << "\tSkipping impossible x cluster combination "
+                     "with y flags (tag up) ("
+                  << seed.getCentroidY() << " " << cluster1.getCentroidY()
+                  << ")";
               continue;
             }
 
@@ -258,13 +256,11 @@ void TrigScintTrackProducer::produce(framework::Event& event) {
                     (seed.getCentroidY() < cluster2.getCentroidY() ||
                      cluster1.getCentroidY() >
                          cluster2.getCentroidY())) {  // impossible
-                  if (verbose_ > 1) {
-                    ldmx_log(debug)
-                        << "\tSkipping impossible x cluster combination with y "
-                           "flags (tag up dn) ("
-                        << seed.getCentroidY() << " " << cluster1.getCentroidY()
-                        << " " << cluster2.getCentroidY() << ")";
-                  }
+                  ldmx_log(warn)
+                      << "\tSkipping impossible x cluster combination with y "
+                         "flags (tag up dn) ("
+                      << seed.getCentroidY() << " " << cluster1.getCentroidY()
+                      << " " << cluster2.getCentroidY() << ")";
                   continue;
                 }
 
@@ -386,9 +382,8 @@ break;
         // no need to start pulling constituents from tracks that are
         // ridiculously far apart
         if (((fabs(track.getCentroid() - next_track.getCentroid()) <
-              3 * max_delta_) &&
-             (track.getCentroid() <
-              vert_bar_start_idx_))  // for the horizontal bars
+              3 * max_delta_) && (track.getCentroid() 
+              < vert_bar_start_idx_))  // for the horizontal bars
             || ((fabs(track.getCentroidX() - next_track.getCentroidX()) <
                  2 * max_delta_vert_) &&
                 (track.getCentroidY() == next_track.getCentroidY()) &&
@@ -426,11 +421,8 @@ break;
             }
 
             if (((fabs((tracks_.at(idx)).getResidualX() -
-                       (tracks_.at(idx_comp)).getResidualX())) <
-                 0.01)  // it should be equal
-                &&
-                (track.getCentroid() >=
-                 vert_bar_start_idx_)) {  // specific case for the vertical bars
+                       (tracks_.at(idx_comp)).getResidualX())) < 0.01)  // it should be equal
+                && (track.getCentroid() >= vert_bar_start_idx_)) {  // specific case for the vertical bars
               continue;                   // currently we can't do more here
             } else if (((tracks_.at(idx)).getResidual() <
                             (tracks_.at(idx_comp)).getResidual() &&
@@ -753,8 +745,8 @@ void TrigScintTrackProducer::matchXYTracks(
         sx1 = x_conv_factor_ / 2.;  // 1 bar width
         sx2 = sx1;
         x = (x1 + x2) / 2.;
-        sx = fabs(x1 - x2) /
-             2;  // rely on x precision being one single pad width
+        // rely on x precision being one single pad width
+        sx = fabs(x1 - x2) /2;
         if (verbose_)
           ldmx_log(debug) << "\t\t -- 2 x in quad: setting y track x "
                              "coordinate to midpoint";

@@ -1,25 +1,24 @@
 /**
  * @file ClusterTripletMaker.h
  * @brief Writes cluster combinations to text file
- * @author Lucia Kvarnstrom, Lund University
+ * @author Lucia Kvarnström, Lund University
  */
 
-#ifndef TRIGSCINT_CLUSTERTRIPLETMAKER_H
-#define TRIGSCINT_CLUSTERTRIPLETMAKER_H
+#ifndef TOOLS_CLUSTERTRIPLETMAKER_H
+#define TOOLS_CLUSTERTRIPLETMAKER_H
 
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 
-// TrigScint
 #include <fstream>
 #include <string>
 #include <vector>
 
 #include "TrigScint/Event/TrigScintCluster.h"
 
-namespace trigscint {
+namespace tools {
 
 /**
  * @class ClusterTripletMaker
@@ -51,12 +50,12 @@ class ClusterTripletMaker : public framework::Analyzer {
   std::vector<std::string> cluster_input_collections_;
 
   // output text file
-  std::string output_collection_{"clusters.txt"};
+  std::string output_file_{"clusters.txt"};
 
   // output stream
   std::ofstream output_stream_;
 };
 
-}  // namespace trigscint
+}  // namespace tools
 
-#endif  // TRIGSCINT_CLUSTERTRIPLETMAKER_H
+#endif  // TOOLS_CLUSTERTRIPLETMAKER_H
