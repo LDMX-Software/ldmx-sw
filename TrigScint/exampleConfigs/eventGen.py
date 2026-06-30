@@ -1,4 +1,5 @@
-#Creates simulation sample .root file with TS info
+#Creates simulation sample .root file with TS info, 
+#where "SimSamples.root" is then an example input file for use in runClusterstxt.py
 
 from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process('simulation')
