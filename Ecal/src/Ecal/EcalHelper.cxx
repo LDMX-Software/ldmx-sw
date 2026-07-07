@@ -92,14 +92,14 @@ std::vector<std::vector<float>> pTTrackProp(const ldmx::Tracks& tracks,
 
   // Outputs the 'ele_count' track states themselves without the momentum
   // indexing
-  std::vector<std::vector<float>> max_pT_track_states;
-  max_pT_track_states.reserve(new_track_states.size());
+  std::vector<std::vector<float>> max_p_t_track_states;
+  max_p_t_track_states.reserve(new_track_states.size());
   std::transform(std::make_move_iterator(new_track_states.begin()),
                  std::make_move_iterator(new_track_states.end()),
-                 std::back_inserter(max_pT_track_states),
+                 std::back_inserter(max_p_t_track_states),
                  [](auto&& ts) { return std::move(ts.second); });
 
-  return max_pT_track_states;
+  return max_p_t_track_states;
 }
 
 // Returns a specified number `ele_count` of highest momentum tracks which are

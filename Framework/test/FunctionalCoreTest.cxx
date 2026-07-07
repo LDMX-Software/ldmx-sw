@@ -635,8 +635,8 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
         std::vector<std::string> keep = {"drop .*Collection.*"};
         process.add("keep", keep);
         REQUIRE(framework::test::runProcess(process));
-        CHECK_THAT(event_file_path, framework::test::IsGoodEventFile(
-                                        "makeInputs", 2, 1, false));
+        CHECK_THAT(event_file_path,
+                   framework::test::IsGoodEventFile("makeInputs", 2, 1, false));
       }
     }
 
