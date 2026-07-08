@@ -2,18 +2,22 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser(
-    description = "An ldmx-sw config file for simulating dark brem ineractions in the LDMX tungsten target. \
+    description = "An ldmx-sw config file for simulating dark brem ineractions \
+                   in the LDMX tungsten target. \
                    Includes full tracking for both tagger and recoil trackers. \
-                   Includes optional correction to forward-only energy scaling to approximate expected lepton backscattering.",
-    epilog = "This config will work with default db-lib-gen output if no arguments are given and no changes are made. \
-              If db-lib-gen parameters are customized, the user should change the 'db_lib' variable in this script accordingly. \
-              Supplying arguments is useful to correct forward-only scaling \
-              and/or produce many root files concurrently with different reference db libraries."
+                   Includes optional correction to forward-only energy scaling \
+                   to approximate expected lepton backscattering.",
+    epilog = "This config will work with default db-lib-gen output libraries \
+              if no arguments are given and no changes are made. \
+              If db-lib-gen parameters are customized, \
+              the user should change the 'db_lib' variable in this script accordingly. \
+              Supplying arguments is useful to correct forward only scaling \
+              and/or produce many root files concurrently."
     )
 parser.add_argument('--correct-forward', action='store_true', default=False,
-                    help='apply data driven backscatter estimation to forward only scaling')
+                    help='apply backscatter estimation to forward only scaling')
 parser.add_argument('-r', '--run', type=int, default=3000,
-                    help='corresponds to the run number of the input db library (Default: 3000)')
+                    help='run number of the input db library (Default: 3000)')
 parser.add_argument('-n', '--nevents', type=int, default=1000,
                     help='maximum number of events to simulate (Default: 1000)')
 parser.add_argument('-m', '--apmass', type=float, default=100.,
@@ -35,21 +39,25 @@ import LDMX.Hcal.hcal_geometry
 from LDMX.Biasing import target
 from LDMX.SimCore import generators
 
-detector = 'ldmx-det-v15-8gev' #name of geometry to use 
+detector = 'ldmx-det-v15-8gev' # name of geometry to use
 
-# probably easiest to change db_lib by hand instead of passing numerous arguments (the default db-lib-gen output will work if no changes are made)
-# use the following syntax and insert whichever parameters you gave to db-lib-gen to generate the library
-# {lepton}_{target}_MaxE_{max_energy}_MinE_{min_energy}_RelEStep_{rel_step}_UndecayedAP_mA_{apmass}_run_{run}
+# Rrobably easiest to change 'db_lib' by hand instead of passing numerous arguments.
+# This specifies the input db library.
+# The default db-lib-gen output will work if no changes are made.
+# Use the following syntax and insert whichever parameters you supplied to db-lib-gen
+# {lepton}_{target}_MaxE_{max_energy}_MinE_{min_energy}_RelEStep_{rel_step}
+# _UndecayedAP_mA_{apmass}_run_{run}
 apmass_gev = args.apmass / 1000.
-db_lib = f'electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1_UndecayedAP_mA_{apmass_gev}_run_{args.run}'
+db_lib = f'electron_tungsten_MaxE_8.0_MinE_4.0_RelEStep_0.1 \
+           _UndecayedAP_mA_{apmass_gev}_run_{args.run}'
 target_ap_sim = target.dark_brem(
-                    args.apmass, #MeV - mass of A' (default 100)
-                    db_lib if not args.data_dir else os.path.join(args.data_dir, db_lib),  # input dark brem library
-                    detector,
-                    generators.single_8gev_e_upstream_tagger(), # particle gun (8 gev electrons starting upstream of tagger)
-                    correct_forward = args.correct_forward, # apply correction to forward-only scaling
-                    aprime_lhe_id = args.aprime_lhe # may need to change to e.g., 622 for different versions of db-lib-gen (check your lhe files!)
-                    )
+                  args.apmass, #MeV - mass of A' (default 100)
+                  db_lib if not args.data_dir else os.path.join(args.data_dir, db_lib),
+                  detector,
+                  generators.single_8gev_e_upstream_tagger(), # electron gun
+                  correct_forward = args.correct_forward, # apply correction or not
+                  aprime_lhe_id = args.aprime_lhe # may need to change to e.g., 622
+                )
 
 # Add target dark brem to the process sequence
 p.sequence = [
