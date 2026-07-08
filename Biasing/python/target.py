@@ -212,10 +212,12 @@ def dark_brem(
     detector,
     generator,
     scale_aprime=False,
+    correct_forward=False,
     decay_mode="no_decay",
     ap_tau=-1.0,
     dist_decay_min=0.0,
     dist_decay_max=1.0,
+    aprime_lhe_id=1023
 ):
     """Example configuration for producing dark brem interactions in the target.
 
@@ -261,10 +263,12 @@ def dark_brem(
         0.01  # decrease epsilon from one to help with Geant4 biasing calculations
     )
     db_model.scale_aprime = scale_aprime
+    db_model.correct_forward = correct_forward
     db_model.decay_mode = decay_mode
     db_model.ap_tau = ap_tau
     db_model.dist_decay_min = dist_decay_min
     db_model.dist_decay_max = dist_decay_max
+    db_model.aprime_lhe_id = aprime_lhe_id
     sim.dark_brem.activate(ap_mass, db_model)
 
     import math
