@@ -41,7 +41,7 @@ from LDMX.SimCore import generators
 
 detector = 'ldmx-det-v15-8gev' # name of geometry to use
 
-# Rrobably easiest to change 'db_lib' by hand instead of passing numerous arguments.
+# Probably easiest to change 'db_lib' by hand instead of passing numerous arguments.
 # This specifies the input db library.
 # The default db-lib-gen output will work if no changes are made.
 # Use the following syntax and insert whichever parameters you supplied to db-lib-gen
