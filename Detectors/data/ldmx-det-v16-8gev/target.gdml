@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="gdml.xsd">
+
+  <define>
+
+    &constants;       
+    <variable name="x" value="1"/>
+
+  </define>
+
+  <solids>
+
+    <box lunit="mm" name="target_area_box" x="target_area_envelope_x" y="target_area_envelope_y" z="target_area_envelope_z" />
+    <box lunit="mm" name="target_box" x="target_dim_x" y="target_dim_y" z="target_thickness"/> 
+    <box lunit="mm" name="trigger_bar_box" x="trigger_bar_dx" y="trigger_bar_dy" z="trigger_pad_bar_thickness" /> 
+
+
+  </solids>
+
+  <structure>
+
+    <volume name="target">
+      <materialref ref="Tungsten"/>
+      <solidref ref="target_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Target"/>
+    </volume>
+
+    <volume name="TS_trgt">
+      <materialref ref="Vacuum"/>
+      <solidref ref="target_area_box" />
+
+      <physvol>
+        <file name="tspad3_assembly.gdml"/>
+        <position name="tspad3_pos" unit="mm" x="(tspad3_envelope_x-trigger_bar_dx)/2" y="0"
+		  z="trigger_pad3_z" />
+      </physvol>
+      
+      <physvol copynumber="3">
+        <volumeref ref="target"/>
+        <positionref ref="center"/>
+        <rotationref ref="identity"/>
+      </physvol>
+
+      <auxiliary auxtype="Region" auxvalue="target" />
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+      <auxiliary auxtype="DetElem" auxvalue="target"/>
+
+    </volume>
+
+  </structure> 
+
+  <setup name="Default" version="1.0">
+    <world ref="TS_trgt"/>
+  </setup>
+</gdml>
