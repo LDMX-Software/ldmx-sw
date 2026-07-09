@@ -47,6 +47,9 @@ namespace tracking::digitization {
  */
 class StripClusterer {
  public:
+  // I like not having underscores for struct members,
+  // but that's not settable until a later version of clang-tidy
+  // NOLINTBEGIN(readability-identifier-naming)
   struct ClusterCandidate {
     double centroid_strip{0};   ///< Charge-weighted mean strip index.
     double total_amplitude{0};  ///< Total cluster amplitude [ADC counts].
@@ -56,6 +59,7 @@ class StripClusterer {
     int layer_id{-1};
     std::vector<int> strip_ids;
   };
+  // NOLINTEND(readability-identifier-naming)
 
   /**
    * @param seed_threshold      Minimum amplitude/noise to seed a cluster

@@ -13,23 +13,23 @@ FourPoleShape::FourPoleShape(double tp, double tp2) : tp_(tp), tp2_(tp2) {
     EXCEPTION_RAISE("InvalidArgument", "FourPoleShape: requires tp > tp2 > 0");
   }
 
-  A_ = (tp_ * tp_) / std::pow(tp_ - tp2_, 3.0);
-  B_ = (tp_ - tp2_) / (tp_ * tp2_);
+  a_ = (tp_ * tp_) / std::pow(tp_ - tp2_, 3.0);
+  b_ = (tp_ - tp2_) / (tp_ * tp2_);
 
   // Approximate peak time: 3·(tp·tp2³)^(1/4)
   const double t_peak = 3.0 * std::pow(tp_ * std::pow(tp2_, 3.0), 0.25);
 
   // Evaluate un-normalised amplitude at the peak for normalisation.
-  peak_amp_ = A_ * (std::exp(-t_peak / tp_) -
+  peak_amp_ = a_ * (std::exp(-t_peak / tp_) -
                     std::exp(-t_peak / tp2_) *
-                        (1.0 + t_peak * B_ + 0.5 * t_peak * t_peak * B_ * B_));
+                        (1.0 + t_peak * b_ + 0.5 * t_peak * t_peak * b_ * b_));
 }
 
 double FourPoleShape::eval(double t) const {
   if (t <= 0.0) return 0.0;
   const double g =
-      A_ * (std::exp(-t / tp_) -
-            std::exp(-t / tp2_) * (1.0 + t * B_ + 0.5 * t * t * B_ * B_));
+      a_ * (std::exp(-t / tp_) -
+            std::exp(-t / tp2_) * (1.0 + t * b_ + 0.5 * t * t * b_ * b_));
   return g / peak_amp_;
 }
 

@@ -59,6 +59,9 @@ namespace tracking::digitization {
  */
 class SiStripDigitizer {
  public:
+  // I like not having underscores for struct members,
+  // but that's not settable until a later version of clang-tidy
+  // NOLINTBEGIN(readability-identifier-naming)
   /// All parameters describing one silicon strip sensor layer.
   struct SensorParams {
     /// Sensor thickness [mm].  Must be set from the geometry before use.
@@ -112,6 +115,7 @@ class SiStripDigitizer {
     /// adjacent readout strips.  Applied to both neighbours independently.
     double sense_transfer_efficiency{SENSE_TRANSFER_EFFICIENCY};
   };
+  // NOLINTEND(readability-identifier-naming)
 
   SiStripDigitizer() = default;
 

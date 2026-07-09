@@ -67,7 +67,7 @@ bool GeneralCSVLoader::nextRow() {
 
 StringCSVLoader::StringCSVLoader(const std::string& source,
                                  const std::string lineseparators)
-    : source_{source}, linesep_{lineseparators}, row_begin_{0}, row_end_{0} {
+    : source_{source}, LINESEP{lineseparators}, row_begin_{0}, row_end_{0} {
   getNextLine();
 }
 
@@ -82,9 +82,9 @@ std::string StringCSVLoader::getNextLine() {
   }
   // now we look for the follow on.
   // find the first non-end-of-line character
-  row_begin_ = source_.find_first_not_of(linesep_, row_end_);
+  row_begin_ = source_.find_first_not_of(LINESEP, row_end_);
   if (row_begin_ != std::string::npos) {
-    row_end_ = source_.find_first_of(linesep_, row_begin_);
+    row_end_ = source_.find_first_of(LINESEP, row_begin_);
   } else {
     row_end_ = std::string::npos;
   }

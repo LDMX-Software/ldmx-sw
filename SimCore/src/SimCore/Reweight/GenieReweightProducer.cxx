@@ -151,9 +151,29 @@ void GenieReweightProducer::reconfigureGenieReweight(size_t i_w) {
 }
 
 void GenieReweightProducer::produce(framework::Event& event) {
-  // grab the input hepmc3 event collection
-  auto hepmc3_col = event.getObject<std::vector<ldmx::HepMC3GenEvent> >(
+  // When GENIE runs as a G4VDiscreteProcess rather than a PrimaryGenerator,
+  // not every event will have an electronuclear interaction.  Guard against
+  // a missing or empty HepMC3 collection.
+  if (!event.exists(hepmc3_coll_name_, hepmc3_pass_name_)) {
+    ldmx::EventWeights ev_weights(variation_map_);
+    for (size_t i_w = 0; i_w < n_weights_; ++i_w) {
+      ev_weights.addWeight(1.0);
+    }
+    event.add(event_weights_coll_name_, ev_weights);
+    return;
+  }
+
+  const auto& hepmc3_col = event.getObject<std::vector<ldmx::HepMC3GenEvent> >(
       hepmc3_coll_name_, hepmc3_pass_name_);
+
+  if (hepmc3_col.empty()) {
+    ldmx::EventWeights ev_weights(variation_map_);
+    for (size_t i_w = 0; i_w < n_weights_; ++i_w) {
+      ev_weights.addWeight(1.0);
+    }
+    event.add(event_weights_coll_name_, ev_weights);
+    return;
+  }
 
   // create an output weights
   ldmx::EventWeights ev_weights(variation_map_);

@@ -4,34 +4,40 @@ from LDMX.Framework import ldmxcfg
 p = ldmxcfg.Process("test")
 import os
 
-
-p.max_tries_per_event = 10000
-
-from LDMX.Biasing import ecal
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore import simulator as sim
+from LDMX.SimCore.bias_operators import ElectroNuclear
 
 
 det = "ldmx-det-v15-8gev"
+# det = "ldmx-ti-v15-8gev"
 my_sim = sim.Simulator(instance_name="sim")
 my_sim.set_detector(det, include_scoring_planes_minimal=True)
-genie = gen.Genie(
-    instance_name="genie_G18_02a_02_11b",
-    energy=8.0,
-    targets=[1000741820, 1000741830, 1000741840, 1000741860],
-    target_thickness=0.3504,
-    abundances=[0.2650, 0.1431, 0.3064, 0.2843],
-    time=0.0,
-    position=[0.0, 0.0, 0.0],
-    beam_size=[20.0, 80.0],
-    direction=[0.0, 0.0, 1.0],
-    tune="G18_02a_02_11b",
-    spline_file=f"{os.environ['CI_DATA']}/target_genie/gxspl_emode_GENIE_v3_04_00.xml",
-    message_threshold_file="Messenger_ErrorOnly.xml",
+
+# Beam electron as primary — tracked through tagger with natural energy loss
+my_sim.generators = [gen.single_8gev_e_upstream_tagger()]
+
+# Enable GENIE as a physics process.
+# The electron is tracked normally; when Geant4 selects the process to fire,
+# GENIE generates the interaction at the electron's actual energy.
+my_sim.genie_nuclear.enable = True
+# Targets and abundances are auto-discovered from the target region geometry.
+# Discovery runs once and only builds GENIE drivers for the elements actually
+# in this volume (matching the biased volume below), instead of every material
+# the electron traverses upstream.
+my_sim.genie_nuclear.discover_volume = "target_region"
+my_sim.genie_nuclear.tune = "G18_02a_02_11b"
+# Splines are stored one file per tune (gxspl_emode_<TUNE>.xml). Derive the
+# filename from the tune so the two can never disagree — a mismatch makes GENIE
+# silently recompute all cross sections on the fly and the job appears to hang.
+# See .github/validation_samples/target_genie/README.md.
+my_sim.genie_nuclear.spline_file = (
+    f"{os.environ['CI_DATA']}/target_genie/gxspl_emode_{my_sim.genie_nuclear.tune}.xml"
 )
+my_sim.genie_nuclear.message_threshold_file = "Messenger_ErrorOnly.xml"
 
-
-my_sim.generators = [genie]
+# Bias EN cross-section in target region so interactions occur at usable rate
+my_sim.biasing_operators = [ElectroNuclear(volume="target_region", factor=1e6)]
 
 from LDMX.SimCore import genie_reweight
 
@@ -40,6 +46,7 @@ genie_rw = genie_reweight.GenieReweightProducer(instance_name="genie_reweight")
 genie_rw.hepmc3_coll_name = "SimHepMC3Events"
 genie_rw.hepmc3_pass_name = ""
 genie_rw.var_types = ["GENIE_INukeTwkDial_MFP_pi", "GENIE_INukeTwkDial_MFP_N"]
+genie_rw.message_threshold_file = "Messenger_ErrorOnly.xml"
 
 
 p.sequence = [my_sim, genie_rw]
@@ -75,24 +82,25 @@ from LDMX.Tracking import full_tracking_sequence
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
-# Load the TS modules
-# Cant run this until we figure out how to have
-# an upstream tagger track (GENIE starts at target)
+# Load the TS modules — now enabled since we have an upstream beam electron
+from LDMX.TrigScint.trig_scint import (
+    TrigScintClusterProducer,
+    TrigScintDigiProducer,
+    trig_scint_track,
+)
 
-# from LDMX.TrigScint.trig_scint import TrigScintDigiProducer
-# from LDMX.TrigScint.trig_scint import TrigScintClusterProducer
-# from LDMX.TrigScint.trig_scint import trig_scint_track
-# ts_digis = [
-#         TrigScintDigiProducer.pad1(),
-#         TrigScintDigiProducer.pad2(),
-#         TrigScintDigiProducer.pad3(),
-#         ]
 
-# ts_clusters = [
-#         TrigScintClusterProducer.pad1(),
-#         TrigScintClusterProducer.pad2(),
-#         TrigScintClusterProducer.pad3(),
-#         ]
+ts_digis = [
+    TrigScintDigiProducer.pad1(),
+    TrigScintDigiProducer.pad2(),
+    TrigScintDigiProducer.pad3(),
+]
+
+ts_clusters = [
+    TrigScintClusterProducer.pad1(),
+    TrigScintClusterProducer.pad2(),
+    TrigScintClusterProducer.pad3(),
+]
 
 # Load electron counting and trigger
 from LDMX.Ecal import ecal_trig_digi
@@ -152,10 +160,20 @@ hcal_veto = hcal.HcalVetoProcessor()
 
 p.logger.term_level = 10
 # Example to show trace level logging for ecal veto (only)
-p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level=-1)
+# p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level=-1)
+p.logger.custom("GenieElectroNuclearProcess", level=-1)
 
-# Add full tracking for both recoil trackers:
-# digi, seeds, CFK, ambiguity resolution, GSF, DQM
+
+# Add full tracking for both tagger and recoil trackers:
+# digi, seeds, CKF, ambiguity resolution, GSF, DQM
+tagger_tracking = [
+    full_tracking_sequence.digi_tagger,
+    full_tracking_sequence.seeder_tagger,
+    full_tracking_sequence.tracking_tagger,
+    full_tracking_sequence.greedy_solver_tagger,
+    full_tracking_sequence.gsf_tagger,
+]
+
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
     full_tracking_sequence.truth_tracking,
@@ -163,6 +181,10 @@ recoil_tracking = [
     full_tracking_sequence.tracking_recoil,
     full_tracking_sequence.greedy_solver_recoil,
     full_tracking_sequence.gsf_recoil,
+]
+
+tagger_tracker_dqm = [
+    full_tracking_sequence.dqm_tagger_ckf,
 ]
 
 recoil_tracker_dqm = [
@@ -173,7 +195,10 @@ recoil_tracker_dqm = [
 
 p.sequence.extend(
     [
+        *tagger_tracking,
         *recoil_tracking,
+        *ts_digis,
+        *ts_clusters,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_cluster.EcalClusterProducer(),
@@ -190,14 +215,16 @@ p.sequence.extend(
     ]
 )
 
-# Remove TS DQM
 almost_all_dqm = [
     dqm.sample_validation_dqm
+    + tagger_tracker_dqm
     + recoil_tracker_dqm
     + dqm.ecal_dqm
     + dqm.hcal_dqm
     + dqm.trigger_dqm
     + dqm.dedx_dqm
+    + dqm.trig_scint_dqm
 ]
 
 p.sequence.extend(*almost_all_dqm)
+p.sequence.append(dqm.ElectroNuclearDQM())

@@ -1,0 +1,27 @@
+# Visualize the target region only (the TS_trgt envelope, which holds the
+# target and the nearby trigger pad tspad3).  Unlike tspads.mac this does not
+# add the upstream trig_scint pads, so the scene is centred on the target and
+# the three views can zoom in on it.  The third view looks down the x-axis so
+# the beam (z) runs horizontally, making the target / trigger-pad spacing in z
+# easy to read.
+
+# Front view, looking down the beam (-z): target and pad face-on.
+/vis/open OGLIX 600x600+0+0
+/vis/scene/create
+/vis/scene/add/volume TS_trgt_PV
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 180 0
+/vis/viewer/zoom 1.2
+
+# Perspective view.
+/vis/open OGLIX 600x600+400+150
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointVector -1 1 -1
+/vis/viewer/zoom 1
+
+# Side view, looking down the x-axis: z horizontal, y vertical.  Shows where the
+# target and tspad3 sit along the beam direction.
+/vis/open OGLIX 600x600-1+300
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 270 0
+/vis/viewer/zoom 1

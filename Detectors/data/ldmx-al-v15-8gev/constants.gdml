@@ -53,9 +53,18 @@
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
 
-<!-- Trigger pad setup --> 
+<!-- Trigger pad setup -->
+<!--
+  Gap between the target and the upstream trigger pad (tspad3).  This shrinks as
+  the target thickens, keeping the pad inside the +-9 mm space between the tagger
+  and recoil trackers.  The aluminum target (8.89 mm) is thick enough that only
+  ~4.555 mm of room remains upstream for the 4.5 mm pad, so the gap is small:
+  0.025 mm leaves a balanced ~0.028 mm clearance to both the target and the
+  tagger.  (Thin-target geometries such as det-v15/ti use ~1.4248 mm.)  See
+  issue 2088.
+-->
 <constant name="trigger_gap_from_target"
-          value="1.4248*mm" />
+          value="0.025*mm" />
 <constant name="trig_scint_pad12_separation"
           value="60"/>
 <!--Trigger pad x follows the beam curve and is determined a priori
@@ -184,8 +193,13 @@ subtracted here to make them positive lengths.
 <!-- Moved here due to dependence on other constants-->>
 <constant name="target_area_envelope_x" value="magnet_gap_dx - 5" />
 <constant name="target_area_envelope_y" value="magnet_gap_dy - 5" />
-<constant name="target_area_envelope_z" 
-          value="2*(target_thickness/2 + 2*clearance + + trigger_gap_from_target + trigger_pad_thickness)" />
+<!--
+  Symmetric envelope around the target.  With the small trigger_gap_from_target
+  above, the half-length stays under 9 mm, so the envelope clears both the tagger
+  (z = -9) and recoil (z = +9) trackers.  See issue 2088.
+-->
+<constant name="target_area_envelope_z"
+          value="2*(target_thickness/2 + 2*clearance + trigger_gap_from_target + trigger_pad_thickness)" />
 
 <!--
    HCal
