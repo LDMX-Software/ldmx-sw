@@ -1,3 +1,6 @@
+#Script 2 of 3 to generate new lookup table
+#Next script is runLUTana.py
+
 #example config which makes digis, clusters, and writes clusters
 #to .txt file using ClusterTripletMaker
 

@@ -1,3 +1,6 @@
+#Script 3 of 3 to generate new lookup table
+#To use the output file, make sure to turn on LUT tracking in your config:
+#trig_scint_track.lut_tracking = True
 #Creates LUT using PatternLUTMaker for use in LUT-method tracking
 
 from LDMX.Framework import ldmxcfg

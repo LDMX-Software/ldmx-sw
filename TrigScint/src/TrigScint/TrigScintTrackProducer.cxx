@@ -70,6 +70,11 @@ void TrigScintTrackProducer::configure(framework::config::Parameters& ps) {
 
   if (lut_tracking_) {
     std::ifstream file(lut_file);
+    if (!file.good()) {
+      EXCEPTION_RAISE("TrigScintTrackProducer",
+                      "LUT file '" + lut_file + "' not found! Make sure it's in the directory from which just is executed!");
+    }
+
     float a, b, c;
 
     while (file >> a >> b >> c) {

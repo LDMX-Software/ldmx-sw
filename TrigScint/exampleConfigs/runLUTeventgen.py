@@ -1,3 +1,7 @@
+#Script 1 of 3 to generate new lookup table for TSpad tracks
+#All scripts use local paths and are intended to be executed from the same directory
+
+
 #Creates simulation sample .root file with TS info, 
 #where "SimSamples.root" is then an example input file for use in runClusterstxt.py
 
