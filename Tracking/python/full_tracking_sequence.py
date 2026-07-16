@@ -103,13 +103,11 @@ def full_tracking_sequence(
     # ------------------------------------------------------------------
     # Truth seeder
     # ------------------------------------------------------------------
-    truth_tracking = tracking.TruthSeedProcessor(
+    truth_seeding = tracking.TruthSeedProcessor(
         instance_name=tagged("TruthSeedProcessor"),
-        recoil_seeds_collection=tagged("RecoilTruthSeeds"),
-        tagger_seeds_collection=tagged("TaggerTruthSeeds"),
-        tagger_truth_collection=tagged("TaggerTruthTracks"),
-        recoil_truth_collection=tagged("RecoilTruthTracks"),
-        beam_electrons_collection=tagged("beamElectrons"),
+        tagger_truth_collection=tagged("InputTaggerTruthTracks"),
+        recoil_truth_collection=tagged("InputRecoilTruthTracks"),
+        beam_electrons_collection=tagged("InputBeamElectrons"),
         pdg_ids=[11],
         scoring_hits_coll_name="TargetScoringPlaneHits",
         z_min=0.0,
@@ -117,6 +115,21 @@ def full_tracking_sequence(
         p_cut=0.05,
         pz_cut=0.03,
         p_cut_ecal=0.0,
+    )
+
+    # ------------------------------------------------------------------
+    # Truth tracker
+    # ------------------------------------------------------------------
+    truth_tracking = tracking.TruthTrackProcessor(
+        instance_name=tagged("TruthTrackProcessor"),
+        recoil_seeds_collection=tagged("RecoilTruthSeeds"),
+        tagger_seeds_collection=tagged("TaggerTruthSeeds"),
+        tagger_truth_collection=tagged("TaggerTruthTracks"),
+        recoil_truth_collection=tagged("RecoilTruthTracks"),
+        beam_electrons_collection=tagged("beamElectrons"),
+        input_tagger_truth_collection=tagged("InputTaggerTruthTracks"),
+        input_recoil_truth_collection=tagged("InputRecoilTruthTracks"),
+        input_beam_electrons_collection=tagged("InputBeamElectrons"),
     )
 
     # ------------------------------------------------------------------
@@ -220,9 +233,12 @@ def full_tracking_sequence(
         tagger_meas_collection = cluster_tagger.out_collection
         recoil_meas_collection = cluster_recoil.out_collection
         digi_sequence = [
-            digi_tagger,    digi_recoil,
-            fit_tagger,     fit_recoil,
-            cluster_tagger, cluster_recoil,
+            digi_tagger,
+            digi_recoil,
+            fit_tagger,
+            fit_recoil,
+            cluster_tagger,
+            cluster_recoil,
         ]
         charge_digi_processors = {
             "fit_tagger": fit_tagger,
@@ -430,6 +446,7 @@ def full_tracking_sequence(
     # ------------------------------------------------------------------
     sequence = [
         *digi_sequence,
+        truth_seeding,
         truth_tracking,
         seeder_tagger,
         seeder_recoil,
@@ -458,6 +475,7 @@ def full_tracking_sequence(
     return TrackingSequence(
         sequence,
         dqm_sequence,
+        truth_seeding=truth_seeding,
         truth_tracking=truth_tracking,
         digi_tagger=digi_tagger,
         digi_recoil=digi_recoil,
@@ -522,6 +540,7 @@ def recoil_sequence(
 
     sequence = [
         *digi_seq,
+        full.truth_seeding,
         full.truth_tracking,
         full.seeder_recoil,
         full.tracking_recoil,
@@ -537,8 +556,9 @@ def recoil_sequence(
         full.dqm_digi_recoil,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 
@@ -579,6 +599,7 @@ def tagger_sequence(
 
     sequence = [
         *digi_seq,
+        full.truth_seeding,
         full.truth_tracking,
         full.seeder_tagger,
         full.tracking_tagger,
@@ -594,8 +615,9 @@ def tagger_sequence(
         full.dqm_digi_tagger,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 

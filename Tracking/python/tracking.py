@@ -377,10 +377,49 @@ class TruthSeedProcessor(Processor):
     sim_particles_passname: str = ""
     particle_hypothesis: int = 11
     beam_electrons_collection: str = "beamElectrons"
+    tagger_truth_collection: str = "InputTaggerTruthTracks"
+    recoil_truth_collection: str = "InputRecoilTruthTracks"
+    field_map: str = field(default_factory=make_field_map_path)
+
+
+@processor("tracking::reco::TruthTrackProcessor", "Tracking")
+class TruthTrackProcessor(Processor):
+    """Producer that returns truth seeds to feed the KF based track finding.
+
+    Seeds are not smeared, so the fits will be too optimistic, especially the
+    residuals of the estimated locations w.r.t. simulated hits on each surface.
+    The default parameters assume electron seeds are being found in the recoil
+    tracker with loose requirements on momentum and z position.
+
+    Attributes
+    ----------
+    particle_hypothesis : int
+        PDG ID for the particle hypothesis.
+    beam_electrons_collection: str
+        The name of the beam electrons collection to use
+    tagger_seeds_collection : str
+        The name of the tagger seeds collection to be stored.
+    tagger_truth_collection : str
+        The name of the tagger truth collection.
+    recoil_seeds_collection : str
+        The name of the recoil seeds collection.
+    recoil_truth_collection : str
+        The name of the recoil truth collection.
+    field_map: str
+        Magnetic field map
+    """
+
+    debug: bool = False
+    input_pass_name: str = ""
+    particle_hypothesis: int = 11
+    beam_electrons_collection: str = "beamElectrons"
     tagger_seeds_collection: str = "TaggerTruthSeeds"
     tagger_truth_collection: str = "TaggerTruthTracks"
     recoil_seeds_collection: str = "RecoilTruthSeeds"
     recoil_truth_collection: str = "RecoilTruthTracks"
+    input_tagger_truth_collection: str = "InputTaggerTruthTracks"
+    input_recoil_truth_collection: str = "InputRecoilTruthTracks"
+    input_beam_electrons_collection: str = "InputBeamElectrons"
     field_map: str = field(default_factory=make_field_map_path)
 
 
@@ -472,6 +511,7 @@ class TrackerVetoProcessor(Processor):
     output_collection: str = "TrackerVeto"
     sim_particles_passname: str = ""
     input_collection_events_passname: str = ""
+
 
 @processor("tracking::reco::StripFitProcessor", "Tracking")
 class StripFitProcessor(Processor):
@@ -594,9 +634,9 @@ class StripClusterProcessor(Processor):
         Max chi2/ndf for a fitted hit to be used; <= 0 disables (default -1).
     """
 
-    in_collection: str = 'FittedSiStripHits'
-    in_pass: str = ''
-    out_collection: str = 'StripMeasurements'
+    in_collection: str = "FittedSiStripHits"
+    in_pass: str = ""
+    out_collection: str = "StripMeasurements"
     seed_threshold: float = 4.0
     neighbor_threshold: float = 3.0
     cluster_threshold: float = 4.0
@@ -604,4 +644,3 @@ class StripClusterProcessor(Processor):
     time_window_ns: float = -1.0
     neighbor_delta_t_ns: float = -1.0
     max_chi2_ndf: float = -1.0
-

@@ -1,6 +1,8 @@
 """Test packing config"""
 
 from LDMX.Framework import ldmxcfg
+
+p = ldmxcfg.Process("unpack")
 import sys
 import os
 

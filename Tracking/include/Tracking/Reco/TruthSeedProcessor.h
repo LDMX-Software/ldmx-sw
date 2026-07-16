@@ -31,7 +31,7 @@ using TruthPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 namespace tracking::reco {
 
 /**
- * Create a track seed using truth information extracted from the corresponding
+ * Create a seed using truth information extracted from the corresponding
  * SimParticle or SimTrackerHit. When creating seeds in the Tagger tracker,
  * the SimParticle associated with the incident electron (trackID == 1) is used
  * to create the seed from the parameters (x_, y_, z_, px, py, pz, q) at the
@@ -101,41 +101,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
                        std::map<int, std::vector<int>>& hit_count_map);
 
   /**
-   * Use the vertex position of the SimParticle to extract
-   * (x_, y_, z_, px, py, pz, q) and create a track seed.
-   *
-   * @param particle The SimParticle to make a seed from.
-   */
-  void createTruthTrack(const ldmx::SimParticle& particle, ldmx::Track& trk,
-                        const std::shared_ptr<Acts::Surface>& target_surface);
-
-  /**
-   * Use the scoring plane hit at the target to extract
-   * (x_, y_, z_, px, py, pz) and create a track seed. In this case, the
-   * SimParticle is used to extract the charge of the particle.
-   *
-   * @param particle The SimParticle to extract the charge from.
-   * @param hit The SimTrackerHit used to create the seed.
-   */
-  void createTruthTrack(const ldmx::SimParticle& particle,
-                        const ldmx::SimTrackerHit& hit, ldmx::Track& trk,
-                        const std::shared_ptr<Acts::Surface>& target_surface);
-
-  /**
-   * Create a seed track from the given position, momentum and charge.
-   *
-   * @param pos_ The position at which the particle was created.
-   * @param p The momentum of the particle at the point of creation.
-   * @param charge The charge of the particle.
-   * @param target_surface the surface to where to express the truth track
-   */
-
-  void createTruthTrack(const std::vector<double>& pos_vec,
-                        const std::vector<double>& p_vec, int charge,
-                        ldmx::Track& trk,
-                        const std::shared_ptr<Acts::Surface>& target_surface);
-
-  /**
    * Filter that checks if a scoring plane passes specified momentum cuts as
    * well as if the associated SimParticle hits the ECal.
    *
@@ -146,48 +111,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   bool scoringPlaneHitFilter(
       const ldmx::SimTrackerHit& hit,
       const std::vector<ldmx::SimTrackerHit>& ecal_sp_hits);
-
-  /** Create a track seed from a truth track applying a smearing to the truth
-   * parameters as well as an inflation to the covariance matrix.
-   * @param tt TruthTrack to be used to form a seed
-   * @return seed The seed track
-   */
-
-  ldmx::Track seedFromTruth(const ldmx::Track& tt, bool seed_smearing);
-
-  ldmx::Track recoilFullSeed(
-      const ldmx::SimParticle& particle, const int trackID,
-      const ldmx::SimTrackerHit& hit, const ldmx::SimTrackerHit& ecal_hit,
-      const std::map<int, std::vector<int>>& hit_count_map,
-      const std::shared_ptr<Acts::Surface>& origin_surface,
-      const std::shared_ptr<Acts::Surface>& target_surface,
-      const std::shared_ptr<Acts::Surface>& ecal_surface);
-
-  /**
-   * This method retrieves the beam electron and forms a full seed
-   * The seed parameters are the truth parameters from the beam electron stored
-   * at the beam origin Additionally, the foolowing track states are stored
-   * ts_smeared      : the truth smeared perigee state at the beam origin
-   * ts_truth_target : the truth on-surface state at the target
-   * Linear extrapolations are done from the origin of the particle to the
-   * reference surfaces This track also contains the list of hits belonging to
-   * the beam electron on the sensitive surfaces on the tagger tracker, for
-   * acceptance studies
-   * @param beam_electron  : the beam electron particle
-   * @param hit            : the scoring hit at the target from the beam
-   * electron particle survived
-   * @param hit_count_map  : the sim hit on track map
-   * @param origin_surface : where to express the track origin parameters. Can
-   * be perigee, plane...
-   * @param target_surface : the target surface for the truth target state
-   */
-
-  ldmx::Track taggerFullSeed(
-      const ldmx::SimParticle& beam_electron, const int trackID,
-      const ldmx::SimTrackerHit& hit,
-      const std::map<int, std::vector<int>>& hit_count_map,
-      const std::shared_ptr<Acts::Surface>& origin_surface,
-      const std::shared_ptr<Acts::Surface>& target_surface);
 
   /// The ACTS geometry context properly
   Acts::GeometryContext gctx_;
@@ -260,29 +183,9 @@ class TruthSeedProcessor : public TrackingGeometryUser {
   // Maximum track id for hit to be selected from target scoring plane
   int max_track_id_{5};
 
-  std::unique_ptr<const TruthPropagator> propagator_;
-
-  // Track Extrapolator Tool
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<TruthPropagator>>
-      trk_extrap_;
-
   /// Path to the magnetic field map
   std::string field_map_{""};
 
-  //--- Smearing ---//
-
-  std::default_random_engine generator_;
-  std::shared_ptr<std::normal_distribution<float>> normal_;
-
-  bool seed_smearing_{false};
-
-  std::vector<double> d0smear_;
-  std::vector<double> z0smear_;
-  double phismear_;
-  double thetasmear_;
-  double relpsmear_;
-  std::vector<double> rel_smearfactors_;
-  std::vector<double> inflate_factors_;
   std::vector<double> beam_origin_{-880.1, -44., 0.};
   int particle_hypothesis_;
 
