@@ -16,16 +16,13 @@ void ClusterTripletMaker::configure(framework::config::Parameters& ps) {
   verbose_ = ps.get<int>("verbosity");
 
   if (verbose_) {
-    ldmx_log(info) << "In ClusterTripletMaker: configure done!"
-                   << "\nInput collection 1: "
-                   << cluster_input_collections_.at(0)
-                   << "\nInput collection 2: "
-                   << cluster_input_collections_.at(1)
-                   << "\nInput collection 3: "
-                   << cluster_input_collections_.at(2)
-                   << "\nPass name: " << pass_name_
-                   << "\nOutput file: " << output_file_
-                   << "\nVerbosity: " << verbose_;
+    ldmx_log(info)
+        << "In ClusterTripletMaker: configure done!"
+        << "\nInput collection 1: " << cluster_input_collections_.at(0)
+        << "\nInput collection 2: " << cluster_input_collections_.at(1)
+        << "\nInput collection 3: " << cluster_input_collections_.at(2)
+        << "\nPass name: " << pass_name_ << "\nOutput file: " << output_file_
+        << "\nVerbosity: " << verbose_;
   }
   return;
 }
@@ -47,22 +44,26 @@ void ClusterTripletMaker::analyze(const framework::Event& event) {
   const auto clusters_pad3{event.getCollection<ldmx::TrigScintCluster>(
       cluster_input_collections_.at(2), pass_name_)};
 
-  const size_t num_clusters = std::min( //in the event of multiple clusters in 
-      {clusters_pad1.size(),   //one pad in one event, select that with the lowest
-      clusters_pad2.size(),   //centroid value for simplicity (not always accurate
-      clusters_pad3.size()}); //unfortunately)
+  const size_t num_clusters = std::min(  // in the event of multiple clusters in
+      {clusters_pad1
+           .size(),  // one pad in one event, select that with the lowest
+       clusters_pad2
+           .size(),  // centroid value for simplicity (not always accurate
+       clusters_pad3.size()});  // unfortunately)
 
-  ldmx_log(debug) << "Event " << event.getEventNumber() << " has " << clusters_pad1.size() 
-                  << ", " << clusters_pad2.size() << ", " << clusters_pad3.size()
+  ldmx_log(debug) << "Event " << event.getEventNumber() << " has "
+                  << clusters_pad1.size() << ", " << clusters_pad2.size()
+                  << ", " << clusters_pad3.size()
                   << " clusters in pads 1, 2, and 3.";
-  
-  for (size_t cluster_index = 0; cluster_index < num_clusters; ++cluster_index) {
+
+  for (size_t cluster_index = 0; cluster_index < num_clusters;
+       ++cluster_index) {
     const int event_number = event.getEventNumber();
     const float pad1_centroid = clusters_pad1.at(cluster_index).getCentroid();
     const float pad2_centroid = clusters_pad2.at(cluster_index).getCentroid();
     const float pad3_centroid = clusters_pad3.at(cluster_index).getCentroid();
-    
-    //write to output file 
+
+    // write to output file
     output_stream_ << event_number << " " << pad1_centroid << " "
                    << pad2_centroid << " " << pad3_centroid << " " << "\n";
   }

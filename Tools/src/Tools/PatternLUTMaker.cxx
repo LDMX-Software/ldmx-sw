@@ -29,9 +29,9 @@ void PatternLUTMaker::configure(framework::config::Parameters& ps) {
 
   ldmx_log(info) << "In PatternLUTMaker: configure done!" << std::endl;
   ldmx_log(info) << "Got parameters: \nInput file:   " << input_file_
-                   << "\nOutput file:     " << output_file_
-                   << "\nLUT threshold:     " << lut_threshold_
-                   << "\nVerbosity:      " << verbose_;
+                 << "\nOutput file:     " << output_file_
+                 << "\nLUT threshold:     " << lut_threshold_
+                 << "\nVerbosity:      " << verbose_;
 
   return;
 }
@@ -44,27 +44,34 @@ void PatternLUTMaker::onProcessStart() {
   int ev;
   float p1, p2, p3;
   while (infile_ >> ev >> p1 >> p2 >> p3) {
-    float p12 = p2 - p1; //for each cluster combination, calculate vertical propagation
-    float p23 = p3 - p2; //between pads 1 and 2 (p12) and between pads 2 and 3 (p23);
-    groups_[{p12, p23}].push_back({ev, p1, p2, p3}); //and group by these values
-    total_lines_++;                                 //(the "propagation patterns").
+    float p12 =
+        p2 -
+        p1;  // for each cluster combination, calculate vertical propagation
+    float p23 =
+        p3 - p2;  // between pads 1 and 2 (p12) and between pads 2 and 3 (p23);
+    groups_[{p12, p23}].push_back(
+        {ev, p1, p2, p3});  // and group by these values
+    total_lines_++;         //(the "propagation patterns").
   }
   return;
 }
 
-void PatternLUTMaker::analyze(const framework::Event& event) {
-}
+void PatternLUTMaker::analyze(const framework::Event& event) {}
 
 void PatternLUTMaker::onProcessEnd() {
   ldmx_log(info) << "total_lines = " << total_lines_;
   ldmx_log(info) << "groups = " << groups_.size();
-  int combs = 0; //combs will be the total number of patterns written to the LUT
-  int tracks = 0; //and tracks the number of tracks contained within those pattern groups
+  int combs =
+      0;  // combs will be the total number of patterns written to the LUT
+  int tracks = 0;  // and tracks the number of tracks contained within those
+                   // pattern groups
 
   if (verbose_) {
-    ldmx_log(info) << "Total number of cluster combinations: " << total_lines_ << "\n"
-                   << "Number of different propagation patterns: " << groups_.size()
-                   << "\n" << "LUT Threshold: " << lut_threshold_ * 100 << "%\n";
+    ldmx_log(info) << "Total number of cluster combinations: " << total_lines_
+                   << "\n"
+                   << "Number of different propagation patterns: "
+                   << groups_.size() << "\n"
+                   << "LUT Threshold: " << lut_threshold_ * 100 << "%\n";
   }
 
   for (auto& g : groups_) {
@@ -72,23 +79,25 @@ void PatternLUTMaker::onProcessEnd() {
     double frac = static_cast<double>(count) / total_lines_;
 
     if (verbose_) {
-      ldmx_log(debug) << "(" << g.first.first << "," << g.first.second << ") appears "
-                      << count << " times, (" << frac * 100 << " %)" << "\n";
+      ldmx_log(debug) << "(" << g.first.first << "," << g.first.second
+                      << ") appears " << count << " times, (" << frac * 100
+                      << " %)" << "\n";
     }
 
-    if (frac > lut_threshold_) {  // write to outfile_ (LUT file) if over threshold
-        combs++;
-        for (auto& line : g.second) {
-          tracks++;
-          outfile_ << line.p1_ << " " << line.p2_ << " " << line.p3_ << "\n";
-        }
+    if (frac >
+        lut_threshold_) {  // write to outfile_ (LUT file) if over threshold
+      combs++;
+      for (auto& line : g.second) {
+        tracks++;
+        outfile_ << line.p1_ << " " << line.p2_ << " " << line.p3_ << "\n";
+      }
     }
-
   }
 
   if (verbose_) {
-    ldmx_log(info) << "\nLUT textfile written." << "\n" << combs
-                   << " combinations (" << tracks << " tracks) written to LUT.\n";
+    ldmx_log(info) << "\nLUT textfile written." << "\n"
+                   << combs << " combinations (" << tracks
+                   << " tracks) written to LUT.\n";
   }
   return;
 }
