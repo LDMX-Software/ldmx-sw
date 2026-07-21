@@ -1,7 +1,6 @@
 #include "Tracking/Reco/SiStripWaveformBuilder.h"
 
 #include <algorithm>
-#include <iostream>
 #include <map>
 
 #include "Tracking/Digitization/SiStripConstants.h"
@@ -24,7 +23,6 @@ void SiStripWaveformBuilder::configure(framework::config::Parameters& ps) {
   min_consecutive_low_ =
       ps.get<int>("min_consecutive_low", min_consecutive_low_);
   n_triggers_ = ps.get<int>("n_triggers", n_triggers_);
-  verbose_ = ps.get<bool>("verbose", verbose_);
 }
 
 void SiStripWaveformBuilder::produce(framework::Event& event) {
@@ -133,16 +131,14 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
     ++n_fit_attempted_;
     if (!fit.converged) ++n_fit_failed_;
 
-    std::cout << "[SiStripWaveformBuilder]   fit"
-              << " feb=" << static_cast<int>(ch.feb_id_)
-              << " hyb=" << static_cast<int>(ch.hybrid_id_)
-              << " pch=" << pchannel << " nsamp=" << n_samples
-              << " noise=" << ch.noise_
-              << " -> converged=" << (fit.converged ? "yes" : "no")
-              << " amp=" << fit.amplitude << " t0=" << fit.t0 << "ns"
-              << " chi2/ndf=" << fit.chi2 << "/" << fit.ndf;
-    if (fit.ndf > 0) std::cout << " (" << fit.chi2 / fit.ndf << ")";
-    std::cout << "\n";
+    ldmx_log(trace) << "fit feb=" << static_cast<int>(ch.feb_id_)
+                    << " hyb=" << static_cast<int>(ch.hybrid_id_)
+                    << " pch=" << pchannel << " nsamp=" << n_samples
+                    << " noise=" << ch.noise_
+                    << " -> converged=" << (fit.converged ? "yes" : "no")
+                    << " amp=" << fit.amplitude << " t0=" << fit.t0 << "ns"
+                    << " chi2/ndf=" << fit.chi2 << "/" << fit.ndf << " ("
+                    << (fit.ndf > 0 ? fit.chi2 / fit.ndf : 0.0) << ")";
 
     waveforms.emplace_back(std::move(samples), pchannel, ch.hybrid_id_,
                            ch.feb_id_, n_trig);
@@ -151,15 +147,14 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
         static_cast<float>(fit.chi2), fit.ndf, fit.converged);
   }
 
-  std::cout << "[SiStripWaveformBuilder] Built " << waveforms.size()
-            << " waveforms (>=" << min_high_samples_ << " samples @"
-            << high_threshold_ << "s, streak>=" << min_consecutive_low_ << " @"
-            << low_threshold_ << "s) from " << hits.size() << " hits\n";
+  ldmx_log(debug) << "Built " << waveforms.size()
+                  << " waveforms (>=" << min_high_samples_ << " samples @"
+                  << high_threshold_ << "s, streak>=" << min_consecutive_low_
+                  << " @" << low_threshold_ << "s) from " << hits.size()
+                  << " hits";
 
-  if (verbose_) {
-    for (const auto& wf : waveforms) {
-      std::cout << wf;
-    }
+  for (const auto& wf : waveforms) {
+    ldmx_log(trace) << wf;
   }
 
   event.add(output_collection_, waveforms);
@@ -171,9 +166,9 @@ void SiStripWaveformBuilder::onProcessEnd() {
       n_fit_attempted_ > 0
           ? 100.0 * static_cast<double>(n_fit_failed_) / n_fit_attempted_
           : 0.0;
-  std::cout << "[SiStripWaveformBuilder] Fit summary: " << n_fit_attempted_
-            << " attempted, " << n_ok << " converged, " << n_fit_failed_
-            << " failed (" << fail_pct << "%)" << std::endl;
+  ldmx_log(info) << "Fit summary: " << n_fit_attempted_ << " attempted, "
+                 << n_ok << " converged, " << n_fit_failed_ << " failed ("
+                 << fail_pct << "%)";
 }
 
 }  // namespace tracking::reco

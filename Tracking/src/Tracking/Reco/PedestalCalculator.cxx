@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <iostream>
 #include <nlohmann/json.hpp>
 
 #include "Tracking/Event/RawSiStripHit.h"
@@ -46,8 +45,8 @@ void PedestalCalculator::onProcessEnd() {
   if (output_format_ == "json") {
     writePedestalsJson();
   } else {
-    std::cerr << "[PedestalCalculator] ERROR: unknown output_format '"
-              << output_format_ << "' (supported: 'json')" << std::endl;
+    ldmx_log(error) << "Unknown output_format '" << output_format_
+                    << "' (supported: 'json')";
   }
 }
 
@@ -68,15 +67,13 @@ void PedestalCalculator::writePedestalsJson() {
 
   std::ofstream out(output_file_);
   if (!out) {
-    std::cerr << "[PedestalCalculator] ERROR: cannot write to '" << output_file_
-              << "'" << std::endl;
+    ldmx_log(error) << "Cannot write to '" << output_file_ << "'";
     return;
   }
   out << doc.dump(2) << std::endl;
 
-  std::cout << "[PedestalCalculator] Wrote " << accumulators_.size()
-            << " channels from " << n_events_ << " events to '" << output_file_
-            << "'" << std::endl;
+  ldmx_log(info) << "Wrote " << accumulators_.size() << " channels from "
+                 << n_events_ << " events to '" << output_file_ << "'";
 }
 
 }  // namespace tracking::reco

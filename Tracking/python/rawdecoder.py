@@ -125,8 +125,9 @@ class SiStripWaveformBuilder(Processor):
         Minimum number of consecutive samples that must exceed low_threshold.
     n_triggers : int
         Expected number of APV triggers per RoR (default: 10).
-    verbose : bool
-        Print full waveform traces to stdout (default: False).
+
+    Per-fit results and full waveform traces are emitted at the 'trace' logging
+    level; set the processor's logging level to see them.
     """
 
     input_collection: str = "TrackerHits"
@@ -137,4 +138,3 @@ class SiStripWaveformBuilder(Processor):
     low_threshold: float = 3.0
     min_consecutive_low: int = 5
     n_triggers: int = 10
-    verbose: bool = False

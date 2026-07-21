@@ -53,8 +53,7 @@ class SiStripWaveformBuilder : public framework::Producer {
       3.0};  ///< per-sample significance for consecutive-streak cut
   int min_consecutive_low_{
       5};                ///< min consecutive samples exceeding low_threshold
-  int n_triggers_{10};   ///< expected APV triggers per RoR
-  bool verbose_{false};  ///< print full waveform traces to stdout
+  int n_triggers_{10};  ///< expected APV triggers per RoR
 
   /// Pulse shape used for the per-waveform fit test (built lazily in produce).
   std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
