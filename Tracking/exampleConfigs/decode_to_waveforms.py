@@ -65,7 +65,8 @@ parser.add_argument(
 parser.add_argument(
     "--verbose-waveforms",
     action="store_true",
-    help="Print full ASCII waveform traces to stdout",
+    help="Drop the waveform builder to the trace logging level, printing the "
+    "per-channel fit results and full ASCII waveform traces",
 )
 parser.add_argument("--high-threshold", type=float, default=5.0,
                     help="Per-sample significance (ADC/noise) for the high-threshold count cut")
@@ -118,6 +119,8 @@ builder.min_high_samples     = arg.min_high_samples
 builder.low_threshold        = arg.low_threshold
 builder.min_consecutive_low  = arg.min_consecutive_low
 builder.n_triggers           = arg.n_triggers
-builder.verbose              = arg.verbose_waveforms
+
+if arg.verbose_waveforms:
+    p.logger.trace(builder)
 
 p.sequence = [unpacker, decoder, subtractor, builder]
