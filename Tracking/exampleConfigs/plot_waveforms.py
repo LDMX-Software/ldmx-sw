@@ -53,8 +53,18 @@ parser.add_argument("--tree", default="LDMX_Events",
                     help="Event tree name (default: LDMX_Events)")
 parser.add_argument("--collection", default="TrackerWaveforms",
                     help="SiStripWaveform collection name (default: TrackerWaveforms)")
-parser.add_argument("--max-waveforms", type=int, default=10,
-                    help="Number of highest-significance waveforms to plot (default: 10)")
+parser.add_argument("--n-examples", type=int, default=10,
+                    help="Number of example waveforms to draw individual/overview "
+                         "panels for (default: 10). Summary histograms always use "
+                         "ALL waveforms.")
+parser.add_argument("--example-selection", choices=("random", "top"),
+                    default="random",
+                    help="How to pick the example waveforms: a 'random' sample "
+                         "(default) or the 'top' by peak significance.")
+parser.add_argument("--seed", type=int, default=12345,
+                    help="Random seed for example-waveform sampling (default: 12345)")
+parser.add_argument("--max-waveforms", type=int, default=None,
+                    help="Deprecated alias for --n-examples")
 parser.add_argument("--pedestal-file", default="pedestals.json",
                     help="Pedestal JSON (the conditions source) used to recover "
                          "per-channel noise for significance. If missing, raw ADC "
@@ -63,7 +73,24 @@ parser.add_argument("--output-dir", default="",
                     help="Directory for output PNGs (default: same as the ROOT file)")
 parser.add_argument("--cols", type=int, default=2,
                     help="Columns in the multi-panel overview (default: 2)")
+parser.add_argument("--t0-range", type=float, nargs=2, default=(150.0, 225.0),
+                    metavar=("MIN", "MAX"),
+                    help="x-range [ns] for the fit-t0 histogram (default: 150 225)")
+parser.add_argument("--t0-bins", type=int, default=75,
+                    help="Number of bins for the fit-t0 histogram (default: 75 = 1 ns)")
+parser.add_argument("--t0-select", type=float, nargs=2, default=None,
+                    metavar=("MIN", "MAX"),
+                    help="Restrict the example-waveform panels to converged fits "
+                         "with t0 in [MIN, MAX] ns (e.g. --t0-select 205 215). "
+                         "Summary histograms still use ALL waveforms.")
+parser.add_argument("--t0-band-split", type=float, default=200.0,
+                    help="t0 [ns] separating the in-time (below) from the late "
+                         "(above) band in the t0-diagnostics figure (default: 200)")
 args = parser.parse_args()
+
+# Backwards compatibility: --max-waveforms used to control the panel count.
+if args.max_waveforms is not None:
+    args.n_examples = args.max_waveforms
 
 # ---------------------------------------------------------------------------
 # Open the file and locate the waveform branch
@@ -101,6 +128,23 @@ print(f"Reading '{branch_name}' from '{args.tree}' in {args.root_file}")
 # ---------------------------------------------------------------------------
 N_STRIPS = 640  # APV25 hybrid: 5 APVs * 128 channels
 CHANNELS_PER_APV = 128
+
+# Readout timing / pulse shape, matching Tracking/Digitization/SiStripConstants.h
+# (CRRC shaper, tp = 45 ns) so the overlaid curve reproduces the C++ fit.
+SAMPLING_INTERVAL_NS = 25.0
+PEAKING_TIME_NS = 45.0
+
+
+def crrc_shape(t, tp=PEAKING_TIME_NS):
+    """Peak-normalised CR-RC pulse: f(t) = (t/tp)*exp(1 - t/tp) for t > 0."""
+    t = np.asarray(t, dtype=float)
+    out = np.where(t > 0.0, (t / tp) * np.exp(1.0 - t / tp), 0.0)
+    return out
+
+
+def gaussian(x, amp, mu, sigma):
+    """Unnormalised Gaussian for fitting histogram counts."""
+    return amp * np.exp(-0.5 * ((x - mu) / sigma) ** 2)
 
 
 def hybrid_label(feb, hybrid):
@@ -170,17 +214,50 @@ for ievt, entry in enumerate(tree):
             "peak_sigma": peak_sigma,
             "samples": samples,
             "label": hybrid_label(feb, hybrid),
+            "fit_converged": bool(wf.isFitConverged()),
+            "fit_amplitude": float(wf.getFitAmplitude()),
+            "fit_t0": float(wf.getFitT0()),
+            "fit_chi2": float(wf.getFitChi2()),
+            "fit_ndf": int(wf.getFitNDF()),
         })
 
 tfile.Close()
 
-# Rank by significance when noise is available, otherwise by raw peak amplitude.
+# Keep ALL waveforms for the summary histograms; pick a subset for the
+# example panels (random by default, or top-ranked).
+all_waveforms = top
 rank = "peak_sigma" if have_noise else "peak_amp"
-top.sort(key=lambda w: w[rank], reverse=True)
-waveforms = top[:args.max_waveforms]
-
 ranked_by = "peak significance" if have_noise else "peak amplitude"
-print(f"Found {len(top)} waveforms; plotting the top {len(waveforms)} by {ranked_by}")
+
+# Candidate pool for the example panels.  Optionally restrict to a fit-t0
+# window so a specific timing population can be inspected in isolation.
+candidate_pool = all_waveforms
+t0_sel_desc = ""
+if args.t0_select is not None:
+    lo, hi = args.t0_select
+    candidate_pool = [w for w in all_waveforms
+                      if w["fit_converged"] and lo <= w["fit_t0"] <= hi]
+    t0_sel_desc = f", t0 in [{lo:.0f},{hi:.0f}] ns"
+    print(f"t0 window [{lo:.0f}, {hi:.0f}] ns -> {len(candidate_pool)} candidate "
+          f"waveforms")
+
+n_ex = min(args.n_examples, len(candidate_pool))
+if args.example_selection == "top":
+    examples = sorted(candidate_pool, key=lambda w: w[rank], reverse=True)[:n_ex]
+    example_desc = f"top {n_ex} by {ranked_by}{t0_sel_desc}"
+elif candidate_pool:
+    rng = np.random.default_rng(args.seed)
+    pick = sorted(rng.choice(len(candidate_pool), size=n_ex, replace=False))
+    examples = [candidate_pool[i] for i in pick]
+    example_desc = f"{n_ex} random (seed {args.seed}){t0_sel_desc}"
+else:
+    examples = []
+    example_desc = "none"
+
+# 'waveforms' drives the example panels below.
+waveforms = examples
+print(f"Found {len(all_waveforms)} waveforms; drawing {len(examples)} example "
+      f"panels ({example_desc})")
 
 stem = os.path.splitext(os.path.basename(args.root_file))[0]
 out_dir = args.output_dir or os.path.dirname(os.path.abspath(args.root_file))
@@ -212,6 +289,7 @@ plt.rcParams.update({
 TRIGGER_COLOR = "#d0e8ff"
 SIGNAL_COLOR  = "#1f4e8c"
 ZERO_COLOR    = "#aaaaaa"
+FIT_COLOR     = "#d1495b"
 
 
 # ---------------------------------------------------------------------------
@@ -235,7 +313,20 @@ def draw_waveform(ax, wf):
 
     ax.plot(xs, samples, color=SIGNAL_COLOR, marker="o",
             markerfacecolor="white", markeredgecolor=SIGNAL_COLOR,
-            markeredgewidth=1.0, zorder=3)
+            markeredgewidth=1.0, zorder=3, label="data")
+
+    # Overlay the stored pulse-shape fit: curve = A * f(t_i - T), with the
+    # sample index i mapped to time t = i * 25 ns (same frame as the C++ fit).
+    if wf.get("fit_converged"):
+        x_fine = np.linspace(0.0, len(samples) - 1, 400)
+        t_fine = x_fine * SAMPLING_INTERVAL_NS
+        curve = wf["fit_amplitude"] * crrc_shape(t_fine - wf["fit_t0"])
+        ax.plot(x_fine, curve / scale, color=FIT_COLOR, linewidth=1.6,
+                zorder=4, label="CR-RC fit")
+        # Mark the fitted peak position (t = T + tp) in sample-index units.
+        peak_x = (wf["fit_t0"] + PEAKING_TIME_NS) / SAMPLING_INTERVAL_NS
+        ax.axvline(peak_x, color=FIT_COLOR, linewidth=0.8, linestyle="--",
+                   alpha=0.6, zorder=2)
 
     for t in range(1, n_trig):
         ax.axvline(t * 3 - 0.5, color="#888888", linewidth=0.5,
@@ -265,6 +356,18 @@ def draw_waveform(ax, wf):
     ax.set_title(title, pad=4)
     ax.grid(axis="y", which="major", zorder=0)
 
+    if wf.get("fit_converged"):
+        ndf = wf["fit_ndf"]
+        chi2ndf = wf["fit_chi2"] / ndf if ndf > 0 else float("nan")
+        fit_txt = (f"fit: t0={wf['fit_t0']:.0f} ns\n"
+                   f"amp={wf['fit_amplitude']:.0f} ADC\n"
+                   f"$\\chi^2$/ndf={chi2ndf:.2f}")
+        ax.text(0.97, 0.95, fit_txt, transform=ax.transAxes, ha="right",
+                va="top", fontsize=6.5, color=FIT_COLOR,
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=FIT_COLOR,
+                          alpha=0.85, linewidth=0.6))
+    ax.legend(loc="upper left", fontsize=6.5, framealpha=0.85)
+
 
 # ---------------------------------------------------------------------------
 # 1. Multi-panel overview
@@ -285,7 +388,7 @@ if waveforms:
     for ax in axes[len(waveforms):]:
         ax.set_visible(False)
 
-    fig.suptitle(f"Top waveforms by {ranked_by}", fontsize=10, y=1.01)
+    fig.suptitle(f"Example waveforms ({example_desc})", fontsize=10, y=1.01)
     path = out_path("all")
     fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
@@ -305,7 +408,195 @@ if waveforms:
         print(f"Waveform  -> {path}")
 
 # ---------------------------------------------------------------------------
-# 3. Occupancy: hits vs strip number, all hybrids on one plot
+# 3. Fit summary: 1-D histograms + vs-strip profiles (over ALL waveforms)
+# ---------------------------------------------------------------------------
+conv = [w for w in all_waveforms if w["fit_converged"] and w["fit_ndf"] > 0]
+if conv:
+    t0    = np.array([w["fit_t0"] for w in conv])
+    amp   = np.array([w["fit_amplitude"] for w in conv])
+    chi2n = np.array([w["fit_chi2"] / w["fit_ndf"] for w in conv])
+    strip = np.array([w["pchannel"] for w in conv])
+    keys  = [(w["feb"], w["hybrid"]) for w in conv]
+    psig  = np.array([w["peak_sigma"] for w in conv])
+    has_sig = have_noise and any(w["noise"] > 0 for w in conv)
+
+    # Consistent color per (feb, hybrid) across all summary plots.
+    uniq = sorted(set(keys))
+    cmap = plt.get_cmap("tab10")
+    hyb_color = {k: cmap(i % 10) for i, k in enumerate(uniq)}
+    point_colors = [hyb_color[k] for k in keys]
+
+    # --- 3a. 1-D histograms ---
+    def hist1d(ax, data, xlabel, color, bins=30, hist_range=None, gauss=False):
+        if len(data) == 0:
+            ax.set_visible(False)
+            return
+        # Stats reflect the displayed window when a range is given.
+        shown = data
+        if hist_range is not None:
+            shown = data[(data >= hist_range[0]) & (data <= hist_range[1])]
+        counts, edges, _ = ax.hist(data, bins=bins, range=hist_range,
+                                   color=color, edgecolor="white", linewidth=0.4)
+        ax.set_xlabel(xlabel, labelpad=2)
+        ax.set_ylabel("waveforms", labelpad=2)
+        ax.grid(axis="y", alpha=0.4, zorder=0)
+        if hist_range is not None:
+            ax.set_xlim(*hist_range)
+
+        stats = (f"N={len(shown)}\nmean={np.mean(shown):.1f}\n"
+                 f"std={np.std(shown):.1f}")
+
+        if gauss and len(shown) > 5:
+            centers = 0.5 * (edges[:-1] + edges[1:])
+            p0 = [counts.max(), np.mean(shown), max(np.std(shown), 1.0)]
+            try:
+                from scipy.optimize import curve_fit
+                popt, _ = curve_fit(gaussian, centers, counts, p0=p0)
+                amp_f, mu_f, sig_f = popt[0], popt[1], abs(popt[2])
+                fit_kind = "Gauss fit"
+            except Exception:
+                # Fall back to a moment-based Gaussian if scipy/fit unavailable.
+                amp_f, mu_f, sig_f = p0
+                fit_kind = "Gauss (moments)"
+            xfit = np.linspace(edges[0], edges[-1], 400)
+            ax.plot(xfit, gaussian(xfit, amp_f, mu_f, sig_f),
+                    color="#c1121f", linewidth=1.8, zorder=5)
+            stats += f"\n\n{fit_kind}:\n$\\mu$={mu_f:.1f} ns\n$\\sigma$={sig_f:.1f} ns"
+
+        ax.text(0.97, 0.95, stats, transform=ax.transAxes, ha="right",
+                va="top", fontsize=7,
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#888888",
+                          alpha=0.85, linewidth=0.5))
+
+    fig_h, axh = plt.subplots(2, 2, figsize=(9.0, 6.0), constrained_layout=True)
+    axh = axh.flat
+    hist1d(axh[0], t0,    "fit t0  [ns]",          "#1f4e8c",
+           bins=args.t0_bins, hist_range=tuple(args.t0_range), gauss=True)
+    hist1d(axh[1], amp,   "fit amplitude  [ADC]",  "#2a9d8f")
+    hist1d(axh[2], chi2n, r"fit $\chi^2$/ndf",     "#e9c46a")
+    if has_sig:
+        hist1d(axh[3], psig, r"peak significance  [$\sigma$]", "#d1495b")
+    else:
+        axh[3].set_visible(False)
+
+    fig_h.suptitle(f"Pulse-fit summary  (N={len(conv)} converged fits)",
+                   fontsize=11)
+    path = out_path("fit_summary")
+    fig_h.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(fig_h)
+    print(f"Fit hist  -> {path}")
+
+    # --- 3b. vs-strip profiles + timing walk ---
+    fig_p, axp = plt.subplots(1, 3, figsize=(13.0, 3.8), constrained_layout=True)
+
+    axp[0].scatter(strip, t0, c=point_colors, s=14, edgecolor="none", alpha=0.8)
+    axp[0].set(xlabel="Strip (pchannel)", ylabel="fit t0  [ns]",
+               xlim=(-5, N_STRIPS + 4), title="Hit time vs strip")
+
+    axp[1].scatter(strip, amp, c=point_colors, s=14, edgecolor="none", alpha=0.8)
+    axp[1].set(xlabel="Strip (pchannel)", ylabel="fit amplitude  [ADC]",
+               xlim=(-5, N_STRIPS + 4), title="Amplitude vs strip")
+
+    axp[2].scatter(t0, amp, c=point_colors, s=14, edgecolor="none", alpha=0.8)
+    axp[2].set(xlabel="fit t0  [ns]", ylabel="fit amplitude  [ADC]",
+               title="Amplitude vs t0 (timing walk)")
+
+    for ax in axp:
+        ax.grid(alpha=0.3, zorder=0)
+
+    handles = [plt.Line2D([], [], marker="o", linestyle="", markersize=5,
+                          markerfacecolor=hyb_color[k], markeredgecolor="none",
+                          label=hybrid_label(*k)) for k in uniq]
+    fig_p.legend(handles=handles, loc="upper right", fontsize=7, framealpha=0.9,
+                 ncol=max(1, len(uniq) // 2))
+
+    path = out_path("fit_profiles")
+    fig_p.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(fig_p)
+    print(f"Fit prof  -> {path}")
+
+    # --- 3c. t0-population diagnostics: is the late band hybrid/event/strip
+    #         localised, or a uniform ~one-sample-late copy of the bulk? ---
+    ev       = np.array([w["event"] for w in conv])
+    lo, hi   = args.t0_range
+    split    = args.t0_band_split
+    keys_idx = np.array([uniq.index(k) for k in keys])
+    in_time  = (t0 >= lo) & (t0 < split)
+    late     = (t0 >= split) & (t0 <= hi)
+
+    frac = 100.0 * late.sum() / max(1, in_time.sum() + late.sum())
+    bins_s = np.arange(0, N_STRIPS + 1)
+
+    def make_diag(logy):
+        """Build the 4-panel diagnostics figure; top-left t0 panel optionally
+        log-y so the small late peak is visible."""
+        fig_d, axd = plt.subplots(2, 2, figsize=(12.0, 8.5),
+                                  constrained_layout=True)
+
+        # (A) t0 stacked by hybrid -- which hybrids feed the late bump?
+        axd[0, 0].hist([t0[keys_idx == i] for i in range(len(uniq))],
+                       bins=args.t0_bins, range=(lo, hi), stacked=True,
+                       color=[hyb_color[k] for k in uniq],
+                       label=[hybrid_label(*k) for k in uniq],
+                       edgecolor="white", linewidth=0.15)
+        scale_tag = " [log y]" if logy else ""
+        axd[0, 0].set(xlabel="fit t0  [ns]", ylabel="waveforms", xlim=(lo, hi),
+                      title=f"t0 by hybrid (stacked){scale_tag}")
+        if logy:
+            axd[0, 0].set_yscale("log")
+            axd[0, 0].set_ylim(bottom=0.5)
+        axd[0, 0].legend(fontsize=6, ncol=2, framealpha=0.9)
+        axd[0, 0].grid(axis="y", alpha=0.3, zorder=0)
+
+        # (B) 2-D t0 vs hybrid -- localisation as a heatmap.
+        h2 = axd[0, 1].hist2d(t0, keys_idx, bins=[args.t0_bins, len(uniq)],
+                              range=[(lo, hi), (-0.5, len(uniq) - 0.5)],
+                              cmap="viridis")
+        axd[0, 1].set_yticks(range(len(uniq)))
+        axd[0, 1].set_yticklabels([hybrid_label(*k) for k in uniq], fontsize=7)
+        axd[0, 1].set(xlabel="fit t0  [ns]", title="t0 vs hybrid")
+        fig_d.colorbar(h2[3], ax=axd[0, 1], label="waveforms")
+
+        # (C) t0 vs event -- is the late band time-localised within the run?
+        axd[1, 0].scatter(ev, t0, c=point_colors, s=10, alpha=0.6,
+                          edgecolor="none")
+        axd[1, 0].set(xlabel="event index", ylabel="fit t0  [ns]", ylim=(lo, hi),
+                      title="t0 vs event")
+        axd[1, 0].grid(alpha=0.3, zorder=0)
+
+        # (D) occupancy split by t0 band -- do late hits sit on specific strips?
+        axd[1, 1].hist(strip[in_time], bins=bins_s, histtype="step",
+                       linewidth=1.2, color="#1f4e8c",
+                       label=f"in-time [{lo:.0f},{split:.0f}) ns  "
+                             f"N={int(in_time.sum())}")
+        axd[1, 1].hist(strip[late], bins=bins_s, histtype="step", linewidth=1.2,
+                       color="#d1495b",
+                       label=f"late [{split:.0f},{hi:.0f}] ns  "
+                             f"N={int(late.sum())}")
+        axd[1, 1].set(xlabel="strip (pchannel)", ylabel="waveforms",
+                      xlim=(-5, N_STRIPS + 4), title="Occupancy by t0 band")
+        if logy:
+            axd[1, 1].set_yscale("log")
+            axd[1, 1].set_ylim(bottom=0.5)
+        axd[1, 1].xaxis.set_major_locator(mticker.MultipleLocator(64))
+        axd[1, 1].legend(fontsize=7, framealpha=0.9)
+        axd[1, 1].grid(axis="y", alpha=0.3, zorder=0)
+
+        fig_d.suptitle(f"t0-population diagnostics  (late band = {frac:.1f}% of "
+                       f"in-time+late, split at {split:.0f} ns)", fontsize=11)
+        suffix = "t0_diagnostics_logy" if logy else "t0_diagnostics"
+        path = out_path(suffix)
+        fig_d.savefig(path, dpi=200, bbox_inches="tight")
+        plt.close(fig_d)
+        print(f"t0 diag   -> {path}")
+
+    make_diag(logy=False)
+    make_diag(logy=True)
+else:
+    print("No converged fits found; skipping fit summary plots")
+
+# ---------------------------------------------------------------------------
+# 4. Occupancy: hits vs strip number, all hybrids on one plot
 # ---------------------------------------------------------------------------
 if occupancy:
     fig_o, ax_o = plt.subplots(figsize=(8.0, 3.8), constrained_layout=True)

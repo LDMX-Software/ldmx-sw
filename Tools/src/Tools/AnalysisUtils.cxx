@@ -52,21 +52,21 @@ std::tuple<int, const ldmx::SimParticle*> getRecoil(
 
 std::tuple<int, const ldmx::SimParticle*> getBremPhoton(
     const std::map<int, ldmx::SimParticle>& particleMap) {
-  int bremTrackID = -1;
-  double bremEnergy = -9999.0;
+  int brem_track_id = -1;
+  double brem_energy = -9999.0;
   for (const auto& [trackID, particle] : particleMap) {
     // find the highest energy photon generated at the target
-    if (particle.getEnergy() > bremEnergy  // if the energy is greatest yet
+    if (particle.getEnergy() > brem_energy  // if the energy is greatest yet
         && particle.getVertex()[2] > -5.0 &&
         particle.getVertex()[2] <
             5.0  // if the particle originates near the target
         && particle.getPdgID() == 22) {  // and the particle is a photon
-      bremTrackID = trackID;
-      bremEnergy = particle.getEnergy();
+      brem_track_id = trackID;
+      brem_energy = particle.getEnergy();
     }
   }  //
-  if (bremTrackID != -1 && bremEnergy != -9999.0) {
-    return {bremTrackID, &particleMap.at(bremTrackID)};
+  if (brem_track_id != -1 && brem_energy != -9999.0) {
+    return {brem_track_id, &particleMap.at(brem_track_id)};
   } else {
     // if no brem photon is found
     return {1, nullptr};

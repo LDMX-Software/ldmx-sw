@@ -17,9 +17,9 @@ SiStripWaveform::SiStripWaveform(std::vector<short> samples, int16_t pchannel,
 
 void SiStripWaveform::clear() {
   samples_.clear();
-  pchannel_   = 0;
-  hybrid_id_  = 0;
-  feb_id_     = 0;
+  pchannel_ = 0;
+  hybrid_id_ = 0;
+  feb_id_ = 0;
   n_triggers_ = 0;
   fit_amplitude_ = 0;
   fit_t0_        = 0;
@@ -58,25 +58,23 @@ std::ostream& operator<<(std::ostream& output, const SiStripWaveform& w) {
     short val = w.samples_[i];
     int t = i / 3, s = i % 3;
 
-    const std::string label =
-        "T" + std::to_string(t) + "." + std::to_string(s);
+    const std::string label = "T" + std::to_string(t) + "." + std::to_string(s);
 
     // Column positions for zero and this sample.
-    int zero_pos = (range > 0)
-                       ? static_cast<int>((0.f - s_min) / range * (bar_width - 1))
-                       : bar_width / 2;
-    int val_pos  = (range > 0)
-                       ? static_cast<int>((static_cast<float>(val) - s_min)
-                                          / range * (bar_width - 1))
-                       : zero_pos;
+    int zero_pos =
+        (range > 0) ? static_cast<int>((0.f - s_min) / range * (bar_width - 1))
+                    : bar_width / 2;
+    int val_pos = (range > 0)
+                      ? static_cast<int>((static_cast<float>(val) - s_min) /
+                                         range * (bar_width - 1))
+                      : zero_pos;
     val_pos = std::max(0, std::min(bar_width - 1, val_pos));
 
     std::string bar(bar_width, ' ');
     // Fill between zero and sample.
     int lo = std::min(zero_pos, val_pos);
     int hi = std::max(zero_pos, val_pos);
-    for (int k = lo; k <= hi; ++k)
-      bar[k] = (val >= 0) ? '+' : '-';
+    for (int k = lo; k <= hi; ++k) bar[k] = (val >= 0) ? '+' : '-';
     // Tip marker.
     bar[val_pos] = (val > 0) ? '>' : (val < 0) ? '<' : '|';
     // Zero marker (only when sample is non-zero).

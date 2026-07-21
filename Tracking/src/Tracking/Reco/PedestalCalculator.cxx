@@ -3,7 +3,6 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-
 #include <nlohmann/json.hpp>
 
 #include "Tracking/Event/RawSiStripHit.h"
@@ -12,15 +11,16 @@
 namespace tracking::reco {
 
 void PedestalCalculator::configure(framework::config::Parameters& ps) {
-  input_collection_ = ps.get<std::string>("input_collection", input_collection_);
-  input_pass_name_  = ps.get<std::string>("input_pass_name", input_pass_name_);
-  output_file_      = ps.get<std::string>("output_file", output_file_);
-  output_format_    = ps.get<std::string>("output_format", output_format_);
+  input_collection_ =
+      ps.get<std::string>("input_collection", input_collection_);
+  input_pass_name_ = ps.get<std::string>("input_pass_name", input_pass_name_);
+  output_file_ = ps.get<std::string>("output_file", output_file_);
+  output_format_ = ps.get<std::string>("output_format", output_format_);
 }
 
 void PedestalCalculator::analyze(const framework::Event& event) {
-  const auto& hits =
-      event.getCollection<ldmx::RawSiStripHit>(input_collection_, input_pass_name_);
+  const auto& hits = event.getCollection<ldmx::RawSiStripHit>(input_collection_,
+                                                              input_pass_name_);
 
   for (const auto& hit : hits) {
     const auto key = channelmap::channelKey(hit.getFebId(), hit.getHybridId(),
@@ -29,11 +29,12 @@ void PedestalCalculator::analyze(const framework::Event& event) {
     acc.n++;
     const auto& samples = hit.getSamples();
     for (int s = 0; s < 3 && s < static_cast<int>(samples.size()); ++s) {
-      // Welford's online algorithm: numerically stable incremental mean+variance.
+      // Welford's online algorithm: numerically stable incremental
+      // mean+variance.
       double v = samples[s];
       double delta = v - acc.mean[s];
       acc.mean[s] += delta / acc.n;
-      acc.M2[s]   += delta * (v - acc.mean[s]);
+      acc.M2[s] += delta * (v - acc.mean[s]);
     }
   }
   ++n_events_;
@@ -56,7 +57,8 @@ void PedestalCalculator::writePedestalsJson() {
     std::array<double, 3> noise{};
     for (int s = 0; s < 3; ++s) {
       // Welford: M2/(n-1) is the sample variance; M2/n is population variance.
-      // Use population variance (divide by n) since we want noise of the distribution.
+      // Use population variance (divide by n) since we want noise of the
+      // distribution.
       noise[s] = acc.n > 1 ? std::sqrt(acc.M2[s] / acc.n) : 0.0;
     }
     channels[key] = {{"mean", acc.mean}, {"noise", noise}};
