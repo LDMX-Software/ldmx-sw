@@ -21,6 +21,11 @@ void SiStripWaveform::clear() {
   hybrid_id_  = 0;
   feb_id_     = 0;
   n_triggers_ = 0;
+  fit_amplitude_ = 0;
+  fit_t0_        = 0;
+  fit_chi2_      = 0;
+  fit_ndf_       = 0;
+  fit_converged_ = false;
 }
 
 std::ostream& operator<<(std::ostream& output, const SiStripWaveform& w) {
@@ -29,8 +34,12 @@ std::ostream& operator<<(std::ostream& output, const SiStripWaveform& w) {
          << " Hybrid=" << static_cast<int>(w.hybrid_id_)
          << " PCh=" << w.pchannel_
          << " NTrig=" << static_cast<int>(w.n_triggers_)
-         << " PeakAmp=" << w.peakAmplitude()
-         << "\n";
+         << " PeakAmp=" << w.peakAmplitude();
+  if (w.fit_converged_) {
+    output << " | fit amp=" << w.fit_amplitude_ << " t0=" << w.fit_t0_ << "ns"
+           << " chi2/ndf=" << w.fit_chi2_ << "/" << w.fit_ndf_;
+  }
+  output << "\n";
 
   if (w.samples_.empty()) return output;
 
