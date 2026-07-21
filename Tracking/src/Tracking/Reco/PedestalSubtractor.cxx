@@ -44,7 +44,9 @@ void PedestalSubtractor::produce(framework::Event& event) {
                   << key << " — passing through un-subtracted" << std::endl;
       }
     } else {
-      for (int i = 0; i < 3 && i < static_cast<int>(sub.size()); ++i)
+      for (int i = 0; i < channelmap::K_SAMPLES_PER_APV_TRIGGER &&
+                      i < static_cast<int>(sub.size());
+           ++i)
         sub[i] = static_cast<short>(s[i] - ped->mean_[i]);
     }
 

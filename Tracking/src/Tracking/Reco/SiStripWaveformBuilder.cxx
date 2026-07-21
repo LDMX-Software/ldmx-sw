@@ -84,7 +84,8 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
 
     // Assemble full waveform: [s0_t0, s1_t0, s2_t0, s0_t1, ...].
     std::vector<short> samples;
-    samples.reserve(ch.triggers_.size() * 3);
+    samples.reserve(ch.triggers_.size() *
+                    channelmap::K_SAMPLES_PER_APV_TRIGGER);
     for (const auto& trig : ch.triggers_) {
       for (short s : trig.samples_) samples.push_back(s);
     }

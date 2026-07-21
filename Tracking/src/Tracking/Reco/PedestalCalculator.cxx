@@ -27,7 +27,9 @@ void PedestalCalculator::analyze(const framework::Event& event) {
     auto& acc = accumulators_[key];
     acc.n_++;
     const auto& samples = hit.getSamples();
-    for (int s = 0; s < 3 && s < static_cast<int>(samples.size()); ++s) {
+    for (int s = 0; s < channelmap::K_SAMPLES_PER_APV_TRIGGER &&
+                    s < static_cast<int>(samples.size());
+         ++s) {
       // Welford's online algorithm: numerically stable incremental
       // mean+variance.
       double v = samples[s];
@@ -53,8 +55,8 @@ void PedestalCalculator::onProcessEnd() {
 void PedestalCalculator::writePedestalsJson() {
   nlohmann::json channels = nlohmann::json::object();
   for (const auto& [key, acc] : accumulators_) {
-    std::array<double, 3> noise{};
-    for (int s = 0; s < 3; ++s) {
+    std::array<double, channelmap::K_SAMPLES_PER_APV_TRIGGER> noise{};
+    for (int s = 0; s < channelmap::K_SAMPLES_PER_APV_TRIGGER; ++s) {
       // Welford: M2/(n-1) is the sample variance; M2/n is population variance.
       // Use population variance (divide by n) since we want noise of the
       // distribution.

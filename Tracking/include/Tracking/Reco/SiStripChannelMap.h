@@ -24,6 +24,8 @@ inline constexpr int K_APVS_PER_HYBRID = 5;
 /// Number of physical strips per hybrid (kApvsPerHybrid * kChannelsPerApv).
 inline constexpr int K_CHANNELS_PER_HYBRID =
     K_APVS_PER_HYBRID * K_CHANNELS_PER_APV;
+/// Number of ADC samples the APV25 reads out per channel per trigger.
+inline constexpr int K_SAMPLES_PER_APV_TRIGGER = 3;
 
 /**
  * Convert an (APV id, APV channel) pair into the physical strip number

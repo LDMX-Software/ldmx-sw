@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "Framework/EventProcessor.h"
+#include "Tracking/Reco/SiStripChannelMap.h"
 
 namespace tracking::reco {
 
@@ -32,9 +33,11 @@ class PedestalCalculator : public framework::Analyzer {
 
   // Welford's online algorithm for numerically stable mean+variance.
   struct Accumulator {
-    std::array<double, 3> mean_{};  // running mean
-    std::array<double, 3> m2_{};  // running sum of squared deviations from mean
-    long n_{0};                   // hit count for this channel
+    /// running mean
+    std::array<double, channelmap::K_SAMPLES_PER_APV_TRIGGER> mean_{};
+    /// running sum of squared deviations from mean
+    std::array<double, channelmap::K_SAMPLES_PER_APV_TRIGGER> m2_{};
+    long n_{0};  // hit count for this channel
   };
 
   std::string input_collection_{"TrackerRawData"};

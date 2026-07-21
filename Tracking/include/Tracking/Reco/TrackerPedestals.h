@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstdint>
+#include <numeric>
 #include <string>
 #include <unordered_map>
 
@@ -31,8 +32,8 @@ class TrackerPedestals : public framework::ConditionsObject {
 
   /// Per-channel pedestal mean and RMS noise for the three APV25 samples.
   struct Channel {
-    std::array<float, 3> mean_{};
-    std::array<float, 3> noise_{};
+    std::array<float, channelmap::K_SAMPLES_PER_APV_TRIGGER> mean_{};
+    std::array<float, channelmap::K_SAMPLES_PER_APV_TRIGGER> noise_{};
   };
 
   TrackerPedestals() : framework::ConditionsObject(CONDITIONS_NAME) {}
@@ -55,7 +56,9 @@ class TrackerPedestals : public framework::ConditionsObject {
   float noise(uint8_t feb, uint8_t hybrid, uint8_t apv, uint8_t channel) const {
     const Channel* c = find(feb, hybrid, apv, channel);
     if (!c) return 0.f;
-    return (c->noise_[0] + c->noise_[1] + c->noise_[2]) / 3.f;
+    const float sum =
+        std::accumulate(c->noise_.begin(), c->noise_.end(), 0.f);
+    return sum / static_cast<float>(c->noise_.size());
   }
 
   /// Number of channels in the table.
