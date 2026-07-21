@@ -1,12 +1,13 @@
 """Configuration for Cluster Triplet text file Maker and Pattern LUT Maker"""
 
-from LDMX.Framework import Processor, processor 
+from LDMX.Framework import Processor, processor
+
 
 @processor("tools::ClusterTripletMaker", "Tools")
 class ClusterTripletMaker(Processor) :
     """Configuration for cluster text file maker for Trigger Scintillators"""
-    
-    cluster_input_collections: list[str] = ["TriggerPad1Clusters", 
+
+    cluster_input_collections: list[str] = ["TriggerPad1Clusters",
                                             "TriggerPad2Clusters","TriggerPad3Clusters"]
     pass_name: str = ""
     output_file: str = "clusters.txt"
