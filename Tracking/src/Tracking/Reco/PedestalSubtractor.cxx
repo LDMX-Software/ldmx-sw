@@ -45,7 +45,7 @@ void PedestalSubtractor::produce(framework::Event& event) {
       }
     } else {
       for (int i = 0; i < 3 && i < static_cast<int>(sub.size()); ++i)
-        sub[i] = static_cast<short>(s[i] - ped->mean[i]);
+        sub[i] = static_cast<short>(s[i] - ped->mean_[i]);
     }
 
     // Emit a pedestal-subtracted RawSiStripHit that keeps the same electronics

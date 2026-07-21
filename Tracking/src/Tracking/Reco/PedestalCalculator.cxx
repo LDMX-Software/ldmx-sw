@@ -26,15 +26,15 @@ void PedestalCalculator::analyze(const framework::Event& event) {
     const auto key = channelmap::channelKey(hit.getFebId(), hit.getHybridId(),
                                             hit.getApvId(), hit.getChannel());
     auto& acc = accumulators_[key];
-    acc.n++;
+    acc.n_++;
     const auto& samples = hit.getSamples();
     for (int s = 0; s < 3 && s < static_cast<int>(samples.size()); ++s) {
       // Welford's online algorithm: numerically stable incremental
       // mean+variance.
       double v = samples[s];
-      double delta = v - acc.mean[s];
-      acc.mean[s] += delta / acc.n;
-      acc.M2[s] += delta * (v - acc.mean[s]);
+      double delta = v - acc.mean_[s];
+      acc.mean_[s] += delta / acc.n_;
+      acc.m2_[s] += delta * (v - acc.mean_[s]);
     }
   }
   ++n_events_;
@@ -59,9 +59,9 @@ void PedestalCalculator::writePedestalsJson() {
       // Welford: M2/(n-1) is the sample variance; M2/n is population variance.
       // Use population variance (divide by n) since we want noise of the
       // distribution.
-      noise[s] = acc.n > 1 ? std::sqrt(acc.M2[s] / acc.n) : 0.0;
+      noise[s] = acc.n_ > 1 ? std::sqrt(acc.m2_[s] / acc.n_) : 0.0;
     }
-    channels[key] = {{"mean", acc.mean}, {"noise", noise}};
+    channels[key] = {{"mean", acc.mean_}, {"noise", noise}};
   }
 
   nlohmann::json doc = {{"n_events", n_events_}, {"channels", channels}};

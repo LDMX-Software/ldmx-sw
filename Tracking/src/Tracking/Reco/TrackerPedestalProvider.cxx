@@ -85,8 +85,8 @@ class TrackerPedestalProvider : public framework::ConditionsObjectProvider {
       if (!channelmap::parseChannelKey(key, feb, hybrid, apv, channel))
         continue;
       TrackerPedestals::Channel ped;
-      ped.mean = ch.at("mean").get<std::array<float, 3>>();
-      ped.noise = ch.at("noise").get<std::array<float, 3>>();
+      ped.mean_ = ch.at("mean").get<std::array<float, 3>>();
+      ped.noise_ = ch.at("noise").get<std::array<float, 3>>();
       peds.add(feb, hybrid, apv, channel, ped);
     }
   }
