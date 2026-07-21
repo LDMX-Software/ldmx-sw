@@ -13,7 +13,7 @@ physics runs.
 
 Usage
 -----
-    ldmx fire Tracking/exampleConfigs/compute_pedestals.py \
+    just fire Tracking/exampleConfigs/compute_pedestals.py \
         [-- --dat /path/to/baseline.dat] \
         [-- --output-json pedestals.json] \
         [-- --max-events N]
