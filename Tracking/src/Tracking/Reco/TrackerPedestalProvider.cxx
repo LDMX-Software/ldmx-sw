@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-
 #include <nlohmann/json.hpp>
 
 #include "Framework/ConditionsObjectProvider.h"
@@ -74,15 +73,17 @@ class TrackerPedestalProvider : public framework::ConditionsObjectProvider {
     try {
       in >> doc;
     } catch (const nlohmann::json::parse_error& e) {
-      EXCEPTION_RAISE("BadFormat",
-                      "TrackerPedestalProvider failed to parse pedestal file '" +
-                          pedestal_file_ + "': " + e.what());
+      EXCEPTION_RAISE(
+          "BadFormat",
+          "TrackerPedestalProvider failed to parse pedestal file '" +
+              pedestal_file_ + "': " + e.what());
     }
 
     // Each channel is keyed "feb:hyb:apv:ch" -> {"mean":[...], "noise":[...]}.
     for (const auto& [key, ch] : doc.at("channels").items()) {
       uint8_t feb, hybrid, apv, channel;
-      if (!channelmap::parseChannelKey(key, feb, hybrid, apv, channel)) continue;
+      if (!channelmap::parseChannelKey(key, feb, hybrid, apv, channel))
+        continue;
       TrackerPedestals::Channel ped;
       ped.mean = ch.at("mean").get<std::array<float, 3>>();
       ped.noise = ch.at("noise").get<std::array<float, 3>>();

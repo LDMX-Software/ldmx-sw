@@ -15,14 +15,14 @@ namespace tracking::reco {
  * Per-channel tracker pedestal conditions: the per-sample pedestal mean and RMS
  * noise for every silicon-strip readout channel.
  *
- * This is a conditions object (a *service*), not event data: pedestals and noise
- * are calibration constants delivered on demand via getCondition<>(), the same
- * way Ecal/Hcal deliver their HGCROC pedestals/gains.  Consumers
+ * This is a conditions object (a *service*), not event data: pedestals and
+ * noise are calibration constants delivered on demand via getCondition<>(), the
+ * same way Ecal/Hcal deliver their HGCROC pedestals/gains.  Consumers
  * (PedestalSubtractor, SiStripWaveformBuilder, ...) look up values by
  * electronics address; nothing is persisted into the hit objects.
  *
- * The object is filled by TrackerPedestalProvider, which reads the pedestal file
- * produced by PedestalCalculator.
+ * The object is filled by TrackerPedestalProvider, which reads the pedestal
+ * file produced by PedestalCalculator.
  */
 class TrackerPedestals : public framework::ConditionsObject {
  public:
@@ -31,8 +31,8 @@ class TrackerPedestals : public framework::ConditionsObject {
 
   /// Per-channel pedestal mean and RMS noise for the three APV25 samples.
   struct Channel {
-    std::array<float, 3> mean{};
-    std::array<float, 3> noise{};
+    std::array<float, 3> mean_{};
+    std::array<float, 3> noise_{};
   };
 
   TrackerPedestals() : framework::ConditionsObject(CONDITIONS_NAME) {}
@@ -55,7 +55,7 @@ class TrackerPedestals : public framework::ConditionsObject {
   float noise(uint8_t feb, uint8_t hybrid, uint8_t apv, uint8_t channel) const {
     const Channel* c = find(feb, hybrid, apv, channel);
     if (!c) return 0.f;
-    return (c->noise[0] + c->noise[1] + c->noise[2]) / 3.f;
+    return (c->noise_[0] + c->noise_[1] + c->noise_[2]) / 3.f;
   }
 
   /// Number of channels in the table.

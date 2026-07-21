@@ -10,17 +10,19 @@
 namespace tracking::reco {
 
 void PedestalSubtractor::configure(framework::config::Parameters& ps) {
-  input_collection_  = ps.get<std::string>("input_collection", input_collection_);
-  input_pass_name_   = ps.get<std::string>("input_pass_name", input_pass_name_);
-  output_collection_ = ps.get<std::string>("output_collection", output_collection_);
+  input_collection_ =
+      ps.get<std::string>("input_collection", input_collection_);
+  input_pass_name_ = ps.get<std::string>("input_pass_name", input_pass_name_);
+  output_collection_ =
+      ps.get<std::string>("output_collection", output_collection_);
 }
 
 void PedestalSubtractor::produce(framework::Event& event) {
   const auto& peds =
       getCondition<TrackerPedestals>(TrackerPedestals::CONDITIONS_NAME);
 
-  const auto& raw =
-      event.getCollection<ldmx::RawSiStripHit>(input_collection_, input_pass_name_);
+  const auto& raw = event.getCollection<ldmx::RawSiStripHit>(input_collection_,
+                                                             input_pass_name_);
 
   std::vector<ldmx::RawSiStripHit> hits;
   hits.reserve(raw.size());
@@ -34,9 +36,9 @@ void PedestalSubtractor::produce(framework::Event& event) {
 
     if (!ped) {
       // Warn once per unknown channel, pass hit through un-subtracted.
-      const auto key = channelmap::channelKey(
-          raw_hit.getFebId(), raw_hit.getHybridId(), raw_hit.getApvId(),
-          raw_hit.getChannel());
+      const auto key =
+          channelmap::channelKey(raw_hit.getFebId(), raw_hit.getHybridId(),
+                                 raw_hit.getApvId(), raw_hit.getChannel());
       if (warned_channels_.insert(key).second) {
         std::cout << "[PedestalSubtractor] WARN: no pedestal for channel "
                   << key << " — passing through un-subtracted" << std::endl;

@@ -9,7 +9,8 @@
 namespace tracking::reco {
 
 /**
- * Assemble per-trigger pedestal-subtracted hits into full per-channel waveforms.
+ * Assemble per-trigger pedestal-subtracted hits into full per-channel
+ * waveforms.
  *
  * Each RoR issues n_triggers APV triggers, each producing a 3-sample
  * (pedestal-subtracted) RawSiStripHit per channel.  This producer groups all
@@ -42,12 +43,15 @@ class SiStripWaveformBuilder : public framework::Producer {
   std::string input_collection_{"TrackerHits"};
   std::string input_pass_name_{""};
   std::string output_collection_{"TrackerWaveforms"};
-  double high_threshold_{5.0};     ///< per-sample significance for high-threshold cut
-  int    min_high_samples_{4};     ///< min samples exceeding high_threshold
-  double low_threshold_{3.0};      ///< per-sample significance for consecutive-streak cut
-  int    min_consecutive_low_{5};  ///< min consecutive samples exceeding low_threshold
-  int    n_triggers_{10};          ///< expected APV triggers per RoR
-  bool   verbose_{false};          ///< print full waveform traces to stdout
+  double high_threshold_{
+      5.0};                  ///< per-sample significance for high-threshold cut
+  int min_high_samples_{4};  ///< min samples exceeding high_threshold
+  double low_threshold_{
+      3.0};  ///< per-sample significance for consecutive-streak cut
+  int min_consecutive_low_{
+      5};                ///< min consecutive samples exceeding low_threshold
+  int n_triggers_{10};   ///< expected APV triggers per RoR
+  bool verbose_{false};  ///< print full waveform traces to stdout
 };
 
 }  // namespace tracking::reco

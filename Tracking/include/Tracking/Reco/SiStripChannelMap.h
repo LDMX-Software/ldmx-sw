@@ -18,11 +18,12 @@ namespace tracking::reco {
 namespace channelmap {
 
 /// Number of readout channels per APV25 chip.
-inline constexpr int kChannelsPerApv = 128;
+inline constexpr int K_CHANNELS_PER_APV = 128;
 /// Number of APV25 chips per hybrid.
-inline constexpr int kApvsPerHybrid = 5;
+inline constexpr int K_APVS_PER_HYBRID = 5;
 /// Number of physical strips per hybrid (kApvsPerHybrid * kChannelsPerApv).
-inline constexpr int kChannelsPerHybrid = kApvsPerHybrid * kChannelsPerApv;
+inline constexpr int K_CHANNELS_PER_HYBRID =
+    K_APVS_PER_HYBRID * K_CHANNELS_PER_APV;
 
 /**
  * Convert an (APV id, APV channel) pair into the physical strip number
@@ -34,8 +35,8 @@ inline constexpr int kChannelsPerHybrid = kApvsPerHybrid * kChannelsPerApv;
  */
 inline constexpr int16_t pchannel(uint8_t apv_id, uint8_t channel) {
   return static_cast<int16_t>(
-      (kChannelsPerHybrid - 1) -
-      (apv_id * kChannelsPerApv + (kChannelsPerApv - 1) - channel));
+      (K_CHANNELS_PER_HYBRID - 1) -
+      (apv_id * K_CHANNELS_PER_APV + (K_CHANNELS_PER_APV - 1) - channel));
 }
 
 /// Build the per-channel pedestal-map key "feb:hybrid:apv:channel".
@@ -59,7 +60,8 @@ inline constexpr uint32_t channelId(uint8_t feb, uint8_t hybrid, uint8_t apv,
 inline bool parseChannelKey(const std::string& key, uint8_t& feb,
                             uint8_t& hybrid, uint8_t& apv, uint8_t& channel) {
   unsigned f, h, a, c;
-  if (std::sscanf(key.c_str(), "%u:%u:%u:%u", &f, &h, &a, &c) != 4) return false;
+  if (std::sscanf(key.c_str(), "%u:%u:%u:%u", &f, &h, &a, &c) != 4)
+    return false;
   feb = static_cast<uint8_t>(f);
   hybrid = static_cast<uint8_t>(h);
   apv = static_cast<uint8_t>(a);

@@ -32,9 +32,9 @@ class PedestalCalculator : public framework::Analyzer {
 
   // Welford's online algorithm for numerically stable mean+variance.
   struct Accumulator {
-    std::array<double, 3> mean{};  // running mean
-    std::array<double, 3> M2{};   // running sum of squared deviations from mean
-    long n{0};                     // hit count for this channel
+    std::array<double, 3> mean_{};  // running mean
+    std::array<double, 3> m2_{};  // running sum of squared deviations from mean
+    long n_{0};                   // hit count for this channel
   };
 
   std::string input_collection_{"TrackerRawData"};

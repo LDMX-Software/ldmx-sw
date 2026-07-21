@@ -13,8 +13,8 @@ namespace ldmx {
  * Full multi-trigger waveform for one silicon strip channel.
  *
  * Assembled by SiStripWaveformBuilder from the per-trigger pedestal-subtracted
- * RawSiStripHit objects for a single (feb, hybrid, pchannel).  Samples are stored in
- * trigger order: [s0_t0, s1_t0, s2_t0, s0_t1, s1_t1, s2_t1, ...], so
+ * RawSiStripHit objects for a single (feb, hybrid, pchannel).  Samples are
+ * stored in trigger order: [s0_t0, s1_t0, s2_t0, s0_t1, s1_t1, s2_t1, ...], so
  * the total size is n_triggers * 3.
  *
  * This is the natural input for waveform fitting (APV25 CR-RC pulse
@@ -32,16 +32,14 @@ class SiStripWaveform {
 
   void clear();
 
-  const std::vector<short>& getSamples()   const { return samples_; }
-  int16_t                   getPchannel()  const { return pchannel_; }
-  uint8_t                   getHybridId()  const { return hybrid_id_; }
-  uint8_t                   getFebId()     const { return feb_id_; }
-  uint8_t                   getNTriggers() const { return n_triggers_; }
+  const std::vector<short>& getSamples() const { return samples_; }
+  int16_t getPchannel() const { return pchannel_; }
+  uint8_t getHybridId() const { return hybrid_id_; }
+  uint8_t getFebId() const { return feb_id_; }
+  uint8_t getNTriggers() const { return n_triggers_; }
 
   /// Sample at trigger index t (0-based), APV sample s (0-2).
-  short getSample(uint8_t t, uint8_t s) const {
-    return samples_[t * 3 + s];
-  }
+  short getSample(uint8_t t, uint8_t s) const { return samples_[t * 3 + s]; }
 
   /// Peak amplitude: the maximum (pedestal-subtracted) ADC sample.  Convert to
   /// a significance downstream by dividing by the per-channel noise from the
@@ -61,11 +59,12 @@ class SiStripWaveform {
   friend std::ostream& operator<<(std::ostream& o, const SiStripWaveform& w);
 
  protected:
-  std::vector<short> samples_;   ///< n_triggers * 3 pedestal-subtracted ADC samples
-  int16_t pchannel_{0};          ///< physical strip number within hybrid [0, 639]
+  std::vector<short>
+      samples_;          ///< n_triggers * 3 pedestal-subtracted ADC samples
+  int16_t pchannel_{0};  ///< physical strip number within hybrid [0, 639]
   uint8_t hybrid_id_{0};
   uint8_t feb_id_{0};
-  uint8_t n_triggers_{0};        ///< number of APV triggers assembled
+  uint8_t n_triggers_{0};  ///< number of APV triggers assembled
 
   ClassDef(SiStripWaveform, 1);
 };
