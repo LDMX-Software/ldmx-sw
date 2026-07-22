@@ -80,14 +80,14 @@ find_package(Eigen3 CONFIG REQUIRED)
 include(GNUInstallDirs)
 
 # Find or fetch ACTS - must be at top level so both Ecal and Tracking can use it
-find_package(Acts 46.0.0 QUIET)
+find_package(Acts 47.0.0 QUIET)
 if (NOT Acts_FOUND)
-  message(STATUS "Did not find Acts >= 46.0.0, downloading and compiling v46.8.1")
+  message(STATUS "Did not find Acts >= 47.0.0, downloading and compiling v47.0.0")
   include(FetchContent)
   FetchContent_Declare(
       Acts
-      URL https://github.com/acts-project/acts/archive/refs/tags/v46.8.1.tar.gz
-      URL_HASH MD5=671ef266b008d70e5cdbe2b829f09881
+      URL https://github.com/acts-project/acts/archive/refs/tags/v47.0.0.tar.gz
+      URL_HASH MD5=833c02edee49827f25be74c80d8ee654
       DOWNLOAD_EXTRACT_TIMESTAMP TRUE
   )
   FetchContent_MakeAvailable(Acts)

@@ -60,7 +60,7 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       GsfPropagator(std::move(multi_stepper), std::move(navigator),
                     Acts::getDefaultLogger("GSF_PROP", acts_logging_level));
 
-  auto bethe_heitler = std::make_shared<Acts::AtlasBetheHeitlerApprox>(
+  auto bethe_heitler = std::make_shared<Acts::PolynomialBetheHeitlerApprox>(
       Acts::makeDefaultBetheHeitlerApprox());
 
   gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
