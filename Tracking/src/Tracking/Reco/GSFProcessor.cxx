@@ -1,6 +1,8 @@
 #include "Tracking/Reco/GSFProcessor.h"
 
 #include <algorithm>
+#include <chrono>
+#include <iomanip>
 
 #include "Acts/EventData/SourceLink.hpp"
 #include "Tracking/Event/Track.h"
@@ -13,6 +15,8 @@ GSFProcessor::GSFProcessor(const std::string& name, framework::Process& process)
 
 void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   beam_origin_surface_ = tracking::sim::utils::unboundSurface(-700);
+  // 1mm inside tagger ACTS volume outer boundary (~-618mm), 1.5mm upstream of L1 at x=-615.5mm
+  tagger_start_surface_ = tracking::sim::utils::unboundSurface(-617.);
   target_surface_ = tracking::sim::utils::unboundSurface(0.);
   ecal_surface_ = tracking::sim::utils::unboundSurface(240.5);
 
@@ -109,6 +113,8 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
 }  // end of configure()
 
 void GSFProcessor::produce(framework::Event& event) {
+  auto t_start = std::chrono::high_resolution_clock::now();
+
   // General Setup
 
   auto tg{geometry()};
@@ -205,7 +211,11 @@ void GSFProcessor::produce(framework::Event& event) {
   Acts::TrackContainer tc{vtc, mtj};
 
   // Loop on tracks
+  n_input_tracks_ += static_cast<int>(tracks.size());
+
   unsigned int itrk = 0;
+  int n_gsf_ok_evt = 0;
+  int n_tgt_fail_evt = 0;
   ldmx_log(debug) << "Starting GSF processing of " << tracks.size()
                   << " tracks";
 
@@ -253,19 +263,22 @@ void GSFProcessor::produce(framework::Event& event) {
     Acts::BoundTrackParameters trk_btp =
         tracking::sim::utils::boundTrackParameters(track, perigee);
 
-    // GSF starting parameters: for tagger, extrapolate back to beam origin;
-    // for recoil, use target parameters directly.
     Acts::BoundTrackParameters trk_btp_fit_start = trk_btp;
 
+
+    // For tagger: backward-extrapolate (via VoidNavigator) from the target perigee
+    // (x=0mm) to just inside the tagger outer boundary (x≈-650mm), then run the
+    // GSF forward (+x) through L1→L7.  The CKF stores tagger track perigees at
+    // the target, so we must back-propagate before handing off to the GSF.
     if (tagger_tracking_) {
-      auto opt_beam_origin =
-          trk_extrap_->extrapolate(trk_btp, beam_origin_surface_);
-      if (!opt_beam_origin) {
-        ldmx_log(warn) << "Failed extrapolating to beam origin for GSF start. "
-                          "Skipping..";
+      auto opt_tagger_start =
+          trk_extrap_->extrapolate(trk_btp, tagger_start_surface_);
+      if (!opt_tagger_start) {
+        ldmx_log(debug) << "  Failed pre-fit extrapolation to tagger start surface (itrk=" << itrk << ")";
+        ++n_gsf_failed_;
         continue;
       }
-      trk_btp_fit_start = *opt_beam_origin;
+      trk_btp_fit_start = *opt_tagger_start;
     }
 
     ldmx_log(debug) << "    Perigee surface (acts): (" << track.getPerigeeX()
@@ -291,9 +304,10 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "  About to run GSF fit with "
                     << fit_track_source_links.size() << " source links";
 
-    // Update GSF reference surface for this track
+    // GSF reference surface: for tagger use the start surface (x=-648mm, inside
+    // geometry), for recoil use the target (x=0mm).
     if (tagger_tracking_) {
-      gsf_ref_surface = beam_origin_surface_;
+      gsf_ref_surface = tagger_start_surface_;
     } else {
       gsf_ref_surface = target_surface_;
     }
@@ -304,16 +318,20 @@ void GSFProcessor::produce(framework::Event& event) {
                   trk_btp_fit_start, gsf_options, tc);
 
     if (!gsf_refit_result.ok()) {
-      ldmx_log(warn) << "GSF re-fit failed: "
-                     << gsf_refit_result.error().message();
+      ldmx_log(debug) << "  GSF re-fit failed (itrk=" << itrk
+                      << "): " << gsf_refit_result.error().message();
+      if (n_gsf_failed_ < 5)
+        ldmx_log(info) << "  [GSF dbg] fit failed (first few): "
+                       << gsf_refit_result.error().message();
+      ++n_gsf_failed_;
       continue;
     }
 
-    ldmx_log(debug) << "  GSF fit succeeded, tc.size() = " << tc.size();
+    ++n_gsf_ok_evt;
+    ldmx_log(debug) << "  GSF fit succeeded (itrk=" << itrk
+                    << "), tc.size()=" << tc.size();
 
-    if (tc.size() < 1) continue;
-
-    auto gsftrk = tc.getTrack(0);
+    auto gsftrk = gsf_refit_result.value();
     // calculateTrackQuantities(gsftrk);
 
     const Acts::BoundVector& perigee_pars = gsftrk.parameters();
@@ -326,8 +344,12 @@ void GSFProcessor::produce(framework::Event& event) {
         << perigee_surface.localToGlobalTransform(geometryContext()).translation()(1) << ", "
         << perigee_surface.localToGlobalTransform(geometryContext()).translation()(2) << ")";
 
-    ldmx_log(debug) << "    Found track has " << gsftrk.nTrackStates()
-                    << " track states";
+    ldmx_log(debug) << "    nTrackStates=" << gsftrk.nTrackStates()
+                    << " nMeasurements=" << gsftrk.nMeasurements()
+                    << " chi2=" << gsftrk.chi2();
+    if (gsftrk.nTrackStates() == 0)
+      ldmx_log(info) << "  [GSF dbg] track has 0 states after fit (itrk="
+                     << itrk << ");";
 
     ldmx_log(debug) << "    Track parameters (d0, z0, phi, theta, q/p)= ("
                     << perigee_pars[Acts::eBoundLoc0] << ", "
@@ -341,6 +363,7 @@ void GSFProcessor::produce(framework::Event& event) {
     // Extrapolate GSF track to target surface to get perigee parameters
     auto opt_target = trk_extrap_->extrapolate(gsftrk, target_surface_);
 
+    ldmx_log(debug) << "    Extrapolating to target (itrk=" << itrk << ")";
     if (opt_target) {
       ldmx_log(debug) << "    GSF target extrapolation succeeded";
       auto ts_at_target = tracking::sim::utils::makeTrackState(
@@ -367,8 +390,10 @@ void GSFProcessor::produce(framework::Event& event) {
           << opt_target->parameters()[Acts::eBoundTheta] << ", "
           << opt_target->parameters()[Acts::eBoundQOverP] << ")";
     } else {
-      ldmx_log(debug) << "    GSF target extrapolation failed, using GSF fit "
-                         "parameters at reference surface";
+      ++n_target_extrap_failed_;
+      ++n_tgt_fail_evt;
+      ldmx_log(debug) << "    GSF target extrapolation failed (itrk=" << itrk
+                      << "), using GSF fit parameters at reference surface";
       trk.setPerigeeParameters(
           tracking::sim::utils::convertActsToLdmxPars(perigee_pars));
       std::vector<double> v_trk_cov;
@@ -389,6 +414,8 @@ void GSFProcessor::produce(framework::Event& event) {
       if (opt_ecal)
         trk.addTrackState(tracking::sim::utils::makeTrackState(
             geometryContext(), *opt_ecal, ldmx::AtECAL));
+      else
+        ++n_ecal_extrap_failed_;
     }
 
     trk.setChi2(gsftrk.chi2());
@@ -410,11 +437,34 @@ void GSFProcessor::produce(framework::Event& event) {
 
   }  // loop on tracks
 
+  ldmx_log(debug) << "[GSF evt " << nevents_ << "] in=" << tracks.size()
+                  << " gsf_ok=" << n_gsf_ok_evt
+                  << " tgt_fail=" << n_tgt_fail_evt
+                  << " out=" << out_tracks.size();
+
+  n_output_tracks_ += static_cast<int>(out_tracks.size());
   event.add(out_trk_collection_, out_tracks);
+
+  auto t_end = std::chrono::high_resolution_clock::now();
+  processing_time_ +=
+      std::chrono::duration<double, std::milli>(t_end - t_start).count();
+  ++nevents_;
 }  // end of produce()
 
-void GSFProcessor::onProcessStart() {};
-void GSFProcessor::onProcessEnd() {};
+void GSFProcessor::onProcessStart() {}
+
+void GSFProcessor::onProcessEnd() {
+  ldmx_log(info) << "--------------------------------- ";
+  ldmx_log(info) << "GSF: " << n_output_tracks_ << " output tracks / "
+                 << n_input_tracks_ << " input tracks";
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
+                 << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "GSF Fit Failures: " << n_gsf_failed_;
+  ldmx_log(info) << "Extrapolation Failures::";
+  ldmx_log(info) << "  Target: " << n_target_extrap_failed_ << " times";
+  if (!tagger_tracking_)
+    ldmx_log(info) << "  ECAL:   " << n_ecal_extrap_failed_ << " times";
+}
 
 }  // namespace reco
 }  // namespace tracking

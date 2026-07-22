@@ -68,7 +68,7 @@ class TrackingSequence:
 
 
 def full_tracking_sequence(
-    use_truth_smearing=False,
+    use_truth_smearing=True,
     detector="ldmx-det-v15-8gev",
     tag="",
 ):

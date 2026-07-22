@@ -85,17 +85,8 @@ class TrackExtrapolatorTool {
 
     if (result.ok())
       return *result->endParameters;
-    else {
-      std::cout << "[TET DIAG BTP] propagation failed: "
-                << result.error().message() << "\n";
-      std::cout << "[TET DIAG BTP]   start pos=("
-                << pars.position(gctx_).transpose() << ")\n";
-      std::cout << "[TET DIAG BTP]   direction=("
-                << pars.direction().transpose() << ")\n";
-      std::cout << "[TET DIAG BTP]   target surface type="
-                << target_surface->name() << "\n";
+    else
       return std::nullopt;
-    }
   }  // end of extrapolate()
 
   /** Method to extrapolate to a target surface given a track
@@ -131,16 +122,6 @@ class TrackExtrapolatorTool {
         Acts::TrackExtrapolationStrategy::firstOrLast);
 
     if (!stateResult.ok()) {
-      // Temporary diagnostic: print why and dump type flags of all states
-      std::cout << "[TET DIAG] findTrackStateForExtrapolation failed: "
-                << stateResult.error().message()
-                << "  nStates=" << track.nTrackStates() << "\n";
-      for (const auto& tsDiag : track.trackStatesReversed()) {
-        std::cout << "  isMeas=" << tsDiag.typeFlags().isMeasurement()
-                  << " isHole=" << tsDiag.typeFlags().isHole()
-                  << " hasFiltered=" << tsDiag.hasFiltered()
-                  << " hasSmoothed=" << tsDiag.hasSmoothed() << "\n";
-      }
       return std::nullopt;
     }
 

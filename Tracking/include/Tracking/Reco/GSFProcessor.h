@@ -163,8 +163,13 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Processing time counter
   // double processing_time_{0.};
 
-  /// Time profiling data for performance analysis
-  std::map<std::string, double> profiling_map_;
+  int nevents_{0};
+  int n_input_tracks_{0};
+  int n_gsf_failed_{0};
+  int n_output_tracks_{0};
+  int n_target_extrap_failed_{0};
+  int n_ecal_extrap_failed_{0};
+  double processing_time_{0.};
 
   // refitting of tracks
   // bool kf_refit_{false};
@@ -277,8 +282,12 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
       trk_extrap_;
 
-  /// Beam origin surface at z=-700 mm (tagger track initialization)
+  /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via VoidNavigator)
   std::shared_ptr<Acts::Surface> beam_origin_surface_;
+
+  /// Tagger GSF start surface at x≈-617mm in ACTS (1mm inside tagger volume outer boundary ~-618mm,
+  /// 1.5mm upstream of L1 sensors at x=-615.5mm)
+  std::shared_ptr<Acts::Surface> tagger_start_surface_;
 
   /// Target surface at z=0 mm (recoil track initialization, perigee output)
   std::shared_ptr<Acts::Surface> target_surface_;
