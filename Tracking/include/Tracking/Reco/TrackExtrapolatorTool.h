@@ -117,15 +117,15 @@ class TrackExtrapolatorTool {
     // Use ACTS's built-in helper to find the measurement track state
     // (first or last) that is closest to the target surface. This correctly
     // handles holes and material-only states which lack filtered parameters.
-    auto stateResult = Acts::findTrackStateForExtrapolation(
+    auto state_result = Acts::findTrackStateForExtrapolation(
         gctx_, track, *target_surface,
         Acts::TrackExtrapolationStrategy::firstOrLast);
 
-    if (!stateResult.ok()) {
+    if (!state_result.ok()) {
       return std::nullopt;
     }
 
-    const auto& ts = stateResult->first;
+    const auto& ts = state_result->first;
     const auto& surface = ts.referenceSurface();
 
     Acts::BoundVector params;
