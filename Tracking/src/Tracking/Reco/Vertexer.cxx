@@ -44,7 +44,6 @@ void Vertexer::onProcessStart() {
   h_tz0_vs_rz0_ =
       new TH2F("h_tz0_vs_rz0", "h_tz0_vs_rz0", 100, -40, 40, 100, -40, 40);
 
-  gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
   /*

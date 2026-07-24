@@ -14,7 +14,6 @@ VertexProcessor::VertexProcessor(const std::string& name,
     : framework::Producer(name, process) {}
 
 void VertexProcessor::onProcessStart() {
-  gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
   h_m_ = new TH1F("m", "m", 100, 0., 1.);

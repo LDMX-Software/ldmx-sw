@@ -2,7 +2,6 @@
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/EventData/Seed.hpp"
 // #include "Acts/Utilities/VectorHelpers.hpp"
 #include <optional>
 
@@ -44,10 +43,11 @@ class SeedToTrackParamMaker {
   /// This resembles the method used in ATLAS for the seed fitting
   /// L811
   /// https://acode-browser.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetRecTools/SiTrackMakerTool_xk/src/SiTrackMaker_xk.cxx
-  template <typename external_spacepoint_t>
-  bool fitSeedAtlas(const Acts::Seed<external_spacepoint_t>& seed,
-                    std::array<double, 9>& data, const Acts::Transform3& Tp,
-                    const double& bFieldZ);
+  // Acts::Seed<T> removed in v47 — fitSeedAtlas(Seed) unused, commented out
+  // template <typename external_spacepoint_t>
+  // bool fitSeedAtlas(const Acts::Seed<external_spacepoint_t>& seed,
+  //                   std::array<double, 9>& data, const Acts::Transform3& Tp,
+  //                   const double& bFieldZ);
 
   template <typename external_spacepoint_t>
   bool fitSeedAtlas(const std::vector<external_spacepoint_t>& sp,
@@ -56,9 +56,10 @@ class SeedToTrackParamMaker {
 
   /// This is a simple Line and Parabola fit (from HPS reconstruction by Robert
   /// Johnson)
-  template <typename external_spacepoint_t>
-  bool fitSeedLinPar(const Acts::Seed<external_spacepoint_t>& seed,
-                     std::vector<double>& data);
+  // Acts::Seed<T> removed in v47 — fitSeedLinPar(Seed) unused, commented out
+  // template <typename external_spacepoint_t>
+  // bool fitSeedLinPar(const Acts::Seed<external_spacepoint_t>& seed,
+  //                    std::vector<double>& data);
 
   /// Estimate the full track parameters from three space points
   ///

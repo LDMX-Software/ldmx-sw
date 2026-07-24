@@ -8,9 +8,9 @@ namespace tracking::geo {
 
 const std::string GeometryContext::NAME = "TrackingGeometryContext";
 
-GeometryContext::GeometryContext() : framework::ConditionsObject(NAME) {
-  acts_gc_ = this;
-}
+GeometryContext::GeometryContext()
+    : framework::ConditionsObject(NAME),
+      acts_gc_(Acts::GeometryContext(static_cast<GeometryContext*>(this))) {}
 
 const Acts::GeometryContext& GeometryContext::get() const { return acts_gc_; }
 

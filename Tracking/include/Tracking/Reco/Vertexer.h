@@ -40,7 +40,8 @@
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
 // Propagator with void navigator
-using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
+#include "Acts/Propagator/VoidNavigator.hpp"
+using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -62,7 +63,6 @@ class Vertexer : public framework::Producer {
                               const std::vector<ldmx::Track>& recoil_tracks);
 
  private:
-  Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
 
   int nevents_{0};

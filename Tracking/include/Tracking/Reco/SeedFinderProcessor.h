@@ -22,9 +22,7 @@
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/EventData/Seed.hpp"
-#include "Acts/Seeding/SeedFilter.hpp"
-#include "Acts/Seeding/SpacePointGrid.hpp"
+
 #include "Acts/Utilities/CalibrationContext.hpp"
 #include "Acts/Utilities/Intersection.hpp"
 

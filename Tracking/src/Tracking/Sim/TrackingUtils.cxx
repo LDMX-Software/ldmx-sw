@@ -247,7 +247,7 @@ ldmx::Track::TrackState makeTrackState(
   const Acts::BoundToFreeMatrix j_btf =
       bound_pars.referenceSurface().boundToFreeJacobian(gctx, acts_pos,
                                                         acts_dir);
-  const Acts::FreeSquareMatrix free_cov =
+  const Acts::FreeMatrix free_cov =
       j_btf * bound_cov.value() * j_btf.transpose();
 
   // Step 2: Drop time row/col (eFreeTime = 3) -> 7x7

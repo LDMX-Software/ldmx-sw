@@ -9,7 +9,6 @@ TruthSeedProcessor::TruthSeedProcessor(const std::string& name,
     : TrackingGeometryUser(name, process) {}
 
 void TruthSeedProcessor::onNewRun(const ldmx::RunHeader& rh) {
-  gctx_ = Acts::GeometryContext();
   normal_ = std::make_shared<std::normal_distribution<float>>(0., 1.);
 
   // Custom transformation of the interpolated bfield map
@@ -187,7 +186,7 @@ void TruthSeedProcessor::createTruthTrack(
 
   // Transform the parameters to local positions on the perigee surface.
   auto bound_params{
-      Acts::transformFreeToBoundParameters(free_params, *gen_surface, gctx_)
+      Acts::transformFreeToBoundParameters(free_params, *gen_surface, geometryContext())
           .value()};
   // Create a particle hypothesis
   auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
@@ -262,7 +261,7 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
     double q_ecal = particle.getCharge() * Acts::UnitConstants::e;
     auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
     auto ecal_bound =
-        Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, gctx_);
+        Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, geometryContext());
     if (ecal_bound.ok()) {
       auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
       Acts::BoundTrackParameters ecal_pars(ecal_surface, ecal_bound.value(),
@@ -793,7 +792,7 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         double q_ecal = phit.getCharge() * Acts::UnitConstants::e;
         auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
         auto ecal_bound = Acts::transformFreeToBoundParameters(
-            ecal_free, *ecal_surface, gctx_);
+            ecal_free, *ecal_surface, geometryContext());
         if (ecal_bound.ok()) {
           auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
           Acts::BoundTrackParameters ecal_pars(
