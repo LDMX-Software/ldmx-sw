@@ -1,0 +1,99 @@
+#ifndef TRACKING_EVENT_SISTRIPWAVEFORM_H_
+#define TRACKING_EVENT_SISTRIPWAVEFORM_H_
+
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+#include "TObject.h"
+
+namespace ldmx {
+
+/**
+ * Full multi-trigger waveform for one silicon strip channel.
+ *
+ * Assembled by SiStripWaveformBuilder from the per-trigger pedestal-subtracted
+ * RawSiStripHit objects for a single (feb, hybrid, pchannel).  Samples are
+ * stored in trigger order: [s0_t0, s1_t0, s2_t0, s0_t1, s1_t1, s2_t1, ...], so
+ * the total size is n_triggers * 3.
+ *
+ * This is the natural input for waveform fitting (APV25 CR-RC pulse
+ * shape → hit time with ~2.5 ns resolution) and any per-channel
+ * waveform corrections before clustering.
+ */
+class SiStripWaveform {
+ public:
+  SiStripWaveform() = default;
+
+  SiStripWaveform(std::vector<short> samples, int16_t pchannel,
+                  uint8_t hybrid_id, uint8_t feb_id, uint8_t n_triggers);
+
+  virtual ~SiStripWaveform() {}
+
+  void clear();
+
+  const std::vector<short>& getSamples() const { return samples_; }
+  int16_t getPchannel() const { return pchannel_; }
+  uint8_t getHybridId() const { return hybrid_id_; }
+  uint8_t getFebId() const { return feb_id_; }
+  uint8_t getNTriggers() const { return n_triggers_; }
+
+  /// Store the result of a pulse-shape fit to this waveform.
+  void setFitResult(float amplitude, float t0, float chi2, int ndf,
+                    bool converged) {
+    fit_amplitude_ = amplitude;
+    fit_t0_        = t0;
+    fit_chi2_      = chi2;
+    fit_ndf_       = ndf;
+    fit_converged_ = converged;
+  }
+
+  /// Fitted pulse amplitude [ADC counts] (peak of the fitted pulse shape).
+  float getFitAmplitude() const { return fit_amplitude_; }
+  /// Fitted hit arrival time T [ns] in the sample-window frame (t_i = i*dt).
+  float getFitT0()        const { return fit_t0_; }
+  float getFitChi2()      const { return fit_chi2_; }
+  int   getFitNDF()       const { return fit_ndf_; }
+  bool  isFitConverged()  const { return fit_converged_; }
+
+  /// Sample at trigger index t (0-based), APV sample s (0-2).
+  short getSample(uint8_t t, uint8_t s) const { return samples_[t * 3 + s]; }
+
+  /// Peak amplitude: the maximum (pedestal-subtracted) ADC sample.  Convert to
+  /// a significance downstream by dividing by the per-channel noise from the
+  /// TrackerPedestals conditions object.
+  short peakAmplitude() const {
+    if (samples_.empty()) return 0;
+    return *std::max_element(samples_.begin(), samples_.end());
+  }
+
+  /// Trigger index (0-based) of the sample with the maximum ADC value.
+  uint8_t peakTrigger() const {
+    if (samples_.empty()) return 0;
+    auto it = std::max_element(samples_.begin(), samples_.end());
+    return static_cast<uint8_t>(std::distance(samples_.begin(), it) / 3);
+  }
+
+  friend std::ostream& operator<<(std::ostream& o, const SiStripWaveform& w);
+
+ protected:
+  std::vector<short>
+      samples_;          ///< n_triggers * 3 pedestal-subtracted ADC samples
+  int16_t pchannel_{0};  ///< physical strip number within hybrid [0, 639]
+  uint8_t hybrid_id_{0};
+  uint8_t feb_id_{0};
+  uint8_t n_triggers_{0};  ///< number of APV triggers assembled
+
+  // Pulse-shape fit result (filled by SiStripWaveformBuilder).
+  float fit_amplitude_{0};       ///< fitted amplitude [ADC]
+  float fit_t0_{0};              ///< fitted hit arrival time T [ns]
+  float fit_chi2_{0};            ///< chi-squared at the minimum
+  int   fit_ndf_{0};             ///< degrees of freedom = n_samples - 2
+  bool  fit_converged_{false};   ///< true if the fit succeeded
+
+  ClassDef(SiStripWaveform, 2);
+};
+
+}  // namespace ldmx
+
+#endif  // TRACKING_EVENT_SISTRIPWAVEFORM_H_
