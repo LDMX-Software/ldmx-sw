@@ -18,9 +18,9 @@
 #include "Tracking/Event/Track.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
-using ActionList = Acts::ActorList<Acts::detail::SteppingLogger,
-                                   Acts::MaterialInteractor,
-                                   Acts::EndOfWorldReached>;
+using ActionList =
+    Acts::ActorList<Acts::detail::SteppingLogger, Acts::MaterialInteractor,
+                    Acts::EndOfWorldReached>;
 
 namespace tracking {
 namespace reco {
@@ -51,8 +51,7 @@ class TrackExtrapolatorTool {
    @return optional with BoundTrackParameters
   */
 
-  using PropagatorOptions =
-      typename propagator_t::template Options<ActionList>;
+  using PropagatorOptions = typename propagator_t::template Options<ActionList>;
 
   std::optional<Acts::BoundTrackParameters> extrapolate(
       const Acts::BoundTrackParameters pars,
@@ -240,7 +239,8 @@ class TrackExtrapolatorTool {
 
     if (opt_pars) {
       if (debug_) {
-        Acts::Vector3 surf_loc = target_surface->localToGlobalTransform(gctx_).translation();
+        Acts::Vector3 surf_loc =
+            target_surface->localToGlobalTransform(gctx_).translation();
         std::cout << "[TrackExtrapolatorTool]   Surface location: ("
                   << surf_loc(0) << ", " << surf_loc(1) << ", " << surf_loc(2)
                   << ")\n";

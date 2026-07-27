@@ -166,7 +166,8 @@ bool PropagatorStepWriter::writeSteps(
       //      step.stepSize.value(Acts::ConstrainedStep::accuracy());
       double accuracy = step.stepSize.accuracy();
       double actor = step.stepSize.value(Acts::ConstrainedStep::Type::Actor);
-      double aborter = step.stepSize.value(Acts::ConstrainedStep::Type::Navigator);
+      double aborter =
+          step.stepSize.value(Acts::ConstrainedStep::Type::Navigator);
       double user = step.stepSize.value(Acts::ConstrainedStep::Type::User);
       double act2 = actor * actor;
       double acc2 = accuracy * accuracy;

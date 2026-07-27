@@ -14,8 +14,8 @@
 
 // ACTS
 #include "Acts/Definitions/Units.hpp"
-#include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/BoundTrackParameters.hpp"
+#include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/TransformationHelpers.hpp"
 #include "Acts/Geometry/CuboidVolumeBuilder.hpp"
 #include "Acts/Geometry/GeometryContext.hpp"
@@ -142,7 +142,8 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   ecal_vol_cfg.name = "EcalVolume";
   ecal_vol_cfg.layerCfg = layer_configs;
   ecal_vol_cfg.volumeMaterial =
-      std::make_shared<Acts::HomogeneousVolumeMaterial>(Acts::Material::Vacuum());
+      std::make_shared<Acts::HomogeneousVolumeMaterial>(
+          Acts::Material::Vacuum());
 
   // Build the tracking geometry
   Acts::CuboidVolumeBuilder cvb;
@@ -616,10 +617,9 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
   ckf_extensions.updater.connect<
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
       &kf_updater);
-  ckf_extensions.createTrackStates
-      .connect<&Acts::TrackStateCreator<SourceLinkAccIt,
-                                        TrackContainer>::createTrackStates>(
-          &track_state_creator);
+  ckf_extensions.createTrackStates.connect<&Acts::TrackStateCreator<
+      SourceLinkAccIt, TrackContainer>::createTrackStates>(
+      &track_state_creator);
 
   // Create track container
   Acts::VectorTrackContainer vtc;
@@ -650,8 +650,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
                                             cov_mat, part_hypo);
 
     // Setup CKF options
-    const Acts::CombinatorialKalmanFilterOptions<TrackContainer>
-        ckf_options(gctx, mctx, cctx, ckf_extensions, propagator_options);
+    const Acts::CombinatorialKalmanFilterOptions<TrackContainer> ckf_options(
+        gctx, mctx, cctx, ckf_extensions, propagator_options);
 
     // Run CKF
     auto results = ckf_->findTracks(start_params, ckf_options, tc);
@@ -766,8 +766,7 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
       // Add measurement indices
       for (const auto ts : track.trackStatesReversed()) {
-        if (ts.typeFlags().isMeasurement() &&
-            ts.hasUncalibratedSourceLink()) {
+        if (ts.typeFlags().isMeasurement() && ts.hasUncalibratedSourceLink()) {
           Acts::SourceLink usl = ts.getUncalibratedSourceLink();
           const acts_examples::IndexSourceLink& sl =
               usl.get<acts_examples::IndexSourceLink>();

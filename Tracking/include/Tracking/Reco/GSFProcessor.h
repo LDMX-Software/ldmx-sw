@@ -39,8 +39,8 @@
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
@@ -78,9 +78,9 @@
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
 
-using ActionList = Acts::ActorList<Acts::detail::SteppingLogger,
-                                   Acts::MaterialInteractor,
-                                   Acts::EndOfWorldReached>;
+using ActionList =
+    Acts::ActorList<Acts::detail::SteppingLogger, Acts::MaterialInteractor,
+                    Acts::EndOfWorldReached>;
 
 // using GsfPropagator = Acts::Propagator<
 //                         Acts::MultiEigenStepperLoop<
@@ -93,7 +93,8 @@ using ActionList = Acts::ActorList<Acts::detail::SteppingLogger,
 using MultiStepper = Acts::MultiEigenStepperLoop<>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
-using GsfExtrapPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
+using GsfExtrapPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -222,8 +223,8 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string seed_coll_name_{"seedTracks"};
 
   /// Gaussian Sum Fitter instance for track refitting
-  std::unique_ptr<const Acts::GaussianSumFitter<GsfPropagator,
-                                                Acts::VectorMultiTrajectory>>
+  std::unique_ptr<
+      const Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>>
       gsf_;
 
   /// Collection name for input tracks to be refit
@@ -282,11 +283,12 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
       trk_extrap_;
 
-  /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via VoidNavigator)
+  /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via
+  /// VoidNavigator)
   std::shared_ptr<Acts::Surface> beam_origin_surface_;
 
-  /// Tagger GSF start surface at x≈-617mm in ACTS (1mm inside tagger volume outer boundary ~-618mm,
-  /// 1.5mm upstream of L1 sensors at x=-615.5mm)
+  /// Tagger GSF start surface at x≈-617mm in ACTS (1mm inside tagger volume
+  /// outer boundary ~-618mm, 1.5mm upstream of L1 sensors at x=-615.5mm)
   std::shared_ptr<Acts::Surface> tagger_start_surface_;
 
   /// Target surface at z=0 mm (recoil track initialization, perigee output)

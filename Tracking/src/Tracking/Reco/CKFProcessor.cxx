@@ -5,8 +5,8 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
-#include "Tracking/geo/DetectorElement.h"
 #include "Tracking/Sim/GeometryContainers.h"
+#include "Tracking/geo/DetectorElement.h"
 
 //--- C++ StdLib ---//
 #include <algorithm>  //std::vector reverse
@@ -110,11 +110,13 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       *propagator_zero_b_,
       Acts::getDefaultLogger("CKF_ZERO_B", acts_logging_level));
   propagator_extrap_zero_b_ = std::make_unique<ExtrapPropagator>(
-      Acts::EigenStepper<>{std::make_shared<Acts::ConstantBField>(zero_b_field)},
+      Acts::EigenStepper<>{
+          std::make_shared<Acts::ConstantBField>(zero_b_field)},
       Acts::VoidNavigator{});
   trk_extrap_zero_b_ =
       std::make_shared<std::decay_t<decltype(*trk_extrap_zero_b_)>>(
-          *propagator_extrap_zero_b_, geometryContext(), magneticFieldContext());
+          *propagator_extrap_zero_b_, geometryContext(),
+          magneticFieldContext());
 
   // Setup const-B (1.5T) CKF as fallback for tagger
   propagator_const_b_ =
@@ -126,7 +128,8 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       Acts::EigenStepper<>{const_b_field}, Acts::VoidNavigator{});
   trk_extrap_const_b_ =
       std::make_shared<std::decay_t<decltype(*trk_extrap_const_b_)>>(
-          *propagator_extrap_const_b_, geometryContext(), magneticFieldContext());
+          *propagator_extrap_const_b_, geometryContext(),
+          magneticFieldContext());
 }  // end of CKFProcessor::onNewRun()
 
 void CKFProcessor::produce(framework::Event& event) {
@@ -341,10 +344,9 @@ void CKFProcessor::produce(framework::Event& event) {
   ckf_extensions.updater.connect<
       &Acts::GainMatrixUpdater::operator()<Acts::VectorMultiTrajectory>>(
       &kf_updater);
-  ckf_extensions.createTrackStates
-      .connect<&Acts::TrackStateCreator<SourceLinkAccIt,
-                                        TrackContainer>::createTrackStates>(
-          &track_state_creator);
+  ckf_extensions.createTrackStates.connect<&Acts::TrackStateCreator<
+      SourceLinkAccIt, TrackContainer>::createTrackStates>(
+      &track_state_creator);
 
   ldmx_log(debug) << "Setting up surfaces...";
 
@@ -370,14 +372,12 @@ void CKFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "---------------------------";
     ldmx_log(debug) << "Candidate Track ID = " << track_id;
     // Define the CKF options here:
-    const Acts::CombinatorialKalmanFilterOptions<TrackContainer>
-        ckf_options(TrackingGeometryUser::geometryContext(),
-                    TrackingGeometryUser::magneticFieldContext(),
-                    TrackingGeometryUser::calibrationContext(),
-                    ckf_extensions,
-                    static_cast<Acts::PropagatorPlainOptions>(propagator_options),
-                    true /* multiple scattering */,
-                    false /* energy loss */);
+    const Acts::CombinatorialKalmanFilterOptions<TrackContainer> ckf_options(
+        TrackingGeometryUser::geometryContext(),
+        TrackingGeometryUser::magneticFieldContext(),
+        TrackingGeometryUser::calibrationContext(), ckf_extensions,
+        static_cast<Acts::PropagatorPlainOptions>(propagator_options),
+        true /* multiple scattering */, false /* energy loss */);
 
     ldmx_log(debug) << "  Checking options:  multiple scattering = "
                     << ckf_options.multipleScattering
@@ -515,7 +515,8 @@ void CKFProcessor::produce(framework::Event& event) {
       }
       // Perigee location: target surface origin rotated to LDMX frame
       Acts::Vector3 target_loc_ldmx = tracking::sim::utils::acts2Ldmx(
-          target_surface_->localToGlobalTransform(geometryContext()).translation());
+          target_surface_->localToGlobalTransform(geometryContext())
+              .translation());
       trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
                              target_loc_ldmx[2]);
 
@@ -560,8 +561,7 @@ void CKFProcessor::produce(framework::Event& event) {
         // Check if the track state is a measurement
         auto type_flags = ts.typeFlags();
 
-        if (type_flags.isMeasurement() &&
-            ts.hasUncalibratedSourceLink()) {
+        if (type_flags.isMeasurement() && ts.hasUncalibratedSourceLink()) {
           Acts::SourceLink usl = ts.getUncalibratedSourceLink();
           const acts_examples::IndexSourceLink& sl =
               usl.get<acts_examples::IndexSourceLink>();

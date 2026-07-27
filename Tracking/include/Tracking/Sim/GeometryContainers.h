@@ -166,10 +166,10 @@ inline auto selectModule(const GeometryIdMultiset<T>& container,
                          Acts::GeometryIdentifier::Value volume,
                          Acts::GeometryIdentifier::Value layer,
                          Acts::GeometryIdentifier::Value module_) {
-  return selectModule(
-      container,
-      Acts::GeometryIdentifier().withVolume(volume).withLayer(layer).withSensitive(
-          module_));
+  return selectModule(container, Acts::GeometryIdentifier()
+                                     .withVolume(volume)
+                                     .withLayer(layer)
+                                     .withSensitive(module_));
 }
 
 /// Select all elements for the lowest non-zero identifier component.

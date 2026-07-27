@@ -356,10 +356,11 @@ std::vector<ldmx::Measurement> DigitizationProcessor::digitizeHits(
     auto hit_surface{geometry().getSurface(layer_id)};
     if (!hit_surface) continue;
 
-    ldmx_log(trace) << "Local to global\n"
-                    << hit_surface->localToGlobalTransform(geometryContext()).rotation()
-                    << "\n"
-                    << hit_surface->localToGlobalTransform(geometryContext()).translation();
+    ldmx_log(trace)
+        << "Local to global\n"
+        << hit_surface->localToGlobalTransform(geometryContext()).rotation()
+        << "\n"
+        << hit_surface->localToGlobalTransform(geometryContext()).translation();
 
     // -----------------------------------------------------------------------
     // Project global hit position onto the surface (2D local coords)

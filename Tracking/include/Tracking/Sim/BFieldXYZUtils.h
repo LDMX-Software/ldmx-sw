@@ -211,8 +211,8 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
         localToGlobalBin,
     GenericTransformPos transformPosition,
     GenericTransformBField transformMagneticField,
-    const std::string& fieldMapFile, double lengthUnit,
-    double BFieldUnit, bool firstOctant, bool rotateAxes) {
+    const std::string& fieldMapFile, double lengthUnit, double BFieldUnit,
+    bool firstOctant, bool rotateAxes) {
   /// [1] Read in field map file
   // Grid position points in x, y and z
   std::vector<double> x_pos;
