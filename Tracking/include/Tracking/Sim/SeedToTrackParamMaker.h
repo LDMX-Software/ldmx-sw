@@ -92,8 +92,7 @@ class SeedToTrackParamMaker {
   template <typename spacepoint_iterator_t>
   std::optional<Acts::BoundVector> estimateTrackParamsFromSeed(
       const Acts::Transform3& Tp, spacepoint_iterator_t spBegin,
-      spacepoint_iterator_t spEnd, Acts::Vector3 bField,
-      double bFieldMin,
+      spacepoint_iterator_t spEnd, Acts::Vector3 bField, double bFieldMin,
       double mass = 139.57018 * Acts::UnitConstants::MeV) {
     // Check the number of provided space points
     size_t num_sp = std::distance(spBegin, spEnd);
@@ -157,8 +156,7 @@ class SeedToTrackParamMaker {
     // Lambda to transform the coordinates to the (u, v) space
     auto uv_transform = [](const Acts::Vector3& local) -> Acts::Vector2 {
       Acts::Vector2 uv;
-      double denominator =
-          local.x() * local.x() + local.y() * local.y();
+      double denominator = local.x() * local.x() + local.y() * local.y();
       uv.x() = local.x() / denominator;
       uv.y() = local.y() / denominator;
       return uv;

@@ -15,7 +15,8 @@ GSFProcessor::GSFProcessor(const std::string& name, framework::Process& process)
 
 void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   beam_origin_surface_ = tracking::sim::utils::unboundSurface(-700);
-  // 1mm inside tagger ACTS volume outer boundary (~-618mm), 1.5mm upstream of L1 at x=-615.5mm
+  // 1mm inside tagger ACTS volume outer boundary (~-618mm), 1.5mm upstream of
+  // L1 at x=-615.5mm
   tagger_start_surface_ = tracking::sim::utils::unboundSurface(-617.);
   target_surface_ = tracking::sim::utils::unboundSurface(0.);
   ecal_surface_ = tracking::sim::utils::unboundSurface(240.5);
@@ -265,16 +266,18 @@ void GSFProcessor::produce(framework::Event& event) {
 
     Acts::BoundTrackParameters trk_btp_fit_start = trk_btp;
 
-
-    // For tagger: backward-extrapolate (via VoidNavigator) from the target perigee
-    // (x=0mm) to just inside the tagger outer boundary (x≈-650mm), then run the
-    // GSF forward (+x) through L1→L7.  The CKF stores tagger track perigees at
-    // the target, so we must back-propagate before handing off to the GSF.
+    // For tagger: backward-extrapolate (via VoidNavigator) from the target
+    // perigee (x=0mm) to just inside the tagger outer boundary (x≈-650mm), then
+    // run the GSF forward (+x) through L1→L7.  The CKF stores tagger track
+    // perigees at the target, so we must back-propagate before handing off to
+    // the GSF.
     if (tagger_tracking_) {
       auto opt_tagger_start =
           trk_extrap_->extrapolate(trk_btp, tagger_start_surface_);
       if (!opt_tagger_start) {
-        ldmx_log(debug) << "  Failed pre-fit extrapolation to tagger start surface (itrk=" << itrk << ")";
+        ldmx_log(debug)
+            << "  Failed pre-fit extrapolation to tagger start surface (itrk="
+            << itrk << ")";
         ++n_gsf_failed_;
         continue;
       }
@@ -338,11 +341,16 @@ void GSFProcessor::produce(framework::Event& event) {
     const Acts::BoundMatrix& trk_cov = gsftrk.covariance();
     const Acts::Surface& perigee_surface = gsftrk.referenceSurface();
 
-    ldmx_log(debug)
-        << "    Reference Surface (acts-x, acts-y, acts-z) = ("
-        << perigee_surface.localToGlobalTransform(geometryContext()).translation()(0) << ", "
-        << perigee_surface.localToGlobalTransform(geometryContext()).translation()(1) << ", "
-        << perigee_surface.localToGlobalTransform(geometryContext()).translation()(2) << ")";
+    ldmx_log(debug) << "    Reference Surface (acts-x, acts-y, acts-z) = ("
+                    << perigee_surface.localToGlobalTransform(geometryContext())
+                           .translation()(0)
+                    << ", "
+                    << perigee_surface.localToGlobalTransform(geometryContext())
+                           .translation()(1)
+                    << ", "
+                    << perigee_surface.localToGlobalTransform(geometryContext())
+                           .translation()(2)
+                    << ")";
 
     ldmx_log(debug) << "    nTrackStates=" << gsftrk.nTrackStates()
                     << " nMeasurements=" << gsftrk.nMeasurements()
@@ -378,7 +386,8 @@ void GSFProcessor::produce(framework::Event& event) {
         trk.setPerigeeCov(cov_vec);
       }
       Acts::Vector3 target_loc_ldmx = tracking::sim::utils::acts2Ldmx(
-          target_surface_->localToGlobalTransform(geometryContext()).translation());
+          target_surface_->localToGlobalTransform(geometryContext())
+              .translation());
       trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
                              target_loc_ldmx[2]);
 

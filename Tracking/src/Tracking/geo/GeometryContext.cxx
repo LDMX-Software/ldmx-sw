@@ -20,8 +20,7 @@ void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
 
   for (auto entry : surf_map) {
     alignment_map_[entry.first] =
-        static_cast<const DetectorElement*>(
-            (entry.second)->surfacePlacement())
+        static_cast<const DetectorElement*>((entry.second)->surfacePlacement())
             ->uncorrectedTransform();
   }
 }

@@ -41,7 +41,8 @@
 
 // Propagator with void navigator
 #include "Acts/Propagator/VoidNavigator.hpp"
-using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
+using VoidPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {

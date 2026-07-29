@@ -185,9 +185,9 @@ void TruthSeedProcessor::createTruthTrack(
   // " <<free_params[Acts::eFreePos1]<<" " <<free_params[Acts::eFreePos2];
 
   // Transform the parameters to local positions on the perigee surface.
-  auto bound_params{
-      Acts::transformFreeToBoundParameters(free_params, *gen_surface, geometryContext())
-          .value()};
+  auto bound_params{Acts::transformFreeToBoundParameters(
+                        free_params, *gen_surface, geometryContext())
+                        .value()};
   // Create a particle hypothesis
   auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
   Acts::BoundTrackParameters bound_trk_pars(gen_surface, bound_params,
@@ -260,13 +260,13 @@ ldmx::Track TruthSeedProcessor::recoilFullSeed(
     }
     double q_ecal = particle.getCharge() * Acts::UnitConstants::e;
     auto ecal_free = tracking::sim::utils::toFreeParameters(ep, em, q_ecal);
-    auto ecal_bound =
-        Acts::transformFreeToBoundParameters(ecal_free, *ecal_surface, geometryContext());
+    auto ecal_bound = Acts::transformFreeToBoundParameters(
+        ecal_free, *ecal_surface, geometryContext());
     if (ecal_bound.ok()) {
-      auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
+      auto part{
+          Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
       Acts::BoundTrackParameters ecal_pars(ecal_surface, ecal_bound.value(),
-                                           Acts::BoundMatrix::Identity(),
-                                           part);
+                                           Acts::BoundMatrix::Identity(), part);
       smeared_truth_track.addTrackState(tracking::sim::utils::makeTrackState(
           geometryContext(), ecal_pars, ldmx::AtECAL));
     }
@@ -429,8 +429,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
         (bound_params).data(),
         bound_params.data() + bound_params.rows() * bound_params.cols());
 
-    Acts::BoundMatrix bound_cov =
-        stddev.cwiseProduct(stddev).asDiagonal();
+    Acts::BoundMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
     seed.setPerigeeParameters(v_seed_params);
@@ -455,8 +454,7 @@ ldmx::Track TruthSeedProcessor::seedFromTruth(const ldmx::Track& tt,
     stddev[Acts::eBoundTheta] = 5 * Acts::UnitConstants::degree;
     stddev[Acts::eBoundQOverP] = (1. / p) * (1. / p) * sigma_p;
 
-    Acts::BoundMatrix bound_cov =
-        stddev.cwiseProduct(stddev).asDiagonal();
+    Acts::BoundMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
     std::vector<double> v_seed_cov;
     tracking::sim::utils::flatCov(bound_cov, v_seed_cov);
     seed.setPerigeeParameters(v_seed_params);
@@ -794,10 +792,11 @@ void TruthSeedProcessor::produce(framework::Event& event) {
         auto ecal_bound = Acts::transformFreeToBoundParameters(
             ecal_free, *ecal_surface, geometryContext());
         if (ecal_bound.ok()) {
-          auto part{Acts::ParticleHypothesis(Acts::PdgParticle(particle_hypothesis_))};
-          Acts::BoundTrackParameters ecal_pars(
-              ecal_surface, ecal_bound.value(),
-              Acts::BoundMatrix::Identity(), part);
+          auto part{Acts::ParticleHypothesis(
+              Acts::PdgParticle(particle_hypothesis_))};
+          Acts::BoundTrackParameters ecal_pars(ecal_surface, ecal_bound.value(),
+                                               Acts::BoundMatrix::Identity(),
+                                               part);
           truth_recoil_track.addTrackState(tracking::sim::utils::makeTrackState(
               geometryContext(), ecal_pars, ldmx::AtECAL));
         }

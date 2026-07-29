@@ -97,7 +97,8 @@ void VertexProcessor::produce(framework::Event& event) {
 
     Acts::BoundMatrix cov_mat =
         tracking::sim::utils::unpackCov(tracks.at(i_track).getPerigeeCov());
-    auto part{Acts::ParticleHypothesis(Acts::PdgParticle(tracks.at(i_track).getPdgID()))};
+    auto part{Acts::ParticleHypothesis(
+        Acts::PdgParticle(tracks.at(i_track).getPdgID()))};
     billoir_tracks.push_back(Acts::BoundTrackParameters(
         perigee_surface, param_vec, std::move(cov_mat), part));
   }

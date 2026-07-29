@@ -228,11 +228,12 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 }
 
 void GreedyAmbiguitySolver::onProcessEnd() {
-  double avg_in = nevents_ > 0 ? static_cast<double>(n_input_tracks_) / nevents_ : 0.;
-  double avg_out = nevents_ > 0 ? static_cast<double>(n_output_tracks_) / nevents_ : 0.;
-  double retention = n_input_tracks_ > 0
-                         ? 100.0 * n_output_tracks_ / n_input_tracks_
-                         : 0.;
+  double avg_in =
+      nevents_ > 0 ? static_cast<double>(n_input_tracks_) / nevents_ : 0.;
+  double avg_out =
+      nevents_ > 0 ? static_cast<double>(n_output_tracks_) / nevents_ : 0.;
+  double retention =
+      n_input_tracks_ > 0 ? 100.0 * n_output_tracks_ / n_input_tracks_ : 0.;
   ldmx_log(info) << "--------------------------------- ";
   ldmx_log(info) << "GAS: " << n_output_tracks_ << " output tracks / "
                  << n_input_tracks_ << " input tracks";

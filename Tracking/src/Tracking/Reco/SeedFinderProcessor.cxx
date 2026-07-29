@@ -125,8 +125,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
     const auto& perigee_cov = tagtrk.getPerigeeCov();
     if (!perigee_cov.empty()) {
-      Acts::BoundMatrix cov =
-          tracking::sim::utils::unpackCov(perigee_cov);
+      Acts::BoundMatrix cov = tracking::sim::utils::unpackCov(perigee_cov);
       double locu = tagtrk.getD0();
       double locv = tagtrk.getZ0();
       double covuu =
@@ -246,8 +245,10 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
 
     // Get the global to local transformation
-    auto rot = hit_surface->localToGlobalTransform(geometryContext()).rotation();
-    auto tr = hit_surface->localToGlobalTransform(geometryContext()).translation();
+    auto rot =
+        hit_surface->localToGlobalTransform(geometryContext()).rotation();
+    auto tr =
+        hit_surface->localToGlobalTransform(geometryContext()).translation();
 
     auto rotl2g = rot.transpose();
 
@@ -313,7 +314,8 @@ ldmx::Track SeedFinderProcessor::seedTracker(
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
           perigee_location(0), perigee_location(1), perigee_location(2)));
 
-  // in mm — x is absolute ACTS x; y and z evaluated at fit-x = relative_perigee_x
+  // in mm — x is absolute ACTS x; y and z evaluated at fit-x =
+  // relative_perigee_x
   Acts::Vector3 seed_pos{perigee_location(0),
                          b(0) + b(1) * relative_perigee_x +
                              b(2) * relative_perigee_x * relative_perigee_x,
@@ -381,7 +383,8 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   ldmx::Track trk = ldmx::Track();
   // Store the perigee surface position (absolute ACTS coordinates) converted to
   // LDMX frame so CKFProcessor can reconstruct the same surface.
-  Acts::Vector3 perigee_ldmx = tracking::sim::utils::acts2Ldmx(perigee_location);
+  Acts::Vector3 perigee_ldmx =
+      tracking::sim::utils::acts2Ldmx(perigee_location);
   trk.setPerigeeLocation(perigee_ldmx(0), perigee_ldmx(1), perigee_ldmx(2));
   trk.setChi2(0.);
   trk.setNhits(5);

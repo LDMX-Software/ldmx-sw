@@ -40,8 +40,8 @@
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
@@ -79,12 +79,13 @@
 // mg Aug 2024 not sure if these are needed...
 using Updater = Acts::GainMatrixUpdater;
 
-using ActionList = Acts::ActorList<Acts::detail::SteppingLogger,
-                                   Acts::MaterialInteractor,
-                                   Acts::EndOfWorldReached>;
+using ActionList =
+    Acts::ActorList<Acts::detail::SteppingLogger, Acts::MaterialInteractor,
+                    Acts::EndOfWorldReached>;
 
 using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
-using ExtrapPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
+using ExtrapPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer,
                                             Acts::VectorMultiTrajectory>;
 
@@ -222,7 +223,8 @@ class CKFProcessor final : public TrackingGeometryUser {
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_;
 
-  // Track Extrapolator Tool (uses VoidNavigator to propagate freely to any surface)
+  // Track Extrapolator Tool (uses VoidNavigator to propagate freely to any
+  // surface)
   std::unique_ptr<const ExtrapPropagator> propagator_extrap_;
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_;
