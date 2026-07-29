@@ -120,7 +120,9 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   Acts::Vector3 back_acts =
       tracking::sim::utils::ldmx2Acts(Acts::Vector3(0.0, 0.0, ecal_back_z));
 
-  // Create layer configurations - one per ECAL layer
+  // Create layer configurations - one per ECAL layer.
+  // IMPORTANT: layer_configs must be in ascending x-order so LayerArrayCreator
+  // gets a monotone sequence for BinningType::arbitrary along AxisX.
   std::vector<Acts::CuboidVolumeBuilder::LayerConfig> layer_configs;
   double clearance = 1.0;  // mm envelope around each layer surface
 
@@ -172,6 +174,11 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
     // Only care about sensitive surfaces (those with a sensitive ID)
     if (surface->geometryId().sensitive() == 0) return;
 
+    // CuboidVolumeBuilder creates new PlaneSurface objects inside the geometry
+    // rather than using our originals. Mark them sensitive here so the CKF
+    // actor doesn't skip them as passive surfaces.
+    const_cast<Acts::Surface*>(surface)->assignIsSensitive(true);
+
     // Match to ECAL layer by z position (LDMX frame)
     Acts::Vector3 center_ldmx =
         tracking::sim::utils::acts2Ldmx(surface->center(gctx));
@@ -196,16 +203,19 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   // Setup stepper with zero B-field
   const auto stepper = Acts::EigenStepper<>{zero_b_field};
 
+  auto acts_logging_level =
+      debug_ ? Acts::Logging::VERBOSE : Acts::Logging::FATAL;
+
   // Setup navigator with tracking geometry
   Acts::Navigator::Config nav_cfg{tracking_geometry_};
   nav_cfg.resolveSensitive = true;
   nav_cfg.resolvePassive = false;
   nav_cfg.resolveMaterial = false;
-  const Acts::Navigator navigator(nav_cfg);
+  const Acts::Navigator navigator(
+      nav_cfg,
+      Acts::getDefaultLogger("ECAL_NAV", acts_logging_level));
 
   // Create propagator
-  auto acts_logging_level =
-      debug_ ? Acts::Logging::VERBOSE : Acts::Logging::WARNING;
   propagator_ = std::make_unique<EcalPropagator>(
       stepper, navigator,
       Acts::getDefaultLogger("ECAL_PROP", acts_logging_level));
@@ -237,6 +247,11 @@ void EcalTrackFinderProcessor::createEcalSurfaces() {
     auto bounds = std::make_shared<Acts::RectangleBounds>(500.0, 500.0);
     auto surface =
         Acts::Surface::makeShared<Acts::PlaneSurface>(transform, bounds);
+
+    // Mark as sensitive so the CKF actor creates track states here.
+    // PlaneSurfaces default to isSensitive()=false; without this flag the CKF
+    // treats them as passive material surfaces and creates no track states.
+    surface->assignIsSensitive(true);
 
     // Assign a geometry ID (use layer as volume, 0 as layer in ACTS sense)
     Acts::GeometryIdentifier geo_id =
@@ -393,17 +408,20 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
     return seeds;
   }
 
-  // Create seed track at reference surface (ECAL front)
-  // Intersect line with reference surface
+  // Create seed track at the FIRST ECAL layer surface (layer 0).
+  // Using a surface that IS in the tracking geometry (has associatedLayer set)
+  // ensures the ACTS Navigator can use the fast initialization path and find
+  // all sensitive surfaces during CKF propagation.
   auto& gctx = getCondition<tracking::geo::GeometryContext>(
                    tracking::geo::GeometryContext::NAME)
                    .get();
 
-  // For a plane surface, normal is the third column of rotation (z-direction in
-  // local frame)
+  auto& seed_surface = layer_surfaces_.begin()->second;
+
+  // For a plane surface, normal is the third column of rotation
   Acts::Vector3 ref_normal =
-      reference_surface_->localToGlobalTransform(gctx).rotation().col(2);
-  Acts::Vector3 ref_center = reference_surface_->center(gctx);
+      seed_surface->localToGlobalTransform(gctx).rotation().col(2);
+  Acts::Vector3 ref_center = seed_surface->center(gctx);
 
   double t =
       (ref_center - position).dot(ref_normal) / direction.dot(ref_normal);
@@ -416,12 +434,12 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   // Charge (assume positive)
   double q = Acts::UnitConstants::e;
 
-  // Convert to bound parameters at reference surface
+  // Convert to bound parameters at the first layer surface
   Acts::FreeVector seed_free =
       tracking::sim::utils::toFreeParameters(seed_pos, seed_mom, q);
 
   auto bound_params_result = Acts::transformFreeToBoundParameters(
-      seed_free, *reference_surface_, gctx);
+      seed_free, *seed_surface, gctx);
 
   if (!bound_params_result.ok()) {
     ldmx_log(warn) << "Failed to create bound parameters for seed";
@@ -444,7 +462,7 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   // Create ldmx::Track seed
   ldmx::Track seed;
 
-  // Convert reference surface position to LDMX frame
+  // Convert layer 0 surface position to LDMX frame
   Acts::Vector3 ref_ldmx = tracking::sim::utils::acts2Ldmx(ref_center);
   seed.setPerigeeLocation(ref_ldmx[0], ref_ldmx[1], ref_ldmx[2]);
 
@@ -484,7 +502,7 @@ EcalTrackFinderProcessor::makeGeoIdSourceLinkMap(
     // matches our source link map keys.
     auto it = layer_geo_ids_.find(layer);
     if (it == layer_geo_ids_.end()) {
-      ldmx_log(debug) << "No builder geometry ID for layer " << layer;
+      ldmx_log(warn) << "No builder geometry ID for layer " << layer;
       continue;
     }
 
@@ -529,7 +547,9 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
   // Create source link map
   auto geo_id_sl_map = makeGeoIdSourceLinkMap(measurements);
-  ldmx_log(debug) << "Source link map: " << geo_id_sl_map.size() << " entries";
+  ldmx_log(info) << "Source link map: " << geo_id_sl_map.size()
+                 << " entries from " << measurements.size()
+                 << " measurements";
 
   // Find seed tracks
   auto seed_tracks = findSeeds(measurements);
@@ -630,10 +650,10 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
   for (size_t seed_idx = 0; seed_idx < seed_tracks.size(); ++seed_idx) {
     const auto& seed = seed_tracks[seed_idx];
 
-    // Convert seed to BoundTrackParameters
-    // The seed was created with bound parameters on the reference PlaneSurface,
-    // so we must start the CKF from that same surface (NOT a PerigeeSurface,
-    // which interprets loc0/loc1 as d0/z0 instead of plane-local coordinates).
+    // Convert seed to BoundTrackParameters.
+    // Start from layer_surfaces_[0] which is part of the tracking geometry and
+    // has associatedLayer() set — this lets the Navigator use the fast
+    // initialization path and correctly traverse all 32 ECAL layers.
     Acts::BoundVector param_vec;
     param_vec << seed.getD0(), seed.getZ0(), seed.getPhi(), seed.getTheta(),
         seed.getQoP(), seed.getT();
@@ -646,7 +666,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
         tracking::sim::utils::unpackCov(seed.getPerigeeCov());
 
     auto part_hypo{Acts::ParticleHypothesis::electron()};
-    Acts::BoundTrackParameters start_params(reference_surface_, param_vec,
+    auto& layer0_surface = layer_surfaces_.begin()->second;
+    Acts::BoundTrackParameters start_params(layer0_surface, param_vec,
                                             cov_mat, part_hypo);
 
     // Setup CKF options
@@ -663,11 +684,28 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
     }
 
     auto& tracks_from_seed = results.value();
-    ldmx_log(debug) << "CKF returned " << tracks_from_seed.size()
-                    << " tracks from seed " << seed_idx;
+    ldmx_log(info) << "CKF returned " << tracks_from_seed.size()
+                   << " tracks from seed " << seed_idx;
     for (auto& track : tracks_from_seed) {
+      // Count track state types before smoothing
+      int n_meas = 0, n_holes = 0, n_outliers = 0, n_total = 0;
+      for (const auto& ts : track.trackStatesReversed()) {
+        ++n_total;
+        if (ts.typeFlags().isMeasurement()) ++n_meas;
+        if (ts.typeFlags().isHole()) ++n_holes;
+        if (ts.typeFlags().isOutlier()) ++n_outliers;
+      }
+      ldmx_log(info) << "Track states: total=" << n_total
+                     << " meas=" << n_meas << " holes=" << n_holes
+                     << " outliers=" << n_outliers;
+
       // Smooth the track
-      Acts::smoothTrack(gctx, track);
+      auto smooth_result = Acts::smoothTrack(gctx, track);
+      if (!smooth_result.ok()) {
+        ldmx_log(warn) << "smoothTrack failed: "
+                       << smooth_result.error().message();
+        continue;
+      }
 
       // Create output track
       ldmx::Track trk;
@@ -689,7 +727,7 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       }
 
       if (!found_smoothed) {
-        ldmx_log(warn) << "No smoothed track state found";
+        ldmx_log(warn) << "No smoothed track state found after smoothing";
         continue;
       }
 
@@ -755,7 +793,7 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       trk.setPerigeeCov(cov_vec);
 
       Acts::Vector3 ref_loc_ldmx =
-          tracking::sim::utils::acts2Ldmx(reference_surface_->center(gctx));
+          tracking::sim::utils::acts2Ldmx(layer_surfaces_.begin()->second->center(gctx));
       trk.setPerigeeLocation(ref_loc_ldmx[0], ref_loc_ldmx[1], ref_loc_ldmx[2]);
 
       trk.setChi2(track.chi2());
