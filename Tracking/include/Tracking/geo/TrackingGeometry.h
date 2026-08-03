@@ -6,6 +6,7 @@
 #include <Acts/Geometry/TrackingGeometryBuilder.hpp>
 #include <Acts/Surfaces/DiamondBounds.hpp>
 #include <Acts/Surfaces/PlaneSurface.hpp>
+#include <Acts/Surfaces/SurfaceArray.hpp>
 
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/Material/HomogeneousSurfaceMaterial.hpp"

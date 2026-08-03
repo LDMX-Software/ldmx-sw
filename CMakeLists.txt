@@ -71,6 +71,31 @@ find_package(
              atomic
              regex)
 
+# Find Eigen3 (required by ACTS)
+find_package(Eigen3 CONFIG REQUIRED)
+
+# GNUInstallDirs must be included before ACTS is configured as a sub-project;
+# ACTS only calls include(GNUInstallDirs) when it is the top-level project, so
+# CMAKE_INSTALL_INCLUDEDIR would otherwise be empty and its install() calls fail.
+include(GNUInstallDirs)
+
+# Find or fetch ACTS - must be at top level so both Ecal and Tracking can use it
+find_package(Acts 47.0.0 QUIET)
+if (NOT Acts_FOUND)
+  message(STATUS "Did not find Acts >= 47.0.0, downloading and compiling v47.0.0")
+  include(FetchContent)
+  FetchContent_Declare(
+      Acts
+      URL https://github.com/acts-project/acts/archive/refs/tags/v47.0.0.tar.gz
+      URL_HASH MD5=833c02edee49827f25be74c80d8ee654
+      DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  )
+  FetchContent_MakeAvailable(Acts)
+  FetchContent_GetProperties(Acts)
+  include_directories(SYSTEM "${Acts_SOURCE_DIR}/Core/include")
+else()
+  message(STATUS "Found Acts ${Acts_VERSION}")
+endif()
 
 # FunctionalCoreTest.cxx doesnt comply with clang-tidy but that's ok
 set_source_files_properties(Framework/test/FunctionalCoreTest.cxx PROPERTIES COMPILE_OPTIONS "-Wno-null-dereference")

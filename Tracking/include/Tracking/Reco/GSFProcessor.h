@@ -19,7 +19,7 @@
 #include "Acts/Definitions/Common.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
-#include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
@@ -34,13 +34,13 @@
 
 // propagation testing
 #include "Acts/MagneticField/ConstantBField.hpp"
-#include "Acts/Propagator/AbortList.hpp"
-#include "Acts/Propagator/ActionList.hpp"
-#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
+#include "Acts/Propagator/ActorList.hpp"
+#include "Acts/Propagator/EigenStepperDenseExtension.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
@@ -55,7 +55,6 @@
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
 #include "Acts/TrackFinding/MeasurementSelector.hpp"
-#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
 #include "Acts/TrackFitting/GainMatrixUpdater.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 
@@ -80,8 +79,8 @@
 #include "Tracking/Sim/BFieldXYZUtils.h"
 
 using ActionList =
-    Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
-using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
+    Acts::ActorList<Acts::detail::SteppingLogger, Acts::MaterialInteractor,
+                    Acts::EndOfWorldReached>;
 
 // using GsfPropagator = Acts::Propagator<
 //                         Acts::MultiEigenStepperLoop<
@@ -94,7 +93,8 @@ using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using MultiStepper = Acts::MultiEigenStepperLoop<>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
-using BetheHeitlerApprox = Acts::AtlasBetheHeitlerApprox<6, 5>;
+using GsfExtrapPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -164,8 +164,13 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Processing time counter
   // double processing_time_{0.};
 
-  /// Time profiling data for performance analysis
-  std::map<std::string, double> profiling_map_;
+  int nevents_{0};
+  int n_input_tracks_{0};
+  int n_gsf_failed_{0};
+  int n_output_tracks_{0};
+  int n_target_extrap_failed_{0};
+  int n_ecal_extrap_failed_{0};
+  double processing_time_{0.};
 
   // refitting of tracks
   // bool kf_refit_{false};
@@ -218,8 +223,8 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string seed_coll_name_{"seedTracks"};
 
   /// Gaussian Sum Fitter instance for track refitting
-  std::unique_ptr<const Acts::GaussianSumFitter<
-      GsfPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>>
+  std::unique_ptr<
+      const Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>>
       gsf_;
 
   /// Collection name for input tracks to be refit
@@ -273,12 +278,18 @@ class GSFProcessor final : public TrackingGeometryUser {
   /// Layer ID to ACTS Surface mapping for hit surface lookup
   std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
-  // Track Extrapolator Tool
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<Propagator>>
+  // Track Extrapolator Tool (VoidNavigator to reach surfaces outside geometry)
+  std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
       trk_extrap_;
 
-  /// Beam origin surface at z=-700 mm (tagger track initialization)
+  /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via
+  /// VoidNavigator)
   std::shared_ptr<Acts::Surface> beam_origin_surface_;
+
+  /// Tagger GSF start surface at x≈-617mm in ACTS (1mm inside tagger volume
+  /// outer boundary ~-618mm, 1.5mm upstream of L1 sensors at x=-615.5mm)
+  std::shared_ptr<Acts::Surface> tagger_start_surface_;
 
   /// Target surface at z=0 mm (recoil track initialization, perigee output)
   std::shared_ptr<Acts::Surface> target_surface_;

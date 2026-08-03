@@ -125,8 +125,7 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
     const auto& perigee_cov = tagtrk.getPerigeeCov();
     if (!perigee_cov.empty()) {
-      Acts::BoundSquareMatrix cov =
-          tracking::sim::utils::unpackCov(perigee_cov);
+      Acts::BoundMatrix cov = tracking::sim::utils::unpackCov(perigee_cov);
       double locu = tagtrk.getD0();
       double locv = tagtrk.getZ0();
       double covuu =
@@ -236,8 +235,8 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   // In this way it's easier to incorporate the tagger track extrapolation to
   // the fit
 
-  Acts::ActsMatrix<5, 5> a = Acts::ActsMatrix<5, 5>::Zero();
-  Acts::ActsVector<5> y = Acts::ActsVector<5>::Zero();
+  Acts::Matrix<5, 5> a = Acts::Matrix<5, 5>::Zero();
+  Acts::Vector<5> y = Acts::Vector<5>::Zero();
 
   for (auto meas : vmeas) {
     double xmeas = meas.getGlobalPosition()[0] - xOrigin;
@@ -246,8 +245,10 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
 
     // Get the global to local transformation
-    auto rot = hit_surface->transform(geometryContext()).rotation();
-    auto tr = hit_surface->transform(geometryContext()).translation();
+    auto rot =
+        hit_surface->localToGlobalTransform(geometryContext()).rotation();
+    auto tr =
+        hit_surface->localToGlobalTransform(geometryContext()).translation();
 
     auto rotl2g = rot.transpose();
 
@@ -258,7 +259,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     yhit_.push_back(meas.getGlobalPosition()[1]);
     zhit_.push_back(meas.getGlobalPosition()[2]);
 
-    Acts::ActsMatrix<2, 5> a_i;
+    Acts::Matrix<2, 5> a_i;
 
     a_i(0, 0) = rotl2g(0, 1);
     a_i(0, 1) = rotl2g(0, 1) * xmeas;
@@ -279,7 +280,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     loc(0) = meas.getLocalPosition()[0];
     loc(1) = 0.;
     // weight matrix
-    Acts::ActsMatrix<2, 2> w_i = Acts::ActsMatrix<2, 2>::Zero();
+    Acts::Matrix<2, 2> w_i = Acts::Matrix<2, 2>::Zero();
 
     w_i(0, 0) = 1. / (u_error_ * u_error_);
     w_i(1, 1) = 1. / (v_error_ * v_error_);
@@ -287,11 +288,11 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     Acts::Vector2 yprime_i = loc + offset - xoffset;
     y += (a_i.transpose()) * w_i * yprime_i;
 
-    Acts::ActsMatrix<2, 5> wa_i = (w_i * a_i);
+    Acts::Matrix<2, 5> wa_i = (w_i * a_i);
     a += a_i.transpose() * wa_i;
   }
 
-  Acts::ActsVector<5> b;
+  Acts::Vector<5> b;
   b = a.inverse() * y;
 
   b0_.push_back(b(0));
@@ -300,17 +301,22 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   b3_.push_back(b(3));
   b4_.push_back(b(4));
 
-  // Acts::ActsVector<5> hlx = Acts::ActsVector<5>::Zero();
-  Acts::ActsVector<3> ref{0., 0., 0.};
+  // Acts::Vector<5> hlx = Acts::Vector<5>::Zero();
+  Acts::Vector<3> ref{0., 0., 0.};
 
+  // relative_perigee_x is the perigee position in the fit frame (fit-x = ACTS x
+  // - xOrigin). It is used only for evaluating the fitted curve (y, z, slopes).
+  // The PerigeeSurface and seed_pos must use the absolute ACTS x coordinate,
+  // which is perigee_location(0) directly.
   double relative_perigee_x = perigee_location(0) - xOrigin;
 
   std::shared_ptr<const Acts::PerigeeSurface> seed_perigee =
       Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          relative_perigee_x, perigee_location(1), perigee_location(2)));
+          perigee_location(0), perigee_location(1), perigee_location(2)));
 
-  // in mm
-  Acts::Vector3 seed_pos{relative_perigee_x,
+  // in mm — x is absolute ACTS x; y and z evaluated at fit-x =
+  // relative_perigee_x
+  Acts::Vector3 seed_pos{perigee_location(0),
                          b(0) + b(1) * relative_perigee_x +
                              b(2) * relative_perigee_x * relative_perigee_x,
                          b(3) + b(4) * relative_perigee_x};
@@ -324,7 +330,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
 
   // Convert it to MeV since that's what TrackUtils assumes
   Acts::Vector3 seed_mom = p * dir / Acts::UnitConstants::MeV;
-  Acts::ActsScalar q =
+  double q =
       b(2) < 0 ? -1 * Acts::UnitConstants::e : +1 * Acts::UnitConstants::e;
 
   // Linear intersection with the perigee line. TODO:: Use propagator instead
@@ -344,7 +350,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
       (*seed_perigee).intersect(geometryContext(), seed_pos, dir);
 
   Acts::FreeVector seed_free = tracking::sim::utils::toFreeParameters(
-      intersection.intersections()[0].position(), seed_mom, q);
+      intersection[0].position(), seed_mom, q);
 
   auto bound_params = Acts::transformFreeToBoundParameters(
                           seed_free, *seed_perigee, geometryContext())
@@ -370,11 +376,13 @@ ldmx::Track SeedFinderProcessor::seedTracker(
 
   ldmx_log(debug)
       << "Making covariance matrix as diagonal matrix with inflated terms";
-  Acts::BoundSquareMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
+  Acts::BoundMatrix bound_cov = stddev.cwiseProduct(stddev).asDiagonal();
 
   ldmx_log(debug) << "...now putting together the seed track ...";
 
   ldmx::Track trk = ldmx::Track();
+  // Store the perigee surface position (absolute ACTS coordinates) converted to
+  // LDMX frame so CKFProcessor can reconstruct the same surface.
   Acts::Vector3 perigee_ldmx =
       tracking::sim::utils::acts2Ldmx(perigee_location);
   trk.setPerigeeLocation(perigee_ldmx(0), perigee_ldmx(1), perigee_ldmx(2));
@@ -393,7 +401,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
 
   ldmx_log(debug)
       << "...making the ParticleHypothesis ...assume electron for now";
-  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  auto part_hypo{Acts::ParticleHypothesis::electron()};
 
   ldmx_log(debug) << "Making BoundTrackParameters seedParameters";
   Acts::BoundTrackParameters seed_parameters(
