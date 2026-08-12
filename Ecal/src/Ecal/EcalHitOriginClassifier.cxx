@@ -13,8 +13,8 @@
 namespace {
 
 struct OriginContribution {
-  double energy{0.0};
-  unsigned int count{0};
+  double energy= 0.;
+  unsigned int count=0;
 };
 
 struct HitTruth {
@@ -25,10 +25,11 @@ struct HitTruth {
 HitTruth dominantOrigin(const std::map<int, OriginContribution>& contributions,
                         double relative_tolerance) {
   HitTruth truth;
-  if (contributions.empty()) return truth;
+  if (contributions.empty())
+    return truth;
 
-  double total_energy{0.0};
-  double maximum_energy{0.0};
+  double total_energy= 0.;
+  double maximum_energy= 0.;
   for (const auto& [origin_id, contribution] : contributions) {
     (void)origin_id;
     total_energy += contribution.energy;
@@ -37,9 +38,9 @@ HitTruth dominantOrigin(const std::map<int, OriginContribution>& contributions,
 
   unsigned int fewest_contributions{0};
   bool found{false};
-  double winner_energy{0.0};
+  double winner_energy= 0.;
   for (const auto& [origin_id, contribution] : contributions) {
-    const double scale = std::max(std::abs(contribution.energy),
+    double scale = std::max(std::abs(contribution.energy),
                                   std::abs(maximum_energy));
     if (std::abs(contribution.energy - maximum_energy) >
         relative_tolerance * scale) {
@@ -74,7 +75,7 @@ std::map<int, int> truthClasses(
   }
 
   std::sort(ordered_origins.begin(), ordered_origins.end());
-  for (std::size_t i = 0; i < ordered_origins.size(); ++i) {
+  for (std::size_t i = 0; i < ordered_origins.size(); i++) {
     result[ordered_origins[i].second] = static_cast<int>(i + 1);
   }
   return result;
@@ -208,7 +209,7 @@ void EcalHitOriginClassifier::preprocessRow(std::vector<double>& row) const {
     row[tpad_pe_column_] = std::log1p(row[tpad_pe_column_]);
   }
 
-  for (std::size_t i = 0; i < feature_means_.size(); ++i) {
+  for (std::size_t i = 0; i < feature_means_.size(); i++) {
     row[i] = (row[i] - feature_means_[i]) / feature_stds_[i];
   }
 }
@@ -232,7 +233,7 @@ EcalHitOriginClassifier::DecodedOutput EcalHitOriginClassifier::decodeOutputs(
   decoded.num_classes = logits.size() / rows;
   decoded.classifications.reserve(hits.size());
 
-  for (std::size_t i = 0; i < hits.size(); ++i) {
+  for (std::size_t i = 0; i < hits.size(); i++) {
     const auto [classification, confidence] =
         classify(logits.data() + i * decoded.num_classes, decoded.num_classes);
 
@@ -258,11 +259,11 @@ void EcalHitOriginClassifier::addTruth(
 
   for (const auto& sim_hit : sim_hits) {
     std::map<int, OriginContribution> contributions;
-    for (unsigned int i = 0; i < sim_hit.getNumberOfContribs(); ++i) {
+    for (unsigned int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
       const auto contribution = sim_hit.getContrib(static_cast<int>(i));
       auto& origin = contributions[contribution.origin_id_];
       origin.energy += contribution.edep_;
-      ++origin.count;
+      origin.count++;
     }
 
     truth_by_hit_id[sim_hit.getID()] =
@@ -301,8 +302,8 @@ std::pair<int, float> EcalHitOriginClassifier::classify(
   const std::size_t max_index = std::distance(logits, max_iter);
   const double max_logit = *max_iter;
 
-  double denominator{0.0};
-  for (std::size_t i = 0; i < num_classes; ++i) {
+  double denominator= 0.;
+  for (std::size_t i = 0; i < num_classes; i++) {
     denominator += std::exp(static_cast<double>(logits[i]) - max_logit);
   }
 
