@@ -105,3 +105,30 @@ recrem_ecalveto = EcalVetoProcessor(
     collection_name = "EcalVetoInc",
 )
 recrem_processing = [EcalRecoilRemovalProcessor(), recrem_ecalveto]
+
+@processor("ecal::EcalHitOriginClassifier", "Ecal")
+class EcalHitOriginClassifier(Processor):
+    """Assign an origin class to each reconstructed ECal hit."""
+
+    ecal_hit_collection: str = "EcalRecHits"
+    ecal_hit_pass_name: str = ""
+    trigger_pad_collection: str = "TriggerPadTracks"
+    trigger_pad_pass_name: str = ""
+    output_collection: str = "EcalHitClassifications"
+
+    model_path: str = ""
+    input_name: str = "tokens"
+    output_name: str = "logits"
+    use_trigger_pad_context: bool = False
+    output_includes_context_tokens: bool = False
+
+    apply_log1p_ecal_energy: bool = False
+    apply_log1p_trigger_pad_pe: bool = False
+    feature_means: list[float] = []
+    feature_stds: list[float] = []
+
+    enable_truth: bool = False
+    sim_hit_collection: str = "EcalSimHitsOverlay"
+    sim_hit_pass_name: str = "overlay"
+    expected_origin_ids: list[int] = [1, 2, 3]
+    truth_energy_tie_relative_tolerance: float = 1.0e-4

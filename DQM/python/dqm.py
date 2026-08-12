@@ -2514,6 +2514,58 @@ class EcalSPTrackCompare(Processor):
             "Track theta [rad]", 100, 0, 0.5,
         )
 
+@processor("dqm::EcalHitOriginClassifierResults", "DQM")
+class EcalHitOriginClassifierResults(Processor):
+    """Performance plots for the ECal hit-origin classifier."""
+
+    # defaults assume this will be mostly relevant for pileup studies 
+    hit_collection: str = "EcalRecHits"
+    hit_pass_name: str = ""
+    classification_collection: str = "EcalHitClassifications"
+    classification_pass_name: str = ""
+    sim_hit_collection: str = "EcalSimHitsOverlay"
+    sim_hit_pass_name: str = "overlay"
+    scoring_plane_collection: str = "EcalScoringPlaneHitsOverlay"
+    scoring_plane_pass_name: str = "overlay"
+
+    def __post_init__(self):
+        self.histogram("classification", "Predicted class", 8, 0.5, 8.5)
+        self.histogram("confidence", "Predicted-class confidence", 100, 0.0, 1.0)
+        self.histogram("has_truth", "Canonical truth available", 2, -0.5, 1.5)
+        self.histogram("truth_origin_id", "Dominant truth origin ID", 10, -1.5, 8.5)
+        self.histogram("truth_classification", "Truth class", 8, 0.5, 8.5)
+        self.histogram("truth_fraction", "Dominant-origin energy fraction", 100, 0.0, 1.0)
+        self.histogram("correct", "Correct classification", 2, -0.5, 1.5)
+        self.histogram("event_accuracy", "Per-event hit accuracy", 100, 0.0, 1.0)
+        self.histogram("event_energy_weighted_accuracy","Per-event energy-weighted hit accuracy",100,0.0,1.0)
+        self.histogram("num_hits", "ECal reconstructed hits", 500, -0.5, 499.5)
+        self.histogram("num_correct_hits", "Number of correctly classified hits", 500, -0.5, 499.5)
+        self.histogram("num_classifications", "Hit classifications", 500, -0.5, 499.5)
+        self.histogram("num_truth_hits", "Hits with canonical truth", 500, -0.5, 499.5)
+        self.histogram("sim_origin_id", "SimHit contribution origin ID", 10, -1.5, 8.5)
+        self.histogram("truth_classification:classification","Truth class",8,0.5,8.5,"Predicted class",8,0.5,8.5)
+        self.histogram("confidence:correct","Confidence",100,0.0,1.0,"Correct",2,-0.5,1.5)
+        self.histogram("hit_energy:correct","Reco hit energy [MeV]",200,0.0,2000.0,"Correct",2,-0.5,1.5)
+        self.histogram("layer:correct","ECal layer",40,-0.5,39.5,"Correct",2,-0.5,1.5)
+
+        # make sure to match these names with hardwired windows in the analyzer 
+        for weighting in ["sim_unweighted", "sim_weighted"]:
+            for window in ["all", "first1", "first20"]:
+                self._book_geometry(f"{weighting}_{window}")
+
+        self._book_geometry("scoring_plane")
+
+    #helper function to do same plots for weighted, unweighted, and different layer sums
+    def _book_geometry(self, name: str):
+        self.histogram(f"centroid_x_{name}", "Centroid x [mm]", 250, -500.0, 500.0)
+        self.histogram(f"centroid_y_{name}", "Centroid y [mm]", 250, -500.0, 500.0)
+        self.histogram(f"centroid_z_{name}", "Centroid z [mm]", 250, 0.0, 1000.0)
+        self.histogram(f"radial_width_{name}", "Transverse RMS width [mm]", 200, 0.0, 400.0)
+        self.histogram(f"min_separation_{name}", "Minimum transverse separation [mm]", 250, 0.0, 500.0)
+        self.histogram(f"mean_separation_{name}", "Mean transverse separation [mm]", 250, 0.0, 500.0)
+        self.histogram(f"min_separation_{name}:event_accuracy","Minimum transverse separation [mm]",
+            100,0.0,500.0, "Event accuracy",100,0.0,1.0)
+        
 
 ecal_dqm = [
     EcalDigiVerify(),

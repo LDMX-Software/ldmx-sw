@@ -68,8 +68,6 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
     std::copy(input_shape.begin(), input_shape.end(),
               input_node_dims_[input_name].begin());
 
-    // set the batch size to 1 by default
-    input_node_dims_[input_name].at(0) = 1;
   }
 
   size_t num_output_nodes = session_->GetOutputCount();
@@ -97,72 +95,190 @@ ONNXRuntime::ONNXRuntime(const std::string& model_path,
   }
 }
 
-FloatArrays ONNXRuntime::run(const std::vector<std::string>& input_names,
-                             FloatArrays& input_values,
-                             const std::vector<std::string>& output_names,
-                             int64_t batch_size) const {
-  assert(input_names.size() == input_values.size());
-  assert(batch_size > 0);
+FloatArrays ONNXRuntime::run(
+    const std::vector<std::string>& input_names,
+    FloatArrays& input_values,
+    const std::vector<std::string>& output_names,
+    int64_t batch_size) const {
+  if (input_names.size() != input_values.size()) {
+    throw std::runtime_error(
+        "The numbers of input names and input values do not match.");
+  }
 
-  // create input tensor objects from data values
+  if (batch_size <= 0) {
+    throw std::runtime_error("Batch size must be positive.");
+  }
+
+  ShapeArrays input_shapes;
+  input_shapes.reserve(input_names.size());
+
+  for (const auto& input_name : input_names) {
+    auto shape_iter = input_node_dims_.find(input_name);
+
+    if (shape_iter == input_node_dims_.end()) {
+      throw std::runtime_error("Input name '" + input_name + "' is invalid.");
+    }
+
+    auto shape = shape_iter->second;
+
+    if (shape.empty()) {
+      throw std::runtime_error("Input '" + input_name +
+                               "' has no tensor dimensions.");
+    }
+
+    shape.at(0) = batch_size;
+    input_shapes.emplace_back(std::move(shape));
+  }
+
+  return run(input_names, input_values, input_shapes, output_names);
+}
+
+FloatArrays ONNXRuntime::run(
+    const std::vector<std::string>& input_names,
+    FloatArrays& input_values,
+    const ShapeArrays& input_shapes,
+    const std::vector<std::string>& output_names) const {
+  if (input_names.size() != input_values.size()) {
+    throw std::runtime_error(
+        "The numbers of input names and input values do not match.");
+  }
+
+  if (input_names.size() != input_shapes.size()) {
+    throw std::runtime_error(
+        "The numbers of input names and input shapes do not match.");
+  }
+
   std::vector<Value> input_tensors;
+  input_tensors.reserve(input_node_strings_.size());
+
   auto memory_info =
       MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
-  for (const auto& name : input_node_strings_) {
-    auto iter = std::find(input_names.begin(), input_names.end(), name);
-    if (iter == input_names.end()) {
-      throw std::runtime_error("Input '" + name + "' is not provided!");
+
+  for (const auto& model_input_name : input_node_strings_) {
+    auto name_iter =
+        std::find(input_names.begin(), input_names.end(), model_input_name);
+
+    if (name_iter == input_names.end()) {
+      throw std::runtime_error("Input '" + model_input_name +
+                               "' is not provided.");
     }
-    auto value = input_values.begin() + (iter - input_names.begin());
-    auto input_dims = input_node_dims_.at(name);
-    if (input_dims.size() > 0) {
-      input_dims[0] = batch_size;
+
+    const auto input_index =
+        static_cast<std::size_t>(name_iter - input_names.begin());
+
+    auto& values = input_values.at(input_index);
+    const auto& shape = input_shapes.at(input_index);
+
+    if (shape.empty()) {
+      throw std::runtime_error("Input shape for '" + model_input_name +
+                               "' must not be empty.");
     }
-    auto expected_len = std::accumulate(input_dims.begin(), input_dims.end(), 1,
-                                        std::multiplies<int64_t>());
-    if (expected_len != (int64_t)value->size()) {
-      throw std::runtime_error("Input array '" + name +
-                               "' has a wrong size of " +
-                               std::to_string(value->size()) + ", expected " +
-                               std::to_string(expected_len));
+
+    int64_t expected_length{1};
+
+    for (const auto dimension : shape) {
+      if (dimension <= 0) {
+        throw std::runtime_error(
+            "Input shape for '" + model_input_name +
+            "' contains a non-positive dimension: " +
+            std::to_string(dimension));
+      }
+
+      expected_length *= dimension;
     }
-    auto input_tensor =
-        Value::CreateTensor<float>(memory_info, value->data(), value->size(),
-                                   input_dims.data(), input_dims.size());
-    assert(input_tensor.IsTensor());
+
+    if (expected_length != static_cast<int64_t>(values.size())) {
+      throw std::runtime_error(
+          "Input array '" + model_input_name + "' has size " +
+          std::to_string(values.size()) + ", but its supplied shape requires " +
+          std::to_string(expected_length) + " values.");
+    }
+
+    const auto& model_shape = input_node_dims_.at(model_input_name);
+
+    if (shape.size() != model_shape.size()) {
+      throw std::runtime_error(
+          "Input '" + model_input_name + "' was given rank " +
+          std::to_string(shape.size()) + ", but the model expects rank " +
+          std::to_string(model_shape.size()) + ".");
+    }
+
+    for (std::size_t dimension_index = 0;
+         dimension_index < shape.size();
+         ++dimension_index) {
+      const auto model_dimension = model_shape.at(dimension_index);
+      const auto supplied_dimension = shape.at(dimension_index);
+
+      // Negative model dimensions are dynamic and accept any positive value.
+      if (model_dimension > 0 && model_dimension != supplied_dimension) {
+        throw std::runtime_error(
+            "Input '" + model_input_name + "' dimension " +
+            std::to_string(dimension_index) + " was given as " +
+            std::to_string(supplied_dimension) + ", but the model expects " +
+            std::to_string(model_dimension) + ".");
+      }
+    }
+
+    auto input_tensor = Value::CreateTensor<float>(
+        memory_info,
+        values.data(),
+        values.size(),
+        shape.data(),
+        shape.size());
+
+    if (!input_tensor.IsTensor()) {
+      throw std::runtime_error("Failed to construct tensor for input '" +
+                               model_input_name + "'.");
+    }
+
     input_tensors.emplace_back(std::move(input_tensor));
   }
 
-  // set output node names; will get all outputs if `output_names` is not
-  // provided
   std::vector<const char*> run_output_node_names;
+
   if (output_names.empty()) {
     run_output_node_names = output_node_names_;
   } else {
-    for (const auto& name : output_names) {
-      run_output_node_names.push_back(name.c_str());
+    run_output_node_names.reserve(output_names.size());
+
+    for (const auto& output_name : output_names) {
+      if (output_node_dims_.find(output_name) == output_node_dims_.end()) {
+        throw std::runtime_error("Output name '" + output_name +
+                                 "' is invalid.");
+      }
+
+      run_output_node_names.push_back(output_name.c_str());
     }
   }
 
-  // run
-  auto output_tensors =
-      session_->Run(RunOptions{nullptr}, input_node_names_.data(),
-                    input_tensors.data(), input_tensors.size(),
-                    run_output_node_names.data(), run_output_node_names.size());
+  auto output_tensors = session_->Run(
+      RunOptions{nullptr},
+      input_node_names_.data(),
+      input_tensors.data(),
+      input_tensors.size(),
+      run_output_node_names.data(),
+      run_output_node_names.size());
 
-  // convert output to floats
   FloatArrays outputs;
+  outputs.reserve(output_tensors.size());
+
   for (auto& output_tensor : output_tensors) {
-    assert(output_tensor.IsTensor());
+    if (!output_tensor.IsTensor()) {
+      throw std::runtime_error(
+          "ONNX Runtime returned an output that is not a tensor.");
+    }
 
-    // get output shape
     auto tensor_info = output_tensor.GetTensorTypeAndShapeInfo();
-    auto length = tensor_info.GetElementCount();
+    const auto length = tensor_info.GetElementCount();
 
-    auto floatarr = output_tensor.GetTensorMutableData<float>();
-    outputs.emplace_back(floatarr, floatarr + length);
+    auto* values = output_tensor.GetTensorMutableData<float>();
+    outputs.emplace_back(values, values + length);
   }
-  assert(outputs.size() == run_output_node_names.size());
+
+  if (outputs.size() != run_output_node_names.size()) {
+    throw std::runtime_error(
+        "ONNX Runtime returned an unexpected number of outputs.");
+  }
 
   return outputs;
 }

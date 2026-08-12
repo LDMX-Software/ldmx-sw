@@ -18,7 +18,8 @@
 namespace ldmx {
 namespace ort {
 
-typedef std::vector<std::vector<float>> FloatArrays;
+using FloatArrays = std::vector<std::vector<float>>;
+using ShapeArrays = std::vector<std::vector<int64_t>>;
 
 /**
  * @class ONNXRuntime
@@ -55,7 +56,20 @@ class ONNXRuntime {
                   FloatArrays& input_values,
                   const std::vector<std::string>& output_names = {},
                   int64_t batch_size = 1) const;
-
+  /**
+   * Run model inference using explicit runtime shapes.
+   *
+   * @param input_names Names of the input nodes.
+   * @param input_values Flattened input arrays, one per input node.
+   * @param input_shapes Runtime tensor shapes, one per input node. The order
+   * must match input_names and input_values.
+   * @param output_names Names of output nodes to retrieve. An empty list
+   * retrieves all outputs.
+   */
+  FloatArrays run(const std::vector<std::string>& input_names,
+                  FloatArrays& input_values,
+                  const ShapeArrays& input_shapes,
+                  const std::vector<std::string>& output_names = {}) const;
   /**
    * Get the names of all the output nodes.
    * @return A list of names of all the output nodes.
