@@ -47,7 +47,7 @@ struct CentroidAccumulator {
     return std::sqrt(std::max(0.0, r2_xy / weight - cx * cx - cy * cy));
   }
 
-  // a generalization of width, probably not actually useful 
+  // a generalization of width to 3D, probably not actually useful 
   double spatialWidth() const {
     double cx = centroidX();
     double cy = centroidY();
@@ -118,7 +118,7 @@ void EcalHitOriginClassifierResults::analyze(const framework::Event& event) {
           classification_collection_, classification_pass_name_);
   const auto& sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
       sim_hit_collection_, sim_hit_pass_name_);
-  const auto& scoring_hits = event.getCollection<ldmx::SimTrackerHit>(
+  const auto& sp_hits = event.getCollection<ldmx::SimTrackerHit>(
       scoring_plane_collection_, scoring_plane_pass_name_);
 
   std::unordered_map<int, const ldmx::EcalHit*> hit_by_id;
@@ -173,8 +173,8 @@ void EcalHitOriginClassifierResults::analyze(const framework::Event& event) {
   if (has_accuracy) {
     histograms_.fill("event_accuracy", event_accuracy);
     // since accuracy is yes/no, energy weighted accuracy reduces to
-    // correct energy fraction
-    histograms_.fill("event_energy_weighted_accuracy",
+    // correct energy fraction of total event energy 
+    histograms_.fill("energy_weighted_accuracy",
                      correct_energy / total_energy);
   }
 
@@ -187,7 +187,7 @@ void EcalHitOriginClassifierResults::analyze(const framework::Event& event) {
   for (const auto& sim_hit : sim_hits) {
     std::map<int, double> energy_by_origin;
     for (unsigned int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
-      const auto contribution = sim_hit.getContrib(static_cast<int>(i));
+      const auto contribution = sim_hit.getContrib(i);
       energy_by_origin[contribution.origin_id_] += contribution.edep_;
       histograms_.fill("sim_origin_id", contribution.origin_id_);
     }
@@ -233,15 +233,15 @@ void EcalHitOriginClassifierResults::analyze(const framework::Event& event) {
                   std::string{"sim_weighted_"} + layer_names[window]);
   }
 
-  std::map<int, CentroidAccumulator> scoring_plane;
-  for (const auto& hit : scoring_hits) {
+  std::map<int, CentroidAccumulator> sp_electrons;
+  for (const auto& hit : sp_hits) {
     //only keep forward-going, electron, Ecal face scoring plane hits
     if (hit.getPdgID() != 11 || hit.getMomentum()[2] <= 0 || fabs(hit.getPosition()[2] - 240) > 0.1 ) continue;
     const int or_id = originIDFromTrackID(hit.getTrackID());
     const auto pos = hit.getPosition();
-    scoring_plane[or_id].add(pos[0], pos[1], pos[2], 1.0);
+    sp_electrons[or_id].add(pos[0], pos[1], pos[2], 1.0);
   }
-  fill_geometry(scoring_plane, "scoring_plane");
+  fill_geometry(sp_electrons, "sp_electrons");
 
   /* TODO
      somewhere here, add looking at accuracy vs angle of incidence, calculated from the SP momentum.

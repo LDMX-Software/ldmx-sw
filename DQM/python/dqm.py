@@ -2537,7 +2537,7 @@ class EcalHitOriginClassifierResults(Processor):
         self.histogram("truth_fraction", "Dominant-origin energy fraction", 100, 0.0, 1.0)
         self.histogram("correct", "Correct classification", 2, -0.5, 1.5)
         self.histogram("event_accuracy", "Per-event hit accuracy", 100, 0.0, 1.0)
-        self.histogram("event_energy_weighted_accuracy","Per-event energy-weighted hit accuracy",100,0.0,1.0)
+        self.histogram("energy_weighted_accuracy","Per-event energy-weighted hit accuracy",100,0.0,1.0)
         self.histogram("num_hits", "ECal reconstructed hits", 500, -0.5, 499.5)
         self.histogram("num_correct_hits", "Number of correctly classified hits", 500, -0.5, 499.5)
         self.histogram("num_classifications", "Hit classifications", 500, -0.5, 499.5)
@@ -2548,14 +2548,16 @@ class EcalHitOriginClassifierResults(Processor):
         self.histogram("hit_energy:correct","Reco hit energy [MeV]",200,0.0,2000.0,"Correct",2,-0.5,1.5)
         self.histogram("layer:correct","ECal layer",40,-0.5,39.5,"Correct",2,-0.5,1.5)
 
-        # make sure to match these names with hardwired windows in the analyzer 
+        # make sure to match these names with hardwired windows in the analyzer
+        # this might be overkill; reduce or remove once useful windows have been established 
         for weighting in ["sim_unweighted", "sim_weighted"]:
             for window in ["all", "first1", "first20"]:
                 self._book_geometry(f"{weighting}_{window}")
 
-        self._book_geometry("scoring_plane")
+        self._book_geometry("sp_electrons")
 
-    #helper function to do same plots for weighted, unweighted, and different layer sums
+    
+    # helper function to do same plots for weighted, unweighted, and different layer sums
     def _book_geometry(self, name: str):
         self.histogram(f"centroid_x_{name}", "Centroid x [mm]", 250, -500.0, 500.0)
         self.histogram(f"centroid_y_{name}", "Centroid y [mm]", 250, -500.0, 500.0)
