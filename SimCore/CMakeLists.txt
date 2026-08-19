@@ -85,7 +85,8 @@ setup_library(module SimCore
               name Generators
               dependencies SimCore::LHE
                            SimCore::G4User
-			   SimCore::Event
+                           DetDescr::DetDescr
+			                     SimCore::Event
                            ${GENIE_LIBS}
                            HepMC3)
 			   

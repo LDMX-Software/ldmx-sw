@@ -65,6 +65,11 @@ class SimulatorBase : public framework::Producer {
 
   std::vector<std::string> postInitCommands_;
 
+  /**
+   * prepare a new event before entering into the Geant4 simulation
+   */
+  virtual void prepEvent(framework::Event& event);
+
   /*
    *
    * On succesful event, update event header properties like total PN/EN energy

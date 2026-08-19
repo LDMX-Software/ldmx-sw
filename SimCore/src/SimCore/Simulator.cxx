@@ -103,6 +103,7 @@ void Simulator::produce(framework::Event& event) {
   // is then extracted and saved to the event header.
   std::ostringstream stream;
   G4Random::saveFullState(stream);
+  SimulatorBase::prepEvent(event);
   runManager_->ProcessOneEvent(event.getEventHeader().getEventNumber());
 
   // If a Geant4 event has been aborted, skip the rest of the processing
