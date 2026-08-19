@@ -1,6 +1,7 @@
 #include "SimCore/SimulatorBase.h"
 
 #include "SimCore/G4User/PhotonuclearTracker.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
 
 namespace simcore {
 
@@ -16,6 +17,12 @@ SimulatorBase::SimulatorBase(const std::string& name,
                              framework::Process& process)
     : framework::Producer(name, process), conditions_intf_(this) {
   ui_manager_ = G4UImanager::GetUIpointer();
+}
+void SimulatorBase::prepEvent(framework::Event& event) {
+  /// right now, we just make sure the PrimaryVertices are all prepared
+  PrimaryGenerator::Factory::get().apply([&event](auto gen) {
+      gen->PrepEvent(event);
+  });
 }
 void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
   auto event_info = static_cast<UserEventInformation*>(

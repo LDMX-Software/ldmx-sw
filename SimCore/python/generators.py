@@ -223,6 +223,33 @@ class Genie(PrimaryGenerator):
     message_threshold_file: str = "/usr/local/GENIE/Generator/config/Messenger.xml"
 
 
+@primary_generator("simcore::generators::FromScoringPlane")
+class FromScoringPlane(PrimaryGenerator):
+    """use scoring plane hit information to create primaries
+
+    Attributes
+    ----------
+    coll_name : str, default "EcalScoringPlaneHits"
+        name of scoring plane hit collection within the input file
+    pass_name : str, default ""
+        pass name  of scoring plane hit collection to use within the input file
+        only necessary if there is more than one scoring plane hit collection
+        with the same name
+    select_planes : list[int], default []
+        list plane ID numbers to select
+        The "plane" is derived from the "copynumber" written into the scoring plane GDML,
+        but it is probably easiest to just run this generator on a few events with logging
+        set to trace and see a few plane numbers.
+        If an empty list is used, then we use all hits regardless of plane ID number.
+        '31' is the front plane (lowest-z in xy plane) of the Ecal scoring planes
+        and '41' is the front plane of the Hcal scoring planes.
+    """
+
+    coll_name: str = 'EcalScoringPlaneHits'
+    pass_name: str = ''
+    select_planes: list[int] = []
+
+
 def _single_e_upstream_tagger(position, momentum, energy):
     """Internal helper function for creating electron beam guns upstream of tagger
 
