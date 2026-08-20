@@ -237,9 +237,9 @@ class FromScoringPlane(PrimaryGenerator):
         with the same name
     select_planes : list[int], default []
         list plane ID numbers to select
-        The "plane" is derived from the "copynumber" written into the scoring plane GDML,
-        but it is probably easiest to just run this generator on a few events with logging
-        set to trace and see a few plane numbers.
+        The "plane" is derived from the "copynumber" written into the scoring plane
+        GDML, but it is probably easiest to just run this generator on a few events
+        with logging set to trace and see a few plane numbers.
         If an empty list is used, then we use all hits regardless of plane ID number.
         '31' is the front plane (lowest-z in xy plane) of the Ecal scoring planes
         and '41' is the front plane of the Hcal scoring planes.
