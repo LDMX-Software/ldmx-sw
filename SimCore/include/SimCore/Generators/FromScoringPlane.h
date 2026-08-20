@@ -15,6 +15,8 @@
 #include "SimCore/G4User/UserPrimaryParticleInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 
+#include "G4PrimaryVertex.hh"
+
 class G4Event;
 
 namespace simcore {

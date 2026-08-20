@@ -263,8 +263,8 @@ class genie(simcfg.PrimaryGenerator) :
         self.spline_file = spline_file
         self.message_threshold_file = message_threshold_file
 
-@primary_generator("simcore::generators::FromScoringPlane")
-class FromScoringPlane(PrimaryGenerator):
+
+class FromScoringPlane(simcfg.PrimaryGenerator):
     """use scoring plane hit information to create primaries
 
     Attributes
@@ -285,9 +285,11 @@ class FromScoringPlane(PrimaryGenerator):
         and '41' is the front plane of the Hcal scoring planes.
     """
 
-    coll_name: str = 'EcalScoringPlaneHits'
-    pass_name: str = ''
-    select_planes: list[int] = []
+    def __init__(self, coll_name = "EcalScoringPlaneHits", pass_name = "", select_planes = []):
+        super().__init__("from_scoring_plane", "simcore::generators::FromScoringPlane")
+        self.coll_name = coll_name
+        self.pass_name = pass_name
+        self.select_planes = select_planes
 
 
 def _single_e_upstream_tagger(position, momentum, energy):
