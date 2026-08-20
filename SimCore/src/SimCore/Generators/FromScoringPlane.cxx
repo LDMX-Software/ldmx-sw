@@ -18,7 +18,7 @@ FromScoringPlane::FromScoringPlane(
       select_planes_{parameters.get<std::vector<int>>("select_planes")} {}
 
 void FromScoringPlane::prepEvent(const framework::Event& event) {
-  ldmx_log(info) << "preparing event";
+  ldmx_log(debug) << "preparing event";
   const auto& scoring_plane_hits{
       event.getCollection<ldmx::SimTrackerHit>(coll_name_, pass_name_)};
   std::unordered_map<int, std::vector<const ldmx::SimTrackerHit*>>
@@ -29,7 +29,7 @@ void FromScoringPlane::prepEvent(const framework::Event& event) {
               std::find(select_planes_.begin(), select_planes_.end(),
                         id.plane()) != select_planes_.end()};
     // do filtering by layer here
-    ldmx_log(debug) << "hit with plane = " << id.plane() << " is "
+    ldmx_log(trace) << "hit with plane = " << id.plane() << " is "
                     << (keep ? "used" : "ignored");
     if (keep) {
       // sort hits that we are keeping by track ID
@@ -73,7 +73,7 @@ void FromScoringPlane::prepEvent(const framework::Event& event) {
 }
 
 void FromScoringPlane::GeneratePrimaryVertex(G4Event* anEvent) {
-  ldmx_log(info) << "generating primary vertex";
+  ldmx_log(debug) << "generating primary vertex";
   for (auto* primary_vertex : primary_vertices_) {
     anEvent->AddPrimaryVertex(primary_vertex);
   }
