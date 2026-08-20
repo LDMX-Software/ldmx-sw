@@ -1,10 +1,11 @@
 #include "SimCore/Generators/FromScoringPlane.h"
 
-#include "SimCore/Event/SimTrackerHit.h"
-#include "DetDescr/SimSpecialID.h"
 #include <unordered_map>
+
+#include "DetDescr/SimSpecialID.h"
 #include "G4Event.hh"
 #include "G4PrimaryParticle.hh"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace simcore {
 namespace generators {
@@ -14,22 +15,22 @@ FromScoringPlane::FromScoringPlane(
     : PrimaryGenerator(name, parameters),
       coll_name_{parameters.get<std::string>("coll_name")},
       pass_name_{parameters.get<std::string>("pass_name")},
-      select_planes_{parameters.get<std::vector<int>>("select_planes")}
-      {}
+      select_planes_{parameters.get<std::vector<int>>("select_planes")} {}
 
-void FromScoringPlane::PrepEvent(const framework::Event& event) {
+void FromScoringPlane::prepEvent(const framework::Event& event) {
   ldmx_log(info) << "preparing event";
-  const auto& scoring_plane_hits{event.getCollection<ldmx::SimTrackerHit>(coll_name_, pass_name_)};
-  std::unordered_map<int, std::vector<const ldmx::SimTrackerHit*>> hits_by_track_id;
+  const auto& scoring_plane_hits{
+      event.getCollection<ldmx::SimTrackerHit>(coll_name_, pass_name_)};
+  std::unordered_map<int, std::vector<const ldmx::SimTrackerHit*>>
+      hits_by_track_id;
   for (const auto& hit : scoring_plane_hits) {
     ldmx::SimSpecialID id(hit.getID());
-    bool keep{
-      select_planes_.empty() or
-      std::find(select_planes_.begin(), select_planes_.end(), id.plane()) != select_planes_.end()
-    };
+    bool keep{select_planes_.empty() or
+              std::find(select_planes_.begin(), select_planes_.end(),
+                        id.plane()) != select_planes_.end()};
     // do filtering by layer here
-    ldmx_log(debug) << "hit with plane = " << id.plane()
-                    << " is " << (keep ? "used" : "ignored");
+    ldmx_log(debug) << "hit with plane = " << id.plane() << " is "
+                    << (keep ? "used" : "ignored");
     if (keep) {
       // sort hits that we are keeping by track ID
       hits_by_track_id[hit.getTrackID()].push_back(&hit);
@@ -40,10 +41,9 @@ void FromScoringPlane::PrepEvent(const framework::Event& event) {
   primary_vertices_.clear();
   for (auto& [track_id, hits] : hits_by_track_id) {
     auto earliest_hit_it = std::min_element(
-        hits.begin(), hits.end(),
-        [](const auto& hit_lhs, const auto& hit_rhs) {
+        hits.begin(), hits.end(), [](const auto& hit_lhs, const auto& hit_rhs) {
           return hit_lhs->getTime() < hit_rhs->getTime();
-    });
+        });
     const auto* earliest_hit = (*earliest_hit_it);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle;
@@ -80,9 +80,8 @@ void FromScoringPlane::GeneratePrimaryVertex(G4Event* anEvent) {
 }
 
 void FromScoringPlane::RecordConfig(const std::string& id,
-                                       ldmx::RunHeader& rh) {
-  rh.setStringParameter(id + " Class",
-                        "simcore::generators::FromScoringPlane");
+                                    ldmx::RunHeader& rh) {
+  rh.setStringParameter(id + " Class", "simcore::generators::FromScoringPlane");
   rh.setStringParameter(id + " Coll Name", coll_name_);
   rh.setStringParameter(id + " Pass Name", pass_name_);
 }

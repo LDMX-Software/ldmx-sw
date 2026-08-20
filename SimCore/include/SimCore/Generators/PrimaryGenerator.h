@@ -20,9 +20,9 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
 #include "Framework/Factory.h"
 #include "Framework/RunHeader.h"
-#include "Framework/Event.h"
 
 // Forward Declarations
 class G4Event;
@@ -63,12 +63,12 @@ class PrimaryGenerator : public G4VPrimaryGenerator {
    * to use some information from the EventHeader to help guide generation
    * of primary vertices.
    *
-   * @param[in] event a const reference to the event that is about to be generated
-   * It is const because objects should only be added to the event by the
-   * Simulator (or ReSimulator) after an event is confirmed to not have been
+   * @param[in] event a const reference to the event that is about to be
+   * generated It is const because objects should only be added to the event by
+   * the Simulator (or ReSimulator) after an event is confirmed to not have been
    * aborted during the simulation.
    */
-  virtual void PrepEvent(const framework::Event& event) {}
+  virtual void prepEvent(const framework::Event& event) {}
 
   /**
    * Generate a Primary Vertex

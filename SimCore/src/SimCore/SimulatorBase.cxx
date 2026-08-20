@@ -20,9 +20,8 @@ SimulatorBase::SimulatorBase(const std::string& name,
 }
 void SimulatorBase::prepEvent(framework::Event& event) {
   /// right now, we just make sure the PrimaryVertices are all prepared
-  PrimaryGenerator::Factory::get().apply([&event](auto gen) {
-      gen->PrepEvent(event);
-  });
+  PrimaryGenerator::Factory::get().apply(
+      [&event](auto gen) { gen->prepEvent(event); });
 }
 void SimulatorBase::updateEventHeader(ldmx::EventHeader& eventHeader) const {
   auto event_info = static_cast<UserEventInformation*>(

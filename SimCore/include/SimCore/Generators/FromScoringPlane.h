@@ -51,7 +51,7 @@ class FromScoringPlane : public simcore::PrimaryGenerator {
    *
    * @param[in] event framework::Event containing necessary scoring plane hits
    */
-  void PrepEvent(const framework::Event& event) override;
+  void prepEvent(const framework::Event& event) override;
 
   /**
    * Generate vertices in the Geant4 event.
