@@ -245,8 +245,8 @@ class FromScoringPlane(PrimaryGenerator):
         and '41' is the front plane of the Hcal scoring planes.
     """
 
-    coll_name: str = 'EcalScoringPlaneHits'
-    pass_name: str = ''
+    coll_name: str = "EcalScoringPlaneHits"
+    pass_name: str = ""
     select_planes: list[int] = []
 
 
