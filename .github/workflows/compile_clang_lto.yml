@@ -4,7 +4,9 @@ name: Build with CLANG using LTO sanitizer
 on:
   workflow_dispatch:
   push:
-    branches: '**' #all branches
+    branches:
+      - '**' #all branches
+      - '!**backports/**' # except backports to old versions
     tags: 'v*.*.*' #all version tags
 
 env:

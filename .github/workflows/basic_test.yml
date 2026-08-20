@@ -3,7 +3,9 @@ name: Basic Tests
 
 on:
   push:
-    branches: '**' #all branches
+    branches:
+      - '**' #all branches
+      - '!**backports/**' # except backports for old versions
     tags: 'v*.*.*' #all version tags
 
 env:
