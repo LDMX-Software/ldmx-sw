@@ -17,7 +17,5 @@ sim.set_detector("ldmx-det-v15-8gev")
 
 from LDMX.SimCore.generators import FromScoringPlane
 
-sim.generators = [
-    FromScoringPlane(coll_name="HcalScoringPlaneHits", select_planes=[41])
-]
+sim.generators = [FromScoringPlane.hcal()]
 p.sequence = [sim]

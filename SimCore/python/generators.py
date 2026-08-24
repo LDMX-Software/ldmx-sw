@@ -247,7 +247,43 @@ class FromScoringPlane(PrimaryGenerator):
 
     coll_name: str = "EcalScoringPlaneHits"
     pass_name: str = ""
-    select_planes: list[int] = []
+    select_planes: list[int] = [31]
+
+    @staticmethod
+    def ecal(pass_name=""):
+        """use the front EcalScoringPlaneHits as primary particles
+
+        The "front" ecal scoring plane is the one in the x-y plane that has
+        the lowest z coordinate (~240mm in v15) which has a plane ID of 31.
+
+        Parameters
+        ----------
+        pass_name : str, default ""
+            pass name of the ecal scoring plane collection to use from within
+            the input file
+        """
+
+        return FromScoringPlane(
+            coll_name="EcalScoringPlaneHits", pass_name=pass_name, select_planes=[31]
+        )
+
+    @staticmethod
+    def hcal(pass_name=""):
+        """use the front HcalScoringPlaneHits as primary particles
+
+        The "front" hcal scoring plane is the one in the x-y plane that
+        has the lowest z coordinate which has a plane ID of 41.
+
+        Parameters
+        ----------
+        pass_name : str, default ""
+            pass name of the ecal scoring plane collection to use from within
+            the input file
+        """
+
+        return FromScoringPlane(
+            coll_name="HcalScoringPlaneHits", pass_name=pass_name, select_planes=[41]
+        )
 
 
 def _single_e_upstream_tagger(position, momentum, energy):
