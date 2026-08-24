@@ -101,9 +101,9 @@
   <userinfo>
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="15">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v15-8gev"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v15-8gev-no-cals"/>
       <auxiliary auxtype="Description" 
-                 auxvalue="The Late 2022 Design Report Geometry with air instead of vacuum."/>
+                 auxvalue="The Late 2022 Design Report Geometry with air instead of vacuum without calorimeters."/>
     </auxiliary>
     
     <!-- magnetic field with global field map definition -->     
