@@ -59,8 +59,7 @@ void FromScoringPlane::prepEvent(const framework::Event& event) {
     UserPrimaryParticleInformation* uppi = new UserPrimaryParticleInformation;
     uppi->setHepEvtStatus(1);
     particle->SetUserInformation(uppi);
-    // can I copy in the old track_id?
-    // particle->SetTrackId(track_id);
+    particle->SetTrackId(track_id);
 
     auto pos{earliest_hit->getPosition()};
     G4PrimaryVertex* vertex = new G4PrimaryVertex;
