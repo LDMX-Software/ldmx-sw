@@ -45,7 +45,7 @@ jobs:
         git switch -c sunday-clang-tidy
         git add .
         git commit -m "apply clang-format and clang-tidy over all files" || exit 0
-        git push -fu origin sunday-clang-tidy
+        git push -u origin sunday-clang-tidy
         gh pr create \
           --base main \
           --head sunday-clang-tidy \
