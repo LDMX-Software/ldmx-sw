@@ -8,7 +8,7 @@ p.output_files = ["stage-one-no-cal.root"]
 from LDMX.SimCore import simulator, generators, sensitive_detectors
 
 sim = simulator.Simulator("simtrk")
-sim.set_detector("ldmx-det-v14-8gev-no-cals", True)
+sim.set_detector("ldmx-det-v15-8gev-no-cals", True)
 sim.generators = [generators.single_8gev_e_upstream_tagger()]
 sim.description = "single electron 8gev beam, no calorimeters, no biasing or filtering"
 sim.sensitive_detectors = [
@@ -26,5 +26,5 @@ sim.sensitive_detectors = [
 
 from LDMX.Tracking.full_tracking_sequence import full_tracking_sequence
 
-trk_seq = full_tracking_sequence(detector="ldmx-det-v14-8gev")
+trk_seq = full_tracking_sequence(detector="ldmx-det-v15-8gev")
 p.sequence = [sim, *trk_seq.sequence]

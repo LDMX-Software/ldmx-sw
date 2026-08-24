@@ -13,7 +13,7 @@ import LDMX.Hcal.hcal_geometry
 from LDMX.SimCore import simulator
 
 sim = simulator.Simulator(instance_name="scoring-plane-sim")
-sim.set_detector("ldmx-det-v14-8gev")
+sim.set_detector("ldmx-det-v15-8gev")
 
 from LDMX.SimCore.generators import FromScoringPlane
 
