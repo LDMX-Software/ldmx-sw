@@ -59,7 +59,11 @@ void FromScoringPlane::prepEvent(const framework::Event& event) {
     UserPrimaryParticleInformation* uppi = new UserPrimaryParticleInformation;
     uppi->setHepEvtStatus(1);
     particle->SetUserInformation(uppi);
-    particle->SetTrackId(track_id);
+    // NOT copying over the TrackID into the primary because
+    // (as of Geant4.10.2.3) the track IDs of particles created
+    // in this simulation do not start at the primary's number and
+    // count up which is what I would want to make this understandable
+    // particle->SetTrackID(track_id);
 
     auto pos{earliest_hit->getPosition()};
     G4PrimaryVertex* vertex = new G4PrimaryVertex;
