@@ -40,4 +40,16 @@ jobs:
       run: |
         just format-cpp-all
         just tidy-cpp-all
-        git diff --exit-code
+        git config --global user.name clang-tidy-bot
+        git config --global user.email clang-tidy-bot@users.noreply.github.com
+        git switch -c sunday-clang-tidy
+        git add .
+        git commit -m "apply clang-format and clang-tidy over all files" || exit 0
+        git push -fu origin sunday-clang-tidy
+        gh pr create \
+          --base main \
+          --head sunday-clang-tidy \
+          --title "apply clang-tidy over all files" \
+          --body "PR created by weekly clang-tidy, it is now free to be modified/closed/merged."
+      env:
+        GH_TOKEN: ${{ github.token }}
