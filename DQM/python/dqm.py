@@ -2369,12 +2369,16 @@ class EcalTrackAnalyzer(Processor):
         self.histogram(
             "track_p_multitracks",
             "Track p (multi-track events) [MeV]",
-            100, 0, 5000,
+            100,
+            0,
+            5000,
         )
         self.histogram(
             "track_separation",
             "Track angular separation [rad]",
-            100, 0, 3.2,
+            100,
+            0,
+            3.2,
         )
         self.histogram(
             "track_xy",
@@ -2498,20 +2502,48 @@ class EcalSPTrackCompare(Processor):
 
         # 2D correlations
         self.histogram(
-            "sp_x_vs_trk_x", "SP x [mm]", 100, -200, 200,
-            "Track x [mm]", 100, -200, 200,
+            "sp_x_vs_trk_x",
+            "SP x [mm]",
+            100,
+            -200,
+            200,
+            "Track x [mm]",
+            100,
+            -200,
+            200,
         )
         self.histogram(
-            "sp_y_vs_trk_y", "SP y [mm]", 100, -200, 200,
-            "Track y [mm]", 100, -200, 200,
+            "sp_y_vs_trk_y",
+            "SP y [mm]",
+            100,
+            -200,
+            200,
+            "Track y [mm]",
+            100,
+            -200,
+            200,
         )
         self.histogram(
-            "sp_p_vs_trk_p", "SP p [MeV]", 100, 0, 5000,
-            "Track p [MeV]", 100, 0, 5000,
+            "sp_p_vs_trk_p",
+            "SP p [MeV]",
+            100,
+            0,
+            5000,
+            "Track p [MeV]",
+            100,
+            0,
+            5000,
         )
         self.histogram(
-            "sp_theta_vs_trk_theta", "SP theta [rad]", 100, 0, 0.5,
-            "Track theta [rad]", 100, 0, 0.5,
+            "sp_theta_vs_trk_theta",
+            "SP theta [rad]",
+            100,
+            0,
+            0.5,
+            "Track theta [rad]",
+            100,
+            0,
+            0.5,
         )
 
 

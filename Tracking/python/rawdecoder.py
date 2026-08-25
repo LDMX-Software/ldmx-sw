@@ -1,5 +1,9 @@
-from LDMX.Framework import Processor, processor
-from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
+from LDMX.Framework import (
+    ConditionsObjectProvider,
+    Processor,
+    conditions_object_provider,
+    processor,
+)
 
 
 @processor("tracking::reco::RawTrackerDecoder", "Tracking")

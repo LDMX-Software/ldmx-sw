@@ -41,9 +41,7 @@ import LDMX.Ecal.vetos as ecal_vetos
 import LDMX.Tracking.geo
 
 
-ecal_veto = ecal_vetos.EcalVetoProcessor(
-    recoil_from_tracking = False
-)
+ecal_veto = ecal_vetos.EcalVetoProcessor(recoil_from_tracking=False)
 ecal_tracking = ecal_vetos.EcalTrackFinderProcessor()
 
 import LDMX.Hcal.digi as hcal_digi
@@ -82,7 +80,7 @@ trigger = TriggerProcessor(beam_energy=8000.0, instance_name="trigger")
 trigger.thresholds = [3160.0]
 
 p.logger.term_level = 2
-p.logger.custom(dqm.DarkBremInteraction(), level = 0)
+p.logger.custom(dqm.DarkBremInteraction(), level=0)
 
 p.sequence.extend(
     [

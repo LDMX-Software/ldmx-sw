@@ -22,8 +22,9 @@ we assume the following about it.
 - it should get its run number and number of events from the environment variables
 ```python
 import os
-p.run = int(os.environ['LDMX_RUN_NUMBER'])
-p.maxEvents = int(os.environ['LDMX_NUM_EVENTS'])
+
+p.run = int(os.environ["LDMX_RUN_NUMBER"])
+p.maxEvents = int(os.environ["LDMX_NUM_EVENTS"])
 ```
 This just makes passing this information to the configuration easier when using GitHub workflows.
 

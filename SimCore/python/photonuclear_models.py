@@ -191,9 +191,7 @@ class NoPhotoNuclearModel(PhotoNuclearModel):
     pass
 
 
-@photo_nuclear_model(
-    "simcore::bertini::BertiniWithHistoryModel", "SimCore_Bertini"
-)
+@photo_nuclear_model("simcore::bertini::BertiniWithHistoryModel", "SimCore_Bertini")
 class BertiniWithHistoryModel(PhotoNuclearModel):
     """Bertini cascade with internal history recording.
 

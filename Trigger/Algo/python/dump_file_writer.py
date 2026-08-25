@@ -1,4 +1,3 @@
-
 from LDMX.Framework import Processor, processor
 
 

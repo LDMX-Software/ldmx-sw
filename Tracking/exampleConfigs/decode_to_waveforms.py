@@ -32,7 +32,7 @@ import argparse
 import sys
 
 # just fire passes '--' through to the script; strip it so argparse sees only flags.
-sys.argv = [a for a in sys.argv if a != '--']
+sys.argv = [a for a in sys.argv if a != "--"]
 
 parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
 parser.add_argument(
@@ -68,16 +68,33 @@ parser.add_argument(
     help="Drop the waveform builder to the trace logging level, printing the "
     "per-channel fit results and full ASCII waveform traces",
 )
-parser.add_argument("--high-threshold", type=float, default=5.0,
-                    help="Per-sample significance (ADC/noise) for the high-threshold count cut")
-parser.add_argument("--min-high-samples", type=int, default=4,
-                    help="Min samples that must exceed high_threshold")
-parser.add_argument("--low-threshold", type=float, default=3.0,
-                    help="Per-sample significance (ADC/noise) for the consecutive-streak cut")
-parser.add_argument("--min-consecutive-low", type=int, default=5,
-                    help="Min consecutive samples that must exceed low_threshold")
-parser.add_argument("--n-triggers", type=int, default=10,
-                    help="Expected number of APV triggers per RoR")
+parser.add_argument(
+    "--high-threshold",
+    type=float,
+    default=5.0,
+    help="Per-sample significance (ADC/noise) for the high-threshold count cut",
+)
+parser.add_argument(
+    "--min-high-samples",
+    type=int,
+    default=4,
+    help="Min samples that must exceed high_threshold",
+)
+parser.add_argument(
+    "--low-threshold",
+    type=float,
+    default=3.0,
+    help="Per-sample significance (ADC/noise) for the consecutive-streak cut",
+)
+parser.add_argument(
+    "--min-consecutive-low",
+    type=int,
+    default=5,
+    help="Min consecutive samples that must exceed low_threshold",
+)
+parser.add_argument(
+    "--n-triggers", type=int, default=10, help="Expected number of APV triggers per RoR"
+)
 arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
@@ -107,18 +124,18 @@ peds = rawdecoder.TrackerPedestalProvider(pedestal_file=arg.pedestal_file)
 
 # Stage 3: subtract pedestals -> subtracted RawSiStripHit collection.
 subtractor = rawdecoder.PedestalSubtractor()
-subtractor.input_collection  = decoder.output_collection
+subtractor.input_collection = decoder.output_collection
 subtractor.output_collection = "TrackerHits"
 
 # Stage 4: assemble per-channel waveforms -> SiStripWaveform collection.
 builder = rawdecoder.SiStripWaveformBuilder()
-builder.input_collection     = subtractor.output_collection
-builder.output_collection    = "TrackerWaveforms"
-builder.high_threshold       = arg.high_threshold
-builder.min_high_samples     = arg.min_high_samples
-builder.low_threshold        = arg.low_threshold
-builder.min_consecutive_low  = arg.min_consecutive_low
-builder.n_triggers           = arg.n_triggers
+builder.input_collection = subtractor.output_collection
+builder.output_collection = "TrackerWaveforms"
+builder.high_threshold = arg.high_threshold
+builder.min_high_samples = arg.min_high_samples
+builder.low_threshold = arg.low_threshold
+builder.min_consecutive_low = arg.min_consecutive_low
+builder.n_triggers = arg.n_triggers
 
 if arg.verbose_waveforms:
     p.logger.trace(builder)
