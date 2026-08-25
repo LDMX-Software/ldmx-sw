@@ -392,6 +392,8 @@ class TrigScintTrackProducer(Processor):
     input_pass_name: str = ""
     output_collection: str = "TriggerPadTracks"
     verbosity: int = 0
+    lut_tracking: bool = False
+    lut_file: str = "LUT.txt"
 
 
 trig_scint_track = TrigScintTrackProducer(instance_name="trig_scint_track")

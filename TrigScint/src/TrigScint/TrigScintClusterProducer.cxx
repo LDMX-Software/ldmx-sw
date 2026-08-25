@@ -404,9 +404,9 @@ void TrigScintClusterProducer::produce(framework::Event& event) {
       }  // if adding another hit, going forward, was allowed
 
       // done adding hits to cluster. calculate centroid
-      centroid_ /=
-          sumw_;  // final weighting step: divide by total amplitude sum
 
+      centroid_ /=
+          sumw_;       // final weighting step: divide by total amplitude sum
       centroid_ -= 1;  // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;

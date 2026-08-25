@@ -39,7 +39,9 @@
 #include "TLorentzVector.h"
 
 // Propagator with void navigator
-using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
+#include "Acts/Propagator/VoidNavigator.hpp"
+using VoidPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -77,7 +79,6 @@ class VertexProcessor : public framework::Producer {
 
  private:
   /// The contexts - TODO: they should move to some global location, I guess
-  Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
 
   // Event counter

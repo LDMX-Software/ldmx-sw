@@ -20,6 +20,16 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
   Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg = buildVolumeConfig(
       recoil_, recoil_layout_, tracker_y_length, tracker_z_length, "Recoil");
 
+  // Extend the recoil volume upstream so the low-x (ACTS) edge is at -1mm,
+  // placing the target (x=0) clearly inside the volume for the CKF Navigator.
+  {
+    double downstream_x =
+        recoil_volume_cfg.position[0] + recoil_volume_cfg.length[0] / 2.0;
+    constexpr double low_x = -1.0;  // mm
+    recoil_volume_cfg.length[0] = downstream_x - low_x;
+    recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
+  }
+
   std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> vol_builder_configs{
       tagger_volume_cfg, recoil_volume_cfg};
 
@@ -366,7 +376,7 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurfacePtr(
   // After this call each surface will use the underlying detectorElement
   // transformation which will take care of effectively reading the gctx
 
-  surface->assignDetectorElement(std::move(*det_element));
+  surface->assignSurfacePlacement(*det_element);
   det_elements_.push_back(det_element);
 
   return surface;
@@ -408,7 +418,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
   sub_det_volume_config.name = volumeName;
 
   // Vacuum material
-  Acts::Material subdet_mat = Acts::Material();
+  Acts::Material subdet_mat = Acts::Material::Vacuum();
   sub_det_volume_config.volumeMaterial =
       std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
 

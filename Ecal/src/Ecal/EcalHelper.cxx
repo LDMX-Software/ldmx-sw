@@ -1,5 +1,7 @@
 #include "Ecal/EcalHelper.h"
 
+#include <algorithm>
+
 namespace ecal {
 
 std::vector<float> trackProp(const ldmx::Tracks& tracks,
