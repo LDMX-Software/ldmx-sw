@@ -56,7 +56,7 @@ class PatternLUTMaker : public framework::Analyzer {
   // to group cluster combinations by track pattern
   std::map<std::pair<float, float>, std::vector<Line>> groups_;
 
-  //total number of lines in input file
+  // total number of lines in input file
   int total_lines_{0};
 };
 

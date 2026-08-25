@@ -105,16 +105,6 @@ EventFile::EventFile(const framework::config::Parameters& params,
     : EventFile(params, filename, parent, true, is_single_output, false) {}
 
 EventFile::~EventFile() {
-  // Clean up any owned RunHeaders that weren't already cleaned up
-  // by writeRunTree(). This is especially important for input files
-  // where writeRunTree() is never called.
-  for (auto& [num, header_pair] : run_map_) {
-    if (header_pair.first) {
-      delete header_pair.second;
-      header_pair.second = nullptr;
-    }
-  }
-
   // Before an output file, the Event tree needs to be written.
   if (tree_ && is_output_file_) {
     // make sure we are in output file before writing
@@ -395,34 +385,28 @@ void EventFile::writeRunTree() {
   run_tree->Branch("RunHeader", "ldmx::RunHeader", &the_handle, 32000, 3);
 
   // copy over the run headers into the tree
-  for (auto& [num, header_pair] : run_map_) {
-    the_handle = header_pair.second;
+  for (auto& [num, run_header] : run_map_) {
+    the_handle = run_header.get();
     run_tree->Fill();
-    if (header_pair.first) {
-      delete header_pair.second;
-      header_pair.second = nullptr;
-    }
   }
 
   run_tree->Write();
 }
 
-void EventFile::writeRunHeader(ldmx::RunHeader& run_header) {
-  int run_number = run_header.getRunNumber();
+void EventFile::writeRunHeader(std::shared_ptr<ldmx::RunHeader> run_header) {
+  int run_number = run_header->getRunNumber();
 
   if (run_map_.find(run_number) != run_map_.end()) {
     EXCEPTION_RAISE("RunMap", "Run map already contains a run with number '" +
                                   std::to_string(run_number) + "'.");
   }
 
-  run_map_[run_number] = std::make_pair(false, &run_header);
-
-  return;
+  run_map_[run_number] = run_header;
 }
 
 ldmx::RunHeader* EventFile::getRunHeaderPtr(int run_number) {
   if (run_map_.find(run_number) != run_map_.end()) {
-    return run_map_.at(run_number).second;
+    return run_map_.at(run_number).get();
   }
   return nullptr;
 }
@@ -453,15 +437,8 @@ void EventFile::importRunHeaders() {
       auto* old_run_header_ptr = old_run_header.Get();
       if (old_run_header_ptr != nullptr) {
         int run_number = old_run_header_ptr->getRunNumber();
-        // Delete any previously owned RunHeader for this run number
-        // to avoid leaking when importRunHeaders is called again
-        // (e.g. via updateParent for single-output mode)
-        auto it = run_map_.find(run_number);
-        if (it != run_map_.end() && it->second.first) {
-          delete it->second.second;
-        }
         run_map_[run_number] =
-            std::make_pair(true, new ldmx::RunHeader(*old_run_header_ptr));
+            std::make_shared<ldmx::RunHeader>(*old_run_header_ptr);
       }
     }
   }
