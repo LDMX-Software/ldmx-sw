@@ -1,5 +1,8 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
 
+#include <G4Box.hh>
+#include <G4VisExtent.hh>
+
 #include "Framework/Exception/Exception.h"
 
 namespace tracking::geo {
@@ -10,28 +13,45 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
     const Acts::GeometryContext& gctx, const std::string& gdml,
     double tracker_y_length, double tracker_z_length)
     : TrackingGeometry(NAME, gctx, gdml) {
+  std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> vol_builder_configs;
+
   tagger_ = findDaughterByName(f_world_phys_vol_, "tagger_PV");
-  buildTaggerLayoutMap(tagger_, "tagger");
-  Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg = buildVolumeConfig(
-      tagger_, tagger_layout_, tracker_y_length, tracker_z_length, "Tagger");
-
-  recoil_ = findDaughterByName(f_world_phys_vol_, "recoil_PV");
-  buildRecoilLayoutMap(recoil_, "recoil");
-  Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg = buildVolumeConfig(
-      recoil_, recoil_layout_, tracker_y_length, tracker_z_length, "Recoil");
-
-  // Extend the recoil volume upstream so the low-x (ACTS) edge is at -1mm,
-  // placing the target (x=0) clearly inside the volume for the CKF Navigator.
-  {
-    double downstream_x =
-        recoil_volume_cfg.position[0] + recoil_volume_cfg.length[0] / 2.0;
-    constexpr double low_x = -1.0;  // mm
-    recoil_volume_cfg.length[0] = downstream_x - low_x;
-    recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
+  if (tagger_) {
+    buildTaggerLayoutMap(tagger_, "tagger");
+    vol_builder_configs.push_back(buildVolumeConfig(
+        tagger_, tagger_layout_, tracker_y_length, tracker_z_length, "Tagger"));
+  } else {
+    ldmx_log(warn) << "No tagger_PV found in detector — skipping tagger "
+                      "tracking volume";
   }
 
-  std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> vol_builder_configs{
-      tagger_volume_cfg, recoil_volume_cfg};
+  recoil_ = findDaughterByName(f_world_phys_vol_, "recoil_PV");
+  if (recoil_) {
+    buildRecoilLayoutMap(recoil_, "recoil");
+    auto recoil_volume_cfg = buildVolumeConfig(
+        recoil_, recoil_layout_, tracker_y_length, tracker_z_length, "Recoil");
+
+    // Extend the recoil volume upstream so the low-x (ACTS) edge is at -1mm,
+    // placing the target (x=0) clearly inside the volume for the CKF Navigator.
+    {
+      double downstream_x =
+          recoil_volume_cfg.position[0] + recoil_volume_cfg.length[0] / 2.0;
+      constexpr double low_x = -1.0;  // mm
+      recoil_volume_cfg.length[0] = downstream_x - low_x;
+      recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
+    }
+
+    vol_builder_configs.push_back(recoil_volume_cfg);
+  } else {
+    ldmx_log(warn) << "No recoil_PV found in detector — skipping recoil "
+                      "tracking volume";
+  }
+
+  if (vol_builder_configs.empty()) {
+    ldmx_log(warn) << "No tracker volumes found — tracking geometry will be "
+                      "empty";
+    return;
+  }
 
   // Create the builder
   Acts::CuboidVolumeBuilder cvb;
@@ -403,12 +423,21 @@ TrackersTrackingGeometry::buildVolumeConfig(
   };
 
   ldmx_log(trace) << sub_det_position;
-  // Get the size of the volume
-  G4Box* sub_det_box = (G4Box*)(detector->GetLogicalVolume()->GetSolid());
+  // Get the size of the volume along the beam axis (G4 z -> ACTS x).
+  // The solid may be a G4Box or a boolean solid (e.g. G4SubtractionSolid
+  // for the reduced-geometry recoil), so use GetExtent() for generality.
+  G4VSolid* sub_det_solid = detector->GetLogicalVolume()->GetSolid();
+  double z_half;
+  auto* sub_det_box = dynamic_cast<G4Box*>(sub_det_solid);
+  if (sub_det_box) {
+    z_half = sub_det_box->GetZHalfLength();
+  } else {
+    G4VisExtent extent = sub_det_solid->GetExtent();
+    z_half = (extent.GetZmax() - extent.GetZmin()) / 2.0;
+  }
 
   // In tracker coordinates. Add 1mm to compensate for the movement above
-  double x_length =
-      2 * (sub_det_box->GetZHalfLength() + 1) * Acts::UnitConstants::mm;
+  double x_length = 2 * (z_half + 1) * Acts::UnitConstants::mm;
   ldmx_log(info) << "x_length = " << x_length
                  << " y_length = " << tracker_y_length
                  << " z_length = " << tracker_z_length;

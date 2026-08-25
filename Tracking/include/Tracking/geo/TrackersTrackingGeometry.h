@@ -72,8 +72,8 @@ class TrackersTrackingGeometry : public TrackingGeometry {
                            const std::string& gdml, double tracker_y_length,
                            double tracker_z_length);
 
-  G4VPhysicalVolume* tagger_;
-  G4VPhysicalVolume* recoil_;
+  G4VPhysicalVolume* tagger_{nullptr};
+  G4VPhysicalVolume* recoil_{nullptr};
 
   // I store the layout as a map to distinguish layers/sides
   // They are not too many modules, so it should be ok to use this data
