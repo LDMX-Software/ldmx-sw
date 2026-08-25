@@ -33,12 +33,18 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
 
     // Extend the recoil volume upstream so the low-x (ACTS) edge is at -1mm,
     // placing the target (x=0) clearly inside the volume for the CKF Navigator.
+    // Only apply when the recoil volume actually straddles or is downstream of
+    // the target; for reduced geometries the recoil can be entirely upstream.
     {
+      double upstream_x =
+          recoil_volume_cfg.position[0] - recoil_volume_cfg.length[0] / 2.0;
       double downstream_x =
           recoil_volume_cfg.position[0] + recoil_volume_cfg.length[0] / 2.0;
       constexpr double low_x = -1.0;  // mm
-      recoil_volume_cfg.length[0] = downstream_x - low_x;
-      recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
+      if (upstream_x < low_x && downstream_x > low_x) {
+        recoil_volume_cfg.length[0] = downstream_x - low_x;
+        recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
+      }
     }
 
     vol_builder_configs.push_back(recoil_volume_cfg);
