@@ -6,10 +6,11 @@ from ._differ import Differ
 from ._plotter import plotter
 
 
-log = logging.getLogger('dark_brem')
+log = logging.getLogger("dark_brem")
+
 
 @plotter
-def kinematics(d : Differ, out_dir = None) :
+def kinematics(d: Differ, out_dir=None):
     """Plot Dark Brem interaction histograms
 
     Parameters
@@ -19,38 +20,40 @@ def kinematics(d : Differ, out_dir = None) :
     """
 
     features = [
-        ('aprime_energy', 'Dark Photon Energy [MeV]'),
-        ('aprime_pt', 'Dark Photon $p_T$ [MeV]'),
-        ('aprime_theta', 'Dark Photon $\\theta$ [degree]'),
-        ('recoil_energy', 'Recoil Energy [MeV]'),
-        ('recoil_pt', 'Recoil $p_T$ [MeV]'),
-        ('recoil_theta', 'Recoil $\\theta$ [degree]'),
-        ('incident_energy', 'Incident Energy [MeV]'),
-        ('incident_pt', 'Incident $p_T$ [MeV]'),
-        ('dark_brem_z', 'Dark Brem Z Location [mm]'),
+        ("aprime_energy", "Dark Photon Energy [MeV]"),
+        ("aprime_pt", "Dark Photon $p_T$ [MeV]"),
+        ("aprime_theta", "Dark Photon $\\theta$ [degree]"),
+        ("recoil_energy", "Recoil Energy [MeV]"),
+        ("recoil_pt", "Recoil $p_T$ [MeV]"),
+        ("recoil_theta", "Recoil $\\theta$ [degree]"),
+        ("incident_energy", "Incident Energy [MeV]"),
+        ("incident_pt", "Incident $p_T$ [MeV]"),
+        ("dark_brem_z", "Dark Brem Z Location [mm]"),
     ]
-    for h, name in features :
-        log.info(f'plotting {h}')
+    for h, name in features:
+        log.info(f"plotting {h}")
         d.plot1d(
-            f'DarkBremDQM/{h}', name,
-            out_dir=out_dir, density=True,
-            ylabel='Weighted Fraction'
+            f"DarkBremDQM/{h}",
+            name,
+            out_dir=out_dir,
+            density=True,
+            ylabel="Weighted Fraction",
         )
 
-    log.info('plotting dark_brem_element')
+    log.info("plotting dark_brem_element")
     d.plot1d(
-        'DarkBremDQM/dark_brem_element',
-        'Element in which Dark Brem Occurred',
-        out_dir = out_dir,
+        "DarkBremDQM/dark_brem_element",
+        "Element in which Dark Brem Occurred",
+        out_dir=out_dir,
         density=True,
-        ylabel='Weighted Fraction'
+        ylabel="Weighted Fraction",
     )
 
-    log.info('plotting dark_brem_material')
+    log.info("plotting dark_brem_material")
     d.plot1d(
-        'DarkBremDQM/dark_brem_material',
-        'Material in which Dark Brem Occurred',
-        out_dir = out_dir,
+        "DarkBremDQM/dark_brem_material",
+        "Material in which Dark Brem Occurred",
+        out_dir=out_dir,
         density=True,
-        ylabel='Weighted Fraction'
+        ylabel="Weighted Fraction",
     )

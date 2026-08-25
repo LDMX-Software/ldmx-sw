@@ -43,7 +43,7 @@ import sys
 
 
 p.max_events = 10  # int(os.environ['LDMX_NUM_EVENTS'])
-p.run = 1 #int(os.environ["LDMX_RUN_NUMBER"])
+p.run = 1  # int(os.environ["LDMX_RUN_NUMBER"])
 
 p.histogram_file = "hist.root"
 p.output_files = ["events.root"]
