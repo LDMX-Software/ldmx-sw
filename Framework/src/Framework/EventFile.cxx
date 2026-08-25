@@ -105,6 +105,16 @@ EventFile::EventFile(const framework::config::Parameters& params,
     : EventFile(params, filename, parent, true, is_single_output, false) {}
 
 EventFile::~EventFile() {
+  // Clean up any owned RunHeaders that weren't already cleaned up
+  // by writeRunTree(). This is especially important for input files
+  // where writeRunTree() is never called.
+  for (auto& [num, header_pair] : run_map_) {
+    if (header_pair.first) {
+      delete header_pair.second;
+      header_pair.second = nullptr;
+    }
+  }
+
   // Before an output file, the Event tree needs to be written.
   if (tree_ && is_output_file_) {
     // make sure we are in output file before writing
@@ -388,7 +398,10 @@ void EventFile::writeRunTree() {
   for (auto& [num, header_pair] : run_map_) {
     the_handle = header_pair.second;
     run_tree->Fill();
-    if (header_pair.first) delete header_pair.second;
+    if (header_pair.first) {
+      delete header_pair.second;
+      header_pair.second = nullptr;
+    }
   }
 
   run_tree->Write();
@@ -439,9 +452,15 @@ void EventFile::importRunHeaders() {
     while (old_run_tree.Next()) {
       auto* old_run_header_ptr = old_run_header.Get();
       if (old_run_header_ptr != nullptr) {
-        // copy input run tree into run map
-        // We should consider moving to a shared_ptr instead of 'new'
-        run_map_[old_run_header_ptr->getRunNumber()] =
+        int run_number = old_run_header_ptr->getRunNumber();
+        // Delete any previously owned RunHeader for this run number
+        // to avoid leaking when importRunHeaders is called again
+        // (e.g. via updateParent for single-output mode)
+        auto it = run_map_.find(run_number);
+        if (it != run_map_.end() && it->second.first) {
+          delete it->second.second;
+        }
+        run_map_[run_number] =
             std::make_pair(true, new ldmx::RunHeader(*old_run_header_ptr));
       }
     }
