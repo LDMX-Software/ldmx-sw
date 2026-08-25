@@ -220,9 +220,12 @@ def full_tracking_sequence(
         tagger_meas_collection = cluster_tagger.out_collection
         recoil_meas_collection = cluster_recoil.out_collection
         digi_sequence = [
-            digi_tagger,    digi_recoil,
-            fit_tagger,     fit_recoil,
-            cluster_tagger, cluster_recoil,
+            digi_tagger,
+            digi_recoil,
+            fit_tagger,
+            fit_recoil,
+            cluster_tagger,
+            cluster_recoil,
         ]
         charge_digi_processors = {
             "fit_tagger": fit_tagger,
@@ -537,8 +540,9 @@ def recoil_sequence(
         full.dqm_digi_recoil,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 
@@ -594,8 +598,9 @@ def tagger_sequence(
         full.dqm_digi_tagger,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 

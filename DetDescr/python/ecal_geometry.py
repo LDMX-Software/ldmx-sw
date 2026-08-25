@@ -243,7 +243,7 @@ class EcalGeometry:
                 "ldmx-ti-v15-8gev.*",
                 "ldmx-al-v15-8gev",
                 "ldmx-al-v15-8gev.*",
-                "ldmx-det-v16-8gev"
+                "ldmx-det-v16-8gev",
             ],
             gap=1.5,
             si_thickness=0.4,

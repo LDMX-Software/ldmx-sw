@@ -16,9 +16,9 @@ class RawTrackerDecoder(Producer):
         ADC samples per hit (always 3 for APV25).
     """
 
-    def __init__(self, name='raw_tracker_decoder'):
-        super().__init__(name, 'tracking::reco::RawTrackerDecoder', 'Tracking')
-        self.input_collection  = 'TrackerRawData'
-        self.input_pass_name   = ''
-        self.output_collection = 'RawSiStripHits'
-        self.n_samples         = 3
+    def __init__(self, name="raw_tracker_decoder"):
+        super().__init__(name, "tracking::reco::RawTrackerDecoder", "Tracking")
+        self.input_collection = "TrackerRawData"
+        self.input_pass_name = ""
+        self.output_collection = "RawSiStripHits"
+        self.n_samples = 3
