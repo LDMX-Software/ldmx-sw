@@ -11,22 +11,7 @@
     "layer_id is the Acts surface id, keyed as vol*1000 + layer*100 + sensor",
     "(TrackingGeometry.cxx:327); recoil volume = 3.  The sensor suffix (00/01)",
     "follows z-order, so the upstream stereo sensor is xx00 and the downstream",
-    "axial one is xx01.  VERIFIED by dumping the surface map",
-    "(Tracking/exampleConfigs/dump_geometry.py, ldmx-reduced-v3):",
-    "  3100  beam-axis z -243.5 mm  stereo (+5.72958 deg)  upstream, station 1",
-    "  3101  beam-axis z -237.5 mm  axial  ( 0.00000 deg)  downstream, station 1",
-    "  3200  beam-axis z -143.5 mm  stereo (+5.72958 deg)  upstream, station 2",
-    "  3201  beam-axis z -137.5 mm  axial  ( 0.00000 deg)  downstream, station 2",
-    "Station centers -240.5 / -140.5 mm, each split by 6 mm.  Both stations now",
-    "carry the SAME stereo sign, matching the hardware.",
-    "",
-    "The recoil.gdml geometry was corrected on 2026-07-23 (stereo moved upstream",
-    "and the alternating stereo sign removed), so the surface z-positions and",
-    "rotations are now physically correct -- no compensation is applied here.",
-    "",
-    "n_strips/first_strip/reversed are placeholders: 5 APVs are read out per",
-    "hybrid (2560 pedestal channels = 4 x 640) but the bonded strip count and",
-    "the readout direction are not yet confirmed.  See the plan's open question."
+    "axial one is xx01." 
   ],
   "sensors": [
     {
