@@ -164,7 +164,7 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("TaggerSimHits"),
+            out_raw_collection=tagged("TaggerSimSiStripHits"),
         )
 
         digi_recoil = tracking.DigitizationProcessor(
@@ -178,7 +178,7 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("RecoilSimHits"),
+            out_raw_collection=tagged("RecoilSimSiStripHits"),
         )
 
         fit_tagger = tracking.StripFitProcessor(
@@ -220,9 +220,12 @@ def full_tracking_sequence(
         tagger_meas_collection = cluster_tagger.out_collection
         recoil_meas_collection = cluster_recoil.out_collection
         digi_sequence = [
-            digi_tagger,    digi_recoil,
-            fit_tagger,     fit_recoil,
-            cluster_tagger, cluster_recoil,
+            digi_tagger,
+            digi_recoil,
+            fit_tagger,
+            fit_recoil,
+            cluster_tagger,
+            cluster_recoil,
         ]
         charge_digi_processors = {
             "fit_tagger": fit_tagger,
@@ -238,6 +241,9 @@ def full_tracking_sequence(
         instance_name=tagged("SeedTagger"),
         input_hits_collection=tagger_meas_collection,
         out_seed_collection=tagged("TaggerRecoSeeds"),
+        # Perigee upstream of all tagger sensors (ACTS x from -12.5 to -615.5 mm).
+        # World boundary is at ACTS x = -650 mm.
+        perigee_location=[-617.0, 0.0, 0.0],
         pmin=0.03,
         pmax=63.0,
         d0min=-36.9,
@@ -537,8 +543,9 @@ def recoil_sequence(
         full.dqm_digi_recoil,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 
@@ -594,8 +601,9 @@ def tagger_sequence(
         full.dqm_digi_tagger,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 

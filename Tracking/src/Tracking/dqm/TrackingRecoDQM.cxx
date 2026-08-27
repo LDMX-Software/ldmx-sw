@@ -382,7 +382,7 @@ void TrackingRecoDQM::trackMonitoring(
     }
 
     // Covariance matrix
-    Acts::BoundSquareMatrix cov =
+    Acts::BoundMatrix cov =
         tracking::sim::utils::unpackCov(track.getPerigeeCov());
 
     double sigmad0 = sqrt(

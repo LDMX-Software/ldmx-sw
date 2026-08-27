@@ -8,14 +8,13 @@
 #define TOOLS_CLUSTERTRIPLETMAKER_H
 
 // LDMX Framework
-#include "Framework/Configure/Parameters.h"
-#include "Framework/Event.h"
-#include "Framework/EventProcessor.h"
-
 #include <fstream>
 #include <string>
 #include <vector>
 
+#include "Framework/Configure/Parameters.h"
+#include "Framework/Event.h"
+#include "Framework/EventProcessor.h"
 #include "TrigScint/Event/TrigScintCluster.h"
 
 namespace tools {

@@ -40,6 +40,8 @@ void ReSimulator::produce(framework::Event& event) {
 
   std::istringstream iss(event_header.getStringParameter("eventSeed"));
   G4Random::restoreFullState(iss);
+
+  SimulatorBase::prepEvent(event);
   run_manager_->ProcessOneEvent(event_number);
 
   ldmx_log(trace) << "Finished with event number " << event_number;

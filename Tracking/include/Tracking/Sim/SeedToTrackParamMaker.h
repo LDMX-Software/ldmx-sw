@@ -2,7 +2,6 @@
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Seeding/Seed.hpp"
 // #include "Acts/Utilities/VectorHelpers.hpp"
 #include <optional>
 
@@ -44,10 +43,11 @@ class SeedToTrackParamMaker {
   /// This resembles the method used in ATLAS for the seed fitting
   /// L811
   /// https://acode-browser.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetRecTools/SiTrackMakerTool_xk/src/SiTrackMaker_xk.cxx
-  template <typename external_spacepoint_t>
-  bool fitSeedAtlas(const Acts::Seed<external_spacepoint_t>& seed,
-                    std::array<double, 9>& data, const Acts::Transform3& Tp,
-                    const double& bFieldZ);
+  // Acts::Seed<T> removed in v47 — fitSeedAtlas(Seed) unused, commented out
+  // template <typename external_spacepoint_t>
+  // bool fitSeedAtlas(const Acts::Seed<external_spacepoint_t>& seed,
+  //                   std::array<double, 9>& data, const Acts::Transform3& Tp,
+  //                   const double& bFieldZ);
 
   template <typename external_spacepoint_t>
   bool fitSeedAtlas(const std::vector<external_spacepoint_t>& sp,
@@ -56,9 +56,10 @@ class SeedToTrackParamMaker {
 
   /// This is a simple Line and Parabola fit (from HPS reconstruction by Robert
   /// Johnson)
-  template <typename external_spacepoint_t>
-  bool fitSeedLinPar(const Acts::Seed<external_spacepoint_t>& seed,
-                     std::vector<double>& data);
+  // Acts::Seed<T> removed in v47 — fitSeedLinPar(Seed) unused, commented out
+  // template <typename external_spacepoint_t>
+  // bool fitSeedLinPar(const Acts::Seed<external_spacepoint_t>& seed,
+  //                    std::vector<double>& data);
 
   /// Estimate the full track parameters from three space points
   ///
@@ -91,9 +92,8 @@ class SeedToTrackParamMaker {
   template <typename spacepoint_iterator_t>
   std::optional<Acts::BoundVector> estimateTrackParamsFromSeed(
       const Acts::Transform3& Tp, spacepoint_iterator_t spBegin,
-      spacepoint_iterator_t spEnd, Acts::Vector3 bField,
-      Acts::ActsScalar bFieldMin,
-      Acts::ActsScalar mass = 139.57018 * Acts::UnitConstants::MeV) {
+      spacepoint_iterator_t spEnd, Acts::Vector3 bField, double bFieldMin,
+      double mass = 139.57018 * Acts::UnitConstants::MeV) {
     // Check the number of provided space points
     size_t num_sp = std::distance(spBegin, spEnd);
     if (num_sp != 3) {
@@ -102,8 +102,8 @@ class SeedToTrackParamMaker {
     }
 
     // Convert bField to Tesla
-    Acts::ActsScalar b_field_in_tesla = bField.norm() / Acts::UnitConstants::T;
-    Acts::ActsScalar b_field_min_in_tesla = bFieldMin / Acts::UnitConstants::T;
+    double b_field_in_tesla = bField.norm() / Acts::UnitConstants::T;
+    double b_field_min_in_tesla = bFieldMin / Acts::UnitConstants::T;
     // Check if magnetic field is too small
     if (b_field_in_tesla < b_field_min_in_tesla) {
       // @todo shall we use straight-line estimation and use default q/pt in
@@ -156,8 +156,7 @@ class SeedToTrackParamMaker {
     // Lambda to transform the coordinates to the (u, v) space
     auto uv_transform = [](const Acts::Vector3& local) -> Acts::Vector2 {
       Acts::Vector2 uv;
-      Acts::ActsScalar denominator =
-          local.x() * local.x() + local.y() * local.y();
+      double denominator = local.x() * local.x() + local.y() * local.y();
       uv.x() = local.x() / denominator;
       uv.y() = local.y() / denominator;
       return uv;
@@ -168,15 +167,15 @@ class SeedToTrackParamMaker {
 
     // A,B are slope and intercept of the straight line in the u,v plane
     // connecting the three points
-    Acts::ActsScalar a = (uv2.y() - uv1.y()) / (uv2.x() - uv1.x());
-    Acts::ActsScalar b = uv2.y() - a * uv2.x();
+    double a = (uv2.y() - uv1.y()) / (uv2.x() - uv1.x());
+    double b = uv2.y() - a * uv2.x();
     // Curvature (with a sign) estimate
-    Acts::ActsScalar rho = -2.0 * b / std::hypot(1., a);
+    double rho = -2.0 * b / std::hypot(1., a);
     // The projection of the top space point on the transverse plane of the new
     // frame
-    Acts::ActsScalar rn = local2.x() * local2.x() + local2.y() * local2.y();
+    double rn = local2.x() * local2.x() + local2.y() * local2.y();
     // The (1/tanTheta) of momentum in the new frame,
-    Acts::ActsScalar inv_tan_theta =
+    double inv_tan_theta =
         local2.z() * std::sqrt(1. / rn) / (1. + rho * rho * rn);
     // The momentum direction in the new frame (the center of the circle has the
     // coordinate (-1.*A/(2*B), 1./(2*B)))
@@ -200,23 +199,23 @@ class SeedToTrackParamMaker {
 
     // The estimated q/pt in [GeV/c]^-1 (note that the pt is the projection of
     // momentum on the transverse plane of the new frame)
-    Acts::ActsScalar q_over_pt =
+    double q_over_pt =
         rho * (Acts::UnitConstants::m) / (0.3 * b_field_in_tesla);
     // The estimated q/p in [GeV/c]^-1
     params[Acts::eBoundQOverP] = q_over_pt / std::hypot(1., inv_tan_theta);
 
     // The estimated momentum, and its projection along the magnetic field
     // diretion
-    Acts::ActsScalar p_in_ge_v = std::abs(1.0 / params[Acts::eBoundQOverP]);
-    Acts::ActsScalar pz_in_ge_v = 1.0 / std::abs(q_over_pt) * inv_tan_theta;
-    Acts::ActsScalar mass_in_ge_v = mass / Acts::UnitConstants::GeV;
+    double p_in_ge_v = std::abs(1.0 / params[Acts::eBoundQOverP]);
+    double pz_in_ge_v = 1.0 / std::abs(q_over_pt) * inv_tan_theta;
+    double mass_in_ge_v = mass / Acts::UnitConstants::GeV;
     // The estimated velocity, and its projection along the magnetic field
     // diretion
-    Acts::ActsScalar v = p_in_ge_v / std::hypot(p_in_ge_v, mass_in_ge_v);
-    Acts::ActsScalar vz = pz_in_ge_v / std::hypot(p_in_ge_v, mass_in_ge_v);
+    double v = p_in_ge_v / std::hypot(p_in_ge_v, mass_in_ge_v);
+    double vz = pz_in_ge_v / std::hypot(p_in_ge_v, mass_in_ge_v);
     // The z_ coordinate of the bottom space point along the magnetic field
     // direction
-    Acts::ActsScalar pathz = sp_global_positions[0].dot(bField) / bField.norm();
+    double pathz = sp_global_positions[0].dot(bField) / bField.norm();
     // The estimated time (use path length along magnetic field only if it's not
     // zero)
     if (pathz != 0) {

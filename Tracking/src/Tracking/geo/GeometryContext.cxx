@@ -8,9 +8,9 @@ namespace tracking::geo {
 
 const std::string GeometryContext::NAME = "TrackingGeometryContext";
 
-GeometryContext::GeometryContext() : framework::ConditionsObject(NAME) {
-  acts_gc_ = this;
-}
+GeometryContext::GeometryContext()
+    : framework::ConditionsObject(NAME),
+      acts_gc_(Acts::GeometryContext(this)) {}
 
 const Acts::GeometryContext& GeometryContext::get() const { return acts_gc_; }
 
@@ -20,8 +20,7 @@ void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
 
   for (auto entry : surf_map) {
     alignment_map_[entry.first] =
-        static_cast<const DetectorElement*>(
-            (entry.second)->associatedDetectorElement())
+        static_cast<const DetectorElement*>((entry.second)->surfacePlacement())
             ->uncorrectedTransform();
   }
 }

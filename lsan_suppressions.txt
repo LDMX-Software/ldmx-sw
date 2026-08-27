@@ -7,7 +7,6 @@ leak:THashTable
 leak:TString::Clobber
 leak:TStreamerInfo
 leak:TBufferFile::ReadStdString
-leak:ROOT::new_ldmx
 
 # Geant4 / CLHEP
 leak:CLHEP::Evaluator
@@ -51,6 +50,9 @@ leak:ROOT::new_geniecLcLHAIntranuke2018
 leak:genie::rew::GSystSet::Init
 leak:genie::GRV98LO::Initialize
 leak:genie::rew::GReWeightINukeParams::GReWeightINukeParams
+
+# ROOT dictionary auto-generated code (TStreamerInfo)
+leak:FrameworkDict
 
 # ROOT Cling / interpreter
 leak:TF1::InitStandardFunctions

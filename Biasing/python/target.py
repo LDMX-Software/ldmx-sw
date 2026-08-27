@@ -217,7 +217,7 @@ def dark_brem(
     ap_tau=-1.0,
     dist_decay_min=0.0,
     dist_decay_max=1.0,
-    aprime_lhe_id=1023
+    aprime_lhe_id=1023,
 ):
     """Example configuration for producing dark brem interactions in the target.
 

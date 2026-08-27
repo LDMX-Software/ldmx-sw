@@ -23,14 +23,14 @@ import argparse
 import sys
 
 # just fire passes '--' through to the script; strip it so argparse sees only flags.
-sys.argv = [a for a in sys.argv if a != '--']
+sys.argv = [a for a in sys.argv if a != "--"]
 
 parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
 parser.add_argument(
     "--dat",
     default="/sdf/data/hps/users/mgignac/hardware/data/LDMX/Run_049_20251211_093048.dat",
     help="Path to the baseline (pedestal) Rogue .dat file. Must be a dedicated "
-         "pedestal run, NOT a physics run.",
+    "pedestal run, NOT a physics run.",
 )
 parser.add_argument(
     "--output-json",
@@ -52,7 +52,9 @@ parser.add_argument(
 parser.add_argument(
     "--output",
     default="pedestal_calc.root",
-    help="Output ROOT file (required by the framework; the important output is the JSON)",
+    help=(
+        "Output ROOT file (required by the framework; the important output is the JSON)"
+    ),
 )
 arg = parser.parse_args()
 

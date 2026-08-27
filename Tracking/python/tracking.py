@@ -477,6 +477,7 @@ class TrackerVetoProcessor(Processor):
     sim_particles_passname: str = ""
     input_collection_events_passname: str = ""
 
+
 @processor("tracking::reco::StripFitProcessor", "Tracking")
 class StripFitProcessor(Processor):
     """Fits a pulse shape to each RawSiStripHit to extract amplitude and time.
@@ -503,9 +504,9 @@ class StripFitProcessor(Processor):
         If > 0, discard fits with chi2/ndf above this value (default -1 = off).
     """
 
-    in_collection: str = 'SimSiStripHits'
-    in_pass: str = ''
-    out_collection: str = 'FittedSiStripHits'
+    in_collection: str = "SimSiStripHits"
+    in_pass: str = ""
+    out_collection: str = "FittedSiStripHits"
     t_scan_min_ns: float = -50.0
     t_scan_max_ns: float = 150.0
     t_scan_step_ns: float = 1.0
@@ -602,9 +603,9 @@ class StripClusterProcessor(Processor):
         N_READOUT_STRIPS constant.  Empty (default, MC) keeps the constant.
     """
 
-    in_collection: str = 'FittedSiStripHits'
-    in_pass: str = ''
-    out_collection: str = 'StripMeasurements'
+    in_collection: str = "FittedSiStripHits"
+    in_pass: str = ""
+    out_collection: str = "StripMeasurements"
     seed_threshold: float = 4.0
     neighbor_threshold: float = 3.0
     cluster_threshold: float = 4.0

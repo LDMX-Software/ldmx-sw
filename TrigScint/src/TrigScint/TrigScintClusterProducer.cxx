@@ -6,7 +6,7 @@
 
 namespace trigscint {
 
-void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
+void TrigScintClusterProducer::configure(framework::config::Parameters& ps) {
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
@@ -405,8 +405,9 @@ void TrigScintClusterProducer::produce(framework::Event& event) {
 
       // done adding hits to cluster. calculate centroid
 
-      centroid_ /= sumw_ ; // final weighting step: divide by total amplitude sum
-      centroid_ -= 1;     // shift back to actual channel center
+      centroid_ /=
+          sumw_;       // final weighting step: divide by total amplitude sum
+      centroid_ -= 1;  // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;
 
