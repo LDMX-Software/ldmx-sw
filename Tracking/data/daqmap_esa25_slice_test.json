@@ -7,7 +7,6 @@
     "  station 2 = hybrid 3 (stereo) + hybrid 2 (axial)",
     "In each station the stereo sensor sits upstream (more negative z) and the",
     "axial sensor downstream.",
-    "",
     "layer_id is the Acts surface id, keyed as vol*1000 + layer*100 + sensor",
     "(TrackingGeometry.cxx:327); recoil volume = 3.  The sensor suffix (00/01)",
     "follows z-order, so the upstream stereo sensor is xx00 and the downstream",
