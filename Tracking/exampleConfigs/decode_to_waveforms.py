@@ -10,14 +10,20 @@ Pipeline
 --------
     SingleSubsystemUnpacker  ->  TrackerRawData (bytes)
     RawTrackerDecoder        ->  RawSiStripHits
-    PedestalSubtractor       ->  TrackerHits     (RawSiStripHit, pedestal-subtracted)
-    SiStripWaveformBuilder   ->  TrackerWaveforms (SiStripWaveform)
+    PedestalSubtractor          ->  TrackerHits       (RawSiStripHit, subtracted)
+    SiStripWaveformBuilder      ->  TrackerWaveforms  (SiStripWaveform)
+    SiStripWaveformFitProcessor ->  FittedSiStripHits (fit results)
 
 Pedestals/noise are supplied as a conditions object (TrackerPedestals) by
 TrackerPedestalProvider, not stored in the hits.  Run compute_pedestals.py first
 to produce the pedestal JSON, then pass it here via --pedestal-file (it is handed
 to the provider).  The output ROOT file contains a SiStripWaveform collection
 ('TrackerWaveforms') ready for waveform analysis / plotting.
+
+The pulse fit lives in a separate processor and its results are written to a
+FittedSiStripHit collection, not stored on the waveform.  It is run here so that
+plot_waveforms.py can overlay the fitted pulse on the samples; pass --no-fit to
+skip it (the overlay is then simply absent from the plots).
 
 Usage
 -----
@@ -78,6 +84,10 @@ parser.add_argument("--min-consecutive-low", type=int, default=5,
                     help="Min consecutive samples that must exceed low_threshold")
 parser.add_argument("--n-triggers", type=int, default=10,
                     help="Expected number of APV triggers per RoR")
+parser.add_argument("--daq-map", default=None,
+                    help="DAQ map JSON (default: the installed ESA slice-test map)")
+parser.add_argument("--no-fit", action="store_true",
+                    help="Skip the pulse-fit stage; only TrackerWaveforms is written")
 arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
@@ -120,7 +130,20 @@ builder.low_threshold        = arg.low_threshold
 builder.min_consecutive_low  = arg.min_consecutive_low
 builder.n_triggers           = arg.n_triggers
 
+p.sequence = [unpacker, decoder, subtractor, builder]
+
+# Stage 5: fit the pulse shape -> FittedSiStripHit collection.  Addressing comes
+# from the DAQ map, so plot_waveforms.py can join the fits back onto the
+# waveforms by inverting the same strip transform.
+if not arg.no_fit:
+    daq_map = arg.daq_map if arg.daq_map is not None else rawdecoder.daq_map_path()
+    fitter = rawdecoder.SiStripWaveformFitProcessor()
+    fitter.input_collection = builder.output_collection
+    fitter.output_collection = "FittedSiStripHits"
+    fitter.daq_map_file = daq_map
+    p.sequence.append(fitter)
+
 if arg.verbose_waveforms:
     p.logger.trace(builder)
-
-p.sequence = [unpacker, decoder, subtractor, builder]
+    if not arg.no_fit:
+        p.logger.trace(fitter)

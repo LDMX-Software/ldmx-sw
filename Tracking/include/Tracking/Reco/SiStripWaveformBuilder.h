@@ -1,11 +1,9 @@
 #ifndef TRACKING_RECO_SISTRIPWAVEFORMBUILDER_H_
 #define TRACKING_RECO_SISTRIPWAVEFORMBUILDER_H_
 
-#include <memory>
 #include <string>
 
 #include "Framework/EventProcessor.h"
-#include "Tracking/Digitization/PulseShape.h"
 #include "Tracking/Event/SiStripWaveform.h"
 
 namespace tracking::reco {
@@ -32,6 +30,10 @@ namespace tracking::reco {
  *      (default: 5 consecutive samples > 3σ).
  * Both conditions must be satisfied; this strongly suppresses noise while
  * retaining real APV25 signal pulses.
+ *
+ * No pulse fitting happens here: the assembled waveforms are handed to
+ * SiStripWaveformFitProcessor, which fits them and emits FittedSiStripHits,
+ * mirroring what StripFitProcessor does for simulation.
  */
 class SiStripWaveformBuilder : public framework::Producer {
  public:
@@ -40,7 +42,6 @@ class SiStripWaveformBuilder : public framework::Producer {
 
   void configure(framework::config::Parameters& ps) override;
   void produce(framework::Event& event) override;
-  void onProcessEnd() override;
 
  private:
   std::string input_collection_{"TrackerHits"};
@@ -54,14 +55,6 @@ class SiStripWaveformBuilder : public framework::Producer {
   int min_consecutive_low_{
       5};                ///< min consecutive samples exceeding low_threshold
   int n_triggers_{10};  ///< expected APV triggers per RoR
-
-  /// Pulse shape used for the per-waveform fit test (built lazily in produce).
-  std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
-
-  // Fit monitoring counters (summed over the whole job, reported in
-  // onProcessEnd).
-  long n_fit_attempted_{0};  ///< waveforms passed to the fitter
-  long n_fit_failed_{0};     ///< fits that did not converge
 };
 
 }  // namespace tracking::reco

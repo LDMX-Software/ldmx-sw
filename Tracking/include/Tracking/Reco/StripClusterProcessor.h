@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -7,6 +8,7 @@
 #include "Framework/Event.h"
 #include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/StripClusterer.h"
+#include "Tracking/Reco/TrackerDaqMap.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 namespace tracking::reco {
@@ -58,6 +60,13 @@ class StripClusterProcessor : public TrackingGeometryUser {
   std::string in_collection_{"FittedSiStripHits"};
   std::string in_pass_{""};
   std::string out_collection_{"StripMeasurements"};
+
+  // Optional DAQ map: when set, the local-U centre offset for a layer uses that
+  // sensor's real strip count instead of the fixed N_READOUT_STRIPS constant.
+  // Empty (the default, MC) keeps the constant and leaves the MC path
+  // unchanged.
+  std::string daq_map_file_{""};
+  std::map<int, int> layer_n_strips_;  ///< layer_id -> n_strips (from DAQ map)
 
   // Clustering parameters (forwarded to StripClusterer)
   double seed_threshold_{4.0};

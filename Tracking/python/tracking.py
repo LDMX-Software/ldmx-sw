@@ -58,6 +58,9 @@ class DigitizationProcessor(Processor):
         Minimum number of charge deposition segments (Mode 1).
     out_raw_collection : str
         Output RawSiStripHit collection name; empty disables (Mode 1).
+    dump_geo_csv : str
+        If non-empty, write every ACTS surface (id, centre, U/V/W axes) to this
+        CSV at onProcessStart and continue; empty disables.
     """
 
     merge_hits: bool = True
@@ -81,6 +84,7 @@ class DigitizationProcessor(Processor):
     deposition_granularity: float = 0.10
     n_segments_min: int = 5
     out_raw_collection: str = ""
+    dump_geo_csv: str = ""
 
 
 @processor("tracking::reco::SeedFinderProcessor", "Tracking")
@@ -592,6 +596,10 @@ class StripClusterProcessor(Processor):
         <= 0 disables (default -1).
     max_chi2_ndf : float
         Max chi2/ndf for a fitted hit to be used; <= 0 disables (default -1).
+    daq_map_file : str
+        Optional DAQ map JSON.  When set, the local-U centre offset for each
+        layer uses that sensor's real strip count instead of the fixed
+        N_READOUT_STRIPS constant.  Empty (default, MC) keeps the constant.
     """
 
     in_collection: str = 'FittedSiStripHits'
@@ -604,4 +612,5 @@ class StripClusterProcessor(Processor):
     time_window_ns: float = -1.0
     neighbor_delta_t_ns: float = -1.0
     max_chi2_ndf: float = -1.0
+    daq_map_file: str = ''
 
