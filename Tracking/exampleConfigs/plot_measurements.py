@@ -1,6 +1,6 @@
 """Basic diagnostic plots for a StripMeasurements collection.
 
-Reads the ROOT file written by waveforms_to_measurements.py and produces a small
+Reads the ROOT file written by raw_to_measurements.py and produces a small
 set of PNGs: per-layer beam-spot occupancy, local-U distributions, cluster
 amplitude and cluster size, and the global-position spread that shows the two
 recoil stations.
@@ -13,6 +13,10 @@ Usage
 -----
     denv_workspace="$PWD" denv fire Tracking/exampleConfigs/plot_measurements.py \
         -- [--input meas.root] [--outdir plots_meas]
+
+--input accepts a single file or a glob over per-chunk outputs, e.g.
+    --input '/path/to/prod/meas_chunk_*.root'
+so the batch chunks can be plotted directly without an hadd merge.
 """
 
 import argparse
@@ -22,7 +26,12 @@ import sys
 sys.argv = [a for a in sys.argv if a != "--"]
 
 parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
-parser.add_argument("--input", default="meas.root")
+parser.add_argument(
+    "--input",
+    nargs="+",
+    default=["meas.root"],
+    help="one file, or many (a shell glob over per-chunk outputs)",
+)
 parser.add_argument("--outdir", default="plots_meas")
 parser.add_argument("--tree", default="LDMX_Events")
 parser.add_argument("--branch", default="StripMeasurements_trackerReco")
@@ -39,8 +48,14 @@ ROOT.gSystem.Load("libTracking_Event")
 
 os.makedirs(arg.outdir, exist_ok=True)
 
-f = ROOT.TFile.Open(arg.input)
-t = f.Get(arg.tree)
+# --input is a list of files (a single file, or a shell glob over per-chunk
+# outputs, e.g. '.../meas_chunk_*.root'). TChain reads them as one dataset, so
+# there is no need to hadd the per-chunk outputs together first.
+t = ROOT.TChain(arg.tree)
+for pat in arg.input:
+    t.Add(pat)
+input_label = arg.input[0] if len(arg.input) == 1 else f"{len(arg.input)} files"
+print(f"chained {len(arg.input)} input path(s)")
 meas = ROOT.std.vector("ldmx::Measurement")()
 t.SetBranchAddress(arg.branch, meas)
 
@@ -53,7 +68,8 @@ for i in range(t.GetEntries()):
     for m in meas:
         lid = m.getLayerID()
         d = layers.setdefault(
-            lid, dict(gx=[], gy=[], gz=[], u=[], amp=[], nstrips=[], t=[])
+            lid,
+            {"gx": [], "gy": [], "gz": [], "u": [], "amp": [], "nstrips": [], "t": []},
         )
         g = m.getGlobalPosition()
         lp = m.getLocalPosition()
@@ -66,15 +82,17 @@ for i in range(t.GetEntries()):
         d["t"].append(m.getTime())
 
 layer_ids = sorted(layers)
-total = sum(len(layers[l]["u"]) for l in layer_ids)
-print(f"{arg.input}: {t.GetEntries()} events, {total} measurements, "
-      f"layers {layer_ids}")
+total = sum(len(layers[lyr]["u"]) for lyr in layer_ids)
+print(
+    f"{input_label}: {t.GetEntries()} events, {total} measurements, layers {layer_ids}"
+)
 for lid in layer_ids:
     d = layers[lid]
-    print(f"  layer {lid}: {len(d['u']):5d} meas, "
-          f"beam-pos {np.mean(d['gx']):.2f} mm")
+    print(f"  layer {lid}: {len(d['u']):5d} meas, beam-pos {np.mean(d['gx']):.2f} mm")
 
-colors = dict(zip(layer_ids, plt.cm.viridis(np.linspace(0.1, 0.85, len(layer_ids)))))
+colors = dict(
+    zip(layer_ids, plt.cm.viridis(np.linspace(0.1, 0.85, len(layer_ids))), strict=True)
+)
 
 
 def save(fig, name):
@@ -86,9 +104,10 @@ def save(fig, name):
 
 
 # 1. Global in-plane occupancy (beam spot) per layer.
-fig, axes = plt.subplots(1, len(layer_ids), figsize=(4 * len(layer_ids), 4),
-                         squeeze=False)
-for ax, lid in zip(axes[0], layer_ids):
+fig, axes = plt.subplots(
+    1, len(layer_ids), figsize=(4 * len(layer_ids), 4), squeeze=False
+)
+for ax, lid in zip(axes[0], layer_ids, strict=True):
     d = layers[lid]
     ax.scatter(d["gy"], d["gz"], s=6, alpha=0.4, color=colors[lid])
     ax.set_title(f"layer {lid}  (beam {np.mean(d['gx']):.1f} mm)")
@@ -100,8 +119,13 @@ save(fig, "occupancy_global.png")
 # 2. Local-U distributions.
 fig, ax = plt.subplots(figsize=(7, 4.5))
 for lid in layer_ids:
-    ax.hist(layers[lid]["u"], bins=60, histtype="step", label=f"layer {lid}",
-            color=colors[lid])
+    ax.hist(
+        layers[lid]["u"],
+        bins=60,
+        histtype="step",
+        label=f"layer {lid}",
+        color=colors[lid],
+    )
 ax.set_xlabel("local U [mm]")
 ax.set_ylabel("measurements")
 ax.set_title("Cluster local-U position per layer")
@@ -110,11 +134,16 @@ save(fig, "local_u.png")
 
 # 3. Cluster amplitude.
 fig, ax = plt.subplots(figsize=(7, 4.5))
-amp_max = max(max(layers[l]["amp"]) for l in layer_ids)
+amp_max = max(max(layers[lyr]["amp"]) for lyr in layer_ids)
 bins = np.linspace(0, amp_max, 60)
 for lid in layer_ids:
-    ax.hist(layers[lid]["amp"], bins=bins, histtype="step", label=f"layer {lid}",
-            color=colors[lid])
+    ax.hist(
+        layers[lid]["amp"],
+        bins=bins,
+        histtype="step",
+        label=f"layer {lid}",
+        color=colors[lid],
+    )
 ax.set_xlabel("cluster amplitude [ADC]")
 ax.set_ylabel("measurements")
 ax.set_title("Cluster amplitude per layer")
@@ -123,11 +152,16 @@ save(fig, "cluster_amplitude.png")
 
 # 4. Cluster size.
 fig, ax = plt.subplots(figsize=(7, 4.5))
-smax = max(max(layers[l]["nstrips"]) for l in layer_ids)
+smax = max(max(layers[lyr]["nstrips"]) for lyr in layer_ids)
 bins = np.arange(0.5, smax + 1.5, 1)
 for lid in layer_ids:
-    ax.hist(layers[lid]["nstrips"], bins=bins, histtype="step",
-            label=f"layer {lid}", color=colors[lid])
+    ax.hist(
+        layers[lid]["nstrips"],
+        bins=bins,
+        histtype="step",
+        label=f"layer {lid}",
+        color=colors[lid],
+    )
 ax.set_xlabel("strips per cluster")
 ax.set_ylabel("measurements")
 ax.set_title("Cluster size per layer")
@@ -145,8 +179,7 @@ save(fig, "beam_axis_positions.png")
 
 # 6. Measurements per event.
 fig, ax = plt.subplots(figsize=(7, 4.5))
-ax.hist(n_per_event, bins=np.arange(-0.5, max(n_per_event) + 1.5, 1),
-        color="0.3")
+ax.hist(n_per_event, bins=np.arange(-0.5, max(n_per_event) + 1.5, 1), color="0.3")
 ax.set_xlabel("measurements per event")
 ax.set_ylabel("events")
 ax.set_title(f"Measurements per event (mean {np.mean(n_per_event):.2f})")
