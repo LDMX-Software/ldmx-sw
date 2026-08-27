@@ -11,17 +11,6 @@ namespace tracking::reco {
  * Tracker DAQ map: the correspondence between an electronics sensor address
  * (feb, hybrid) and the detector layer it reads, plus the strip transform that
  * turns a physical channel (pchannel) into a sensor strip index.
- *
- * This is the single piece of information that connects the electronics-only
- * real-data chain (SiStripWaveform, addressed by feb/hybrid/pchannel) to the
- * geometry-aware reconstruction (FittedSiStripHit -> Measurement, addressed by
- * layer_id/strip_id).  Downstream of the resulting FittedSiStripHit nothing
- * knows about electronics again.
- *
- * The in-memory representation is deliberately independent of the on-disk
- * format: today it loads from a plain JSON file (fromJsonFile), but the map is
- * intended to migrate onto the conditions database later without changing any
- * consumer.
  */
 class TrackerDaqMap {
  public:
