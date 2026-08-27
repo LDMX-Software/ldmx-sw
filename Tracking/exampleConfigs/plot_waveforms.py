@@ -50,55 +50,107 @@ import ROOT
 parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
 )
-parser.add_argument("root_file",
-                    help="ROOT file from raw_to_measurements.py (--stop-at fit "
-                         "or measurements, so it carries the fit collection)")
-parser.add_argument("--tree", default="LDMX_Events",
-                    help="Event tree name (default: LDMX_Events)")
-parser.add_argument("--collection", default="TrackerWaveforms",
-                    help="SiStripWaveform collection name (default: TrackerWaveforms)")
-parser.add_argument("--fitted-collection", default="FittedSiStripHits",
-                    help="FittedSiStripHit collection holding the pulse fits "
-                         "(default: FittedSiStripHits). The fit is no longer "
-                         "stored on the waveform; it is joined back on via the "
-                         "DAQ map. If the collection or the map is missing, the "
-                         "fit overlay is simply omitted.")
-parser.add_argument("--daq-map", default=None,
-                    help="DAQ map JSON used to join fits back onto waveforms "
-                         "(default: search the install tree and ./Tracking/data)")
-parser.add_argument("--n-examples", type=int, default=10,
-                    help="Number of example waveforms to draw individual/overview "
-                         "panels for (default: 10). Summary histograms always use "
-                         "ALL waveforms.")
-parser.add_argument("--example-selection", choices=("random", "top"),
-                    default="random",
-                    help="How to pick the example waveforms: a 'random' sample "
-                         "(default) or the 'top' by peak significance.")
-parser.add_argument("--seed", type=int, default=12345,
-                    help="Random seed for example-waveform sampling (default: 12345)")
-parser.add_argument("--max-waveforms", type=int, default=None,
-                    help="Deprecated alias for --n-examples")
-parser.add_argument("--pedestal-file", default="pedestals.json",
-                    help="Pedestal JSON (the conditions source) used to recover "
-                         "per-channel noise for significance. If missing, raw ADC "
-                         "is plotted and waveforms are ranked by peak amplitude.")
-parser.add_argument("--output-dir", default="",
-                    help="Directory for output PNGs (default: same as the ROOT file)")
-parser.add_argument("--cols", type=int, default=2,
-                    help="Columns in the multi-panel overview (default: 2)")
-parser.add_argument("--t0-range", type=float, nargs=2, default=(150.0, 225.0),
-                    metavar=("MIN", "MAX"),
-                    help="x-range [ns] for the fit-t0 histogram (default: 150 225)")
-parser.add_argument("--t0-bins", type=int, default=75,
-                    help="Number of bins for the fit-t0 histogram (default: 75 = 1 ns)")
-parser.add_argument("--t0-select", type=float, nargs=2, default=None,
-                    metavar=("MIN", "MAX"),
-                    help="Restrict the example-waveform panels to converged fits "
-                         "with t0 in [MIN, MAX] ns (e.g. --t0-select 205 215). "
-                         "Summary histograms still use ALL waveforms.")
-parser.add_argument("--t0-band-split", type=float, default=200.0,
-                    help="t0 [ns] separating the in-time (below) from the late "
-                         "(above) band in the t0-diagnostics figure (default: 200)")
+parser.add_argument(
+    "root_file",
+    help="ROOT file from raw_to_measurements.py (--stop-at fit "
+    "or measurements, so it carries the fit collection)",
+)
+parser.add_argument(
+    "--tree", default="LDMX_Events", help="Event tree name (default: LDMX_Events)"
+)
+parser.add_argument(
+    "--collection",
+    default="TrackerWaveforms",
+    help="SiStripWaveform collection name (default: TrackerWaveforms)",
+)
+parser.add_argument(
+    "--fitted-collection",
+    default="FittedSiStripHits",
+    help="FittedSiStripHit collection holding the pulse fits "
+    "(default: FittedSiStripHits). The fit is no longer "
+    "stored on the waveform; it is joined back on via the "
+    "DAQ map. If the collection or the map is missing, the "
+    "fit overlay is simply omitted.",
+)
+parser.add_argument(
+    "--daq-map",
+    default=None,
+    help="DAQ map JSON used to join fits back onto waveforms "
+    "(default: search the install tree and ./Tracking/data)",
+)
+parser.add_argument(
+    "--n-examples",
+    type=int,
+    default=10,
+    help="Number of example waveforms to draw individual/overview "
+    "panels for (default: 10). Summary histograms always use "
+    "ALL waveforms.",
+)
+parser.add_argument(
+    "--example-selection",
+    choices=("random", "top"),
+    default="random",
+    help="How to pick the example waveforms: a 'random' sample "
+    "(default) or the 'top' by peak significance.",
+)
+parser.add_argument(
+    "--seed",
+    type=int,
+    default=12345,
+    help="Random seed for example-waveform sampling (default: 12345)",
+)
+parser.add_argument(
+    "--max-waveforms", type=int, default=None, help="Deprecated alias for --n-examples"
+)
+parser.add_argument(
+    "--pedestal-file",
+    default="pedestals.json",
+    help="Pedestal JSON (the conditions source) used to recover "
+    "per-channel noise for significance. If missing, raw ADC "
+    "is plotted and waveforms are ranked by peak amplitude.",
+)
+parser.add_argument(
+    "--output-dir",
+    default="",
+    help="Directory for output PNGs (default: same as the ROOT file)",
+)
+parser.add_argument(
+    "--cols",
+    type=int,
+    default=2,
+    help="Columns in the multi-panel overview (default: 2)",
+)
+parser.add_argument(
+    "--t0-range",
+    type=float,
+    nargs=2,
+    default=(150.0, 225.0),
+    metavar=("MIN", "MAX"),
+    help="x-range [ns] for the fit-t0 histogram (default: 150 225)",
+)
+parser.add_argument(
+    "--t0-bins",
+    type=int,
+    default=75,
+    help="Number of bins for the fit-t0 histogram (default: 75 = 1 ns)",
+)
+parser.add_argument(
+    "--t0-select",
+    type=float,
+    nargs=2,
+    default=None,
+    metavar=("MIN", "MAX"),
+    help="Restrict the example-waveform panels to converged fits "
+    "with t0 in [MIN, MAX] ns (e.g. --t0-select 205 215). "
+    "Summary histograms still use ALL waveforms.",
+)
+parser.add_argument(
+    "--t0-band-split",
+    type=float,
+    default=200.0,
+    help="t0 [ns] separating the in-time (below) from the late "
+    "(above) band in the t0-diagnostics figure (default: 200)",
+)
 args = parser.parse_args()
 
 # Backwards compatibility: --max-waveforms used to control the panel count.
@@ -220,11 +272,15 @@ have_noise = bool(ped_noise)
 # same DAQ-map strip transform the C++ uses (channelmap::stripId) turns a
 # waveform's (feb, hybrid, pchannel) into that key, so the join is exact.
 DAQ_MAP_CANDIDATES = [
-    os.path.join(os.environ.get("LDMX_INSTALL_PREFIX", ""),
-                 "data/Tracking/daqmap_esa25_slice_test.json"),
+    os.path.join(
+        os.environ.get("LDMX_INSTALL_PREFIX", ""),
+        "data/Tracking/daqmap_esa25_slice_test.json",
+    ),
     "Tracking/data/daqmap_esa25_slice_test.json",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 "../data/daqmap_esa25_slice_test.json"),
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "../data/daqmap_esa25_slice_test.json",
+    ),
 ]
 
 
@@ -259,23 +315,32 @@ if fitted_branch is not None:
             print(f"Loaded DAQ map for {len(daq_map)} sensors from '{cand}'")
             break
     if not daq_map:
-        print("WARNING: no DAQ map found; cannot join fit results onto "
-              "waveforms, so the fit overlay will be omitted. Pass --daq-map.")
+        print(
+            "WARNING: no DAQ map found; cannot join fit results onto "
+            "waveforms, so the fit overlay will be omitted. Pass --daq-map."
+        )
 
 have_fits = bool(fitted_branch) and bool(daq_map)
 if fitted_branch is None:
-    print(f"WARNING: no '{args.fitted_collection}' branch; fit overlay omitted. "
-          "Re-run raw_to_measurements.py with --stop-at fit (or measurements) "
-          "to produce it.")
+    print(
+        f"WARNING: no '{args.fitted_collection}' branch; fit overlay omitted. "
+        "Re-run raw_to_measurements.py with --stop-at fit (or measurements) "
+        "to produce it."
+    )
 elif have_fits:
     print(f"Joining fits from '{fitted_branch}' via the DAQ map")
 
-NO_FIT = {"fit_converged": False, "fit_amplitude": 0.0, "fit_t0": 0.0,
-          "fit_chi2": 0.0, "fit_ndf": 0}
+NO_FIT = {
+    "fit_converged": False,
+    "fit_amplitude": 0.0,
+    "fit_t0": 0.0,
+    "fit_chi2": 0.0,
+    "fit_ndf": 0,
+}
 
 
-top = []            # list of waveform record dicts
-occupancy = {}      # (feb, hybrid) -> np.array(N_STRIPS) of counts
+top = []  # list of waveform record dicts
+occupancy = {}  # (feb, hybrid) -> np.array(N_STRIPS) of counts
 
 for ievt, entry in enumerate(tree):
     # Index this event's fits by the address the fit processor assigned them.

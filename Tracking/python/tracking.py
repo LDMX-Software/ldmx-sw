@@ -613,5 +613,4 @@ class StripClusterProcessor(Processor):
     time_window_ns: float = -1.0
     neighbor_delta_t_ns: float = -1.0
     max_chi2_ndf: float = -1.0
-    daq_map_file: str = ''
-
+    daq_map_file: str = ""

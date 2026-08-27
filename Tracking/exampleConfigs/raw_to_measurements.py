@@ -44,7 +44,7 @@ import argparse
 import sys
 
 # fire passes '--' through to the script; strip it so argparse sees only flags.
-sys.argv = [a for a in sys.argv if a != '--']
+sys.argv = [a for a in sys.argv if a != "--"]
 
 parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
 parser.add_argument(
@@ -82,16 +82,18 @@ parser.add_argument("--neighbor-threshold", type=float, default=3.0)
 parser.add_argument("--cluster-threshold", type=float, default=4.0)
 # Chain truncation (subsumes the old decode_to_waveforms.py --no-fit / QA modes).
 parser.add_argument(
-    "--stop-at", choices=("waveforms", "fit", "measurements"),
+    "--stop-at",
+    choices=("waveforms", "fit", "measurements"),
     default="measurements",
     help="Truncate the chain: 'waveforms' (only TrackerWaveforms, no fit / no "
-         "DAQ map), 'fit' (adds FittedSiStripHits -- what plot_waveforms.py "
-         "wants), or 'measurements' (full chain to StripMeasurements, default).",
+    "DAQ map), 'fit' (adds FittedSiStripHits -- what plot_waveforms.py "
+    "wants), or 'measurements' (full chain to StripMeasurements, default).",
 )
 parser.add_argument(
-    "--verbose-waveforms", action="store_true",
+    "--verbose-waveforms",
+    action="store_true",
     help="Set the waveform builder (and fitter, if run) to trace logging, "
-         "printing per-channel fit results and full ASCII waveform traces.",
+    "printing per-channel fit results and full ASCII waveform traces.",
 )
 arg = parser.parse_args()
 
