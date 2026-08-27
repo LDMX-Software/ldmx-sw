@@ -85,12 +85,12 @@ void SiStripWaveformFitProcessor::produce(framework::Event& event) {
     const auto& sensor = daq_map_.at(feb, hybrid);
     const int16_t pchannel = wf.getPchannel();
     const int strip_id = channelmap::stripId(
-        pchannel, sensor.n_strips, sensor.first_strip, sensor.reversed);
+        pchannel, sensor.n_strips_, sensor.first_strip_, sensor.reversed_);
 
     // Reject channels that fall outside the bonded strip range (e.g. a read-out
     // but unbonded APV).  Counted so an unexpected layout shows up loudly.
-    if (strip_id < sensor.first_strip ||
-        strip_id >= sensor.first_strip + sensor.n_strips) {
+    if (strip_id < sensor.first_strip_ ||
+        strip_id >= sensor.first_strip_ + sensor.n_strips_) {
       ++n_out_of_range_;
       continue;
     }
@@ -141,7 +141,7 @@ void SiStripWaveformFitProcessor::produce(framework::Event& event) {
     }
 
     hits.emplace_back(
-        sensor.layer_id, strip_id, static_cast<float>(fit.amplitude),
+        sensor.layer_id_, strip_id, static_cast<float>(fit.amplitude),
         static_cast<float>(fit.t0), static_cast<float>(fit.chi2), fit.ndf,
         /*track_id=*/-1, /*pdg_id=*/0, /*sim_hit_id=*/-1,
         /*edep=*/0.f, noise);

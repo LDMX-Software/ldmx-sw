@@ -52,7 +52,7 @@ void StripClusterProcessor::onProcessStart() {
   if (!daq_map_file_.empty()) {
     const auto map = TrackerDaqMap::fromJsonFile(daq_map_file_);
     for (const auto& [key, sensor] : map.sensors()) {
-      layer_n_strips_[sensor.layer_id] = sensor.n_strips;
+      layer_n_strips_[sensor.layer_id_] = sensor.n_strips_;
     }
     ldmx_log(info) << "StripClusterProcessor loaded DAQ map from '"
                    << daq_map_file_ << "' (" << layer_n_strips_.size()

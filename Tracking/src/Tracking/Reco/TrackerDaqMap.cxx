@@ -52,10 +52,10 @@ TrackerDaqMap TrackerDaqMap::fromJsonFile(const std::string& path) {
     }
 
     SensorInfo info;
-    info.layer_id = s.at("layer_id").get<int>();
-    info.n_strips = s.at("n_strips").get<int>();
-    info.first_strip = s.at("first_strip").get<int>();
-    info.reversed = s.at("reversed").get<bool>();
+    info.layer_id_ = s.at("layer_id").get<int>();
+    info.n_strips_ = s.at("n_strips").get<int>();
+    info.first_strip_ = s.at("first_strip").get<int>();
+    info.reversed_ = s.at("reversed").get<bool>();
     map.sensors_[k] = info;
   }
 
