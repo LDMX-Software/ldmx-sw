@@ -64,10 +64,6 @@
                                                     -48.0 -40.0 
                                                     -96.0 -40.0" />
     
-    <!-- Both stations carry the SAME stereo sign: in the ESA slice-test
-         hardware the two stations are arranged identically, so the stereo
-         sensors tilt the same way.  (Previously this alternated
-         stereo_angle / -stereo_angle, giving the two stations opposite tilt.) -->
     <matrix name="recoil_l14_rot" coldim="1" values=" stereo_angle
                                                       stereo_angle
                                                       stereo_angle
@@ -133,11 +129,6 @@
       <materialref ref="Air"/>
       <solidref ref="recoil_box_trimmed"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-      <!-- ESA slice-test ordering: in each station the STEREO sensor sits
-           upstream (more negative z) and the AXIAL sensor downstream.  The
-           Acts surface index (00/01) follows z-order, so this makes 31/3200 the
-           stereo surface and 31/3201 the axial one.  (Previously the axial
-           sensor was placed upstream, opposite to the hardware.) -->
       <loop for="i" from="1" to="2" step="1">
         <!-- Stereo sensors (upstream) -->
         <physvol copynumber="20*i">
