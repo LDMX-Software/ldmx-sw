@@ -56,7 +56,7 @@ per-channel waveform. MC digitization already emits the assembled samples.
 | `SiStripWaveform` | assembled per-channel waveform (data) | samples + `feb/hybrid/pchannel`; **no fit result** (moved out) |
 | `FittedSiStripHit` | pulse-fit result (both chains) | + `noise` field; optional truth |
 
-### DAQ map (`Tracking/Reco/TrackerDaqMap`, `Tracking/data/daqmap_esa_slice_test.json`)
+### DAQ map (`Tracking/Reco/TrackerDaqMap`, `Tracking/data/daqmap_esa25_slice_test.json`)
 
 The single piece connecting electronics addressing to geometry:
 `(feb, hybrid) → (layer_id, n_strips, first_strip, reversed)`. Loaded from JSON

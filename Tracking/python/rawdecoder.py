@@ -2,7 +2,7 @@ from LDMX.Framework import Processor, processor
 from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
 
 
-def daq_map_path(name="daqmap_esa_slice_test.json"):
+def daq_map_path(name="daqmap_esa25_slice_test.json"):
     """Absolute path to a DAQ-map JSON installed under data/Tracking.
 
     The install prefix is substituted by cmake's configure_file when this module

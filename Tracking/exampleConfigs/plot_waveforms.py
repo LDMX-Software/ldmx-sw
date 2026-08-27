@@ -213,10 +213,10 @@ have_noise = bool(ped_noise)
 # waveform's (feb, hybrid, pchannel) into that key, so the join is exact.
 DAQ_MAP_CANDIDATES = [
     os.path.join(os.environ.get("LDMX_INSTALL_PREFIX", ""),
-                 "data/Tracking/daqmap_esa_slice_test.json"),
-    "Tracking/data/daqmap_esa_slice_test.json",
+                 "data/Tracking/daqmap_esa25_slice_test.json"),
+    "Tracking/data/daqmap_esa25_slice_test.json",
     os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                 "../data/daqmap_esa_slice_test.json"),
+                 "../data/daqmap_esa25_slice_test.json"),
 ]
 
 
