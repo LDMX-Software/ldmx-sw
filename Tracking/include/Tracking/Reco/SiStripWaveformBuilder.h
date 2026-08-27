@@ -9,31 +9,7 @@
 namespace tracking::reco {
 
 /**
- * Assemble per-trigger pedestal-subtracted hits into full per-channel
- * waveforms.
- *
- * Each RoR issues n_triggers APV triggers, each producing a 3-sample
- * (pedestal-subtracted) RawSiStripHit per channel.  This producer groups all
- * trigger hits for the same (feb, hybrid, pchannel), sorts by apv_trigger, and
- * concatenates their samples into a SiStripWaveform with n_triggers*3 samples
- * ordered as [s0_t0, s1_t0, s2_t0, s0_t1, ...].
- *
- * The per-channel noise used for the significance cuts is obtained from the
- * TrackerPedestals conditions object (a service); the physical strip number
- * (pchannel) is derived from the hit's apv_id/channel via channelmap.
- *
- * Two-stage threshold applied before writing:
- *   1. High-threshold count: at least min_high_samples samples with
- *      ADC/noise > high_threshold (default: 4 samples > 5σ).
- *   2. Consecutive low-threshold streak: at least min_consecutive_low
- *      consecutive samples with ADC/noise > low_threshold
- *      (default: 5 consecutive samples > 3σ).
- * Both conditions must be satisfied; this strongly suppresses noise while
- * retaining real APV25 signal pulses.
- *
- * No pulse fitting happens here: the assembled waveforms are handed to
- * SiStripWaveformFitProcessor, which fits them and emits FittedSiStripHits,
- * mirroring what StripFitProcessor does for simulation.
+ * Assemble per-trigger pedestal-subtracted hits into full per-channel waveforms.
  */
 class SiStripWaveformBuilder : public framework::Producer {
  public:
