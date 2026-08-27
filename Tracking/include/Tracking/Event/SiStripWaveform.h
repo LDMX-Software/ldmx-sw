@@ -20,12 +20,6 @@ namespace ldmx {
  * This is the natural input for waveform fitting (APV25 CR-RC pulse
  * shape → hit time with ~2.5 ns resolution) and any per-channel
  * waveform corrections before clustering.
- *
- * The class deliberately holds no fit result: the pulse-shape fit is performed
- * by SiStripWaveformFitProcessor, which writes it into an ldmx::FittedSiStripHit
- * exactly as StripFitProcessor does for simulation.  This is the real-data
- * analogue of ldmx::SimSiStripHit — assembled samples plus an address, nothing
- * more.
  */
 class SiStripWaveform {
  public:
