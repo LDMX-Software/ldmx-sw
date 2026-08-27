@@ -9,7 +9,8 @@
 namespace tracking::reco {
 
 /**
- * Assemble per-trigger pedestal-subtracted hits into full per-channel waveforms.
+ * Assemble per-trigger pedestal-subtracted hits into full per-channel
+ * waveforms.
  */
 class SiStripWaveformBuilder : public framework::Producer {
  public:
@@ -29,7 +30,7 @@ class SiStripWaveformBuilder : public framework::Producer {
   double low_threshold_{
       3.0};  ///< per-sample significance for consecutive-streak cut
   int min_consecutive_low_{
-      5};                ///< min consecutive samples exceeding low_threshold
+      5};               ///< min consecutive samples exceeding low_threshold
   int n_triggers_{10};  ///< expected APV triggers per RoR
 };
 

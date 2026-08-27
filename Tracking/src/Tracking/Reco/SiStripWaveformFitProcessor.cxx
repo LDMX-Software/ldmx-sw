@@ -10,8 +10,7 @@
 
 namespace tracking::reco {
 
-void SiStripWaveformFitProcessor::configure(
-    framework::config::Parameters& ps) {
+void SiStripWaveformFitProcessor::configure(framework::config::Parameters& ps) {
   input_collection_ =
       ps.get<std::string>("input_collection", input_collection_);
   input_pass_name_ = ps.get<std::string>("input_pass_name", input_pass_name_);
@@ -141,12 +140,11 @@ void SiStripWaveformFitProcessor::produce(framework::Event& event) {
       }
     }
 
-    hits.emplace_back(sensor.layer_id, strip_id,
-                      static_cast<float>(fit.amplitude),
-                      static_cast<float>(fit.t0),
-                      static_cast<float>(fit.chi2), fit.ndf,
-                      /*track_id=*/-1, /*pdg_id=*/0, /*sim_hit_id=*/-1,
-                      /*edep=*/0.f, noise);
+    hits.emplace_back(
+        sensor.layer_id, strip_id, static_cast<float>(fit.amplitude),
+        static_cast<float>(fit.t0), static_cast<float>(fit.chi2), fit.ndf,
+        /*track_id=*/-1, /*pdg_id=*/0, /*sim_hit_id=*/-1,
+        /*edep=*/0.f, noise);
     ++n_hits_;
   }
 

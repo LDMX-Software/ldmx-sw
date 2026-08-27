@@ -63,7 +63,8 @@ class StripClusterProcessor : public TrackingGeometryUser {
 
   // Optional DAQ map: when set, the local-U centre offset for a layer uses that
   // sensor's real strip count instead of the fixed N_READOUT_STRIPS constant.
-  // Empty (the default, MC) keeps the constant and leaves the MC path unchanged.
+  // Empty (the default, MC) keeps the constant and leaves the MC path
+  // unchanged.
   std::string daq_map_file_{""};
   std::map<int, int> layer_n_strips_;  ///< layer_id -> n_strips (from DAQ map)
 

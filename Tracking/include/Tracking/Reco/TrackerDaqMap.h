@@ -16,10 +16,10 @@ class TrackerDaqMap {
  public:
   /// Everything the mapper needs to know about one physical sensor.
   struct SensorInfo {
-    int layer_id{-1};  ///< Acts surface id (volume*1000 + layer*100 + sensor).
-    int n_strips{0};   ///< Number of bonded strips on the sensor.
-    int first_strip{0};    ///< Sensor strip index that pchannel 0 maps to.
-    bool reversed{false};  ///< True if the hybrid reads the sensor descending.
+    int layer_id_{-1};  ///< Acts surface id (volume*1000 + layer*100 + sensor).
+    int n_strips_{0};   ///< Number of bonded strips on the sensor.
+    int first_strip_{0};    ///< Sensor strip index that pchannel 0 maps to.
+    bool reversed_{false};  ///< True if the hybrid reads the sensor descending.
   };
 
   TrackerDaqMap() = default;

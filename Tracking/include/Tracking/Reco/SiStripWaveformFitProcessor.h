@@ -14,7 +14,7 @@ namespace tracking::reco {
 /**
  * Fit a pulse shape to each SiStripWaveform and produce FittedSiStripHits.
  * This is the real-data counterpart of StripFitProcessor, and the bridge into
- * the geometry-aware reconstruction.  
+ * the geometry-aware reconstruction.
  *
  * Input  : collection of ldmx::SiStripWaveform (pedestal-subtracted samples)
  * Output : collection of ldmx::FittedSiStripHit
