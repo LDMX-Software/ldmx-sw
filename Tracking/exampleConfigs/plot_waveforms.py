@@ -1,10 +1,10 @@
-"""Plot SiStripWaveforms straight from a decode_to_waveforms.py ROOT file.
+"""Plot SiStripWaveforms straight from a raw_to_measurements.py ROOT file.
 
 This is step 3 of the real-data tracker waveform chain:
 
-    1. compute_pedestals.py                   -> pedestals.json
-    2. decode_to_waveforms.py                 -> <output>.root (TrackerWaveforms)
-    3. plot_waveforms.py       (this script)  -> PNG figures
+    1. compute_pedestals.py                       -> pedestals.json
+    2. raw_to_measurements.py --stop-at fit      -> <output>.root (TrackerWaveforms)
+    3. plot_waveforms.py           (this script)  -> PNG figures
 
 Unlike the in-framework approach, this is a STANDALONE script: it reads the
 ldmx::SiStripWaveform collection directly out of the ROOT event tree with
@@ -50,7 +50,9 @@ import ROOT
 parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
 )
-parser.add_argument("root_file", help="ROOT file from decode_to_waveforms.py")
+parser.add_argument("root_file",
+                    help="ROOT file from raw_to_measurements.py (--stop-at fit "
+                         "or measurements, so it carries the fit collection)")
 parser.add_argument("--tree", default="LDMX_Events",
                     help="Event tree name (default: LDMX_Events)")
 parser.add_argument("--collection", default="TrackerWaveforms",
@@ -263,7 +265,8 @@ if fitted_branch is not None:
 have_fits = bool(fitted_branch) and bool(daq_map)
 if fitted_branch is None:
     print(f"WARNING: no '{args.fitted_collection}' branch; fit overlay omitted. "
-          "Re-run decode_to_waveforms.py without --no-fit to produce it.")
+          "Re-run raw_to_measurements.py with --stop-at fit (or measurements) "
+          "to produce it.")
 elif have_fits:
     print(f"Joining fits from '{fitted_branch}' via the DAQ map")
 

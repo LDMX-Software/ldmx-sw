@@ -4,6 +4,17 @@ This is the step that connects the electronics-addressed waveform chain to the
 geometry-aware reconstruction, using a DAQ map to turn (feb, hybrid, pchannel)
 into (layer_id, strip_id).
 
+The chain can be truncated with --stop-at, which subsumes the old
+decode_to_waveforms.py workflows:
+
+    --stop-at waveforms    ->  TrackerWaveforms                     (no fit)
+    --stop-at fit          ->  TrackerWaveforms + FittedSiStripHits
+    --stop-at measurements ->  ... + StripMeasurements              (default)
+
+The 'fit' output is exactly what plot_waveforms.py reads -- same collection
+names, same 'trackerReco' pass -- so waveform QA runs straight off this script
+(point plot_waveforms.py at the output ROOT file).
+
 Pipeline
 --------
     SingleSubsystemUnpacker  ->  TrackerRawData (bytes)
@@ -25,6 +36,7 @@ Usage
         [--daq-map /path/to/daqmap.json] \
         [--detector ldmx-reduced-v3] \
         [--max-events N] \
+        [--stop-at waveforms|fit|measurements] \
         [--output measurements.root]
 """
 
@@ -68,6 +80,19 @@ parser.add_argument("--min-consecutive-low", type=int, default=5)
 parser.add_argument("--seed-threshold", type=float, default=4.0)
 parser.add_argument("--neighbor-threshold", type=float, default=3.0)
 parser.add_argument("--cluster-threshold", type=float, default=4.0)
+# Chain truncation (subsumes the old decode_to_waveforms.py --no-fit / QA modes).
+parser.add_argument(
+    "--stop-at", choices=("waveforms", "fit", "measurements"),
+    default="measurements",
+    help="Truncate the chain: 'waveforms' (only TrackerWaveforms, no fit / no "
+         "DAQ map), 'fit' (adds FittedSiStripHits -- what plot_waveforms.py "
+         "wants), or 'measurements' (full chain to StripMeasurements, default).",
+)
+parser.add_argument(
+    "--verbose-waveforms", action="store_true",
+    help="Set the waveform builder (and fitter, if run) to trace logging, "
+         "printing per-channel fit results and full ASCII waveform traces.",
+)
 arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
@@ -131,4 +156,17 @@ clusterer.seed_threshold = arg.seed_threshold
 clusterer.neighbor_threshold = arg.neighbor_threshold
 clusterer.cluster_threshold = arg.cluster_threshold
 
-p.sequence = [unpacker, decoder, subtractor, builder, fitter, clusterer]
+# Assemble the sequence, truncating at --stop-at. The builder always runs; the
+# fitter is added for 'fit'/'measurements', the clusterer only for the full
+# 'measurements' chain. (In 'waveforms' mode the fitter/clusterer objects above
+# are simply left out of the sequence, and the DAQ map is never opened.)
+p.sequence = [unpacker, decoder, subtractor, builder]
+if arg.stop_at in ("fit", "measurements"):
+    p.sequence.append(fitter)
+if arg.stop_at == "measurements":
+    p.sequence.append(clusterer)
+
+if arg.verbose_waveforms:
+    p.logger.trace(builder)
+    if arg.stop_at in ("fit", "measurements"):
+        p.logger.trace(fitter)
