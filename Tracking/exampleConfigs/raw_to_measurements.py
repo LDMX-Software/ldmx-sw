@@ -19,7 +19,7 @@ compute_pedestals.py first to produce the pedestal JSON.
 
 Usage
 -----
-    denv_workspace="$PWD" denv fire Tracking/exampleConfigs/waveforms_to_measurements.py -- \
+    denv_workspace="$PWD" denv fire Tracking/exampleConfigs/raw_to_measurements.py -- \
         [--dat /path/to/physics.dat] \
         [--pedestal-file pedestals.json] \
         [--daq-map /path/to/daqmap.json] \
