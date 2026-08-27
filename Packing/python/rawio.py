@@ -48,13 +48,15 @@ class RawIO(Processor):
 
     @staticmethod
     def source(file_name):
-        return RawIO(raw_file=RawDataFile.source(file_name),
-                     instance_name=f'IO_{file_name}')
+        return RawIO(
+            raw_file=RawDataFile.source(file_name), instance_name=f"IO_{file_name}"
+        )
 
     @staticmethod
     def destination(file_name):
-        return RawIO(raw_file=RawDataFile.destination(file_name),
-                     instance_name=f'IO_{file_name}')
+        return RawIO(
+            raw_file=RawDataFile.destination(file_name), instance_name=f"IO_{file_name}"
+        )
 
 
 @processor("packing::SingleSubsystemUnpacker", "Packing")

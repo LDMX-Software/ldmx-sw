@@ -12,4 +12,4 @@ Use the following line in your python script to inform PyROOT of our Event Model
 import ROOT
 
 
-ROOT.gSystem.Load( '@CMAKE_INSTALL_PREFIX@/lib/libRecon.so' )
+ROOT.gSystem.Load("@CMAKE_INSTALL_PREFIX@/lib/libRecon.so")

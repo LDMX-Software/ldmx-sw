@@ -38,7 +38,7 @@ import argparse
 import sys
 
 # just fire passes '--' through to the script; strip it so argparse sees only flags.
-sys.argv = [a for a in sys.argv if a != '--']
+sys.argv = [a for a in sys.argv if a != "--"]
 
 parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
 parser.add_argument(
@@ -117,18 +117,18 @@ peds = rawdecoder.TrackerPedestalProvider(pedestal_file=arg.pedestal_file)
 
 # Stage 3: subtract pedestals -> subtracted RawSiStripHit collection.
 subtractor = rawdecoder.PedestalSubtractor()
-subtractor.input_collection  = decoder.output_collection
+subtractor.input_collection = decoder.output_collection
 subtractor.output_collection = "TrackerHits"
 
 # Stage 4: assemble per-channel waveforms -> SiStripWaveform collection.
 builder = rawdecoder.SiStripWaveformBuilder()
-builder.input_collection     = subtractor.output_collection
-builder.output_collection    = "TrackerWaveforms"
-builder.high_threshold       = arg.high_threshold
-builder.min_high_samples     = arg.min_high_samples
-builder.low_threshold        = arg.low_threshold
-builder.min_consecutive_low  = arg.min_consecutive_low
-builder.n_triggers           = arg.n_triggers
+builder.input_collection = subtractor.output_collection
+builder.output_collection = "TrackerWaveforms"
+builder.high_threshold = arg.high_threshold
+builder.min_high_samples = arg.min_high_samples
+builder.low_threshold = arg.low_threshold
+builder.min_consecutive_low = arg.min_consecutive_low
+builder.n_triggers = arg.n_triggers
 
 p.sequence = [unpacker, decoder, subtractor, builder]
 

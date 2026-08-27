@@ -122,4 +122,3 @@ class PropagationMapWriter(Processor):
     target_scoring_plane_passname: str = ""
     target_sp_hits_events_passname: str = ""
     ecal_sp_hits_events_passname: str = ""
-

@@ -19,7 +19,7 @@
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
@@ -188,9 +188,6 @@ class TruthSeedProcessor : public TrackingGeometryUser {
       const std::map<int, std::vector<int>>& hit_count_map,
       const std::shared_ptr<Acts::Surface>& origin_surface,
       const std::shared_ptr<Acts::Surface>& target_surface);
-
-  /// The ACTS geometry context properly
-  Acts::GeometryContext gctx_;
 
   /// pdg_ids of the particles we want to select for the seeds
   std::vector<int> pdg_ids_{11};

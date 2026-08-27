@@ -135,17 +135,16 @@ void StraightTracksDQM::trackMonitoringUnique(
     double track_state_loc1_ecal = track.getEcalLayer1Y();
     int track_pdg_id = track.getPdgID();
 
-    double sigma_phi = phiAngleError(track.getSlopeX(), track.getCov());
+    const std::vector<double> cov = track.getCov();
+    double sigma_phi = phiAngleError(track.getSlopeX(), cov);
     double sigma_theta =
-        thetaAngleError(track.getSlopeX(), track.getSlopeY(), track.getCov());
-    double sigma_loc0_target = std::sqrt(track.getCov()[4]);
-    double sigma_loc1_target = std::sqrt(track.getCov()[9]);
+        thetaAngleError(track.getSlopeX(), track.getSlopeY(), cov);
+    double sigma_loc0_target = std::sqrt(cov[4]);
+    double sigma_loc1_target = std::sqrt(cov[9]);
     double sigma_loc0_ecal =
-        locError(track.getCov().at(0), track.getCov().at(4),
-                 track.getCov().at(1), track.getEcalLayer1Z());
+        locError(cov.at(0), cov.at(4), cov.at(1), track.getEcalLayer1Z());
     double sigma_loc1_ecal =
-        locError(track.getCov().at(7), track.getCov().at(9),
-                 track.getCov().at(8), track.getEcalLayer1Z());
+        locError(cov.at(7), cov.at(9), cov.at(8), track.getEcalLayer1Z());
 
     histograms_.fill(title + "phi", trk_phi);
     histograms_.fill(title + "theta", trk_theta);

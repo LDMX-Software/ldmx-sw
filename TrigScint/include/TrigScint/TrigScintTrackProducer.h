@@ -96,13 +96,13 @@ class TrigScintTrackProducer : public framework::Producer {
   struct LUTKey {
     float p1_, p2_, p3_;
 
-    bool operator==(const LUTKey &other) const {
+    bool operator==(const LUTKey& other) const {
       return p1_ == other.p1_ && p2_ == other.p2_ && p3_ == other.p3_;
     }
   };
 
   struct LUTKeyHash {
-    size_t operator()(const LUTKey &k) const {
+    size_t operator()(const LUTKey& k) const {
       return std::hash<float>()(k.p1_) ^ (std::hash<float>()(k.p2_) << 1) ^
              (std::hash<float>()(k.p3_) << 2);
     }

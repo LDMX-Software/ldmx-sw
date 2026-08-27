@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Acts/Definitions/Algebra.hpp"
+#include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/SourceLink.hpp"
 #include "Acts/EventData/VectorMultiTrajectory.hpp"
@@ -84,13 +85,9 @@ class LdmxMeasurementCalibrator {
     // make tsCalCov 2x2 block the local_cov we just set
     ts_cal_cov.block(0, 0, 2, 2) = local_cov;
 
-    Acts::ActsMatrix<2, 6> projector;
-    projector.setZero();
-    projector(0, 0) = 1.;
-    projector(1, 1) = 1.;
-
-    trackState.setProjector(projector);
-    trackState.setUncalibratedSourceLink(genericSourceLink);
+    trackState.setProjectorSubspaceIndices(
+        std::array<Acts::BoundIndices, 2>{Acts::eBoundLoc0, Acts::eBoundLoc1});
+    trackState.setUncalibratedSourceLink(Acts::SourceLink{genericSourceLink});
   }
 
   /// Find the measurement corresponding to the source link.
@@ -124,12 +121,9 @@ class LdmxMeasurementCalibrator {
     ts_cal_cov.setZero();
     ts_cal_cov(0, 0) = (meas.getLocalCovariance())[0];
 
-    Acts::ActsMatrix<2, 6> projector;
-    projector.setZero();
-    projector(0, 0) = 1.;
-    projector(1, 1) = 1.;
-    trackState.setProjector(projector.row(0));
-    trackState.setUncalibratedSourceLink(genericSourceLink);
+    trackState.setProjectorSubspaceIndices(
+        std::array<Acts::BoundIndices, 1>{Acts::eBoundLoc0});
+    trackState.setUncalibratedSourceLink(Acts::SourceLink{genericSourceLink});
   }
 
   // Function to test the measurement calibrator
