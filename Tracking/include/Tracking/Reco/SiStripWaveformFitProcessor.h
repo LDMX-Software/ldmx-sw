@@ -13,21 +13,8 @@ namespace tracking::reco {
 
 /**
  * Fit a pulse shape to each SiStripWaveform and produce FittedSiStripHits.
- *
  * This is the real-data counterpart of StripFitProcessor, and the bridge into
- * the geometry-aware reconstruction.  The two processors do the same thing and
- * share the same fitter; they differ only in where the sensor address and the
- * per-sample noise come from:
- *
- *   StripFitProcessor            SimSiStripHit    layer/strip from the hit,
- *                                                 noise = NOISE_SIGMA_ADC
- *   SiStripWaveformFitProcessor  SiStripWaveform  layer/strip from the DAQ map,
- *                                                 noise from TrackerPedestals
- *
- * Address mapping is applied first, so a waveform from an unmapped hybrid or an
- * unbonded channel is discarded before the (more expensive) fit runs.  Once
- * emitted, hits flow through the unchanged StripClusterProcessor -> Measurement
- * path, which knows nothing about electronics.
+ * the geometry-aware reconstruction.  
  *
  * Input  : collection of ldmx::SiStripWaveform (pedestal-subtracted samples)
  * Output : collection of ldmx::FittedSiStripHit
@@ -44,10 +31,6 @@ namespace tracking::reco {
  *   t_scan_step_ns      Step size of the coarse scan [ns] (default 1).
  *   max_chi2_ndf        If > 0, discard fits with chi2/ndf above this value
  *                       (default -1 = off).
- *
- * The pedestal and the sample-0 time offset are fixed at zero: the input
- * samples are already pedestal-subtracted and their times are measured from
- * sample 0.
  */
 class SiStripWaveformFitProcessor : public framework::Producer {
  public:
