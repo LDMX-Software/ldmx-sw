@@ -65,9 +65,9 @@
                                                     -96.0 -40.0" />
     
     <matrix name="recoil_l14_rot" coldim="1" values=" stereo_angle
+                                                     -stereo_angle
                                                       stereo_angle
-                                                      stereo_angle
-                                                      stereo_angle" />
+                                                     -stereo_angle" />
   </define>
 
   
@@ -129,19 +129,19 @@
       <materialref ref="Air"/>
       <solidref ref="recoil_box_trimmed"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
-      <loop for="i" from="1" to="2" step="1">
-        <!-- Stereo sensors (upstream) -->
-        <physvol copynumber="20*i">
-          <volumeref ref="recoil_l14_sensor_vol"/>
-          <position name="recoil_l14_stereo_pos" unit="mm" x="0.0" y="0.0"
-                    z="recoil_l14_z[i] - recoil_l14_sensor_sep" />
-          <rotation name="recoil_l14_stereo_rot" unit="deg" x="0" y="0" z="recoil_l14_rot[i]"/>
+      <loop for="i" from="1" to="2" step="1"> 
+        <!-- Axial sensors --> 
+        <physvol copynumber="20*i-10"> 
+          <volumeref ref="recoil_l14_sensor_vol"/> 
+          <position name="recoil_l14_axial_pos" unit="mm" x="0.0" y="0.0" 
+                    z="recoil_l14_z[i] - recoil_l14_sensor_sep" /> 
         </physvol>
-        <!-- Axial sensors (downstream) -->
-        <physvol copynumber="20*i-10">
-          <volumeref ref="recoil_l14_sensor_vol"/>
-          <position name="recoil_l14_axial_pos" unit="mm" x="0.0" y="0.0"
-                    z="recoil_l14_z[i] + recoil_l14_sensor_sep" />
+        <!-- Stereo sensors -->
+        <physvol copynumber="20*i"> 
+          <volumeref ref="recoil_l14_sensor_vol"/> 
+          <position name="recoil_l14_stereo_pos" unit="mm" x="0.0" y="0.0" 
+                    z="recoil_l14_z[i] + recoil_l14_sensor_sep" /> 
+          <rotation name="recoil_l14_stereo_rot" unit="deg" x="0" y="0" z="recoil_l14_rot[i]"/>
         </physvol>
       </loop>
       <!-- Removed the axial layer sensors for the reduced LDMX--> 
