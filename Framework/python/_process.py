@@ -79,6 +79,7 @@ class Process:
         whether to log performance timing of the difference processors into a directory
         in the histogram file (requires a histogram file to be defined)
 
+
     See Also
     --------
     Producer : one type of event processor
