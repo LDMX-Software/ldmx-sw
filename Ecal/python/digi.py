@@ -428,6 +428,24 @@ class EcalRecProducer(Processor):
         )
 
     @staticmethod
+    def v16(**kwargs):
+        """Generated for the v16 geometry (Ecal is same as v15)
+
+        The secondOrderEnergyCorrection is deteremined by generating 1M single
+        4GeV or 8GeV electron events shot directly into the front of the ECal from
+        immediately upstream. The mean of the resulting total recon energy is found
+        by fitting a two-sided normal distribution (one mean, a low and high deviation)
+        to the histogram.
+        """
+        return EcalRecProducer(
+            second_order_energy_correction=latest_second_order_energy_correction,
+            # these layer weights were the 'dE' column of the table output by
+            # Detectors/util/ecal_layer_stack.py
+            layer_weights=latest_layer_weights,
+            **kwargs,
+        )
+
+    @staticmethod
     def reduced_v2(**kwargs):
         """Generated for the reduced v2 geometry
 

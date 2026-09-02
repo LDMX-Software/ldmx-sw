@@ -1,0 +1,32 @@
+--- ldmx-det-v15-8gev/detector.gdml	2026-07-07 10:30:03.144434844 -0500
++++ ldmx-det-v16-8gev/detector.gdml	2026-07-15 16:10:32.975787237 -0500
+@@ -14,11 +14,11 @@
+ 
+     <!--
+       Position of the tagger and recoil tracker envelopes with respect to
+-      target.  The 9 mm offset was chosen such that the midpoints of the 
+-      last (first) layer of the tagger (recoil) tracker are 25 mm apart.
++      target.  The 11.5 mm offset was chosen such that the midpoints of the 
++      last (first) layer of the tagger (recoil) tracker are 30 mm apart.
+     -->
+-    <variable name="tagger_pos_z" value="-9*mm - tagger_envelope_dz/2" /> 
+-    <variable name="recoil_pos_z" value="9*mm + recoil_envelope_dz/2"/>
++    <variable name="tagger_pos_z" value="-11.5*mm - tagger_envelope_dz/2" /> 
++    <variable name="recoil_pos_z" value="11.5*mm + recoil_envelope_dz/2"/>
+ 
+     <!-- Position of the ECal and HCal parent volumes -->
+     <constant name="em_calorimeter_pos_z" value="ecal_front_z" />
+@@ -110,10 +110,10 @@
+     
+   <userinfo>
+     <!-- detector version -->
+-    <auxiliary auxtype="DetectorVersion" auxvalue="15">
+-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v15-8gev"/>
++    <auxiliary auxtype="DetectorVersion" auxvalue="16">
++      <auxiliary auxtype="DetectorName" auxvalue="ldmx-det-v16-8gev"/>
+       <auxiliary auxtype="Description" 
+-                 auxvalue="The Late 2022 Design Report Geometry with air instead of vacuum."/>
++                 auxvalue="The 2025 Design Report Geometry."/>
+     </auxiliary>
+     
+     <!-- magnetic field with global field map definition -->     

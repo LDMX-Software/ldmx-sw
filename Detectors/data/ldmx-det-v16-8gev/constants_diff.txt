@@ -1,0 +1,74 @@
+--- ldmx-det-v15-8gev/constants.gdml	2026-07-07 10:30:03.143885411 -0500
++++ ldmx-det-v16-8gev/constants.gdml	2026-07-07 13:59:44.647896263 -0500
+@@ -105,18 +105,19 @@
+ <!-- Stereo Angle = 100 mrad = 5.72 degrees -->
+ <variable name="stereo_angle" value="5.72957795130823"/>
+ 
+-<!-- HPS module and sensor dimensions -->
++<!-- Sensor dimensions 
++    #############################################################################################
++    No longer calling this "HPS"
++    Removed "largse sensor". Tagger and recoil will now both use the same sensors.
++    Changed sensor dimensions to match design report
++    Keeping sensor thickness unchanged (still manufactured with HPK silicon microstrips as in HPS)
++    #############################################################################################
++-->
+ <variable name="si_sensor_thickness" value="0.32*mm"/>
+-<variable name="si_active_sensor_dx" value="38.3399*mm" />
+-<variable name="si_active_sensor_dy" value="98.33*mm" />
+-<variable name="si_sensor_dx" value="40.34*mm" />
+-<variable name="si_sensor_dy" value="100.0*mm" />
+-
+-<!-- Large module and sensor dimensions --> 
+-<variable name="si_large_active_sensor_dx" value="48*mm" />
+-<variable name="si_large_active_sensor_dy" value="78*mm" />
+-<variable name="si_large_sensor_dx" value="50*mm" />
+-<variable name="si_large_sensor_dy" value="80*mm" />
++<variable name="si_active_sensor_dx" value="46.02*mm" />
++<variable name="si_active_sensor_dy" value="94.0*mm" />
++<variable name="si_sensor_dx" value="48.02*mm" />
++<variable name="si_sensor_dy" value="96.0*mm" />
+ 
+ <!-- 
+   Clearance between the first/last sensor in the tagger tracker and the 
+@@ -132,10 +133,14 @@
+ <constant name="recoil_l14_sensor_sep" value="3.0*mm"/>
+ <constant name="recoil_l56_sensor_sep" value="1.0*mm"/>
+ 
+-<!-- Seperation between layers --> 
++<!-- Seperation between layers
++    #############################################################################################
++    Changed to match design report.
++    #############################################################################################
++--> 
+ <constant name="recoil_delta_l14" value="15*mm" />
+-<constant name="recoil_delta_l45" value="37*mm" />
+-<constant name="recoil_delta_l56" value="90*mm" />
++<constant name="recoil_delta_l45" value="40*mm" />
++<constant name="recoil_delta_l56" value="80*mm" />
+ 
+ <!-- Recoil envelope dimensions --> 
+ <constant name="recoil_envelope_dx" value="magnet_gap_dx" />
+@@ -158,7 +163,7 @@
+ <variable name="tagger_envelope_dx" value="magnet_gap_dx" />
+ <variable name="tagger_envelope_dy" value="magnet_gap_dy" />
+ <!-- 
+-  The total length in z of the tagger envelope leaves 2.5 mm of clearance on
++  The total length in z of the tagger envelope leaves 3.5 mm of clearance on
+   either side 
+ -->
+ <variable name="tagger_envelope_dz" 
+@@ -167,9 +172,12 @@
+ 
+ <!--
+   Location of TS pads relative to target
++  #########################################################################
++  Changed offset of 9 to 11.5 between tagger envelope and target
++  #########################################################################
+ -->
+ <variable name="ts_center_z"
+-      value="-9 -tagger_envelope_dz -trig_scint_area_envelope_z/2 - clearance - 200" />
++      value="-11.5 -tagger_envelope_dz -trig_scint_area_envelope_z/2 - clearance - 200" />
+ <constant name="trigger_pad1_actual_z"
+     value="ts_center_z - (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2) 
+             + trigger_pad_thickness/2" />

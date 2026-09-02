@@ -10,7 +10,7 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore.user_actions import PhotonuclearTracker
 
 
-det = "ldmx-det-v15-8gev"
+det = "ldmx-det-v16-8gev"
 
 my_sim = ecal.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 my_sim.description = "ECal PN Test Simulation"
