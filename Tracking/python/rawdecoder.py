@@ -6,6 +6,16 @@ from LDMX.Framework import (
 )
 
 
+def daq_map_path(name="daqmap_esa25_slice_test.json"):
+    """Absolute path to a DAQ-map JSON installed under data/Tracking.
+
+    The install prefix is substituted by cmake's configure_file when this module
+    is installed (the same mechanism LDMX.Detectors.make_path uses), so this
+    resolves to the real installed location at runtime.
+    """
+    return "@CMAKE_INSTALL_PREFIX@/data/Tracking/" + name
+
+
 @processor("tracking::reco::RawTrackerDecoder", "Tracking")
 class RawTrackerDecoder(Processor):
     """Decode raw Rogue frame bytes into a RawSiStripHit collection.
@@ -130,8 +140,9 @@ class SiStripWaveformBuilder(Processor):
     n_triggers : int
         Expected number of APV triggers per RoR (default: 10).
 
-    Per-fit results and full waveform traces are emitted at the 'trace' logging
-    level; set the processor's logging level to see them.
+    No pulse fitting happens here; that is SiStripWaveformFitProcessor's job.
+    Full waveform traces are emitted at the 'trace' logging level; set the
+    processor's logging level to see them.
     """
 
     input_collection: str = "TrackerHits"
@@ -142,3 +153,49 @@ class SiStripWaveformBuilder(Processor):
     low_threshold: float = 3.0
     min_consecutive_low: int = 5
     n_triggers: int = 10
+
+
+@processor("tracking::reco::SiStripWaveformFitProcessor", "Tracking")
+class SiStripWaveformFitProcessor(Processor):
+    """Fit SiStripWaveforms and produce geometry-addressed FittedSiStripHits.
+
+    The real-data counterpart of tracking.StripFitProcessor: it fits the same
+    pulse shape with the same fitter, differing only in that the sensor address
+    comes from a DAQ map (JSON) instead of the hit itself, and the per-sample
+    noise comes from the TrackerPedestals conditions object instead of a fixed
+    constant.  Each waveform's (feb, hybrid, pchannel) becomes a
+    (layer_id, strip_id); the resulting FittedSiStripHit collection feeds the
+    standard, geometry-aware StripClusterProcessor exactly as the MC chain does.
+
+    Attributes
+    ----------
+    input_collection : str
+        SiStripWaveform collection to read (default: 'TrackerWaveforms').
+    input_pass_name : str
+        Pass name of the upstream producer (empty = any pass).
+    output_collection : str
+        Name for the output FittedSiStripHit collection (default:
+        'FittedSiStripHits').
+    daq_map_file : str
+        Path to the DAQ map JSON file; required (loaded at onProcessStart).
+    t_scan_min_ns : float
+        Lower bound of the hit-time scan [ns] (default: -50).
+    t_scan_max_ns : float
+        Upper bound of the hit-time scan [ns].  Non-positive means auto, i.e.
+        sized to each waveform as n_samples * 25 ns (default: -1).
+    t_scan_step_ns : float
+        Step size of the coarse hit-time scan [ns] (default: 1).
+    max_chi2_ndf : float
+        If > 0, discard fits with chi2/ndf above this value (default: -1, off).
+
+    Per-fit results are emitted at the 'trace' logging level.
+    """
+
+    input_collection: str = "TrackerWaveforms"
+    input_pass_name: str = ""
+    output_collection: str = "FittedSiStripHits"
+    daq_map_file: str = ""
+    t_scan_min_ns: float = -50.0
+    t_scan_max_ns: float = -1.0
+    t_scan_step_ns: float = 1.0
+    max_chi2_ndf: float = -1.0

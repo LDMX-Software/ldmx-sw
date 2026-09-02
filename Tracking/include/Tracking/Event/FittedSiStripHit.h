@@ -26,7 +26,7 @@ class FittedSiStripHit {
 
   FittedSiStripHit(int layer_id, int strip_id, float amplitude, float t0,
                    float chi2, int ndf, int track_id = -1, int pdg_id = 0,
-                   int sim_hit_id = -1, float edep = 0.f)
+                   int sim_hit_id = -1, float edep = 0.f, float noise = 0.f)
       : layer_id_(layer_id),
         strip_id_(strip_id),
         amplitude_(amplitude),
@@ -36,7 +36,8 @@ class FittedSiStripHit {
         track_id_(track_id),
         pdg_id_(pdg_id),
         sim_hit_id_(sim_hit_id),
-        edep_(edep) {}
+        edep_(edep),
+        noise_(noise) {}
 
   virtual ~FittedSiStripHit() = default;
 
@@ -51,6 +52,7 @@ class FittedSiStripHit {
     pdg_id_ = 0;
     sim_hit_id_ = -1;
     edep_ = 0.f;
+    noise_ = 0.f;
   }
 
   // --- Getters ---
@@ -71,6 +73,9 @@ class FittedSiStripHit {
   int getSimHitID() const { return sim_hit_id_; }
   /// Energy deposited by the parent SimTrackerHit [MeV] (0 if unknown).
   float getEdep() const { return edep_; }
+  /// Per-strip noise RMS [ADC counts] (0 if unknown; clustering then falls back
+  /// to the global StripClusterer noise).
+  float getNoise() const { return noise_; }
 
   // --- Setters ---
   void setLayerID(int v) { layer_id_ = v; }
@@ -83,13 +88,15 @@ class FittedSiStripHit {
   void setPdgID(int v) { pdg_id_ = v; }
   void setSimHitID(int v) { sim_hit_id_ = v; }
   void setEdep(float v) { edep_ = v; }
+  void setNoise(float v) { noise_ = v; }
 
   friend std::ostream& operator<<(std::ostream& o, const FittedSiStripHit& h) {
     o << "[ FittedSiStripHit ]: layer=" << h.layer_id_
       << " strip=" << h.strip_id_ << " amp=" << h.amplitude_ << " ADC"
       << " t0=" << h.t0_ << " ns" << " chi2/ndf=" << h.chi2_ << "/" << h.ndf_
       << " track_id=" << h.track_id_ << " pdg_id=" << h.pdg_id_
-      << " sim_hit_id=" << h.sim_hit_id_ << " edep=" << h.edep_ << " MeV";
+      << " sim_hit_id=" << h.sim_hit_id_ << " edep=" << h.edep_ << " MeV"
+      << " noise=" << h.noise_ << " ADC";
     return o;
   }
 
@@ -111,8 +118,10 @@ class FittedSiStripHit {
   int sim_hit_id_{-1};
   /// Energy deposited by the parent SimTrackerHit [MeV].
   float edep_{0.f};
+  /// Per-strip noise RMS [ADC counts]; 0 means unset.
+  float noise_{0.f};
 
-  ClassDef(FittedSiStripHit, 1);
+  ClassDef(FittedSiStripHit, 2);
 };
 
 }  // namespace ldmx

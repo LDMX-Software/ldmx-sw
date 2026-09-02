@@ -33,6 +33,7 @@ void StripClusterProcessor::configure(
   time_window_ns_ = parameters.get<double>("time_window_ns", -1.0);
   neighbor_delta_t_ns_ = parameters.get<double>("neighbor_delta_t_ns", -1.0);
   max_chi2_ndf_ = parameters.get<double>("max_chi2_ndf", -1.0);
+  daq_map_file_ = parameters.get<std::string>("daq_map_file", "");
 }
 
 // ---------------------------------------------------------------------------
@@ -43,6 +44,20 @@ void StripClusterProcessor::onProcessStart() {
   clusterer_ = std::make_unique<tracking::digitization::StripClusterer>(
       seed_threshold_, neighbor_threshold_, cluster_threshold_, NOISE_SIGMA_ADC,
       mean_time_ns_, time_window_ns_, neighbor_delta_t_ns_, max_chi2_ndf_);
+
+  // Optional DAQ map: build a layer_id -> n_strips lookup so the local-U centre
+  // offset can use the real per-sensor strip count for real data.  Left empty
+  // for MC, in which case the fixed N_READOUT_STRIPS constant is used below.
+  layer_n_strips_.clear();
+  if (!daq_map_file_.empty()) {
+    const auto map = TrackerDaqMap::fromJsonFile(daq_map_file_);
+    for (const auto& [key, sensor] : map.sensors()) {
+      layer_n_strips_[sensor.layer_id_] = sensor.n_strips_;
+    }
+    ldmx_log(info) << "StripClusterProcessor loaded DAQ map from '"
+                   << daq_map_file_ << "' (" << layer_n_strips_.size()
+                   << " layers) for centre-strip offsets";
+  }
 
   ldmx_log(info) << "StripClusterProcessor configured:" << "  seed_thr="
                  << seed_threshold_ << "  nbr_thr=" << neighbor_threshold_
@@ -102,7 +117,14 @@ void StripClusterProcessor::produce(framework::Event& event) {
       // µm, etc.
       // -------------------------------------------------------------------
       using namespace tracking::digitization;
-      const int n_int = N_READOUT_STRIPS / 2;  // integer division = 383
+      // Centre-strip offset: N/2 (integer division).  For MC this is the fixed
+      // N_READOUT_STRIPS constant; for real data, if a DAQ map was supplied,
+      // use that sensor's real strip count so the local origin sits at its
+      // centre.
+      int n_strips = N_READOUT_STRIPS;
+      auto it_ns = layer_n_strips_.find(layer_id);
+      if (it_ns != layer_n_strips_.end()) n_strips = it_ns->second;
+      const int n_int = n_strips / 2;
       const double offset = static_cast<double>(n_int);
       const double local_u = (cl.centroid_strip - offset) * READOUT_PITCH_MM;
 

@@ -38,24 +38,6 @@ class SiStripWaveform {
   uint8_t getFebId() const { return feb_id_; }
   uint8_t getNTriggers() const { return n_triggers_; }
 
-  /// Store the result of a pulse-shape fit to this waveform.
-  void setFitResult(float amplitude, float t0, float chi2, int ndf,
-                    bool converged) {
-    fit_amplitude_ = amplitude;
-    fit_t0_        = t0;
-    fit_chi2_      = chi2;
-    fit_ndf_       = ndf;
-    fit_converged_ = converged;
-  }
-
-  /// Fitted pulse amplitude [ADC counts] (peak of the fitted pulse shape).
-  float getFitAmplitude() const { return fit_amplitude_; }
-  /// Fitted hit arrival time T [ns] in the sample-window frame (t_i = i*dt).
-  float getFitT0()        const { return fit_t0_; }
-  float getFitChi2()      const { return fit_chi2_; }
-  int   getFitNDF()       const { return fit_ndf_; }
-  bool  isFitConverged()  const { return fit_converged_; }
-
   /// Sample at trigger index t (0-based), APV sample s (0-2).
   short getSample(uint8_t t, uint8_t s) const { return samples_[t * 3 + s]; }
 
@@ -84,14 +66,7 @@ class SiStripWaveform {
   uint8_t feb_id_{0};
   uint8_t n_triggers_{0};  ///< number of APV triggers assembled
 
-  // Pulse-shape fit result (filled by SiStripWaveformBuilder).
-  float fit_amplitude_{0};       ///< fitted amplitude [ADC]
-  float fit_t0_{0};              ///< fitted hit arrival time T [ns]
-  float fit_chi2_{0};            ///< chi-squared at the minimum
-  int   fit_ndf_{0};             ///< degrees of freedom = n_samples - 2
-  bool  fit_converged_{false};   ///< true if the fit succeeded
-
-  ClassDef(SiStripWaveform, 2);
+  ClassDef(SiStripWaveform, 3);
 };
 
 }  // namespace ldmx
