@@ -37,7 +37,7 @@ RandomNumberSeedService::RandomNumberSeedService(
     seedMode_ = SEED_RUN;
   } else if (!strcasecmp(seeding.c_str(), "external")) {
     seedMode_ = SEED_EXTERNAL;
-    masterSeed_ = parameters.getParameter<int>("masterSeed");
+    masterSeed_ = parameters.getParameter<int>("seed");
     initialized_ = true;
   } else if (!strcasecmp(seeding.c_str(), "time")) {
     masterSeed_ = time(0);
