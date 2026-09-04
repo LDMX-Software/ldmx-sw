@@ -30,6 +30,9 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   header.setIntParameter(
       "Use Random Seed from Event Header",
       parameters_.getParameter<bool>("rootPrimaryGenUseSeed"));
+  header.setIntParameter(
+      "MultiSimIndex",
+      parameters_.getParameter<int>("multiSimIndex", 0));
 
   // lambda function for dumping 3-vectors into the run header
   auto threeVectorDump = [&header](const std::string& name,
