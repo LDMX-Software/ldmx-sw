@@ -24,6 +24,35 @@ std::tuple<int, int> LDMXRoRHeader::subsystem(const std::string& name) {
   return std::make_tuple(subsys, contrib);
 }
 
+std::string LDMXRoRHeader::getSubsystemName(uint8_t subsystem_id,
+                                            uint8_t contributor_id) {
+  // Check each subsystem's IDs to find a match
+  for (const auto& name_id_pair : SUBSYSTEM_ID) {
+    const auto& name = name_id_pair.first;
+    int subsys_id = name_id_pair.second;
+
+    if (subsys_id != subsystem_id) {
+      continue;  // Not a match on subsystem ID
+    }
+
+    // Check if contributor ID matches (if it's set)
+    auto contrib_it = CONTRIBUTOR_ID.find(name);
+    if (contrib_it != CONTRIBUTOR_ID.end()) {
+      int expected_contrib = contrib_it->second;
+      if (expected_contrib != -1 && expected_contrib != contributor_id) {
+        continue;  // Contributor ID doesn't match, try next
+      }
+    }
+
+    // Found a match
+    return name;
+  }
+
+  // No match found, return generic name
+  return "subsystem" + std::to_string(subsystem_id) + "c" +
+         std::to_string(contributor_id);
+}
+
 utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   valid_ = false;
   uint8_t sentinel;

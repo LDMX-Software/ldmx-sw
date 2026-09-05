@@ -134,6 +134,7 @@ add_subdirectory(SimCore)
 add_subdirectory(Biasing)
 add_subdirectory(Detectors)
 add_subdirectory(MagFieldMap)
+add_subdirectory(EventBuilder)
 
 build_test()
 add_test(
