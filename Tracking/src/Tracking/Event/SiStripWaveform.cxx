@@ -22,9 +22,9 @@ void SiStripWaveform::clear() {
   feb_id_ = 0;
   n_triggers_ = 0;
   fit_amplitude_ = 0;
-  fit_t0_        = 0;
-  fit_chi2_      = 0;
-  fit_ndf_       = 0;
+  fit_t0_ = 0;
+  fit_chi2_ = 0;
+  fit_ndf_ = 0;
   fit_converged_ = false;
 }
 

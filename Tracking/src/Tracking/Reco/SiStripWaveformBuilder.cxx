@@ -123,8 +123,7 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
         n_samples * tracking::digitization::SAMPLING_INTERVAL_NS;
     tracking::digitization::StripPulseFitter fitter(
         *pulse_shape_,
-        /*t0_offset_ns=*/0.0,
-        tracking::digitization::SAMPLING_INTERVAL_NS,
+        /*t0_offset_ns=*/0.0, tracking::digitization::SAMPLING_INTERVAL_NS,
         /*pedestal_adc=*/0.0,
         /*noise_sigma_adc=*/ch.noise_,
         /*t_scan_min_ns=*/-50.0, t_scan_max, /*t_scan_step_ns=*/1.0);

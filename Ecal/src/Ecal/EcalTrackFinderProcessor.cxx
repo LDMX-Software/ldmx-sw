@@ -213,8 +213,7 @@ void EcalTrackFinderProcessor::onNewRun(const ldmx::RunHeader&) {
   nav_cfg.resolvePassive = false;
   nav_cfg.resolveMaterial = false;
   const Acts::Navigator navigator(
-      nav_cfg,
-      Acts::getDefaultLogger("ECAL_NAV", acts_logging_level));
+      nav_cfg, Acts::getDefaultLogger("ECAL_NAV", acts_logging_level));
 
   // Create propagator
   propagator_ = std::make_unique<EcalPropagator>(
@@ -439,8 +438,8 @@ std::vector<ldmx::Track> EcalTrackFinderProcessor::findSeeds(
   Acts::FreeVector seed_free =
       tracking::sim::utils::toFreeParameters(seed_pos, seed_mom, q);
 
-  auto bound_params_result = Acts::transformFreeToBoundParameters(
-      seed_free, *seed_surface, gctx);
+  auto bound_params_result =
+      Acts::transformFreeToBoundParameters(seed_free, *seed_surface, gctx);
 
   if (!bound_params_result.ok()) {
     ldmx_log(warn) << "Failed to create bound parameters for seed";
@@ -549,8 +548,7 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
   // Create source link map
   auto geo_id_sl_map = makeGeoIdSourceLinkMap(measurements);
   ldmx_log(info) << "Source link map: " << geo_id_sl_map.size()
-                 << " entries from " << measurements.size()
-                 << " measurements";
+                 << " entries from " << measurements.size() << " measurements";
 
   // Find seed tracks
   auto seed_tracks = findSeeds(measurements);
@@ -667,8 +665,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
 
     auto part_hypo{Acts::ParticleHypothesis::electron()};
     auto& layer0_surface = layer_surfaces_.begin()->second;
-    Acts::BoundTrackParameters start_params(layer0_surface, param_vec,
-                                            cov_mat, part_hypo);
+    Acts::BoundTrackParameters start_params(layer0_surface, param_vec, cov_mat,
+                                            part_hypo);
 
     // Setup CKF options
     const Acts::CombinatorialKalmanFilterOptions<TrackContainer> ckf_options(
@@ -695,9 +693,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
         if (ts.typeFlags().isHole()) ++n_holes;
         if (ts.typeFlags().isOutlier()) ++n_outliers;
       }
-      ldmx_log(info) << "Track states: total=" << n_total
-                     << " meas=" << n_meas << " holes=" << n_holes
-                     << " outliers=" << n_outliers;
+      ldmx_log(info) << "Track states: total=" << n_total << " meas=" << n_meas
+                     << " holes=" << n_holes << " outliers=" << n_outliers;
 
       // Smooth the track
       auto smooth_result = Acts::smoothTrack(gctx, track);
@@ -792,8 +789,8 @@ void EcalTrackFinderProcessor::produce(framework::Event& event) {
       tracking::sim::utils::flatCov(track.covariance(), cov_vec);
       trk.setPerigeeCov(cov_vec);
 
-      Acts::Vector3 ref_loc_ldmx =
-          tracking::sim::utils::acts2Ldmx(layer_surfaces_.begin()->second->center(gctx));
+      Acts::Vector3 ref_loc_ldmx = tracking::sim::utils::acts2Ldmx(
+          layer_surfaces_.begin()->second->center(gctx));
       trk.setPerigeeLocation(ref_loc_ldmx[0], ref_loc_ldmx[1], ref_loc_ldmx[2]);
 
       trk.setChi2(track.chi2());
