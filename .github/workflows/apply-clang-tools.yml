@@ -18,6 +18,7 @@ jobs:
     - uses: actions/checkout@v7
       with:
         submodules: 'recursive'
+        fetch-depth: ${{ github.ref == 'refs/heads/trunk' && 0 || 1 }}
     - name: get trunk HEAD_REF for comparison
       if: github.ref != 'refs/heads/trunk'
       run: |
@@ -51,6 +52,6 @@ jobs:
           --base main \
           --head sunday-clang-tidy \
           --title "apply clang-tidy over all files" \
-          --body "PR created by weekly clang-tidy, it is now free to be modified/closed/merged."
+          --body "PR created by weekly clang-tidy, it is now free to be modified/closed/merged.\n\nModifications may be necessary since clang-tidy can sometimes break compilation during its auto-fix attempt."
       env:
         GH_TOKEN: ${{ github.token }}
