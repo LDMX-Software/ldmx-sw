@@ -44,3 +44,6 @@ setup_library(module Tracking
               sources ${SRC_FILES})
 
 setup_python(package_name LDMX/Tracking)
+
+# Install data files (e.g. DAQ maps) to install/data/Tracking.
+setup_data(module Tracking)

@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <map>
 
-#include "Tracking/Digitization/SiStripConstants.h"
-#include "Tracking/Digitization/StripPulseFitter.h"
 #include "Tracking/Event/RawSiStripHit.h"
 #include "Tracking/Reco/SiStripChannelMap.h"
 #include "Tracking/Reco/TrackerPedestals.h"
@@ -31,14 +29,6 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
 
   const auto& hits = event.getCollection<ldmx::RawSiStripHit>(input_collection_,
                                                               input_pass_name_);
-
-  // Build the pulse shape once (reused for every channel fit this job).
-  if (!pulse_shape_) {
-    pulse_shape_ = tracking::digitization::PulseShape::make(
-        std::string(tracking::digitization::PULSE_SHAPE_NAME),
-        tracking::digitization::PEAKING_TIME_NS,
-        tracking::digitization::SECOND_TIME_CONST_NS);
-  }
 
   // Key: encodes (feb, hybrid, pchannel) uniquely.
   // Value: vector of (apv_trigger, samples) pairs.
@@ -114,38 +104,8 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
     uint8_t n_trig = static_cast<uint8_t>(
         std::min(static_cast<int>(ch.triggers_.size()), 255));
 
-    // --- TEST: fit a CR-RC pulse shape to the full assembled waveform. ---
-    // Samples are pedestal-subtracted (ped = 0) and lie on a uniform 25 ns
-    // grid, so the scan range is sized to the waveform: T may peak anywhere
-    // from before sample 0 to the last sample.
-    const int n_samples = static_cast<int>(samples.size());
-    const double t_scan_max =
-        n_samples * tracking::digitization::SAMPLING_INTERVAL_NS;
-    tracking::digitization::StripPulseFitter fitter(
-        *pulse_shape_,
-        /*t0_offset_ns=*/0.0,
-        tracking::digitization::SAMPLING_INTERVAL_NS,
-        /*pedestal_adc=*/0.0,
-        /*noise_sigma_adc=*/ch.noise_,
-        /*t_scan_min_ns=*/-50.0, t_scan_max, /*t_scan_step_ns=*/1.0);
-    const auto fit = fitter.fit(samples);
-    ++n_fit_attempted_;
-    if (!fit.converged) ++n_fit_failed_;
-
-    ldmx_log(trace) << "fit feb=" << static_cast<int>(ch.feb_id_)
-                    << " hyb=" << static_cast<int>(ch.hybrid_id_)
-                    << " pch=" << pchannel << " nsamp=" << n_samples
-                    << " noise=" << ch.noise_
-                    << " -> converged=" << (fit.converged ? "yes" : "no")
-                    << " amp=" << fit.amplitude << " t0=" << fit.t0 << "ns"
-                    << " chi2/ndf=" << fit.chi2 << "/" << fit.ndf << " ("
-                    << (fit.ndf > 0 ? fit.chi2 / fit.ndf : 0.0) << ")";
-
     waveforms.emplace_back(std::move(samples), pchannel, ch.hybrid_id_,
                            ch.feb_id_, n_trig);
-    waveforms.back().setFitResult(
-        static_cast<float>(fit.amplitude), static_cast<float>(fit.t0),
-        static_cast<float>(fit.chi2), fit.ndf, fit.converged);
   }
 
   ldmx_log(debug) << "Built " << waveforms.size()
@@ -159,17 +119,6 @@ void SiStripWaveformBuilder::produce(framework::Event& event) {
   }
 
   event.add(output_collection_, waveforms);
-}
-
-void SiStripWaveformBuilder::onProcessEnd() {
-  const long n_ok = n_fit_attempted_ - n_fit_failed_;
-  const double fail_pct =
-      n_fit_attempted_ > 0
-          ? 100.0 * static_cast<double>(n_fit_failed_) / n_fit_attempted_
-          : 0.0;
-  ldmx_log(info) << "Fit summary: " << n_fit_attempted_ << " attempted, "
-                 << n_ok << " converged, " << n_fit_failed_ << " failed ("
-                 << fail_pct << "%)";
 }
 
 }  // namespace tracking::reco
