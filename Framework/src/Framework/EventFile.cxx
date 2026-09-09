@@ -383,6 +383,9 @@ void EventFile::writeRunTree() {
   // create the branch on this tree
   ldmx::RunHeader* the_handle = nullptr;
   run_tree->Branch("RunHeader", "ldmx::RunHeader", &the_handle, 32000, 3);
+  // ROOT allocates a RunHeader when given a null pointer and leaves
+  // ownership with the caller, so take it to avoid leaking it
+  std::unique_ptr<ldmx::RunHeader> root_allocated(the_handle);
 
   // copy over the run headers into the tree
   for (auto& [num, run_header] : run_map_) {
