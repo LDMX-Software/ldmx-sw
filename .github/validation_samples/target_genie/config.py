@@ -57,7 +57,7 @@ p.sequence = [my_sim, genie_rw]
 import sys
 
 
-p.max_events = int(int(os.environ["LDMX_NUM_EVENTS"]) * 0.7)
+p.max_events = int(int(os.environ["LDMX_NUM_EVENTS"]) * 0.5)
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
 p.histogram_file = "hist.root"
