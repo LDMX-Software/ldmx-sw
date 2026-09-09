@@ -117,7 +117,7 @@ void StripClusterProcessor::produce(framework::Event& event) {
       // µm, etc.
       // -------------------------------------------------------------------
       using namespace tracking::digitization;
-      // Centre-strip offset: N/2 (integer division).  For MC this is the fixed
+      // Center-strip offset: N/2 (integer division).  For MC this is the fixed
       // N_READOUT_STRIPS constant; for real data, if a DAQ map was supplied,
       // use that sensor's real strip count so the local origin sits at its
       // centre.
