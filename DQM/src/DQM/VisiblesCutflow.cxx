@@ -61,7 +61,7 @@ bool VisiblesCutflow::inList(std::vector<int> parents, int track_id) {
 void VisiblesCutflow::analyze(const framework::Event& event) {
   std::vector<float> bdt_features;
 
-  double decay_z;
+  double decay_z{-9999.};
 
   const auto& particle_map{event.getMap<int, ldmx::SimParticle>(
       sim_particles_coll_name_, sim_particles_pass_name_)};
