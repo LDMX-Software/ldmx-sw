@@ -5,6 +5,7 @@
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 #include "Framework/RandomNumberSeedService.h"
+#include "SimCore/Event/SimParticle.h"
 
 namespace trigscint {
 
@@ -23,6 +24,10 @@ void TrigScintQIEDigiProducer::configure(
   input_collection_ = parameters.get<std::string>("input_collection");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
   output_collection_ = parameters.get<std::string>("output_collection");
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
+  sim_particles_passname_ =
+      parameters.get<std::string>("sim_particles_passname");
 
   // QIE specific parameters initialization
   maxts_ = parameters.get<int>("maxts");
@@ -83,6 +88,9 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
   // Initialize with strips_per_array_ zeros
   std::vector<float> true_edep(strips_per_array_, 0.);
 
+  // The part of true_edep deposited by beam electrons
+  std::vector<float> beam_edep(strips_per_array_, 0.);
+
   // Initialize with strips_per_array_ nullptrs
   std::vector<Expo*> ex(strips_per_array_, nullptr);
   for (int i = 0; i < strips_per_array_; i++) {
@@ -94,11 +102,32 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
   // loop over sim hits and aggregate energy depositions for each detID
   const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_collection_, input_pass_name_)};
+  const auto particle_map{event.getMap<int, ldmx::SimParticle>(
+      sim_particles_coll_name_, sim_particles_passname_)};
 
   for (const auto& sim_hit : sim_hits) {
     ldmx::TrigScintID id(sim_hit.getID());
 
     ldmx_log(debug) << "Processing sim hit with bar ID: " << id.bar();
+
+    // tag the edep coming from beam electrons
+    for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {
+      const auto contrib{sim_hit.getContrib(i)};
+      const auto particle{particle_map.find(contrib.track_id_)};
+      if (particle == particle_map.end()) continue;
+
+      ldmx_log(trace) << "contrib " << i << " trackID: " << contrib.track_id_
+                      << " pdgID: " << contrib.pdg_code_
+                      << " edep: " << contrib.edep_;
+      ldmx_log(trace) << "\t particle id: " << particle->second.getPdgID()
+                      << " particle status: "
+                      << particle->second.getGenStatus();
+
+      if (particle->second.getPdgID() == 11 &&
+          particle->second.getGenStatus() == 1) {
+        beam_edep[id.bar()] += contrib.edep_;
+      }
+    }
 
     // Simulating the noise corresponding to uncertainity in
     // detecting scintillating photons.
@@ -142,6 +171,10 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
       qie_info.setADC(smq_->outAdc(ex[bar_id]));
       qie_info.setTDC(smq_->outTdc(ex[bar_id]));
       qie_info.setCID(smq_->capId(ex[bar_id]));
+
+      // sim truth; dark-current-only bars get 0
+      qie_info.setBeamEfrac(
+          true_edep[bar_id] > 0 ? beam_edep[bar_id] / true_edep[bar_id] : 0.);
 
       q_digis.push_back(qie_info);
     }
