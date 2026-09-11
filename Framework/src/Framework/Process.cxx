@@ -212,6 +212,9 @@ void Process::run() {
     run_header_ = run_header.get();  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
+    // write early so a killed job still leaves a usable file
+    out_file.writeRunTree();
+
     newRun(*run_header);
 
     int total_tries = 0;  // total number of tries for entire run
@@ -266,7 +269,7 @@ void Process::run() {
 
     run_header->setRunEnd(std::time(nullptr));
     run_header->setNumTries(total_tries);
-    out_file.writeRunTree();
+    out_file.writeRunTree(not preemption_received_);
 
     // Give a warning that this filter has very low efficiency
     if (n_events_processed < total_tries / 10000) {  // integer division is okay
@@ -344,6 +347,9 @@ void Process::run() {
 
         }  // check if in singleOutput mode
 
+        // write early so a killed job still leaves a usable file
+        out_file->writeRunTree();
+
       } else {
         // empty output file list, use inputFile as master file
         in_file.setupEvent(&the_event);
@@ -375,8 +381,12 @@ void Process::run() {
                            << master_file->getFileName() << "'";
             newRun(*run_header_);
           } else {
-            ldmx_log(warn) << "Run header for run " << was_run
-                           << " was not found!";
+            // no header means no newRun, so conditions stay uninitialised
+            EXCEPTION_RAISE(
+                "MissingRunHeader",
+                "Run header for run " + std::to_string(was_run) +
+                    " was not found in '" + master_file->getFileName() +
+                    "'. Conditions cannot be initialised without it.");
           }
         }
 
@@ -412,7 +422,7 @@ void Process::run() {
       the_event.onEndOfFile();
 
       if (out_file and !single_output) {
-        out_file->writeRunTree();
+        out_file->writeRunTree(not preemption_received_);
         delete out_file;
         out_file = nullptr;
       }
@@ -425,7 +435,7 @@ void Process::run() {
     if (out_file) {
       // close outFile
       //  outFile would survive to here in single output mode
-      out_file->writeRunTree();
+      out_file->writeRunTree(not preemption_received_);
       delete out_file;
       out_file = nullptr;
     }
