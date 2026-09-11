@@ -212,6 +212,9 @@ void Process::run() {
     run_header_ = run_header.get();  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
+    // write early so a killed job still leaves a usable file
+    out_file.writeRunTree();
+
     newRun(*run_header);
 
     int total_tries = 0;  // total number of tries for entire run
@@ -343,6 +346,9 @@ void Process::run() {
           master_file = out_file;
 
         }  // check if in singleOutput mode
+
+        // write early so a killed job still leaves a usable file
+        out_file->writeRunTree();
 
       } else {
         // empty output file list, use inputFile as master file
