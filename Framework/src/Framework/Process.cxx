@@ -269,7 +269,7 @@ void Process::run() {
 
     run_header->setRunEnd(std::time(nullptr));
     run_header->setNumTries(total_tries);
-    out_file.writeRunTree();
+    out_file.writeRunTree(not preemption_received_);
 
     // Give a warning that this filter has very low efficiency
     if (n_events_processed < total_tries / 10000) {  // integer division is okay
@@ -422,7 +422,7 @@ void Process::run() {
       the_event.onEndOfFile();
 
       if (out_file and !single_output) {
-        out_file->writeRunTree();
+        out_file->writeRunTree(not preemption_received_);
         delete out_file;
         out_file = nullptr;
       }
@@ -435,7 +435,7 @@ void Process::run() {
     if (out_file) {
       // close outFile
       //  outFile would survive to here in single output mode
-      out_file->writeRunTree();
+      out_file->writeRunTree(not preemption_received_);
       delete out_file;
       out_file = nullptr;
     }

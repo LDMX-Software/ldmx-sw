@@ -350,13 +350,16 @@ void EventFile::updateParent(EventFile* parent) {
   return;
 }
 
-void EventFile::writeRunTree() {
+void EventFile::writeRunTree(bool completed) {
   if (not is_output_file_) {
     EXCEPTION_RAISE("MisCall",
                     "Cannot write the run tree on an input event file.");
   }
 
   // TODO: Tree name shouldn't be hardcoded.
+
+  // stamp completion onto the headers before they go out
+  for (auto& [num, run_header] : run_map_) run_header->setCompleted(completed);
 
   /**
    * ROOT requires us to be in the correct directory when we create

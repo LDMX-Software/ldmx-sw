@@ -234,9 +234,11 @@ class EventFile {
    * overwritten. Process calls it as soon as the headers are known and
    * again on close, so a killed job still leaves a usable file.
    *
+   * @param[in] completed true when closing cleanly. Only the final call
+   * should pass true.
    * @throw Exception if call this function on a non-output file.
    */
-  void writeRunTree();
+  void writeRunTree(bool completed = false);
 
   /**
    * Update the RunHeader for a given run, if it exists in the input file.

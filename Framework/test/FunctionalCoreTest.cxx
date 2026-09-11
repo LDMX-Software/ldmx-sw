@@ -46,12 +46,16 @@ class TestProducer : public Producer {
   /// should we create the run header?
   bool create_run_header_;
 
+  /// throw after this many events (negative to never throw)
+  int throw_after_;
+
  public:
   TestProducer(const std::string& name, Process& p) : Producer(name, p) {}
   ~TestProducer() {}
 
   void configure(framework::config::Parameters& p) final override {
     create_run_header_ = p.get<bool>("create_run_header");
+    throw_after_ = p.get<int>("throw_after", -1);
   }
 
   void beforeNewRun(ldmx::RunHeader& header) final override {
@@ -64,6 +68,11 @@ class TestProducer : public Producer {
     int i_event = event.getEventNumber();
 
     REQUIRE(i_event > 0);
+
+    // stand-in for a kill mid-write
+    if (throw_after_ > 0 and i_event > throw_after_) {
+      EXCEPTION_RAISE("TestKill", "Pretending to be killed mid-run.");
+    }
 
     std::vector<ldmx::CalorimeterHit> calo_hits;
     for (int i = 0; i < i_event; i++) {
@@ -439,6 +448,24 @@ static void stripRunHeader(const std::string& source,
 }
 
 /**
+ * @func isCompleted
+ * Read the completed flag off the first run header in a file.
+ *
+ * @throw Catch failure if the file has no run header at all
+ */
+static bool isCompleted(const std::string& path) {
+  TFile f(path.c_str());
+  REQUIRE(not f.IsZombie());
+  REQUIRE(f.Get("LDMX_Run") != nullptr);
+  TTreeReader runs("LDMX_Run", &f);
+  TTreeReaderValue<ldmx::RunHeader> run_header(runs, "RunHeader");
+  REQUIRE(runs.Next());
+  bool completed{run_header->isCompleted()};
+  f.Close();
+  return completed;
+}
+
+/**
  * @func run the process for the input parameters
  */
 static bool runProcess(const framework::config::Parameters& parameters) {
@@ -799,3 +826,58 @@ TEST_CASE("Missing Run Header", "[Framework][functionality]") {
   CHECK(framework::test::removeFile(headerless_file));
   CHECK(framework::test::removeFile(healthy_file));
 }  // missing run header test
+
+/**
+ * Test that an output file says whether it is whole.
+ *
+ * A job killed partway through used to leave a file indistinguishable from a
+ * complete one, so the events it was missing went unnoticed.
+ *
+ * What does this test?
+ *  - the run header is in the output from the start, not only on close
+ *  - completed is true only when the run reached its clean close
+ */
+TEST_CASE("Output Completeness", "[Framework][functionality]") {
+  framework::config::Parameters process;
+  process.add("compression_setting", 9);
+  process.add("max_tries_per_event", 1);
+  process.add("log_frequency", -1);
+  process.add("term_log_level", 4);
+  process.add("file_log_level", 4);
+  process.add<std::string>("log_file_name", "");
+  process.add<std::string>("tree_name", "LDMX_Events");
+  process.add<std::string>("pass_name", "test");
+  process.add<std::string>("histogram_file", "");
+  process.add("max_events", 5);
+  process.add("run", 3);
+
+  framework::config::Parameters producer_parameters;
+  producer_parameters.add<std::string>("class_name",
+                                       "framework::test::TestProducer");
+  producer_parameters.add<std::string>("instance_name", "TestProducer");
+  producer_parameters.add("create_run_header", true);
+
+  const std::string output_file{"test_completeness_events.root"};
+  process.add("output_files", std::vector<std::string>{output_file});
+
+  SECTION("a clean close is marked completed") {
+    process.add<std::vector<framework::config::Parameters>>(
+        "sequence", {producer_parameters});
+    REQUIRE(framework::test::runProcess(process));
+    CHECK(framework::test::isCompleted(output_file));
+    CHECK_THAT(output_file, framework::test::IsGoodEventFile("test", 5, 1));
+  }
+
+  SECTION("an interrupted run is not") {
+    // die partway, as a preemption would
+    producer_parameters.add("throw_after", 3);
+    process.add<std::vector<framework::config::Parameters>>(
+        "sequence", {producer_parameters});
+    CHECK_THROWS_AS(framework::test::runProcess(process),
+                    framework::exception::Exception);
+    // present because it was written at open, not on close
+    CHECK_FALSE(framework::test::isCompleted(output_file));
+  }
+
+  CHECK(framework::test::removeFile(output_file));
+}  // output completeness test
