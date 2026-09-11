@@ -1,8 +1,8 @@
 <!-- detector version -->
 <auxiliary auxtype="DetectorVersion" auxvalue="1">
-  <auxiliary auxtype="DetectorName" auxvalue="ldmx-hcal-teststand"/>
+  <auxiliary auxtype="DetectorName" auxvalue="ldmx-teststand"/>
   <auxiliary auxtype="Author" auxvalue="Wilde Hedin"/>
-  <auxiliary auxtype="Description" auxvalue="The HCal prototype geometry that will be used to measure cosmic muons at SLAC."/>
+  <auxiliary auxtype="Description" auxvalue="The HCal teststand geometry that will be used to measure cosmic muons at SLAC."/>
 </auxiliary>
 
 <!-- define regions -->

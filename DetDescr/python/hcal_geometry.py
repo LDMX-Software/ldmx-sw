@@ -525,20 +525,20 @@ class HcalReadoutGeometry:
 
 
     #The HCal prototype that will be used to measure cosmic muons.
-    #The HCal prototype has been assumed to be the top and bottom section of the side HCal
-    #since they share the same scintillator orientation.
-    #More changes are required in the software to sucessfully digitize and reconstruct the
-    #data obtained when using this geometry.
-    def make_hcal_teststand():
+    #The HCal prototype has been assumed to be the top and bottom section of 
+    #the side HCal since they share the same scintillator orientation.
+    #More changes are required in the software to sucessfully digitize and 
+    #reconstruct the data obtained when using this geometry.
+    def make_teststand():
         
         scint_thickness = 20.0
         scint_bar_width = 50.0
         scint_bar_length = 2000.0
-        scint_bar_cover_thickness = 0.5
         layer_thickness = 21.5
         space_between_sections = 1000
         
-        #Number of sections is hard-coded, therfore the layers in the back HCal is defined. 
+        #Number of sections is hard-coded, therfore the layers in 
+        #the back HCal is defined. 
         #Zero in this case since it doesn't actually exist.
         num_layers_back = 0
        
@@ -581,7 +581,7 @@ class HcalReadoutGeometry:
         ecal_dx = 0.0
         ecal_dy = 0.0
         detectors_valid = [
-            "ldmx-hcal-teststand",
+            "ldmx-teststand",
         ]
 
         back_horizontal_parity = 0
@@ -625,5 +625,5 @@ class HcalGeometry:
         default_factory=HcalReadoutGeometry.make_v2_prototype
     )
     cosmic_prototype: HcalReadoutGeometry = field(
-        default_factory=HcalReadoutGeometry.make_hcal_teststand
+        default_factory=HcalReadoutGeometry.make_teststand
     )
