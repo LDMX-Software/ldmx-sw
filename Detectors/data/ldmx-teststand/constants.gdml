@@ -1,8 +1,12 @@
 
-<!-- TODO: Include mounting plates. -->
-
 <!-- Center position -->
 <position name="center" x="0" y="0" z="0"/>
+
+<!-- Dimensions of world volume -->
+<constant name="world_dim" value="10.0*m"/>
+
+<!-- HCal -->
+<!-- TODO: Include mounting plates. -->
 
 <!-- Scintillators  -->
 <variable name="scint_thickness" value="20."/>
@@ -38,15 +42,12 @@
 <!-- Distances between layers -->
 <constant name="distance_to_subsequent_scint_layer" value="2*layer_thickness"/>
 
-<!-- World and prototype dimensions-->
-<constant name="world_dim" value="10.0*m"/>
+<!-- HCal dimensions-->
 <variable name="dx" value="3000."/> 
 <variable name="dy" value="(num_layers_bottom + num_layers_top) * layer_thickness + space_between_sections"/>
 <variable name="dz" value="3000."/>
 
 <!-- Positional constants -->
-
-<position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/> <!--center of the hcal-->
 
 <!-- First layer start at bottom, cover positioned on top of scint layer. -->
 
@@ -69,7 +70,7 @@
 <variable name="first_scint_alongz_xpos"
           value="-layer_width/2.0 + scint_bar_width/2.0"/>
 
-<!-- Prototype box  -->
+<!-- hcal box  -->
 <!-- Note: 1m extra spacing -->
-<variable name="prototype_box_dy"
+<variable name="hcal_box_dy"
           value="dy + 1000"/>

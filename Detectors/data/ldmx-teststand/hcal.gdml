@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
+
+  <define>
+
+    &constants; 
+    <!-- loop variables - must be defined here -->
+    <variable name="layer_index"  value="1"/>
+    <variable name="strip_index"  value="1"/>
+
+  </define>
+
+
+  <solids>
+    <!-- Scintilator bars -->
+    <box lunit="mm" name="alongx_scint_box"
+        x="scint_bar_length"
+        y="scint_thickness"
+        z="scint_bar_width"/>
+    <box lunit="mm" name="alongz_scint_box"
+        x="scint_bar_width"
+        y="scint_thickness"
+        z="scint_bar_length"/>
+
+    <!-- Scintillator covers -->
+    <box lunit="mm" name="alongx_scint_cover_box"
+        x="scint_bar_length"
+        y="scint_bar_cover_thickness"
+        z="layer_width"/>
+    <box lunit="mm" name="alongz_scint_cover_box"
+        x="layer_width"
+        y="scint_bar_cover_thickness"
+        z="scint_bar_length"/>
+
+     <!-- Parent Solids -->
+    <box lunit="mm" name="hcal_box" x="dx" y="hcal_box_dy" z="dz"/>
+  </solids>
+  
+  <structure> 
+    <!-- Scintillators -->
+    <volume name="alongx_scint_box_volume">
+      <materialref ref="Scintillator"/>
+      <solidref ref="alongx_scint_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+    </volume>
+    <volume name="alongz_scint_box_volume">
+      <materialref ref="Scintillator"/>
+      <solidref ref="alongz_scint_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+    </volume>
+    <!-- Scintillator covers -->
+    <volume name="alongx_scint_cover_box_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="alongx_scint_cover_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+    </volume>
+    <volume name="alongz_scint_cover_box_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="alongz_scint_cover_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+    </volume>
+
+    <volume name="hadronic_calorimeter">
+      <materialref ref="G4_AIR"/>
+      <solidref    ref="hcal_box"/>
+      
+      <!-- Bottom -->
+      <loop for="layer_index" from="1" to="num_layers_bottom" step="2">
+        <!-- alongz layers -->
+        <physvol name="alongz_scint_cover_physvol_bottom">
+          <volumeref ref="alongz_scint_cover_box_volume"/>
+          <position name="alongz_scint_cover_pos_bottom" unit="mm"
+                    x="0"
+                    y="(layer_index - 1)*layer_thickness + first_layer_scint_cover_ypos_bottom"
+                    z="0"/>
+        </physvol>
+      
+        <loop for="strip_index" from="1" to="num_bars" step="1">
+          <physvol name="alongz_scint_physvol_bottom"
+                   copynumber="1*256*256*256 + 2*256*256 + (layer_index)*256 + (strip_index-1)">
+            <volumeref ref="alongz_scint_box_volume"/>
+            <position name="alongz_scint_pos_bottom" unit="mm"
+                      x="first_scint_alongz_xpos + (strip_index - 1)*scint_bar_width"
+                      y="(layer_index - 1)*layer_thickness + first_layer_scint_ypos_bottom"
+                      z="0"/>
+          </physvol>
+        </loop>
+      
+        <!-- alongx Layers -->
+        <physvol name="alongx_scint_cover_physvol_bottom">
+          <volumeref ref="alongx_scint_cover_box_volume"/>
+          <position name="alongx_scint_cover_pos_bottom" unit="mm"
+                    x="0"
+                    y="(layer_index)*layer_thickness + first_layer_scint_cover_ypos_bottom"
+                    z="0"/>
+        </physvol>
+      
+        <loop for="strip_index" from="1" to="num_bars" step="1">
+          <physvol name="alongx_scint_physvol_bottom"
+                   copynumber="1*256*256*256 + 2*256*256 + (layer_index+1) * 256 + (strip_index-1)">
+            <volumeref ref="alongx_scint_box_volume"/>
+            <position name="alongx_scint_pos_bottom" unit="mm"
+                      x="0"
+                      y="(layer_index)*layer_thickness + first_layer_scint_ypos_bottom"
+                      z="first_scint_alongx_zpos + (strip_index - 1)*scint_bar_width"/>
+          </physvol>
+        </loop>
+      </loop>
+      
+      <!-- Top -->
+      <loop for="layer_index" from="1" to="num_layers_top" step="2">
+        <!-- alongz layers -->
+        <physvol name="alongz_scint_cover_physvol_top">
+          <volumeref ref="alongz_scint_cover_box_volume"/>
+          <position name="alongz_scint_cover_pos_top" unit="mm"
+                    x="0"
+                    y="(layer_index - 1)*layer_thickness + first_layer_scint_cover_ypos_top"
+                    z="0"/>
+        </physvol>
+      
+        <loop for="strip_index" from="1" to="num_bars" step="1">
+          <physvol name="alongz_scint_physvol_top"
+                   copynumber="1*256*256*256 + 1*256*256 + (layer_index)*256 + (strip_index-1)">
+            <volumeref ref="alongz_scint_box_volume"/>
+            <position name="alongz_scint_pos_top" unit="mm"
+                      x="first_scint_alongz_xpos + (strip_index - 1)*scint_bar_width"
+                      y="(layer_index - 1)*layer_thickness + first_layer_scint_ypos_top"
+                      z="0"/>
+          </physvol>
+        </loop>
+      
+        <!-- alongx Layers -->
+        <physvol name="alongx_scint_cover_physvol_top">
+          <volumeref ref="alongx_scint_cover_box_volume"/>
+          <position name="alongx_scint_cover_pos_top" unit="mm"
+                    x="0"
+                    y="(layer_index)*layer_thickness + first_layer_scint_cover_ypos_top"
+                    z="0"/>
+        </physvol>
+      
+        <loop for="strip_index" from="1" to="num_bars" step="1">
+          <physvol name="alongx_scint_physvol_top"
+                   copynumber="1*256*256*256 + 1*256*256 + (layer_index+1) * 256 + (strip_index-1)">
+            <volumeref ref="alongx_scint_box_volume"/>
+            <position name="alongx_scint_pos_top" unit="mm"
+                      x="0"
+                      y="(layer_index)*layer_thickness + first_layer_scint_ypos_top"
+                      z="first_scint_alongx_zpos + (strip_index - 1)*scint_bar_width"/>
+          </physvol>
+        </loop>
+      </loop>
+      <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="hadronic_calorimeter"/>
+  </setup>
+</gdml>
+ 

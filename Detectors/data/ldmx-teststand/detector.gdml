@@ -1,61 +1,67 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gdml [
- <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml"> 
-<!ENTITY userinfo SYSTEM "userinfo.gdml">
-<!ENTITY hcal_solids SYSTEM "hcal_solids.gdml">
-<!ENTITY hcal_volumes SYSTEM "hcal_volumes.gdml">
-<!ENTITY hcal_physvol SYSTEM "hcal_physvol.gdml">
+<!ENTITY constants SYSTEM "constants.gdml">
+<!ENTITY materials SYSTEM "materials.gdml">
 ]>
-
-
-
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
- 
- 
- <define> 
-    <!-- loop variables - must be defined here -->
-    <variable name="layer_index"  value="1"/>
-    <variable name="strip_index"  value="1"/>
+
+
+  <define> 
     &constants; 
+
+    <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/> 
+
   </define>
 
-
- <materials>
-    &materials; 
+  <materials>
+    &materials;
   </materials>
 
-
   <solids>
-    &hcal_solids;
-    <!-- Parent Solids -->
-    <box lunit="mm" name="prototype_box" x="dx" y="prototype_box_dy" z="dz"/>
     <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
   </solids>
 
+    
   <structure>
-    &hcal_volumes;
-    <volume name="prototype_volume">
-      <materialref ref="G4_AIR"/>
-      <solidref    ref="prototype_box"/>
-      &hcal_physvol;
-      <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
-      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
-    </volume>
     <volume name="World">
       <materialref ref="G4_AIR"/>
       <solidref ref="world_box"/>
-      <physvol>
-        <volumeref ref="prototype_volume"/>
-        <positionref ref="hadron_calorimeter_pos"/>
+      <physvol copynumber="1"> 
+        <file name="hcal.gdml"/> 
+        <positionref ref="hadron_calorimeter_pos"/> 
       </physvol>
       <auxiliary auxtype="DetElem" auxvalue="Top"/>
     </volume>
   </structure>
+
   <userinfo>
-    &userinfo;
+    <!-- detector version -->
+    <auxiliary auxtype="DetectorVersion" auxvalue="1">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-teststand"/>
+      <auxiliary auxtype="Author" auxvalue="Wilde Hedin"/>
+      <auxiliary auxtype="Description" auxvalue="The HCal teststand geometry that will be used to measure cosmic muons at SLAC."/>
+    </auxiliary>
+
+    <!-- define regions -->
+    <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>
+
+    <!-- define vis attributes -->
+    <auxiliary auxtype="VisAttributes" auxvalue="HcalVis">
+      <auxiliary auxtype="R" auxvalue="0"/>
+      <auxiliary auxtype="G" auxvalue="0"/>
+      <auxiliary auxtype="B" auxvalue="0"/>
+      <auxiliary auxtype="A" auxvalue="1.0"/>
+      <auxiliary auxtype="Style" auxvalue="wireframe"/>
+      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
+      <auxiliary auxtype="Visible" auxvalue="true"/>
+      <auxiliary auxtype="LineWidth" auxvalue="1.5"/>
+    </auxiliary>
   </userinfo>
+
   <setup name="Default" version="1.0">
     <world ref="World"/>
   </setup>
 </gdml>
+
