@@ -411,6 +411,34 @@ static bool removeFile(const std::string& filepath) {
 }
 
 /**
+ * @func stripRunHeader
+ * Copy the event tree of a file into a new file, leaving the run tree behind.
+ *
+ * Builds a headerless file without needing any real data.
+ */
+static void stripRunHeader(const std::string& source,
+                           const std::string& destination) {
+  TFile src(source.c_str());
+  REQUIRE(not src.IsZombie());
+  auto events{static_cast<TTree*>(src.Get("LDMX_Events"))};
+  REQUIRE(events != nullptr);
+
+  TFile dst(destination.c_str(), "RECREATE");
+  REQUIRE(dst.IsOpen());
+  dst.cd();
+  auto copy{events->CloneTree(-1, "fast")};
+  REQUIRE(copy != nullptr);
+  copy->Write();
+  dst.Close();
+  src.Close();
+
+  // the point of the exercise
+  TFile check(destination.c_str());
+  REQUIRE(check.Get("LDMX_Run") == nullptr);
+  check.Close();
+}
+
+/**
  * @func run the process for the input parameters
  */
 static bool runProcess(const framework::config::Parameters& parameters) {
@@ -705,3 +733,69 @@ TEST_CASE("Core Framework Functionality", "[Framework][functionality]") {
   }  // need input files
 
 }  // process test
+
+/**
+ * Test that a run with no run header is caught rather than crashing.
+ *
+ * Without a run header newRun is never called, so no processor or conditions
+ * provider is ever initialised and the first one to reach for conditions
+ * does something undefined.
+ *
+ * What does this test?
+ *  - a run with no run header raises cleanly rather than segfaulting
+ */
+TEST_CASE("Missing Run Header", "[Framework][functionality]") {
+  framework::config::Parameters process;
+  process.add("compression_setting", 9);
+  process.add("max_tries_per_event", 1);
+  process.add("log_frequency", -1);
+  process.add("term_log_level", 4);
+  process.add("file_log_level", 4);
+  process.add<std::string>("log_file_name", "");
+  process.add<std::string>("tree_name", "LDMX_Events");
+
+  framework::config::Parameters producer_parameters;
+  producer_parameters.add<std::string>("class_name",
+                                       "framework::test::TestProducer");
+  producer_parameters.add<std::string>("instance_name", "TestProducer");
+
+  framework::config::Parameters analyzer_parameters;
+  analyzer_parameters.add<std::string>("class_name",
+                                       "framework::test::TestAnalyzer");
+  analyzer_parameters.add<std::string>("instance_name", "TestAnalyzer");
+
+  const std::string healthy_file{"test_missingrh_healthy_events.root"};
+  const std::string headerless_file{"test_missingrh_headerless_events.root"};
+
+  // healthy file, then take its run header away
+  {
+    auto make_inputs = process;
+    make_inputs.add<std::string>("pass_name", "makeInputs");
+    auto producer = producer_parameters;
+    producer.add("create_run_header", true);
+    make_inputs.add<std::vector<framework::config::Parameters>>("sequence",
+                                                                {producer});
+    make_inputs.add("output_files", std::vector<std::string>{healthy_file});
+    make_inputs.add<std::string>("histogram_file", "");
+    make_inputs.add("max_events", 3);
+    make_inputs.add("run", 3);
+    REQUIRE(framework::test::runProcess(make_inputs));
+    REQUIRE_THAT(healthy_file,
+                 framework::test::IsGoodEventFile("makeInputs", 3, 1));
+  }
+  framework::test::stripRunHeader(healthy_file, headerless_file);
+
+  process.add<std::string>("pass_name", "test");
+  std::string hist_file_path = "test_missingrh_hists.root";
+  process.add("histogram_file", hist_file_path);
+  process.add<std::vector<framework::config::Parameters>>(
+      "sequence", {analyzer_parameters});
+  process.add("input_files", std::vector<std::string>{headerless_file});
+
+  CHECK_THROWS_AS(framework::test::runProcess(process),
+                  framework::exception::Exception);
+
+  CHECK(framework::test::removeFile(hist_file_path));
+  CHECK(framework::test::removeFile(headerless_file));
+  CHECK(framework::test::removeFile(healthy_file));
+}  // missing run header test

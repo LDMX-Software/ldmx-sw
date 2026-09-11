@@ -375,8 +375,12 @@ void Process::run() {
                            << master_file->getFileName() << "'";
             newRun(*run_header_);
           } else {
-            ldmx_log(warn) << "Run header for run " << was_run
-                           << " was not found!";
+            // no header means no newRun, so conditions stay uninitialised
+            EXCEPTION_RAISE(
+                "MissingRunHeader",
+                "Run header for run " + std::to_string(was_run) +
+                    " was not found in '" + master_file->getFileName() +
+                    "'. Conditions cannot be initialised without it.");
           }
         }
 
