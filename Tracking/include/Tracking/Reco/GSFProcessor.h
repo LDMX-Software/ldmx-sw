@@ -266,6 +266,9 @@ class GSFProcessor final : public TrackingGeometryUser {
   /// Path to magnetic field map file
   std::string field_map_{""};
 
+  /// Mis-placement of the reconstruction field; must match the CKF's
+  BFieldDistortion bfield_distortion_{};
+
   /// Use perigee parameterization for tracks
   bool use_perigee_{false};
 

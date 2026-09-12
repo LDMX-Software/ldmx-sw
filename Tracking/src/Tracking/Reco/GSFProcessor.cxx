@@ -23,9 +23,9 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Setup a interpolated bfield map
   if (field_map_.empty())
-    loadBField();
+    loadBField(bfield_distortion_);
   else
-    loadBField(field_map_);
+    loadBField(field_map_, bfield_distortion_);
   const auto map =
       std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
@@ -104,6 +104,7 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   propagator_max_steps_ = parameters.get<int>("propagator_max_steps", 10000);
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
   field_map_ = parameters.get<std::string>("field_map");
+  bfield_distortion_ = bFieldDistortion(parameters);
   use_perigee_ = parameters.get<bool>("usePerigee", false);
 
   debug_ = parameters.get<bool>("debug", false);
