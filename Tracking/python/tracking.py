@@ -201,6 +201,18 @@ class CKFProcessor(Processor):
         The pass name of the sim particles event.
     input_pass_name : str
         The pass name of the input collections.
+    bfield_translation : list[float]
+        Displacement {dx, dy, dz} of the reconstruction field [mm], LDMX global
+        frame (x bend plane, y vertical, z beam). Moves the magnet, not the
+        detector: the simulation is untouched. Default is no displacement.
+    bfield_rotation : list[float]
+        Rotation {ax, ay, az} of the reconstruction field about the LDMX x, y
+        and z axes through ``bfield_pivot`` [rad]. Default is no rotation.
+    bfield_pivot : list[float]
+        Centre of rotation [mm], LDMX global. Defaults to the field-map origin
+        at z = -400 mm, i.e. the centre of the dipole.
+    bfield_scale : float
+        Overall scaling of the reconstruction field strength. Default 1.
     """
 
     dumpobj: bool = False
@@ -209,6 +221,10 @@ class CKFProcessor(Processor):
     bfield: float = -1.5
     const_b_field: bool = False
     field_map: str = ""
+    bfield_translation: list[float] = [0.0, 0.0, 0.0]
+    bfield_rotation: list[float] = [0.0, 0.0, 0.0]
+    bfield_pivot: list[float] = [0.0, 0.0, -400.0]
+    bfield_scale: float = 1.0
     propagator_step_size: float = 1000.0
     propagator_max_steps: int = 10000
     hit_collection: str = "RecoilSimHits"
@@ -249,6 +265,10 @@ class GSFProcessor(Processor):
         Maximum number of steps for the propagator.
     field_map : str
         Path to the location of the magnetic field map.
+    bfield_translation, bfield_rotation, bfield_pivot, bfield_scale
+        Mis-placement of the reconstruction field, see CKFProcessor. Set these
+        to the same values as the CKF that produced the input tracks, otherwise
+        the refit uses a different field than the track finding did.
     tagger_tracking : bool
         Whether tracking in the tagger.
     out_trk_collection : str
@@ -275,6 +295,10 @@ class GSFProcessor(Processor):
     propagator_step_size: float = 200.0
     propagator_max_steps: int = 1000
     field_map: str = ""
+    bfield_translation: list[float] = [0.0, 0.0, 0.0]
+    bfield_rotation: list[float] = [0.0, 0.0, 0.0]
+    bfield_pivot: list[float] = [0.0, 0.0, -400.0]
+    bfield_scale: float = 1.0
     tagger_tracking: bool = True
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"

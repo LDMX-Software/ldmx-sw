@@ -267,11 +267,7 @@ class CKFProcessor final : public TrackingGeometryUser {
   int n_zerob_ecal_extrap_recovered_recoil_{0};
 
   // BField Systematics
-  std::vector<double> map_offset_{
-      0.,
-      0.,
-      0.,
-  };
+  BFieldDistortion bfield_distortion_{};
 
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};

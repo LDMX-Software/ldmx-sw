@@ -49,6 +49,46 @@ void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
                const Acts::MagneticFieldContext& bctx);
 
 /**
+ * A deliberate mis-placement of the *reconstruction* magnetic field, used to
+ * quantify how well we need to know where the dipole sits before the
+ * reconstructed momentum scale is biased. The simulation is untouched.
+ *
+ * Applied as an inverse coordinate transform at lookup time: the query point is
+ * moved back into the nominal map frame, and the returned field is rotated and
+ * rescaled on the way out.
+ *
+ * Members are in the ACTS frame; the configuration is in the LDMX global frame,
+ * see tracking::reco::TrackingGeometryUser::bFieldDistortion().
+ */
+struct BFieldDistortion {
+  /// displacement of the magnet [mm]
+  Acts::Vector3 translation{Acts::Vector3::Zero()};
+  /// rotation about x, y, z through pivot [rad]
+  Acts::Vector3 rotation{Acts::Vector3::Zero()};
+  /// centre of rotation [mm], default the field-map origin
+  Acts::Vector3 pivot{-DIPOLE_OFFSET, 0., 0.};
+  /// overall scaling of the field strength
+  double scale{1.};
+
+  /// Rz(gamma) * Ry(beta) * Rx(alpha)
+  Acts::RotationMatrix3 rotationMatrix() const {
+    return (Acts::AngleAxis3(rotation(2), Acts::Vector3::UnitZ()) *
+            Acts::AngleAxis3(rotation(1), Acts::Vector3::UnitY()) *
+            Acts::AngleAxis3(rotation(0), Acts::Vector3::UnitX()))
+        .toRotationMatrix();
+  }
+
+  /**
+   * Exact comparison on purpose: the nominal case reuses the default transforms
+   * unchanged, so an unconfigured job gets bit-for-bit the field it got before
+   * these knobs existed. rot * (pos - pivot) + pivot would not.
+   */
+  bool isNominal() const {
+    return translation.isZero(0.) && rotation.isZero(0.) && scale == 1.;
+  }
+};
+
+/**
  * The default mapping between local to global bins of the map
  * it transforms the local xyz binning to the global binning
  */

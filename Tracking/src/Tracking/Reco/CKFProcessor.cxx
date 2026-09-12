@@ -64,9 +64,9 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Setup a interpolated bfield map
   if (field_map_.empty())
-    loadBField(map_offset_);
+    loadBField(bfield_distortion_);
   else
-    loadBField(field_map_, map_offset_);
+    loadBField(field_map_, bfield_distortion_);
   const auto map =
       std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
@@ -890,8 +890,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
 
   // BField Systematics
-  map_offset_ =
-      parameters.get<std::vector<double>>("map_offset_", {0., 0., 0.});
+  bfield_distortion_ = bFieldDistortion(parameters);
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }  // end of configure()

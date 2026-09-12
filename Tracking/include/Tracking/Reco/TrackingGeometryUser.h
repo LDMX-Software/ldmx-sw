@@ -33,17 +33,35 @@ class TrackingGeometryUser : public framework::Producer {
    * Load the interpolated B-field map from @p path and cache it.
    *
    * Uses the standard LDMX→ACTS coordinate transform plus DIPOLE_OFFSET.
-   * An optional per-axis offset (in field-map coordinates) can be supplied
-   * for systematic studies (equivalent to CKFProcessor's map_offset_).
+   * An optional distortion can be supplied to deliberately mis-place the
+   * reconstruction field for systematic studies; the default leaves the field
+   * bit-for-bit nominal.
    *
    * @param path       Path to the field map text file.
-   * @param map_offset Optional {dx, dy, dz} offset in field-map coordinates.
+   * @param distortion Optional mis-placement of the reconstruction field.
    */
   void loadBField(const std::string& path,
-                  const std::vector<double>& map_offset = {0., 0., 0.});
+                  const BFieldDistortion& distortion = {});
 
   /** Load B-field from the path recorded in the detector GDML. */
-  void loadBField(const std::vector<double>& map_offset = {0., 0., 0.});
+  void loadBField(const BFieldDistortion& distortion = {});
+
+  /**
+   * Build a BFieldDistortion from processor configuration.
+   *
+   * Config is in the LDMX global frame (x bend, y vertical, z beam); this
+   * permutes it into the ACTS frame the lookup works in. Parameters:
+   *
+   * - `bfield_translation` {dx, dy, dz} [mm], default {0, 0, 0}
+   * - `bfield_rotation`    {ax, ay, az} [rad], default {0, 0, 0}
+   * - `bfield_pivot`       {x, y, z} [mm], default {0, 0, -400}, the map origin
+   * - `bfield_scale`       field scaling, default 1
+   *
+   * A positive translation moves the magnet, so the field at a fixed point
+   * becomes the nominal field from further upstream.
+   */
+  static BFieldDistortion bFieldDistortion(
+      const framework::config::Parameters& parameters);
 
   /** Return the loaded B-field provider. Null until loadBField() is called. */
   std::shared_ptr<Acts::MagneticFieldProvider> bField() const {
