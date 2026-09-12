@@ -249,6 +249,9 @@ class GSFProcessor(Processor):
         Maximum number of steps for the propagator.
     field_map : str
         Path to the location of the magnetic field map.
+    bfield : float
+        BZ component of the constant field used as the tagger fallback when
+        the field map propagation fails. The recoil falls back to 0T.
     tagger_tracking : bool
         Whether tracking in the tagger.
     out_trk_collection : str
@@ -275,6 +278,7 @@ class GSFProcessor(Processor):
     propagator_step_size: float = 200.0
     propagator_max_steps: int = 1000
     field_map: str = ""
+    bfield: float = -1.5
     tagger_tracking: bool = True
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"

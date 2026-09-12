@@ -95,6 +95,8 @@ using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
 using GsfExtrapPropagator =
     Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
+using GsfFitter =
+    Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>;
 
 namespace tracking {
 namespace reco {
@@ -172,6 +174,17 @@ class GSFProcessor final : public TrackingGeometryUser {
   int n_ecal_extrap_failed_{0};
   double processing_time_{0.};
 
+  // Fallback statistics
+  int n_fieldmap_gsf_failed_{0};
+  int n_fallback_gsf_recovered_{0};
+  int n_fieldmap_start_extrap_failed_{0};
+  int n_fallback_start_extrap_recovered_{0};
+  int n_fieldmap_target_extrap_failed_{0};
+  int n_fallback_target_extrap_recovered_{0};
+  int n_fieldmap_ecal_extrap_failed_{0};
+  int n_fallback_ecal_extrap_recovered_{0};
+  int n_start_extrap_failed_{0};
+
   // refitting of tracks
   // bool kf_refit_{false};
   // bool gsf_refit_{false};
@@ -223,9 +236,13 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string seed_coll_name_{"seedTracks"};
 
   /// Gaussian Sum Fitter instance for track refitting
-  std::unique_ptr<
-      const Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>>
-      gsf_;
+  std::unique_ptr<const GsfFitter> gsf_;
+
+  /// Zero-field GSF, fallback for the recoil
+  std::unique_ptr<const GsfFitter> gsf_zero_b_;
+
+  /// Constant-field (bfield_) GSF, fallback for the tagger
+  std::unique_ptr<const GsfFitter> gsf_const_b_;
 
   /// Collection name for input tracks to be refit
   std::string track_collection_{"TaggerTracks"};
@@ -266,6 +283,9 @@ class GSFProcessor final : public TrackingGeometryUser {
   /// Path to magnetic field map file
   std::string field_map_{""};
 
+  /// Bz of the tagger fallback field, in Tesla
+  double bfield_{-1.5};
+
   /// Use perigee parameterization for tracks
   bool use_perigee_{false};
 
@@ -282,6 +302,16 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_;
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
       trk_extrap_;
+
+  // Zero-field extrapolator, fallback for the recoil
+  std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_zero_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
+      trk_extrap_zero_b_;
+
+  // Constant-field extrapolator, fallback for the tagger
+  std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_const_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
+      trk_extrap_const_b_;
 
   /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via
   /// VoidNavigator)

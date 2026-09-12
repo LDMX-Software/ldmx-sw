@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
+#include <optional>
+#include <string>
 
 #include "Acts/EventData/SourceLink.hpp"
 #include "Tracking/Event/Track.h"
@@ -64,8 +66,8 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   auto bethe_heitler = std::make_shared<Acts::PolynomialBetheHeitlerApprox>(
       Acts::makeDefaultBetheHeitlerApprox());
 
-  gsf_ = std::make_unique<std::decay_t<decltype(*gsf_)>>(
-      std::move(gsf_propagator), std::move(bethe_heitler),
+  gsf_ = std::make_unique<GsfFitter>(
+      std::move(gsf_propagator), bethe_heitler,
       Acts::getDefaultLogger("GSF", acts_logging_level));
 
   const auto stepper = Acts::EigenStepper<>{map};
@@ -77,6 +79,40 @@ void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
       Acts::EigenStepper<>{map}, Acts::VoidNavigator{});
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_extrap_, geometryContext(), magneticFieldContext());
+
+  // Constant-field fallbacks for tracks that leave the field map, as in the CKF
+  const auto zero_b_field =
+      std::make_shared<Acts::ConstantBField>(Acts::Vector3(0., 0., 0.));
+  const auto const_b_field = std::make_shared<Acts::ConstantBField>(
+      Acts::Vector3(0., 0., bfield_ * Acts::UnitConstants::T));
+
+  MultiStepper zero_b_multi_stepper(zero_b_field);
+  gsf_zero_b_ = std::make_unique<GsfFitter>(
+      GsfPropagator(
+          std::move(zero_b_multi_stepper), navigator,
+          Acts::getDefaultLogger("GSF_PROP_ZERO_B", acts_logging_level)),
+      bethe_heitler, Acts::getDefaultLogger("GSF_ZERO_B", acts_logging_level));
+
+  MultiStepper const_b_multi_stepper(const_b_field);
+  gsf_const_b_ = std::make_unique<GsfFitter>(
+      GsfPropagator(
+          std::move(const_b_multi_stepper), navigator,
+          Acts::getDefaultLogger("GSF_PROP_CONST_B", acts_logging_level)),
+      bethe_heitler, Acts::getDefaultLogger("GSF_CONST_B", acts_logging_level));
+
+  propagator_extrap_zero_b_ = std::make_unique<GsfExtrapPropagator>(
+      Acts::EigenStepper<>{zero_b_field}, Acts::VoidNavigator{});
+  trk_extrap_zero_b_ =
+      std::make_shared<std::decay_t<decltype(*trk_extrap_zero_b_)>>(
+          *propagator_extrap_zero_b_, geometryContext(),
+          magneticFieldContext());
+
+  propagator_extrap_const_b_ = std::make_unique<GsfExtrapPropagator>(
+      Acts::EigenStepper<>{const_b_field}, Acts::VoidNavigator{});
+  trk_extrap_const_b_ =
+      std::make_shared<std::decay_t<decltype(*trk_extrap_const_b_)>>(
+          *propagator_extrap_const_b_, geometryContext(),
+          magneticFieldContext());
 }
 
 void GSFProcessor::configure(framework::config::Parameters& parameters) {
@@ -104,6 +140,7 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   propagator_max_steps_ = parameters.get<int>("propagator_max_steps", 10000);
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
   field_map_ = parameters.get<std::string>("field_map");
+  bfield_ = parameters.get<double>("bfield", -1.5);
   use_perigee_ = parameters.get<bool>("usePerigee", false);
 
   debug_ = parameters.get<bool>("debug", false);
@@ -220,6 +257,13 @@ void GSFProcessor::produce(framework::Event& event) {
   ldmx_log(debug) << "Starting GSF processing of " << tracks.size()
                   << " tracks";
 
+  // Fallback for this system
+  const GsfFitter& fallback_gsf =
+      tagger_tracking_ ? *gsf_const_b_ : *gsf_zero_b_;
+  auto& fallback_extrap =
+      tagger_tracking_ ? trk_extrap_const_b_ : trk_extrap_zero_b_;
+  const std::string fallback_name = tagger_tracking_ ? "const-B" : "zero-B";
+
   for (auto& track : tracks) {
     ldmx_log(debug) << "Processing track " << itrk << " with "
                     << track.getMeasurementsIdxs().size() << " measurements";
@@ -275,10 +319,19 @@ void GSFProcessor::produce(framework::Event& event) {
       auto opt_tagger_start =
           trk_extrap_->extrapolate(trk_btp, tagger_start_surface_);
       if (!opt_tagger_start) {
+        ++n_fieldmap_start_extrap_failed_;
+        ldmx_log(debug) << "  Field-map pre-fit extrapolation to tagger start "
+                           "surface failed, trying "
+                        << fallback_name << " fallback (itrk=" << itrk << ")";
+        opt_tagger_start =
+            fallback_extrap->extrapolate(trk_btp, tagger_start_surface_);
+        if (opt_tagger_start) ++n_fallback_start_extrap_recovered_;
+      }
+      if (!opt_tagger_start) {
         ldmx_log(debug)
             << "  Failed pre-fit extrapolation to tagger start surface (itrk="
             << itrk << ")";
-        ++n_gsf_failed_;
+        ++n_start_extrap_failed_;
         continue;
       }
       trk_btp_fit_start = *opt_tagger_start;
@@ -316,16 +369,43 @@ void GSFProcessor::produce(framework::Event& event) {
     }
     gsf_options.referenceSurface = &(*gsf_ref_surface);
 
-    auto gsf_refit_result =
-        gsf_->fit(fit_track_source_links.begin(), fit_track_source_links.end(),
-                  trk_btp_fit_start, gsf_options, tc);
+    // Index in tc of the successful fit
+    std::optional<Acts::TrackIndexType> fitted_index;
 
-    if (!gsf_refit_result.ok()) {
-      ldmx_log(debug) << "  GSF re-fit failed (itrk=" << itrk
-                      << "): " << gsf_refit_result.error().message();
-      if (n_gsf_failed_ < 5)
-        ldmx_log(info) << "  [GSF dbg] fit failed (first few): "
-                       << gsf_refit_result.error().message();
+    {
+      auto gsf_refit_result = gsf_->fit(fit_track_source_links.begin(),
+                                        fit_track_source_links.end(),
+                                        trk_btp_fit_start, gsf_options, tc);
+
+      if (gsf_refit_result.ok()) {
+        fitted_index = gsf_refit_result.value().index();
+      } else {
+        ++n_fieldmap_gsf_failed_;
+        ldmx_log(debug) << "  Field-map GSF re-fit failed (itrk=" << itrk
+                        << "): " << gsf_refit_result.error().message()
+                        << ", trying " << fallback_name << " fallback";
+        if (n_fieldmap_gsf_failed_ <= 5)
+          ldmx_log(info) << "  [GSF dbg] fit failed (first few): "
+                         << gsf_refit_result.error().message();
+
+        auto fallback_result = fallback_gsf.fit(
+            fit_track_source_links.begin(), fit_track_source_links.end(),
+            trk_btp_fit_start, gsf_options, tc);
+
+        if (fallback_result.ok()) {
+          ++n_fallback_gsf_recovered_;
+          fitted_index = fallback_result.value().index();
+          ldmx_log(debug) << "  Yay! " << fallback_name
+                          << " GSF succeeded as fallback!";
+        } else {
+          ldmx_log(debug) << "  " << fallback_name
+                          << " GSF also failed (itrk=" << itrk
+                          << "): " << fallback_result.error().message();
+        }
+      }
+    }
+
+    if (!fitted_index) {
       ++n_gsf_failed_;
       continue;
     }
@@ -334,7 +414,7 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx_log(debug) << "  GSF fit succeeded (itrk=" << itrk
                     << "), tc.size()=" << tc.size();
 
-    auto gsftrk = gsf_refit_result.value();
+    auto gsftrk = tc.getTrack(*fitted_index);
     // calculateTrackQuantities(gsftrk);
 
     const Acts::BoundVector& perigee_pars = gsftrk.parameters();
@@ -369,9 +449,17 @@ void GSFProcessor::produce(framework::Event& event) {
     ldmx::Track trk;
 
     // Extrapolate GSF track to target surface to get perigee parameters
+    ldmx_log(debug) << "    Extrapolating to target (itrk=" << itrk << ")";
     auto opt_target = trk_extrap_->extrapolate(gsftrk, target_surface_);
 
-    ldmx_log(debug) << "    Extrapolating to target (itrk=" << itrk << ")";
+    if (!opt_target) {
+      ++n_fieldmap_target_extrap_failed_;
+      ldmx_log(debug) << "    Field-map target extrapolation failed, trying "
+                      << fallback_name << " fallback";
+      opt_target = fallback_extrap->extrapolate(gsftrk, target_surface_);
+      if (opt_target) ++n_fallback_target_extrap_recovered_;
+    }
+
     if (opt_target) {
       ldmx_log(debug) << "    GSF target extrapolation succeeded";
       auto ts_at_target = tracking::sim::utils::makeTrackState(
@@ -414,12 +502,24 @@ void GSFProcessor::produce(framework::Event& event) {
     if (tagger_tracking_) {
       auto opt_beam_origin =
           trk_extrap_->extrapolate(gsftrk, beam_origin_surface_);
+      if (!opt_beam_origin)
+        opt_beam_origin =
+            fallback_extrap->extrapolate(gsftrk, beam_origin_surface_);
       if (opt_beam_origin)
         trk.addTrackState(tracking::sim::utils::makeTrackState(
             geometryContext(), *opt_beam_origin, ldmx::AtBeamOrigin));
     } else {
       ldmx_log(debug) << "  ECAL extrapolation";
       auto opt_ecal = trk_extrap_->extrapolate(gsftrk, ecal_surface_);
+
+      if (!opt_ecal) {
+        ++n_fieldmap_ecal_extrap_failed_;
+        ldmx_log(debug) << "    Field-map ECAL extrapolation failed, trying "
+                        << fallback_name << " fallback";
+        opt_ecal = fallback_extrap->extrapolate(gsftrk, ecal_surface_);
+        if (opt_ecal) ++n_fallback_ecal_extrap_recovered_;
+      }
+
       if (opt_ecal)
         trk.addTrackState(tracking::sim::utils::makeTrackState(
             geometryContext(), *opt_ecal, ldmx::AtECAL));
@@ -470,9 +570,47 @@ void GSFProcessor::onProcessEnd() {
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "GSF Fit Failures: " << n_gsf_failed_;
   ldmx_log(info) << "Extrapolation Failures::";
+  if (tagger_tracking_)
+    ldmx_log(info) << "  Tagger start: " << n_start_extrap_failed_ << " times";
   ldmx_log(info) << "  Target: " << n_target_extrap_failed_ << " times";
   if (!tagger_tracking_)
     ldmx_log(info) << "  ECAL:   " << n_ecal_extrap_failed_ << " times";
+
+  const std::string fallback_name = tagger_tracking_ ? "const-B" : "zero-B";
+  auto recovery_fraction = [](int recovered, int failed) {
+    return failed > 0 ? 100.0 * recovered / failed : 0.0;
+  };
+
+  ldmx_log(info) << "GSF Fallback Statistics (" << fallback_name << ")::";
+  ldmx_log(info) << "  Fit: field-map failed " << n_fieldmap_gsf_failed_
+                 << " times, fallback recovered " << n_fallback_gsf_recovered_
+                 << " ("
+                 << recovery_fraction(n_fallback_gsf_recovered_,
+                                      n_fieldmap_gsf_failed_)
+                 << "%)";
+  if (tagger_tracking_)
+    ldmx_log(info) << "  Tagger start extrap: field-map failed "
+                   << n_fieldmap_start_extrap_failed_
+                   << " times, fallback recovered "
+                   << n_fallback_start_extrap_recovered_ << " ("
+                   << recovery_fraction(n_fallback_start_extrap_recovered_,
+                                        n_fieldmap_start_extrap_failed_)
+                   << "%)";
+  ldmx_log(info) << "  Target extrap: field-map failed "
+                 << n_fieldmap_target_extrap_failed_
+                 << " times, fallback recovered "
+                 << n_fallback_target_extrap_recovered_ << " ("
+                 << recovery_fraction(n_fallback_target_extrap_recovered_,
+                                      n_fieldmap_target_extrap_failed_)
+                 << "%)";
+  if (!tagger_tracking_)
+    ldmx_log(info) << "  ECAL extrap: field-map failed "
+                   << n_fieldmap_ecal_extrap_failed_
+                   << " times, fallback recovered "
+                   << n_fallback_ecal_extrap_recovered_ << " ("
+                   << recovery_fraction(n_fallback_ecal_extrap_recovered_,
+                                        n_fieldmap_ecal_extrap_failed_)
+                   << "%)";
 }
 
 }  // namespace reco
