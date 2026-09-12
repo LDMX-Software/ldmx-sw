@@ -62,19 +62,19 @@ void testField(const std::shared_ptr<Acts::MagneticFieldProvider> bfield,
  */
 struct BFieldDistortion {
   /// displacement of the magnet [mm]
-  Acts::Vector3 translation{Acts::Vector3::Zero()};
+  Acts::Vector3 translation_{Acts::Vector3::Zero()};
   /// rotation about x, y, z through pivot [rad]
-  Acts::Vector3 rotation{Acts::Vector3::Zero()};
+  Acts::Vector3 rotation_{Acts::Vector3::Zero()};
   /// centre of rotation [mm], default the field-map origin
-  Acts::Vector3 pivot{-DIPOLE_OFFSET, 0., 0.};
+  Acts::Vector3 pivot_{-DIPOLE_OFFSET, 0., 0.};
   /// overall scaling of the field strength
-  double scale{1.};
+  double scale_{1.};
 
   /// Rz(gamma) * Ry(beta) * Rx(alpha)
   Acts::RotationMatrix3 rotationMatrix() const {
-    return (Acts::AngleAxis3(rotation(2), Acts::Vector3::UnitZ()) *
-            Acts::AngleAxis3(rotation(1), Acts::Vector3::UnitY()) *
-            Acts::AngleAxis3(rotation(0), Acts::Vector3::UnitX()))
+    return (Acts::AngleAxis3(rotation_(2), Acts::Vector3::UnitZ()) *
+            Acts::AngleAxis3(rotation_(1), Acts::Vector3::UnitY()) *
+            Acts::AngleAxis3(rotation_(0), Acts::Vector3::UnitX()))
         .toRotationMatrix();
   }
 
@@ -84,7 +84,7 @@ struct BFieldDistortion {
    * these knobs existed. rot * (pos - pivot) + pivot would not.
    */
   bool isNominal() const {
-    return translation.isZero(0.) && rotation.isZero(0.) && scale == 1.;
+    return translation_.isZero(0.) && rotation_.isZero(0.) && scale_ == 1.;
   }
 };
 
