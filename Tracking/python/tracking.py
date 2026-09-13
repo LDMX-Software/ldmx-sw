@@ -251,6 +251,8 @@ class GSFProcessor(Processor):
         Path to the location of the magnetic field map.
     tagger_tracking : bool
         Whether tracking in the tagger.
+    tagger_start_x : float
+        ACTS x [mm] of the tagger GSF start surface, upstream of tagger L1.
     out_trk_collection : str
         Name of the output Track collection.
     track_collection : str
@@ -276,6 +278,7 @@ class GSFProcessor(Processor):
     propagator_max_steps: int = 1000
     field_map: str = ""
     tagger_tracking: bool = True
+    tagger_start_x: float = -617.0
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"
     meas_collection: str = "DigiTaggerSimHits"
