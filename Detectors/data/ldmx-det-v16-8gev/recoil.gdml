@@ -48,14 +48,10 @@
               recoil_l6_mid_z-recoil_l56_sensor_sep
               recoil_l6_mid_z+recoil_l56_sensor_sep" />
     
-    <!-- 
-      ############################################################################################################
-      xy position of the center of each sensor in the 10-sensor axial-only layers (layers 5 and 6)  
-      - As in previous versons, I'm using the active sensor dimensions in X since the "columns" are staggered
-        in Z so we want to overlap the sensors in X to cover inactive or "dead" regions
-      - For Y I'm using the diced sensor dimensions
-      - Assuming 0.5mm gap between top and bottom sensors per design report (maintain electrical isolation)
-      ###########################################################################################################
+    <!--
+      xy centers of the sensors in the axial-only layers 5 and 6.
+      x pitch is the active width (columns are staggered in z so they overlap
+      the dead edges); y uses the diced height plus a 0.5 mm isolation gap.
     -->
     <matrix name="recoil_l56_xy" coldim="2" values=" 92.04  48.25 
                                                      46.02  48.25 
