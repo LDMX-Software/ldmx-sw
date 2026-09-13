@@ -26,13 +26,13 @@
 
     <!--
       Trigger scintillator parent volume position relative to the target
-      -851.878 mm. The downstream end of the parent volume relative to the
-      target is at -818.501 mm. This gives a 200.001 mm clearance to the
-      upstream face of the tagger envelope (-618.5 mm).
-      There are now two TS modules upstream of the tagger tracker.
+      -849.378 mm (unchanged from v15). The downstream end of the parent
+      volume relative to the target is at -816.001 mm. This gives a
+      197.501 mm clearance to the upstream face of the tagger envelope
+      (-618.5 mm). There are now two TS modules upstream of the tagger tracker.
     -->
     <variable name="trig_scint_pos_z" 
-      value="tagger_pos_z-trig_scint_area_envelope_z/2 -tagger_envelope_dz/2- clearance - 200" />
+      value="tagger_pos_z-trig_scint_area_envelope_z/2 -tagger_envelope_dz/2- clearance - 197.5" />
     
     <!-- 
          Define all subdetector positions relative to the target.  
