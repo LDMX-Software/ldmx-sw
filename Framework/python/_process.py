@@ -75,9 +75,9 @@ class Process:
     histogram_file: str
         output file to store histograms in (optional, only needed if one of
         the processors in the sequence attempts to fill histograms)
-    log_performance: bool
+    log_performance: bool, default False
         whether to log performance timing of the difference processors into a directory
-        in the histogram file (defaults to False, requires a histogram file to be defined)
+        in the histogram file (requires a histogram file to be defined)
 
 
     See Also

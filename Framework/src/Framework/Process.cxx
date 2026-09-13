@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 
 #include <iostream>
+#include <memory>
 #include <set>
 
 #include "Framework/Event.h"
@@ -206,12 +207,12 @@ void Process::run() {
 
     for (auto rule : drop_keep_rules_) out_file.addDrop(rule);
 
-    ldmx::RunHeader run_header(run_for_generation_);
-    run_header.setRunStart(std::time(nullptr));  // set run starting
-    run_header_ = &run_header;  // give handle to run header to process
+    auto run_header = std::make_shared<ldmx::RunHeader>(run_for_generation_);
+    run_header->setRunStart(std::time(nullptr));  // set run starting
+    run_header_ = run_header.get();  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
-    newRun(run_header);
+    newRun(*run_header);
 
     int total_tries = 0;  // total number of tries for entire run
     int num_tries = 0;    // number of tries for the current event number
@@ -263,8 +264,8 @@ void Process::run() {
 
     onFileClose(out_file);
 
-    run_header.setRunEnd(std::time(nullptr));
-    run_header.setNumTries(total_tries);
+    run_header->setRunEnd(std::time(nullptr));
+    run_header->setNumTries(total_tries);
     out_file.writeRunTree();
 
     // Give a warning that this filter has very low efficiency
