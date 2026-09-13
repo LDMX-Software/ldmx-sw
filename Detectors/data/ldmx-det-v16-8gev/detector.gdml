@@ -26,8 +26,9 @@
 
     <!--
       Trigger scintillator parent volume position relative to the target
-      ???? mm. The end of the parent volume relative to the target
-      is at ?????. This gives a ???? mm clearance between the upstream.
+      -851.878 mm. The downstream end of the parent volume relative to the
+      target is at -818.501 mm. This gives a 200.001 mm clearance to the
+      upstream face of the tagger envelope (-618.5 mm).
       There are now two TS modules upstream of the tagger tracker.
     -->
     <variable name="trig_scint_pos_z" 
