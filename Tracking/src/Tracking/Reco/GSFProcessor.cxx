@@ -15,9 +15,8 @@ GSFProcessor::GSFProcessor(const std::string& name, framework::Process& process)
 
 void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   beam_origin_surface_ = tracking::sim::utils::unboundSurface(-700);
-  // 1mm inside tagger ACTS volume outer boundary (~-618mm), 1.5mm upstream of
-  // L1 at x=-615.5mm
-  tagger_start_surface_ = tracking::sim::utils::unboundSurface(-617.);
+  // 1mm inside tagger ACTS volume outer boundary, upstream of L1
+  tagger_start_surface_ = tracking::sim::utils::unboundSurface(tagger_start_x_);
   target_surface_ = tracking::sim::utils::unboundSurface(0.);
   ecal_surface_ = tracking::sim::utils::unboundSurface(240.5);
 
@@ -108,6 +107,7 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
 
   debug_ = parameters.get<bool>("debug", false);
   tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
+  tagger_start_x_ = parameters.get<double>("tagger_start_x", -617.);
 
   // final_reduction_method_ =
   // parameters.get<double>("finalReductionMethod",);

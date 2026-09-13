@@ -272,6 +272,9 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
 
+  /// ACTS x of the tagger GSF start surface [mm]
+  double tagger_start_x_{-617.};
+
   /// Propagator for track extrapolation using eigen stepper
   std::unique_ptr<const Propagator> propagator_;
 
@@ -287,8 +290,7 @@ class GSFProcessor final : public TrackingGeometryUser {
   /// VoidNavigator)
   std::shared_ptr<Acts::Surface> beam_origin_surface_;
 
-  /// Tagger GSF start surface at x≈-617mm in ACTS (1mm inside tagger volume
-  /// outer boundary ~-618mm, 1.5mm upstream of L1 sensors at x=-615.5mm)
+  /// Tagger GSF start surface at x=tagger_start_x_ in ACTS
   std::shared_ptr<Acts::Surface> tagger_start_surface_;
 
   /// Target surface at z=0 mm (recoil track initialization, perigee output)

@@ -10,7 +10,7 @@ from LDMX.SimCore import generators as gen
 from LDMX.SimCore.user_actions import PhotonuclearTracker
 
 
-det = "ldmx-det-v15-8gev"
+det = "ldmx-det-v16-8gev"
 
 my_sim = ecal.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 my_sim.description = "ECal PN Test Simulation"
@@ -117,8 +117,9 @@ p.logger.term_level = int(os.environ["LDMX_LOG_LEVEL"])
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
 # resolution, GSF, DQM
-p.sequence.extend(full_tracking_sequence.sequence)
-p.sequence.extend(full_tracking_sequence.dqm_sequence)
+trk = full_tracking_sequence.full_tracking_sequence(detector=det)
+p.sequence.extend(trk.sequence)
+p.sequence.extend(trk.dqm_sequence)
 
 p.sequence.extend(
     [
