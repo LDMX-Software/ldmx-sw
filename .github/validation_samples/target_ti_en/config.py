@@ -9,7 +9,7 @@ from LDMX.Biasing import target
 from LDMX.SimCore import generators as gen
 
 
-det = "ldmx-ti-v15-8gev"
+det = "ldmx-ti-v16-8gev"
 
 my_sim = target.electro_nuclear(det, gen.single_8gev_e_upstream_tagger())
 my_sim.description = "Ti Target EN Simulation"
@@ -144,8 +144,9 @@ p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
 # resolution, GSF, DQM
-p.sequence.extend(full_tracking_sequence.sequence)
-p.sequence.extend(full_tracking_sequence.dqm_sequence)
+trk = full_tracking_sequence.full_tracking_sequence(detector=det)
+p.sequence.extend(trk.sequence)
+p.sequence.extend(trk.dqm_sequence)
 
 p.sequence.extend(
     [
