@@ -13,6 +13,8 @@ env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_NUM_EVENTS: 10000
   LDMX_LOG_LEVEL: 1
+  REPORTS_REPO: LDMX-Software/validation-reports
+  REPORTS_URL: https://ldmx-software.github.io/validation-reports
 
 jobs:
   check-comment:
@@ -205,7 +207,92 @@ jobs:
           merge-multiple: false
           path: statuses
 
+      # trunk scripts on issue_comment, no PR code
+      - name: Checkout report script
+        uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/actions/validate
+          path: ldmx-sw
+
+      - name: Download all plot artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '*-pr-validation'
+          merge-multiple: false
+          path: plots
+
+      - name: Build validation report
+        continue-on-error: true
+        run: |
+          for dir in plots/*-pr-validation/; do
+            sample=$(basename "$dir" -pr-validation)
+            mkdir -p "report-input/${sample}"
+            tar -xzf "${dir}${sample}_recon_validation_plots.tar.gz" -C "report-input/${sample}" \
+              --wildcards 'results.json' 'fail/*.png' || echo "::warning::no report inputs for ${sample}"
+            cp statuses/${sample}-validation-status/* "report-input/${sample}/" 2>/dev/null || true
+          done
+          run_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          run_dir="pr-${PR_NUMBER}/run-${{ github.run_id }}-${{ github.run_attempt }}"
+          echo "RUN_DIR=${run_dir}" >> $GITHUB_ENV
+          python3 ldmx-sw/.github/actions/validate/make_report.py report-input/* \
+            --out "site/${run_dir}" \
+            --title "ldmx-sw PR #${PR_NUMBER} validation" \
+            --meta "<a href='${run_url}'>workflow run</a> (attempt ${{ github.run_attempt }}, ${{ github.event_name }})" \
+            --base-url "${REPORTS_URL}/${run_dir}" \
+            --comment-md worst.md
+          python3 ldmx-sw/.github/actions/validate/make_report.py \
+            --runs-index "site/pr-${PR_NUMBER}" --title "ldmx-sw PR #${PR_NUMBER} validation runs"
+
+      - name: Upload validation report
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: validation-report
+          path: site
+
+      - name: Publish validation report
+        continue-on-error: true
+        id: publish
+        env:
+          DEPLOY_KEY: ${{ secrets.VALIDATION_REPORTS_DEPLOY_KEY }}
+        run: |
+          if [[ -z "${DEPLOY_KEY}" ]]; then
+            echo "::warning::VALIDATION_REPORTS_DEPLOY_KEY not available, not publishing"
+            exit 0
+          fi
+          if [[ -z "${RUN_DIR:-}" || ! -d "site/${RUN_DIR}" ]]; then
+            echo "::warning::no report was built, not publishing"
+            exit 0
+          fi
+          mkdir -p ~/.ssh
+          echo "${DEPLOY_KEY}" > ~/.ssh/reports_key
+          chmod 600 ~/.ssh/reports_key
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/reports_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+          # retry on concurrent pushes
+          for attempt in 1 2 3 4 5; do
+            rm -rf reports
+            git clone -q --depth 1 --branch gh-pages "git@github.com:${REPORTS_REPO}.git" reports
+            rm -rf "reports/${RUN_DIR}"
+            mkdir -p "reports/pr-${PR_NUMBER}"
+            cp -r "site/${RUN_DIR}" "reports/${RUN_DIR}"
+            python3 ldmx-sw/.github/actions/validate/make_report.py \
+              --runs-index "reports/pr-${PR_NUMBER}" --title "ldmx-sw PR #${PR_NUMBER} validation runs"
+            touch reports/.nojekyll
+            git -C reports config user.name "github-actions[bot]"
+            git -C reports config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C reports add -A
+            git -C reports commit -q -m "PR #${PR_NUMBER} run ${{ github.run_id }}" || true
+            if git -C reports push -q origin gh-pages; then
+              echo "url=${REPORTS_URL}/${RUN_DIR}/" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep $(( attempt * 15 ))
+          done
+          echo "::warning::could not push validation report"
+
       - name: Post validation summary comment
+        env:
+          REPORT_URL: ${{ steps.publish.outputs.url }}
         run: |
           # Fetch artifact list for this workflow run
           declare -A artifact_urls
@@ -270,7 +357,17 @@ jobs:
             fi
           done
 
-          body="## Validation Results\n\n${header}\n\n${table}${details_section}"
+          report_section=""
+          if [[ -n "${REPORT_URL}" ]]; then
+            header+="\n\n:bar_chart: **[Browse the validation report](${REPORT_URL})** (plots ranked by KS distance)"
+          else
+            header+="\n\nValidation report: \`validation-report\` artifact of [this run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          fi
+          if [[ -s worst.md ]]; then
+            report_section="\n### Worst histograms\n$(cat worst.md)\n"
+          fi
+
+          body="## Validation Results\n\n${header}\n\n${table}${report_section}${details_section}"
 
           curl -s -X POST \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
