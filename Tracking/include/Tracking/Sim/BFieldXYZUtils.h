@@ -8,7 +8,7 @@
 #include "Acts/MagneticField/BFieldMapUtils.hpp"
 #include "Acts/MagneticField/InterpolatedBFieldMap.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Utilities/AxisFwd.hpp"
+#include "Acts/Utilities/AxisDefinitions.hpp"
 #include "Acts/Utilities/Grid.hpp"
 #include "Acts/Utilities/Interpolation.hpp"
 #include "Acts/Utilities/Result.hpp"
@@ -211,8 +211,8 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
         localToGlobalBin,
     GenericTransformPos transformPosition,
     GenericTransformBField transformMagneticField,
-    const std::string& fieldMapFile, Acts::ActsScalar lengthUnit,
-    Acts::ActsScalar BFieldUnit, bool firstOctant, bool rotateAxes) {
+    const std::string& fieldMapFile, double lengthUnit, double BFieldUnit,
+    bool firstOctant, bool rotateAxes) {
   /// [1] Read in field map file
   // Grid position points in x, y and z
   std::vector<double> x_pos;

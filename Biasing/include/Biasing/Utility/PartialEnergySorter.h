@@ -33,7 +33,7 @@ namespace utility {
  * the threshold.
  *
  * ## Necessities for Filters Run in Sequence
- * - *If* your derived class re-defines ClassifyNewTrack, you should avoid
+ * - *If* your derived class re-defines classifyNewTrack, you should avoid
  *   changing the classification and return the current track classification.
  * - *If* your derived class re-defines stepping, you should avoid
  *   change the track status.
@@ -62,7 +62,7 @@ class PartialEnergySorter : public simcore::UserAction {
    *
    * @param[in] event unused
    */
-  void BeginOfEventAction(const G4Event* event) override;
+  void beginOfEventAction(const G4Event* event) override;
 
   /**
    * Classify a "new" track
@@ -81,7 +81,7 @@ class PartialEnergySorter : public simcore::UserAction {
    * @param currentTrackClass The current track classification.
    * @returns the updated classification
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
+  G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
       const G4ClassificationOfNewTrack& currentTrackClass) override;
 
@@ -128,7 +128,7 @@ class PartialEnergySorter : public simcore::UserAction {
    * tracking without "stepping" from above the threshold to
    * below it.
    */
-  void NewStage() override {
+  void newStage() override {
     /** debug printout
     std::cout << "[ PartialEnergySorter ] : "
         << "Starting new stage with "

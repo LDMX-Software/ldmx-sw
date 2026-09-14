@@ -11,6 +11,7 @@
 #include <random>
 
 //--- LDMX ---//
+#include "Tracking/EigenStepper.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 //--- ACTS ---//
@@ -19,7 +20,7 @@
 #include "Acts/Definitions/Common.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
-#include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
@@ -34,14 +35,13 @@
 
 // propagation testing
 #include "Acts/MagneticField/ConstantBField.hpp"
-#include "Acts/Propagator/AbortList.hpp"
-#include "Acts/Propagator/ActionList.hpp"
-#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-#include "Acts/Propagator/EigenStepper.hpp"
+#include "Acts/Propagator/ActorList.hpp"
+#include "Acts/Propagator/EigenStepperDenseExtension.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
@@ -55,7 +55,7 @@
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
 #include "Acts/TrackFinding/MeasurementSelector.hpp"
-#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
+#include "Acts/TrackFinding/TrackStateCreator.hpp"
 #include "Acts/TrackFitting/GainMatrixUpdater.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 
@@ -78,13 +78,14 @@
 #include "Tracking/Sim/BFieldXYZUtils.h"
 // mg Aug 2024 not sure if these are needed...
 using Updater = Acts::GainMatrixUpdater;
-using Smoother = Acts::GainMatrixSmoother;
 
 using ActionList =
-    Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
-using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
+    Acts::ActorList<Acts::detail::SteppingLogger, Acts::MaterialInteractor,
+                    Acts::EndOfWorldReached>;
 
 using CkfPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
+using ExtrapPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 using TrackContainer = Acts::TrackContainer<Acts::VectorTrackContainer,
                                             Acts::VectorMultiTrajectory>;
 
@@ -99,7 +100,7 @@ class CKFProcessor final : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  CKFProcessor(const std::string &name, framework::Process &process);
+  CKFProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~CKFProcessor() = default;
@@ -115,7 +116,7 @@ class CKFProcessor final : public TrackingGeometryUser {
    * This is where you could create single-processors, multi-event
    * calculation objects.
    */
-  void onNewRun(const ldmx::RunHeader &rh) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -127,19 +128,19 @@ class CKFProcessor final : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   // Make geoid -> source link map Measurements
-  auto makeGeoIdSourceLinkMap(const geo::TrackersTrackingGeometry &tg,
-                              const std::vector<ldmx::Measurement> &ldmxsps)
+  auto makeGeoIdSourceLinkMap(const geo::TrackersTrackingGeometry& tg,
+                              const std::vector<ldmx::Measurement>& ldmxsps)
       -> std::unordered_multimap<Acts::GeometryIdentifier,
                                  acts_examples::IndexSourceLink>;
 
@@ -147,8 +148,8 @@ class CKFProcessor final : public TrackingGeometryUser {
             typename source_link_equality_t>
   std::vector<std::vector<std::size_t>> computeSharedHits(
       std::vector<ldmx::Track> tracks, std::vector<ldmx::Measurement> meas_coll,
-      geometry_t &tg, source_link_hash_t &&sourceLinkHash,
-      source_link_equality_t &&sourceLinkEquality) const;
+      geometry_t& tg, source_link_hash_t&& sourceLinkHash,
+      source_link_equality_t&& sourceLinkEquality) const;
 
   // If we want to dump the tracking geometry
   bool dumpobj_{false};
@@ -222,8 +223,10 @@ class CKFProcessor final : public TrackingGeometryUser {
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_;
 
-  // Track Extrapolator Tool
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+  // Track Extrapolator Tool (uses VoidNavigator to propagate freely to any
+  // surface)
+  std::unique_ptr<const ExtrapPropagator> propagator_extrap_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_;
 
   // Zero-B CKF as fallback
@@ -231,7 +234,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_zero_b_;
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+  std::unique_ptr<const ExtrapPropagator> propagator_extrap_zero_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_zero_b_;
 
   // Const-B (1.5T) CKF as fallback for tagger
@@ -239,7 +243,8 @@ class CKFProcessor final : public TrackingGeometryUser {
   std::unique_ptr<
       const Acts::CombinatorialKalmanFilter<CkfPropagator, TrackContainer>>
       ckf_const_b_;
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<CkfPropagator>>
+  std::unique_ptr<const ExtrapPropagator> propagator_extrap_const_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<ExtrapPropagator>>
       trk_extrap_const_b_;
 
   /// n seeds and n tracks

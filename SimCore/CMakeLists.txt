@@ -68,10 +68,11 @@ target_compile_options(SimCore_Bertini PRIVATE -Wno-keyword-macro)
 # Primary Generators library needs G4User, LHE, and HepMC
 setup_library(module SimCore
               name Generators
-              dependencies SimCore::LHE
+              dependencies DetDescr::DetDescr
+                           SimCore::LHE
                            SimCore::HepMC
                            SimCore::G4User
-                        SimCore::Event
+                           SimCore::Event
                            GENIE::GENIE
                            HepMC3)
 
@@ -101,6 +102,7 @@ setup_library(module SimCore
               dependencies ROOT::Physics
                            ROOT::MathMore
                            HepMC3
+                           GENIE::GENIE
                            SimCore::G4User
                            SimCore::Geo
                            SimCore::PhotoNuclearModels

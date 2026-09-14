@@ -109,8 +109,8 @@ class IsCloseEnough : public Catch::Matchers::MatcherBase<double> {
    *
    * Sets the truth level energy
    */
-  IsCloseEnough(double const &truth, double const &abs_diff,
-                double const &rel_diff)
+  IsCloseEnough(double const& truth, double const& abs_diff,
+                double const& rel_diff)
       : truth_{truth},
         MAX_ABSOLUTE_DIFF{abs_diff},
         MAX_RELATIVE_DIFF{rel_diff} {}
@@ -122,7 +122,7 @@ class IsCloseEnough : public Catch::Matchers::MatcherBase<double> {
    * within the absolute difference or the relative
    * difference.
    */
-  bool match(const double &daq_energy) const override {
+  bool match(const double& daq_energy) const override {
     return (daq_energy == Approx(truth_).epsilon(MAX_RELATIVE_DIFF) or
             daq_energy == Approx(truth_).margin(MAX_ABSOLUTE_DIFF));
   }
@@ -175,15 +175,15 @@ class EcalFakeSimHits : public framework::Producer {
   double curr_energy_ = MIN_ENERGY;
 
  public:
-  EcalFakeSimHits(const std::string &name, framework::Process &p)
+  EcalFakeSimHits(const std::string& name, framework::Process& p)
       : framework::Producer(name, p) {}
   ~EcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) final override {
+  void beforeNewRun(ldmx::RunHeader& header) final override {
     header.setDetectorName("ldmx-det-v15-8gev");
   }
 
-  void produce(framework::Event &event) final override {
+  void produce(framework::Event& event) final override {
     // put in a single sim hit
     std::vector<ldmx::SimCalorimeterHit> pretend_sim_hits(1);
 
@@ -223,11 +223,11 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
   std::string ecal_trig_digis_passname_;
 
  public:
-  EcalCheckEnergyReconstruction(const std::string &name, framework::Process &p)
+  EcalCheckEnergyReconstruction(const std::string& name, framework::Process& p)
       : framework::Analyzer(name, p) {}
   ~EcalCheckEnergyReconstruction() {}
 
-  void configure(framework::config::Parameters &parameters) final override {
+  void configure(framework::config::Parameters& parameters) final override {
     ecal_simhits_passname_ =
         parameters.get<std::string>("ecal_simhits_passname", "");
     ecal_digis_passname_ =
@@ -253,7 +253,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
     ntuple_.addVar<int>("EcalDigiTest", "TrigPrimDigiLinear");
   }
 
-  void analyze(const framework::Event &event) final override {
+  void analyze(const framework::Event& event) final override {
     const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         "EcalSimHits", ecal_simhits_passname_);
 
@@ -327,7 +327,7 @@ DECLARE_ANALYZER(ecal::test::EcalCheckEnergyReconstruction)
  */
 TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};
-  char **args{nullptr};
+  char** args{nullptr};
 
   auto cfg{framework::config::run("ldmxcfg.Process.last_process", config_file,
                                   args, 0)};

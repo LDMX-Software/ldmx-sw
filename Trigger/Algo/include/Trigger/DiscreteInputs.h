@@ -19,7 +19,7 @@ struct EcalTP {
   uint32_t module_;
   uint32_t cell_;
 
-  bool operator<(const EcalTP &other) const { return tp_ > other.tp_; }
+  bool operator<(const EcalTP& other) const { return tp_ > other.tp_; }
   void fill(int _tid, int _tp) {
     tid_ = _tid;
     tp_ = _tp;
@@ -38,7 +38,7 @@ struct EcalTP {
     cell_ = _cell;
     tp_lin_ = _tp_lin;
   }
-  void writeToFile(FILE *file) const {
+  void writeToFile(FILE* file) const {
     fwrite(&tp_, sizeof(uint8_t), 1, file);
     fwrite(&tid_, sizeof(uint32_t), 1, file);
     fwrite(&layer_, sizeof(uint32_t), 1, file);
@@ -46,7 +46,7 @@ struct EcalTP {
     fwrite(&cell_, sizeof(uint32_t), 1, file);
     fwrite(&tp_lin_, sizeof(uint32_t), 1, file);
   }
-  void readFromFile(FILE *file) {
+  void readFromFile(FILE* file) {
     fread(&tp_, sizeof(uint8_t), 1, file);
     fread(&tid_, sizeof(uint32_t), 1, file);
     fread(&layer_, sizeof(uint32_t), 1, file);
@@ -57,14 +57,14 @@ struct EcalTP {
 };
 
 template <typename T>
-void writeManyToFile(const std::vector<T> &objs, FILE *file) {
+void writeManyToFile(const std::vector<T>& objs, FILE* file) {
   uint32_t number = objs.size();
   fwrite(&number, 4, 1, file);
   for (uint32_t i = 0; i < number; ++i) objs[i].writeToFile(file);
 }
 
 template <typename T>
-void readManyFromFile(std::vector<T> &objs, FILE *file) {
+void readManyFromFile(std::vector<T>& objs, FILE* file) {
   uint32_t number;
   fread(&number, 4, 1, file);
   objs.resize(number);

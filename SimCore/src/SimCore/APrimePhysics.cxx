@@ -132,6 +132,7 @@ void APrimePhysics::ConstructProcess() {
               model.get<int>("aprime_lhe_id", 1023),
               true,  // always load the library
               model.get<bool>("scale_APrime", false),
+              model.get<bool>("correct_forward", false),
               model.get<double>("dist_decay_min", 0.0),
               model.get<double>("dist_decay_max", 1.0)),
           parameters_.get<bool>("only_one_per_event"),

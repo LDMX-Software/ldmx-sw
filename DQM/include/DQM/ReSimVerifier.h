@@ -13,11 +13,11 @@ namespace dqm {
 
 class ReSimVerifier : public framework::Analyzer {
  public:
-  ReSimVerifier(const std::string &name, framework::Process &process)
+  ReSimVerifier(const std::string& name, framework::Process& process)
       : framework::Analyzer{name, process} {}
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
-  void analyze(const framework::Event &event) override;
+  void analyze(const framework::Event& event) override;
 
   /*
    * Check that the simhits between the two collections are identical.
@@ -26,8 +26,8 @@ class ReSimVerifier : public framework::Analyzer {
    *
    **/
   bool verifySimCalorimeterHits(
-      const std::vector<ldmx::SimCalorimeterHit> &simHits,
-      const std::vector<ldmx::SimCalorimeterHit> &reSimHits);
+      const std::vector<ldmx::SimCalorimeterHit>& simHits,
+      const std::vector<ldmx::SimCalorimeterHit>& reSimHits);
 
   /*
    * Check that all SimParticles are present in both passes of the event
@@ -35,7 +35,7 @@ class ReSimVerifier : public framework::Analyzer {
    * @return: False if any SimParticle is different between the two
    *
    **/
-  bool verifySimParticles(const framework::Event &event);
+  bool verifySimParticles(const framework::Event& event);
 
  private:
   std::vector<std::string> collections_;

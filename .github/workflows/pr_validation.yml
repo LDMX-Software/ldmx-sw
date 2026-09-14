@@ -43,7 +43,7 @@ jobs:
         echo "HEAD_REF=refs/pull/${{ github.event.issue.number }}/merge" >> $GITHUB_ENV
 
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -53,7 +53,7 @@ jobs:
       uses: extractions/setup-just@v4
 
     - name: Cache ccache
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ~/.ccache
         key: ccache-pr-${{ github.sha }}
@@ -106,7 +106,7 @@ jobs:
 
     # need clone of ldmx-sw for getting gold tag
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: 0
@@ -127,7 +127,7 @@ jobs:
         tar xf ldmx-sw-package.tar
 
     - name: Download CI Gold Data
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: LDMX-Software/ci-data
         path: ci-data
@@ -187,7 +187,7 @@ jobs:
 
   post-validation:
     needs: [check-comment, validation]
-    if: always() && (github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/run-validation')))
+    if: (!cancelled()) && (github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '/run-validation')))
     runs-on: ubuntu-latest
     steps:
       - name: Resolve PR number

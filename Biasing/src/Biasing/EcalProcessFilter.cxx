@@ -25,7 +25,7 @@ EcalProcessFilter::EcalProcessFilter(const std::string& name,
   process_ = parameters.get<std::string>("process");
 }
 
-G4ClassificationOfNewTrack EcalProcessFilter::ClassifyNewTrack(
+G4ClassificationOfNewTrack EcalProcessFilter::classifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // Get the particle type.
   G4String particle_name = track->GetParticleDefinition()->GetParticleName();

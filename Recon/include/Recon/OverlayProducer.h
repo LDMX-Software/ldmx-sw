@@ -29,7 +29,7 @@ namespace recon {
  */
 class OverlayProducer : public framework::Producer {
  public:
-  OverlayProducer(const std::string &name, framework::Process &process)
+  OverlayProducer(const std::string& name, framework::Process& process)
       : framework::Producer(name, process), overlay_event_{"overlay"} {}
 
   // Destructor
@@ -38,13 +38,13 @@ class OverlayProducer : public framework::Producer {
   /**
    * Configure the processor with input parameters from the python cofig
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * At the start of the run, the pileup overlay file is set up, and the
    * starting event number is chosen, using the RNSS.
    */
-  void onNewRun(const ldmx::RunHeader &) override;  // );    //
+  void onNewRun(const ldmx::RunHeader&) override;  // );    //
 
   /**
    * Based on the list of collections to overlay, and the desired number of
@@ -63,7 +63,7 @@ class OverlayProducer : public framework::Producer {
    * The resulting collections inherit the input collection name, with an
    * appended string "Overlay". This name is also currently hardwired.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
   /**
    * Encode track ID with overlay event information.

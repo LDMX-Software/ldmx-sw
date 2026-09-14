@@ -45,7 +45,7 @@ class Event {
    * Class constructor.
    * @param passName The default pass name for adding event data.
    */
-  Event(const std::string &passName);
+  Event(const std::string& passName);
 
   /**
    * Class destructor.
@@ -56,13 +56,13 @@ class Event {
    * Get the event header.
    * @return A reference to the event header.
    */
-  ldmx::EventHeader &getEventHeader() { return event_header_; }
+  ldmx::EventHeader& getEventHeader() { return event_header_; }
 
   /**
    * Get the event header.
    * @return A constant reference to the event header.
    */
-  const ldmx::EventHeader &getEventHeader() const { return event_header_; }
+  const ldmx::EventHeader& getEventHeader() const { return event_header_; }
 
   /**
    * Get the event header as a pointer
@@ -72,7 +72,7 @@ class Event {
    *
    * @return A const pointer to the event header.
    */
-  const ldmx::EventHeader *getEventHeaderPtr() { return &event_header_; }
+  const ldmx::EventHeader* getEventHeaderPtr() { return &event_header_; }
 
   /**
    * Get the event number.
@@ -109,9 +109,9 @@ class Event {
    * @param full_string_match require all non-empty regular expressions to match
    * the full string and not a sub-string
    */
-  std::vector<ProductTag> searchProducts(const std::string &namematch,
-                                         const std::string &passmatch,
-                                         const std::string &typematch,
+  std::vector<ProductTag> searchProducts(const std::string& namematch,
+                                         const std::string& passmatch,
+                                         const std::string& typematch,
                                          bool full_string_match = false) const;
 
   /**
@@ -142,7 +142,7 @@ class Event {
    * false if allowing for one or more matching objects
    * @return True if the object or collection exists in the event.
    */
-  bool exists(const std::string &name, const std::string &passName,
+  bool exists(const std::string& name, const std::string& passName,
               bool unique = true) const;
 
   /**
@@ -153,7 +153,7 @@ class Event {
    *
    * @param exp regex to match
    */
-  void addDrop(const std::string &exp);
+  void addDrop(const std::string& exp);
 
   /**
    * Add an ignore rule to the list of regex expressions to ignore on input.
@@ -164,7 +164,7 @@ class Event {
    *
    * @param exp regex to match
    */
-  void addIgnore(const std::string &exp);
+  void addIgnore(const std::string& exp);
 
   /**
    * Adds an object to the event bus
@@ -192,7 +192,7 @@ class Event {
    * @param obj in ROOT dictionary to add
    */
   template <typename T>
-  void add(const std::string &collectionName, T &obj) {
+  void add(const std::string& collectionName, T& obj) {
     if (collectionName.find('_') != std::string::npos) {
       EXCEPTION_RAISE("IllegalName",
                       "The product name '" + collectionName +
@@ -229,7 +229,7 @@ class Event {
       if (output_tree_ and not shouldDrop(branch_name)) {
         // we are writing this branch to an output file, so let's
         //  attach this passenger to the output tree
-        TBranch *out_branch = bus_.attach(output_tree_, branch_name, true);
+        TBranch* out_branch = bus_.attach(output_tree_, branch_name, true);
         // get type name from branch if possible,
         //  otherwise use compiler level type name (above)
         std::string class_name{out_branch->GetClassName()};
@@ -247,7 +247,7 @@ class Event {
     // copy input contents into bus passenger
     try {
       bus_.update(branch_name, obj);
-    } catch (const std::bad_cast &) {
+    } catch (const std::bad_cast&) {
       EXCEPTION_RAISE("TypeMismatch",
                       "Attempting to add an object whose type '" +
                           std::string(typeid(obj).name()) +
@@ -296,8 +296,8 @@ class Event {
    * @return const reference to requested object
    */
   template <typename T>
-  const T &getObject(const std::string &collectionName,
-                     const std::string &passName) const {
+  const T& getObject(const std::string& collectionName,
+                     const std::string& passName) const {
     // get branch name
     std::string branch_name;
     if (collectionName == ldmx::EventHeader::BRANCH) {
@@ -346,7 +346,7 @@ class Event {
       bus_.board<T>(branch_name);
 
       // attempt to attach the new passenger to the input tree
-      TBranch *branch = bus_.attach(input_tree_, branch_name, false);
+      TBranch* branch = bus_.attach(input_tree_, branch_name, false);
       if (branch == 0) {
         // inputTree doesn't have that branch
         EXCEPTION_RAISE(
@@ -387,9 +387,9 @@ class Event {
     //  has been updated
     // let's return the object that the passenger is carrying
     try {
-      const T &obj = bus_.get<T>(branch_name);
+      const T& obj = bus_.get<T>(branch_name);
       return obj;
-    } catch (const std::bad_cast &) {
+    } catch (const std::bad_cast&) {
       EXCEPTION_RAISE("BadType",
                       "Trying to get product from '" + branch_name +
                           "' but asking for wrong type: " + typeid(T).name());
@@ -408,8 +408,8 @@ class Event {
    */
 
   template <typename ContentType>
-  const std::vector<ContentType> &getCollection(
-      const std::string &collectionName, const std::string &passName) const {
+  const std::vector<ContentType>& getCollection(
+      const std::string& collectionName, const std::string& passName) const {
     return getObject<std::vector<ContentType> >(collectionName, passName);
   }
 
@@ -425,32 +425,32 @@ class Event {
    * @returns const reference to collection of objects on the bus
    */
   template <typename KeyType, typename ValType>
-  const std::map<KeyType, ValType> &getMap(const std::string &collectionName,
-                                           const std::string &passName) const {
+  const std::map<KeyType, ValType>& getMap(const std::string& collectionName,
+                                           const std::string& passName) const {
     return getObject<std::map<KeyType, ValType> >(collectionName, passName);
   }
   /**
    * Set the input data tree.
    * @param tree The input data tree.
    */
-  void setInputTree(TTree *tree);
+  void setInputTree(TTree* tree);
 
   /**
    * Set the output data tree.
    * @param tree The output data tree.
    */
-  void setOutputTree(TTree *tree);
+  void setOutputTree(TTree* tree);
 
   /**
    * Create the output data tree.
    * @return The output data tree.
    */
-  TTree *createTree();
+  TTree* createTree();
 
   /**
    * Get a list of the data products in the event
    */
-  const std::vector<ProductTag> &getProducts() const { return products_; }
+  const std::vector<ProductTag>& getProducts() const { return products_; }
 
   /**
    * Go to the next event by retrieving the event header
@@ -501,7 +501,7 @@ class Event {
    *
    * @param electronCount The beam electron count.
    */
-  void setElectronCount(const int &electronCount) {
+  void setElectronCount(const int& electronCount) {
     electron_count_ = electronCount;
   }
 
@@ -512,7 +512,7 @@ class Event {
    * @param collName name of collection
    * @return true if the collection should be dropped (i.e. NOT saved)
    */
-  bool shouldDrop(const std::string &collName) const;
+  bool shouldDrop(const std::string& collName) const;
 
   /**
    * Check if a branch from the input tree should be ignored.
@@ -523,15 +523,15 @@ class Event {
    * @param branchName name of branch
    * @return true if the branch should be ignored (i.e. NOT loaded)
    */
-  bool shouldIgnore(const std::string &branchName) const;
+  bool shouldIgnore(const std::string& branchName) const;
 
   /**
    * Make a branch name from a collection and pass name.
    * @param collectionName The collection name.
    * @param passName The pass name.
    */
-  std::string makeBranchName(const std::string &collectionName,
-                             const std::string &passName) const {
+  std::string makeBranchName(const std::string& collectionName,
+                             const std::string& passName) const {
     return collectionName + "_" + passName;
   }
 
@@ -539,7 +539,7 @@ class Event {
    * Make a branch name from a collection and the default(current) pass name.
    * @param collectionName The collection name.
    */
-  std::string makeBranchName(const std::string &collectionName) const {
+  std::string makeBranchName(const std::string& collectionName) const {
     return makeBranchName(collectionName, pass_name_);
   }
 
@@ -557,12 +557,12 @@ class Event {
   /**
    * The output tree for writing a new file.
    */
-  TTree *output_tree_{nullptr};
+  TTree* output_tree_{nullptr};
 
   /**
    * The input tree for reading existing data.
    */
-  TTree *input_tree_{nullptr};
+  TTree* input_tree_{nullptr};
 
   /// The total number of electrons in the event
   int electron_count_{1};

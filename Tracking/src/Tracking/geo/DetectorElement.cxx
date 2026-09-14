@@ -5,9 +5,9 @@
 
 namespace tracking::geo {
 
-DetectorElement::~DetectorElement(){};
+DetectorElement::~DetectorElement() {};
 
-const Acts::Transform3& DetectorElement::transform(
+const Acts::Transform3& DetectorElement::localToGlobalTransform(
     const Acts::GeometryContext& gctx) const {
   if (!m_surface_)
     EXCEPTION_RAISE("BadGeometry",

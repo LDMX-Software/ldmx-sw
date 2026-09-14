@@ -114,7 +114,7 @@ class LdmxSpacePoint {
   // Projection matrix from the full space to the (u,v) space.
   // This can be expanded to (u,v,t) space in the case time needs to be added.
 
-  Acts::ActsMatrix<2, 6> projector_;
+  Acts::Matrix<2, 6> projector_;
 
  private:
   void initialize() {

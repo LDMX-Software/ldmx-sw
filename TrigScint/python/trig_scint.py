@@ -377,9 +377,10 @@ class TrigScintClusterProducer(Processor):
 @processor("trigscint::TrigScintTrackProducer", "TrigScint")
 class TrigScintTrackProducer(Processor):
     """Configuration for track producer for Trigger Scintillators"""
-    horizontal_bar_length: float = 30.
+
+    horizontal_bar_length: float = 30.0
     delta_max: float = 0.75
-    delta_vert_max: float = 0.
+    delta_vert_max: float = 0.0
     tracking_threshold: float = 0.0
     seeding_collection: str = "TriggerPad1Clusters"
     further_input_collections: list[str] = [
@@ -397,6 +398,8 @@ class TrigScintTrackProducer(Processor):
     input_pass_name: str = ""
     output_collection: str = "TriggerPadTracks"
     verbosity: int = 0
+    lut_tracking: bool = False
+    lut_file: str = "LUT.txt"
 
 
 trig_scint_track = TrigScintTrackProducer(instance_name="trig_scint_track")

@@ -14,20 +14,20 @@ import os
 import sys
 
 
-sys.path.insert(0, os.path.abspath('../../install/python/'))
+sys.path.insert(0, os.path.abspath("../../install/python/"))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'ldmx-sw'
-copyright = 'LDMX Collaboration'
-author = 'LDMX Collaboration'
+project = "ldmx-sw"
+copyright = "LDMX Collaboration"
+author = "LDMX Collaboration"
 
 # the tag next to the package name at in the header
 #   the GitHub action for building the docs overrides this setting
 #   with the git tag that trigger the doc build so this value is
 #   only used if the docs are built locally
-release = 'local'
+release = "local"
 
 # -- General configuration ---------------------------------------------------
 
@@ -35,17 +35,17 @@ release = 'local'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-        'sphinx.ext.autodoc', # generate docs from docstrings
-        'sphinx.ext.napoleon' # support for NumPy-style docstrings
-        ]
+    "sphinx.ext.autodoc",  # generate docs from docstrings
+    "sphinx.ext.napoleon",  # support for NumPy-style docstrings
+]
 
 # Add any paths that contain templates here, relative to this directory.
-#templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-#exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+# exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # put at the beginning of each rst file
 rst_prolog = """
@@ -58,9 +58,9 @@ Go Back to: `C++ Manual </ldmx-sw/index.html>`_ `General Site </>`_
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'bizstyle'
+html_theme = "bizstyle"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+# html_static_path = ['_static']

@@ -428,12 +428,16 @@ class TrackingRecoDQM(Processor):
             self.histogram(
                 f"unbiased_res_u_l{i}",
                 f"Unbiased U residual layer {i} (mm)",
-                200, -0.3, 0.3,
+                200,
+                -0.3,
+                0.3,
             )
             self.histogram(
                 f"unbiased_pull_u_l{i}",
                 f"Unbiased U pull layer {i}",
-                100, -5.0, 5.0,
+                100,
+                -5.0,
+                5.0,
             )
 
         if self.do_truth:
@@ -706,7 +710,6 @@ class TrackingRecoDQM(Processor):
                 )
 
 
-
 @processor("tracking::dqm::DigiDQM", "Tracking")
 class DigiDQM(Processor):
     """DQM for silicon-strip digitization and clustering.
@@ -749,6 +752,7 @@ class DigiDQM(Processor):
             self.histogram(
                 f"sim_cluster_du_s{s}", "Sim U #minus Cluster U (mm)", 100, -0.1, 0.1
             )
+
 
 @processor("tracking::dqm::StraightTracksDQM", "Tracking")
 class StraightTracksDQM(Processor):

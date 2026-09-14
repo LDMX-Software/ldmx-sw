@@ -191,11 +191,11 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir,
   size_t output_precision = 6;
 
   Acts::ObjVisualization3D obj_vis(output_precision, output_scalor);
-  Acts::ViewConfig container_view = Acts::ViewConfig({220, 220, 220});
-  Acts::ViewConfig volume_view = Acts::ViewConfig({220, 220, 0});
-  Acts::ViewConfig sensitive_view = Acts::ViewConfig({0, 180, 240});
-  Acts::ViewConfig passive_view = Acts::ViewConfig({240, 280, 0});
-  Acts::ViewConfig grid_view = Acts::ViewConfig({220, 0, 0});
+  Acts::ViewConfig container_view{.color = {220, 220, 220}};
+  Acts::ViewConfig volume_view{.color = {220, 220, 0}};
+  Acts::ViewConfig sensitive_view{.color = {0, 180, 240}};
+  Acts::ViewConfig passive_view{.color = {240, 280, 0}};
+  Acts::ViewConfig grid_view{.color = {220, 0, 0}};
 
   Acts::GeometryView3D::drawTrackingVolume(
       obj_vis, *(t_geometry_->highestTrackingVolume()), gctx, container_view,

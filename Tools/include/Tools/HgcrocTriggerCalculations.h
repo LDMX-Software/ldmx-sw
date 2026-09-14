@@ -44,7 +44,7 @@ class HgcrocTriggerConditions {
    * @raises Exception if any of the column names from the passed table
    * do not match the hardcoded indices.
    */
-  HgcrocTriggerConditions(const conditions::IntegerTableCondition &,
+  HgcrocTriggerConditions(const conditions::IntegerTableCondition&,
                           bool validate = true);
 
   /**
@@ -93,7 +93,7 @@ class HgcrocTriggerConditions {
 
  private:
   /// reference to the table of conditions storing the chip conditions
-  const conditions::IntegerTableCondition &ict_;
+  const conditions::IntegerTableCondition& ict_;
 };  // HgcrocTriggerConditions
 
 /**
@@ -139,7 +139,7 @@ class HgcrocTriggerCalculations {
    *
    * @param[in] ict table of chip conditions
    */
-  HgcrocTriggerCalculations(const conditions::IntegerTableCondition &ict);
+  HgcrocTriggerCalculations(const conditions::IntegerTableCondition& ict);
 
   /**
    * Determine the linear charge for the given channel, using the calibration
@@ -179,7 +179,7 @@ class HgcrocTriggerCalculations {
    * @returns const reference to the map of trigger channel ID to compressed
    * charge measurements
    */
-  const std::map<unsigned int, uint8_t> &compressedEnergies() const {
+  const std::map<unsigned int, uint8_t>& compressedEnergies() const {
     return compressed_charge_;
   }
 

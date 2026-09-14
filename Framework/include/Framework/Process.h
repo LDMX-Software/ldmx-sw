@@ -40,7 +40,7 @@ class Process {
    * Class constructor.
    * @param configuration Parameters to configure process with
    */
-  Process(const framework::config::Parameters &configuration);
+  Process(const framework::config::Parameters& configuration);
 
   /**
    * Class Destructor
@@ -54,7 +54,7 @@ class Process {
    * Get the processing pass label.
    * @return The processing pass label.
    */
-  const std::string &getPassName() const { return pass_name_; }
+  const std::string& getPassName() const { return pass_name_; }
 
   /**
    * Get the current run number or the run number to be used when initiating new
@@ -66,17 +66,17 @@ class Process {
   /**
    * Get the pointer to the current event header, if defined
    */
-  const ldmx::EventHeader *getEventHeader() const { return event_header_; }
+  const ldmx::EventHeader* getEventHeader() const { return event_header_; }
 
   /**
    * Get the pointer to the current run header, if defined
    */
-  const ldmx::RunHeader *getRunHeader() const { return run_header_; }
+  const ldmx::RunHeader* getRunHeader() const { return run_header_; }
 
   /**
    * Get a reference to the conditions system
    */
-  Conditions &getConditions() { return conditions_; }
+  Conditions& getConditions() { return conditions_; }
 
   /**
    * Get the frequency with which the event information is printed.
@@ -97,22 +97,22 @@ class Process {
   /**
    * Construct a TDirectory* for the given module
    */
-  TDirectory *makeHistoDirectory(const std::string &dirName);
+  TDirectory* makeHistoDirectory(const std::string& dirName);
 
   /**
    * Open a ROOT TFile to write histograms and TTrees.
    */
-  TDirectory *openHistoFile();
+  TDirectory* openHistoFile();
 
   /**
    * Access the storage control unit for this process
    */
-  StorageControl &getStorageController() { return storage_controller_; }
+  StorageControl& getStorageController() { return storage_controller_; }
 
   /**
    * Set the pointer to the current event header, used only for tests
    */
-  void setEventHeader(ldmx::EventHeader *h) { event_header_ = h; }
+  void setEventHeader(ldmx::EventHeader* h) { event_header_ = h; }
 
  private:
   /**
@@ -127,7 +127,7 @@ class Process {
    * @param[in,out] event reference to event we are going to process
    * @returns true if event was full processed (false if aborted)
    */
-  bool process(int n, int n_tries, Event &event) const;
+  bool process(int n, int n_tries, Event& event) const;
 
   /**
    * Run through the processors and let them know
@@ -135,17 +135,17 @@ class Process {
    *
    * @param[in] header RunHeader for the new run
    */
-  void newRun(ldmx::RunHeader &header);
+  void newRun(ldmx::RunHeader& header);
 
   /**
    * File is being opened
    */
-  void onFileOpen(EventFile &file) const;
+  void onFileOpen(EventFile& file) const;
 
   /**
    * File is begin closed
    */
-  void onFileClose(EventFile &file) const;
+  void onFileClose(EventFile& file) const;
 
  private:
   /// The parameters used to configure this class.
@@ -180,7 +180,7 @@ class Process {
   StorageControl storage_controller_;
 
   /** Ordered list of EventProcessors to execute. */
-  std::vector<EventProcessor *> sequence_;
+  std::vector<EventProcessor*> sequence_;
 
   /** Set of ConditionsProviders */
   Conditions conditions_;
@@ -211,16 +211,16 @@ class Process {
   std::string histo_filename_;
 
   /** Pointer to the current EventHeader, used for Conditions information */
-  const ldmx::EventHeader *event_header_{0};
+  const ldmx::EventHeader* event_header_{0};
 
   /** Pointer to the current RunHeader, used for Conditions information */
-  ldmx::RunHeader *run_header_{0};
+  ldmx::RunHeader* run_header_{0};
 
   /** TFile for histograms and other user products */
-  TFile *histo_t_file_{0};
+  TFile* histo_t_file_{0};
 
   /** class with calls backs to track performance measurements of software */
-  performance::Tracker *performance_{0};
+  performance::Tracker* performance_{0};
 
   /// Turn on logging for our process
   enableLogging("Process");

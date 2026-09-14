@@ -27,6 +27,10 @@ class TargetBremFilter(UserAction):
 
     recoil_max_p_threshold: float
     brem_min_energy_threshold: float
+    brem_theta_min: float = 0.0
+    brem_theta_max: float = 999.0
+    dral_min: float = 0.0
+    dral_max: float = 999.0
     kill_recoil_track: bool = False
 
 

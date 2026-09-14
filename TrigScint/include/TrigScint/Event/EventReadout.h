@@ -36,12 +36,12 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
   /**
    * Clear the data in the object.
    */
-  void clear(Option_t *option = "");
+  void clear(Option_t* option = "");
 
   /**
    * Print out the object.
    */
-  void print(Option_t *option = "") const;
+  void print(Option_t* option = "") const;
 
   /**
    * Set channel (linearized. charge) pedestal
@@ -194,7 +194,7 @@ class EventReadout : public trigscint::TrigScintQIEDigis {
    * A dummy operator overloading
    * @note required for declaring std::vector<> in EventDef.h
    */
-  bool operator<(const EventReadout &rhs) const {
+  bool operator<(const EventReadout& rhs) const {
     return this->chan_id_ < rhs.chan_id_;
   }
 

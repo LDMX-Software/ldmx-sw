@@ -16,9 +16,9 @@
 namespace dqm {
 class HcalGeometryVerifier : public framework::Analyzer {
  public:
-  HcalGeometryVerifier(const std::string &name, framework::Process &process)
+  HcalGeometryVerifier(const std::string& name, framework::Process& process)
       : framework::Analyzer{name, process} {}
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
   /*
    *
    * Determine which of x/y/z corresponds to the direction along, across, and
@@ -38,9 +38,9 @@ class HcalGeometryVerifier : public framework::Analyzer {
    * is set to true or log the issue if false.
    *
    */
-  bool hitOk(const ldmx::HcalID id, const std::array<double, 3> &position);
+  bool hitOk(const ldmx::HcalID id, const std::array<double, 3>& position);
 
-  void analyze(const framework::Event &event) override;
+  void analyze(const framework::Event& event) override;
 
  private:
   std::string hcal_sim_hits_collection_{"HcalSimHits"};

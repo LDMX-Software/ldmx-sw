@@ -15,7 +15,7 @@ class TrigMip {
 
   virtual ~TrigMip() = default;
 
-  bool operator<(const TrigMip &h) const { return length_ < h.length_; }
+  bool operator<(const TrigMip& h) const { return length_ < h.length_; }
 
   void setStartLayer(int startLayer) { start_layer_ = startLayer; }
   void setEndLayer(int endLayer) { end_layer_ = endLayer; }

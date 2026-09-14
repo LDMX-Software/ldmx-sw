@@ -37,6 +37,9 @@ class TrackComparisonProcessor : public framework::Analyzer {
   void onProcessEnd() override;
 
  private:
+  // I like not having underscores for struct members,
+  // but that's not settable until a later version of clang-tidy
+  // NOLINTBEGIN(readability-identifier-naming)
   struct PairVars {
     int track_id{-1};
     float truth_prob_s{-1}, truth_prob_d{-1};
@@ -59,6 +62,7 @@ class TrackComparisonProcessor : public framework::Analyzer {
     float vx_t{-999}, vy_t{-999}, vz_t{-999};
     float delta_p_over_p_s{-999}, delta_p_over_p_d{-999};
   };
+  // NOLINTEND(readability-identifier-naming)
 
   void setupTree(TTree* tree, PairVars& v);
   void fillPair(const ldmx::Track& smear, const ldmx::Track& digi,

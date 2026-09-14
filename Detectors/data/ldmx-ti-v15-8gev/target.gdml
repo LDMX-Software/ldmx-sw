@@ -27,7 +27,7 @@
     <volume name="target">
       <materialref ref="Titanium"/>
       <solidref ref="target_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TungstenMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TitaniumMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
     </volume>

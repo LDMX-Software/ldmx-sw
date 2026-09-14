@@ -11,6 +11,7 @@ needs...
 2. to be decorated by the 'plotter' decorator below.
 """
 
+
 def plotter(func):
     """decorator for registering plotters
 
@@ -27,7 +28,7 @@ def plotter(func):
     __registry__ : dict
         Dictionary of registered plotters
     """
-    func_name = func.__module__.replace('ComparePlots.','')+'.'+func.__name__
+    func_name = func.__module__.replace("ComparePlots.", "") + "." + func.__name__
     plotter.__registry__[func_name] = func
     return func
 

@@ -11,8 +11,8 @@ double HgcrocPulseTruth::getMax() const {
 
   std::ranges::sort(
       hits.begin(), hits.end(),
-      [](const std::pair<double, double> &a,
-         const std::pair<double, double> &b) { return a.second < b.second; });
+      [](const std::pair<double, double>& a,
+         const std::pair<double, double>& b) { return a.second < b.second; });
   double starttime = hits.at(0).second - 100;
   double endtime = hits.at(hits.size() - 1).second + 200;
 

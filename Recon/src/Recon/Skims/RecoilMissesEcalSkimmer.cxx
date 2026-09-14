@@ -9,14 +9,14 @@
 
 namespace recon {
 
-RecoilMissesEcalSkimmer::RecoilMissesEcalSkimmer(const std::string &name,
-                                                 framework::Process &process)
+RecoilMissesEcalSkimmer::RecoilMissesEcalSkimmer(const std::string& name,
+                                                 framework::Process& process)
     : framework::Producer(name, process) {}
 
 RecoilMissesEcalSkimmer::~RecoilMissesEcalSkimmer() {}
 
 void RecoilMissesEcalSkimmer::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   ecal_sim_hits_pass_name_ =
       parameters.get<std::string>("ecal_sim_hits_pass_name");
 
@@ -24,7 +24,7 @@ void RecoilMissesEcalSkimmer::configure(
       parameters.get<std::string>("sim_particles_pass_name");
 }
 
-void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
+void RecoilMissesEcalSkimmer::produce(framework::Event& event) {
   // Get the collection of simulated particles from the event
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
@@ -41,7 +41,7 @@ void RecoilMissesEcalSkimmer::produce(framework::Event &event) {
   // associated with any of them.  If there are any recoil electron hits_
   // in the Ecal, drop the event.
   bool has_recoil_electron_hits = false;
-  for (const ldmx::SimCalorimeterHit &sim_hit : ecal_sim_hits) {
+  for (const ldmx::SimCalorimeterHit& sim_hit : ecal_sim_hits) {
     /*std::cout << "[ RecoilMissesEcalSkimmer ]: "
               << "Number of hit contributions: "
               << simHit->getNumberOfContribs() << std::endl;*/

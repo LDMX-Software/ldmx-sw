@@ -76,15 +76,15 @@ ldmx::LdmxSpacePoint* convertSimHitToLdmxSpacePoint(
                                   sigma_v * sigma_v, hit.getID());
 }
 
-void flatCov(Acts::BoundSquareMatrix cov, std::vector<double>& v_cov) {
+void flatCov(Acts::BoundMatrix cov, std::vector<double>& v_cov) {
   v_cov.clear();
   v_cov.reserve(cov.rows() * (cov.rows() + 1) / 2);
   for (int i = 0; i < cov.rows(); i++)
     for (int j = i; j < cov.cols(); j++) v_cov.push_back(cov(i, j));
 }
 
-Acts::BoundSquareMatrix unpackCov(const std::vector<double>& v_cov) {
-  Acts::BoundSquareMatrix cov;
+Acts::BoundMatrix unpackCov(const std::vector<double>& v_cov) {
+  Acts::BoundMatrix cov;
   int e{0};
   for (int i = 0; i < cov.rows(); i++)
     for (int j = i; j < cov.cols(); j++) {
@@ -121,9 +121,9 @@ Acts::Vector3 acts2Ldmx(Acts::Vector3 acts_v) {
 
 // Transform position, momentum and charge to free parameters
 Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
-                                  Acts::ActsScalar q) {
+                                  double q) {
   Acts::FreeVector free_params;
-  Acts::ActsScalar p = mom.norm() * Acts::UnitConstants::MeV;
+  double p = mom.norm() * Acts::UnitConstants::MeV;
 
   free_params[Acts::eFreePos0] = pos_(Acts::ePos0) * Acts::UnitConstants::mm;
   free_params[Acts::eFreePos1] = pos_(Acts::ePos1) * Acts::UnitConstants::mm;
@@ -133,7 +133,7 @@ Acts::FreeVector toFreeParameters(Acts::Vector3 pos_, Acts::Vector3 mom,
   free_params[Acts::eFreeDir1] = mom(1) / mom.norm();
   free_params[Acts::eFreeDir2] = mom(2) / mom.norm();
   free_params[Acts::eFreeQOverP] =
-      (q != Acts::ActsScalar(0)) ? (q / p) : 0.;  // 1. / p instead?
+      (q != double(0)) ? (q / p) : 0.;  // 1. / p instead?
 
   return free_params;
 }
@@ -156,8 +156,8 @@ Acts::BoundVector boundState(const ldmx::Track& trk) {
 Acts::BoundTrackParameters boundTrackParameters(
     const ldmx::Track& trk, std::shared_ptr<Acts::PerigeeSurface> perigee) {
   Acts::BoundVector param_vec = boundState(trk);
-  Acts::BoundSquareMatrix cov_mat = unpackCov(trk.getPerigeeCov());
-  auto part_hypo{Acts::SinglyChargedParticleHypothesis::electron()};
+  Acts::BoundMatrix cov_mat = unpackCov(trk.getPerigeeCov());
+  auto part_hypo{Acts::ParticleHypothesis::electron()};
   return Acts::BoundTrackParameters(perigee, param_vec, std::move(cov_mat),
                                     part_hypo);
 }
@@ -247,7 +247,7 @@ ldmx::Track::TrackState makeTrackState(
   const Acts::BoundToFreeMatrix j_btf =
       bound_pars.referenceSurface().boundToFreeJacobian(gctx, acts_pos,
                                                         acts_dir);
-  const Acts::FreeSquareMatrix free_cov =
+  const Acts::FreeMatrix free_cov =
       j_btf * bound_cov.value() * j_btf.transpose();
 
   // Step 2: Drop time row/col (eFreeTime = 3) -> 7x7

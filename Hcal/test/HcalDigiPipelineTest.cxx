@@ -80,8 +80,8 @@ class IsCloseEnough : public Catch::Matchers::MatcherBase<double> {
    *
    * Sets the truth level
    */
-  IsCloseEnough(double const &truth, double const &abs_diff,
-                double const &rel_diff)
+  IsCloseEnough(double const& truth, double const& abs_diff,
+                double const& rel_diff)
       : truth_{truth},
         MAX_ABSOLUTE_DIFF{abs_diff},
         MAX_RELATIVE_DIFF{rel_diff} {}
@@ -93,7 +93,7 @@ class IsCloseEnough : public Catch::Matchers::MatcherBase<double> {
    * within the absolute difference or the relative
    * difference.
    */
-  bool match(const double &daq) const override {
+  bool match(const double& daq) const override {
     return (daq == Approx(truth_).epsilon(MAX_RELATIVE_DIFF) or
             daq == Approx(truth_).margin(MAX_ABSOLUTE_DIFF));
   }
@@ -142,15 +142,15 @@ class HcalFakeSimHits : public framework::Producer {
   double curr_energy_ = MIN_ENERGY;
 
  public:
-  HcalFakeSimHits(const std::string &name, framework::Process &p)
+  HcalFakeSimHits(const std::string& name, framework::Process& p)
       : framework::Producer(name, p) {}
   ~HcalFakeSimHits() {}
 
-  void beforeNewRun(ldmx::RunHeader &header) final override {
+  void beforeNewRun(ldmx::RunHeader& header) final override {
     header.setDetectorName("ldmx-det-v12");
   }
 
-  void produce(framework::Event &event) final override {
+  void produce(framework::Event& event) final override {
     // put in a single sim hit
     std::vector<ldmx::SimCalorimeterHit> pretend_sim_hits(1);
 
@@ -200,11 +200,11 @@ class HcalCheckReconstruction : public framework::Analyzer {
   std::string hcal_digis_passname_;
 
  public:
-  HcalCheckReconstruction(const std::string &name, framework::Process &p)
+  HcalCheckReconstruction(const std::string& name, framework::Process& p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckReconstruction() {}
 
-  void configure(framework::config::Parameters &ps) override {
+  void configure(framework::config::Parameters& ps) override {
     hcal_fake_sim_hits_passname_ =
         ps.getParameter("hcal_fake_sim_hits_passname", "");
     hcal_digis_passname_ = ps.getParameter("hcal_digis_passname", "");
@@ -232,7 +232,7 @@ class HcalCheckReconstruction : public framework::Analyzer {
     }
   }
 
-  void analyze(const framework::Event &event) final override {
+  void analyze(const framework::Event& event) final override {
     const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         "HcalFakeSimHits", hcal_fake_sim_hits_passname_);
 
@@ -333,7 +333,7 @@ DECLARE_PRODUCER(hcal::test::HcalCheckReconstruction);
  */
 TEST_CASE("Hcal Digi Pipeline test", "[Hcal][functionality]") {
   const std::string config_file{"hcal_digi_pipeline_test_config.py"};
-  char **args{nullptr};
+  char** args{nullptr};
 
   auto cfg{framework::config::run("ldmxcfg.Process.last_process", config_file,
                                   args, 0)};

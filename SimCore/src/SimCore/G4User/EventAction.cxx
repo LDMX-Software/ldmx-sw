@@ -26,14 +26,14 @@ void EventAction::BeginOfEventAction(const G4Event* event) {
 
   // Call user event actions
   for (auto& event_action : event_actions_) {
-    event_action->BeginOfEventAction(event);
+    event_action->beginOfEventAction(event);
   }
 }
 
 void EventAction::EndOfEventAction(const G4Event* event) {
   // Call user event actions
   for (auto& event_action : event_actions_) {
-    event_action->EndOfEventAction(event);
+    event_action->endOfEventAction(event);
   }
 }
 

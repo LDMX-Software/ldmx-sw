@@ -20,7 +20,7 @@
 namespace dqm {
 
 void VisiblesFeatureProducer::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   training_ = parameters.get<bool>("training");
   training_file_ = parameters.get<std::string>("training_file");
 
@@ -50,10 +50,10 @@ bool VisiblesFeatureProducer::inList(std::vector<int> parents, int track_id) {
   return std::find(parents.begin(), parents.end(), track_id) != parents.end();
 }
 
-void VisiblesFeatureProducer::analyze(const framework::Event &event) {
+void VisiblesFeatureProducer::analyze(const framework::Event& event) {
   std::vector<double> bdt_features;
 
-  const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
+  const auto& particle_map{event.getMap<int, ldmx::SimParticle>(
       sim_particles_coll_name_, sim_particles_pass_name_)};
 
   // Get target scoring plane hits for recoil electron
@@ -67,10 +67,10 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
   bool found_recoil_e = false;
 
   if (recoil_from_tracking_) {
-    const auto &recoil_tracks{
+    const auto& recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     // Fill this in later when you know how to use it
-    for (auto &track : recoil_tracks) {
+    for (auto& track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
       auto trk_pos = track.getPositionAtTarget();
       auto trk_mom = track.getMomentumAtTarget();
@@ -84,11 +84,11 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+      const auto& target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
           sp_collection_, sp_pass_name_);
       bool found_rec = false;
-      for (auto const &it : particle_map) {
-        for (auto const &sphit : target_sp_hits) {
+      for (auto const& it : particle_map) {
+        for (auto const& sphit : target_sp_hits) {
           if (sphit.getPosition()[2] > 0) {
             if (it.first == sphit.getTrackID()) {
               if (it.second.getPdgID() == 622) {
@@ -126,21 +126,21 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
                       recoil_p[2] * recoil_p[2]);
   }
 
-  const auto &ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
+  const auto& ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
       ecal_rec_collection_, ecal_rec_pass_name_);
-  const auto &hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
+  const auto& hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
       hcal_rec_collection_, hcal_rec_pass_name_);
 
   double ecal_energy = 0.;
   double hcal_energy = 0.;
   bool hcal_containment = true;
 
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ecal_energy += hit.getEnergy();
     }
   }
-  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+  for (const ldmx::HcalHit& hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID det_id(hit.getID());
       if (det_id.getSection() != 0) {
@@ -172,7 +172,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
     double z_mean = 0.;  // need this when calculating z_std
     std::vector<int> layers_hit;
 
-    for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+    for (const ldmx::HcalHit& hit : hcal_rec_hits) {
       if (hit.getEnergy() > 0.) {
         ldmx::HcalID det_id(hit.getID());
         if (det_id.getSection() != 0) {  // skip hits that aren't in main Hcal
@@ -212,7 +212,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
 
         // Calculate isolated hits
         double closest_point = 9999.;
-        for (const ldmx::HcalHit &hit2 : hcal_rec_hits) {
+        for (const ldmx::HcalHit& hit2 : hcal_rec_hits) {
           if (hit2.getEnergy() > 0.) {
             ldmx::HcalID det_i_d2(hit2.getID());
             if (fabs(hit2.getXPos()) > 1000 || fabs(hit2.getYPos()) > 1000) {
@@ -257,7 +257,7 @@ void VisiblesFeatureProducer::analyze(const framework::Event &event) {
       r_mean_from_photon_track /= summed_det;
     }
 
-    for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+    for (const ldmx::HcalHit& hit : hcal_rec_hits) {
       if (hit.getEnergy() > 0.) {
         if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
           continue;

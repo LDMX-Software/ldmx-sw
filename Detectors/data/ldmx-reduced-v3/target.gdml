@@ -39,6 +39,7 @@
     <volume name="target">
       <materialref ref="LYSO"/>
       <solidref ref="target_bar"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="LYSOMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
       <auxiliary auxtype="Region" auxvalue="target"/>
@@ -48,6 +49,7 @@
     <volume name="lvTargetArray1">
       <materialref ref="Air"/>
       <solidref ref="target_array1"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <loop for="x" from="1" to="number_of_target_bars1" step="1">
         <physvol>
           <volumeref ref="target"/>
@@ -63,6 +65,7 @@
     <volume name="lvTargetArray2">
       <materialref ref="Air"/>
       <solidref ref="target_array2"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <loop for="x" from="1" to="number_of_target_bars2" step="1">
         <physvol>
           <volumeref ref="target"/>
@@ -79,7 +82,7 @@
     <volume name="lvTarget">
       <materialref ref="Air"/>
       <solidref ref="target_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="TargetRegionVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
       <auxiliary auxtype="DetElem" auxvalue="Target"/>
       <auxiliary auxtype="Region" auxvalue="target"/>
 
@@ -100,6 +103,7 @@
     <volume name="lyso_lp_bar_volume">
       <materialref ref="AcrylicPMMA"/>
       <solidref ref="lp3_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="LightPipe"/>
     </volume>
@@ -108,6 +112,7 @@
     <volume name="trigger_pad3_bar_volume">
       <materialref ref="Polyvinyltoluene"/>
       <solidref ref="trigger_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="PolyvinyltolueneMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="TriggerPad"/>
       <!-- keep or drop; not critical -->
@@ -117,6 +122,7 @@
     <volume name="lp_pad3_bar_volume">
       <materialref ref="AcrylicPMMA"/>
       <solidref ref="lp3_bar_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
       <auxiliary auxtype="VisAttributes" auxvalue="TriggerPadRegionVis"/>
       <auxiliary auxtype="DetElem" auxvalue="LightPipe"/>
       <auxiliary auxtype="Region" auxvalue="trig_scint"/>
@@ -126,6 +132,7 @@
     <volume name="TS_trgt">
       <materialref ref="Air"/>
       <solidref ref="target_area_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
 
       <!-- LYSO light pipes: 12 bars, glued by x-shift (same style as TS3 LPs) -->
       <loop for="x" from="1" to="number_of_bars" step="1">

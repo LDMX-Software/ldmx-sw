@@ -12,7 +12,8 @@ import ROOT
 ROOT.gROOT.SetBatch(1)
 ROOT.gStyle.SetOptStat(0)
 
-def flatten(list) :
+
+def flatten(list):
     """Get list of all (non-directory) objects in ROOT file with
     the full path to their location in the file.
 
@@ -38,24 +39,25 @@ def flatten(list) :
         rf = ROOT.TFile('my_file.root')
         full_list = flatten(rf.GetListOfKeys())
     """
-    flat_l = [ ]
-    for k in list :
-        if k.IsFolder() :
+    flat_l = []
+    for k in list:
+        if k.IsFolder():
             # recurse into subdirectory
             d = k.GetFile().GetDirectory(k.GetName())
             flat_l.extend(flatten(d.GetListOfKeys()))
-        else :
+        else:
             # get full path of object relative to file
             fp = k.GetName()
             m = k.GetMotherDir()
-            while m != k.GetFile() :
-                fp = m.GetName() + '/' + fp
+            while m != k.GetFile():
+                fp = m.GetName() + "/" + fp
                 m = m.GetMotherDir()
             flat_l.append(fp)
 
     return flat_l
 
-class HistogramFile :
+
+class HistogramFile:
     """A root file with histograms that we want to be styled in same way
 
     This class is not very complicated and is simply here to do two things.
@@ -75,13 +77,13 @@ class HistogramFile :
         Should these histograms be filled? (Yes == True)
     """
 
-    def __init__(self, f, name, color, fill) :
+    def __init__(self, f, name, color, fill):
         self.__file = ROOT.TFile.Open(f)
         self.__name = name
         self.__color = color
         self.__fill = fill
 
-    def list_histograms(self) :
+    def list_histograms(self):
         """List all of the histograms in this file.
 
         We use flatten here, so technically this lists all
@@ -91,7 +93,7 @@ class HistogramFile :
 
         return flatten(self.__file.GetListOfKeys())
 
-    def get(self, hist_key) :
+    def get(self, hist_key):
         """Get a histogram from this file
 
         After retrieving the histogram
@@ -104,23 +106,26 @@ class HistogramFile :
         """
 
         h = self.__file.Get(hist_key)
-        if 'TH' not in h.__class__.__name__ :
+        if "TH" not in h.__class__.__name__:
             raise AttributeError(
-                f'{hist_key} does not exist in {self.__file.GetName()}')
-        h.SetTitle(f'{self.__name}')
+                f"{hist_key} does not exist in {self.__file.GetName()}"
+            )
+        h.SetTitle(f"{self.__name}")
         h.SetLineColor(self.__color)
         h.SetLineWidth(2)
         h.SetMarkerColor(self.__color)
-        if self.__fill :
+        if self.__fill:
             h.SetFillColor(self.__color)
         return h
 
-def print_error(msg) :
+
+def print_error(msg):
     """Use GitHub workflow command to print errors
     so that they don't get lost in the logs"""
-    print('::error::',msg)
+    print("::error::", msg)
 
-def compare(gold_f, gold_label, test_f, test_label) :
+
+def compare(gold_f, gold_label, test_f, test_label):
     """Compare two histogram files
 
     This is the main function of this script.
@@ -156,61 +161,61 @@ def compare(gold_f, gold_label, test_f, test_label) :
         The label used in the histogram legends for the test histograms
     """
 
-    gold = HistogramFile(gold_f,gold_label,ROOT.kRed ,False )
-    test = HistogramFile(test_f,test_label,ROOT.kBlue,False)
+    gold = HistogramFile(gold_f, gold_label, ROOT.kRed, False)
+    test = HistogramFile(test_f, test_label, ROOT.kBlue, False)
 
     c = ROOT.TCanvas()
 
-    os.makedirs('plots/pass',exist_ok=True)
-    os.makedirs('plots/fail',exist_ok=True)
+    os.makedirs("plots/pass", exist_ok=True)
+    os.makedirs("plots/fail", exist_ok=True)
 
-    for key in gold.list_histograms() :
-        try :
+    for key in gold.list_histograms():
+        try:
             gold_h = gold.get(key)
             test_h = test.get(key)
         except AttributeError as e:
             print_error(e)
             continue
 
-        empty_gold = (gold_h.GetEntries() == 0)
-        empty_test = (test_h.GetEntries() == 0)
+        empty_gold = gold_h.GetEntries() == 0
+        empty_test = test_h.GetEntries() == 0
 
-        sub_dir = 'pass'
-        if empty_gold and empty_test :
+        sub_dir = "pass"
+        if empty_gold and empty_test:
             # both empty, call this a pass
-            sub_dir = 'pass'
-        elif not empty_gold and not empty_test :
+            sub_dir = "pass"
+        elif not empty_gold and not empty_test:
             # both non-empty, check KS test
-            sub_dir = ('fail'
-                if gold_h.KolmogorovTest(test_h, 'UO') < 0.99
-                else 'pass')
-        else :
+            sub_dir = "fail" if gold_h.KolmogorovTest(test_h, "UO") < 0.99 else "pass"
+        else:
             # one empty and other non-empty
-            sub_dir = 'fail'
+            sub_dir = "fail"
 
-        if (gold_h.ClassName() == "TH2F") :
+        if gold_h.ClassName() == "TH2F":
             # Make the yield-axis log scale
             c.SetLogz(1)
             # Plot the 2D plots as a scatter plot
-            gold_h.Draw('SCAT')
-            test_h.Draw('SCAT SAME')
-        else :
+            gold_h.Draw("SCAT")
+            test_h.Draw("SCAT SAME")
+        else:
             # Make the yield-axis log scale
             c.SetLogy(1)
             # Normalize the 1D plots to unit area
-            if gold_h.Integral() > 0 :
-                gold_h.Scale(1/gold_h.Integral())
-            if test_h.Integral() > 0 :
-                test_h.Scale(1/test_h.Integral())
+            if gold_h.Integral() > 0:
+                gold_h.Scale(1 / gold_h.Integral())
+            if test_h.Integral() > 0:
+                test_h.Scale(1 / test_h.Integral())
             # Plot the 1D plots with their uncertainty
             gold_h.Draw("E")
-            test_h.Draw('ESAME')
+            test_h.Draw("ESAME")
 
         legend = c.BuildLegend()
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
-        c.SaveAs(f'plots/{sub_dir}/{key.replace("/","_").replace(":","_")}.pdf')
+        c.SaveAs(f"plots/{sub_dir}/{key.replace('/', '_').replace(':', '_')}.pdf")
 
-if __name__ == '__main__' :
+
+if __name__ == "__main__":
     import sys
+
     compare(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])

@@ -327,13 +327,13 @@ _clang-tool-impl file_list_cmd *tool_cmd_and_args:
 
 
 # format the C++ source code of ldmx-sw
-format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files" "clang-format" ARGS)
+format-cpp-all *ARGS='-i': (_clang-tool-impl "git ls-files | grep -v HLS_Arbitrary_Precision_Types" "clang-format" ARGS)
 
 # formatting is quick enough that the format-cpp shortcut can be used
 format-cpp: format-cpp-all
 
 # format only the C++ files that have changed relative to trunk
-format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only origin/trunk" "clang-format" args)
+format-cpp-diff *args='-i': (_clang-tool-impl "git diff --name-only --diff-filter=d origin/trunk | grep -v HLS_Arbitrary_Precision_Types" "clang-format" args)
 
 # format the Python source code
 format-python:
@@ -363,13 +363,13 @@ lint-python-fix:
 format-just:
     @just --fmt --unstable --justfile {{ justfile() }}
 
-default_tidy_args := '-p build --fix -fix-errors --quiet'
+default_tidy_args := '-p build --fix-notes --fix-errors --quiet'
 
 # tidy all C++ files of ldmx-sw
-tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files" "clang-tidy" args)
+tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files | grep -v HLS_Arbitrary_Precision_Types" "clang-tidy" args)
 
 # tidy C++ files that are different relative to trunk
-tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only origin/trunk" "clang-tidy" args)
+tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only --diff-filter=d origin/trunk | grep -v HLS_Arbitrary_Precision_Types" "clang-tidy" args)
 
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
@@ -412,6 +412,52 @@ rootbrowse FILE:
 # execute g4-vis
 g4-vis gdml_file macro_file="":
     denv g4-vis {{gdml_file}} {{macro_file}}
+
+# CLIENT-SIDE PREREQUISITES for g4-vis-x (do these once on YOUR local machine):
+#   - Connect with trusted forwarding: `ssh -Y ...` (NOT `ssh -X`). Untrusted
+#     forwarding (-X) makes the X Security extension restrict GLX, which shows up
+#     as "BadValue ... X_GLXCreateContext" even when everything else is correct.
+#   - Indirect GLX (IGLX) must be enabled on your local X server, because rendering
+#     is forced through it (LIBGL_ALWAYS_INDIRECT=1; direct rendering cannot work
+#     over the network):
+#       * macOS / XQuartz: ships with IGLX DISABLED. Enable it once with
+#           defaults write org.xquartz.X11 enable_iglx -bool true
+#         then fully quit & restart XQuartz (killall Xquartz). Note XQuartz indirect
+#         GLX only provides OpenGL ~1.4, which is enough for Geant4's OGLIX viewer.
+#       * Linux / Xorg: start the X server with the `+iglx` flag.
+#
+# g4-vis over SSH X11 forwarding: sets up X auth into the denv + forces indirect GLX
+g4-vis-x gdml_file macro_file="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -z "${DISPLAY:-}" ]; then
+      printf '\033[31mg4-vis-x: $DISPLAY is empty -- connect with "ssh -Y" first.\033[0m\n' >&2
+      exit 1
+    fi
+    # The denv/apptainer container's HOME is the workspace and it does NOT mount
+    # your real ~/.Xauthority, so the container cannot find your X11 cookie. Drop a
+    # wildcard (FamilyWild) cookie for the current $DISPLAY into the workspace, where
+    # the container picks it up automatically as ~/.Xauthority. FamilyWild matches
+    # regardless of the container's (differing/empty) hostname.
+    #
+    # This cluster forwards X through more than one host, each with a different
+    # cookie for the same display number, so pick the cookie that sshd stored for
+    # *this* host -- that is the one the live
+    # forwarding validates against. Fall back to the plain $DISPLAY lookup.
+    disp_n="${DISPLAY##*:}"; disp_n="${disp_n%%.*}"
+    ws_xauth="{{ this_denv_workspace }}/.Xauthority"
+    rm -f "${ws_xauth}"; touch "${ws_xauth}"; chmod 600 "${ws_xauth}"
+    src_cookie="$(xauth nlist "$(hostname)/unix:${disp_n}" 2>/dev/null)"
+    [ -z "${src_cookie}" ] && src_cookie="$(xauth nlist "${DISPLAY}" 2>/dev/null)"
+    printf 'g4-vis-x: DISPLAY=%s host=%s display=%s\n' "${DISPLAY}" "$(hostname)" "${disp_n}" >&2
+    printf '%s\n' "${src_cookie}" | sed -e 's/^..../ffff/' | xauth -f "${ws_xauth}" nmerge -
+    if ! [ -s "${ws_xauth}" ]; then
+      printf '\033[31mg4-vis-x: no X11 cookie for DISPLAY=%s on host %s -- reconnect with "ssh -Y".\033[0m\n' "${DISPLAY}" "$(hostname)" >&2
+      exit 1
+    fi
+    # Force indirect GLX so OpenGL is rendered through the X server (required over
+    # SSH; needs indirect GLX enabled on your LOCAL X server -- XQuartz/Xorg +iglx).
+    APPTAINERENV_LIBGL_ALWAYS_INDIRECT=1 denv g4-vis "{{ gdml_file }}" "{{ macro_file }}"
 
 # change which image is used for the denv
 use IMAGE:

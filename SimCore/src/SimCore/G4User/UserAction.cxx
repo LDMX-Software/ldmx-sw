@@ -29,6 +29,16 @@ const std::map<int, ldmx::SimParticle>& UserAction::getCurrentParticleMap()
   return g4user::TrackingAction::get()->getTrackMap().getParticleMap();
 }
 
+void UserAction::abortEvent(const std::string& reason) const {
+  ldmx_log(trace)
+      << "("
+      << G4EventManager::GetEventManager()->GetConstCurrentEvent()->GetEventID()
+      << ") " << reason << " Aborting event.";
+
+  G4RunManager::GetRunManager()->AbortEvent();
+  return;
+}
+
 DEFINE_FACTORY(UserAction);
 
 }  // namespace simcore

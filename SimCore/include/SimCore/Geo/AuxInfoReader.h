@@ -32,7 +32,7 @@ class AuxInfoReader {
    * @param parser The GDML parser.
    * @param ps configuration parameters
    */
-  AuxInfoReader(G4GDMLParser *parser, const framework::config::Parameters &ps);
+  AuxInfoReader(G4GDMLParser* parser, const framework::config::Parameters& ps);
 
   /**
    * Class destructor.
@@ -53,7 +53,7 @@ class AuxInfoReader {
    * Get the detector header that was created from the userinfo block.
    * @return The detector header.
    */
-  ldmx::DetectorHeader *getDetectorHeader() { return detector_header_; }
+  ldmx::DetectorHeader* getDetectorHeader() { return detector_header_; }
 
  private:
   /**
@@ -61,53 +61,53 @@ class AuxInfoReader {
    * @param name The name of the magnetic field.
    * @param auxInfoList The aux info defining the magnetic field.
    */
-  void createMagneticField(const G4String &name,
-                           const G4GDMLAuxListType *auxInfoList);
+  void createMagneticField(const G4String& name,
+                           const G4GDMLAuxListType* auxInfoList);
 
   /**
    * Create a detector region from GDML data.
    * @param name The name of the detector region.
    * @param auxInfoList The aux info defining the detector region.
    */
-  void createRegion(const G4String &name, const G4GDMLAuxListType *auxInfoList);
+  void createRegion(const G4String& name, const G4GDMLAuxListType* auxInfoList);
 
   /**
    * Select the 'mode' for coloring in the visualization.
    * @param name The selected mode
    */
-  void selectColorMode(const G4String &mode);
+  void selectColorMode(const G4String& mode);
 
   /**
    * Create visualization attributes from GDML data.
    * @param name The name of the visualization attributes.
    * @param auxInfoList The aux info defining the visualization attributes.
    */
-  void createVisAttributes(const G4String &name,
-                           const G4GDMLAuxListType *auxInfoList);
+  void createVisAttributes(const G4String& name,
+                           const G4GDMLAuxListType* auxInfoList);
 
   /**
    * Create the detector header from the global auxinfo.
    * @param detectorVersion The aux value with the detector version.
    * @param auxInfoList The aux info with the detector header information.
    */
-  void createDetectorHeader(const G4String &detectorVersion,
-                            const G4GDMLAuxListType *auxInfoList);
+  void createDetectorHeader(const G4String& detectorVersion,
+                            const G4GDMLAuxListType* auxInfoList);
 
  private:
   /**
    * The GDML parser.
    */
-  G4GDMLParser *parser_;
+  G4GDMLParser* parser_;
 
   /**
    * The GDML expression evaluator.
    */
-  G4GDMLEvaluator *eval_;
+  G4GDMLEvaluator* eval_;
 
   /**
    * Detector header with name and version.
    */
-  ldmx::DetectorHeader *detector_header_{nullptr};
+  ldmx::DetectorHeader* detector_header_{nullptr};
 
   /**
    * Color mode for visattributes.

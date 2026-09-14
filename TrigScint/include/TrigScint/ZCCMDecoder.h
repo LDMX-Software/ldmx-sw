@@ -15,7 +15,7 @@ namespace trigscint {
 
 class ZCCMDecoder : public framework::Producer {
  public:
-  ZCCMDecoder(const std::string &name, framework::Process &process)
+  ZCCMDecoder(const std::string& name, framework::Process& process)
       : Producer(name, process) {}
 
   /**
@@ -27,9 +27,9 @@ class ZCCMDecoder : public framework::Producer {
    * Configure our converter based off the configuration parameters
    * decoded from the passed python script
    */
-  void configure(framework::config::Parameters &ps) override;
+  void configure(framework::config::Parameters& ps) override;
 
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
   void onProcessStart() override;
 

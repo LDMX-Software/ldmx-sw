@@ -3,11 +3,11 @@
 #include <iostream>
 
 #include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Geometry/DetectorElementBase.hpp"
 #include "Acts/Geometry/GeometryContext.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
 #include "Acts/Surfaces/Surface.hpp"
+#include "Acts/Surfaces/SurfacePlacementBase.hpp"
 #include "Framework/Exception/Exception.h"
 #include "Tracking/geo/GeoUtils.h"
 
@@ -16,7 +16,7 @@
 
 namespace tracking::geo {
 
-class DetectorElement : public Acts::DetectorElementBase {
+class DetectorElement : public Acts::SurfacePlacementBase {
  public:
   // The detector element is initialized with the surface initial transformation
   // created from the TrackingGeometry constructor/parser
@@ -54,16 +54,18 @@ class DetectorElement : public Acts::DetectorElementBase {
   // corrections Could be interesting to cache the transformations and re-update
   // all of them when IoV changes
 
-  const Acts::Transform3& transform(
+  const Acts::Transform3& localToGlobalTransform(
       const Acts::GeometryContext& gctx) const override;
 
   const Acts::Surface& surface() const override;
 
   Acts::Surface& surface() override;
 
+  bool isSensitive() const override { return true; }
+
   // The thickness of the detector element is taken from the center of the
   // associated surface
-  double thickness() const override;
+  double thickness() const;
 
   Acts::GeometryIdentifier geometryId() const {
     if (!m_surface_)

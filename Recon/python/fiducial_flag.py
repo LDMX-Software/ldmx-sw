@@ -24,7 +24,6 @@ output_collection : string
 
 @processor("recon::RecoilFiducialityProcessor", "Recon")
 class RecoilFiducialityProcessor(Processor):
-
     min_p_mag: float = 50.0
     min_tracker_hits: int = 5
     input_pass_name: str = ""

@@ -4,7 +4,7 @@ from LDMX.Framework import parameter_set
 
 
 @parameter_set
-class HgcrocEmulator :
+class HgcrocEmulator:
     """Configuration for HGCROC Emulator
 
     The parameters in this configuration class
@@ -42,9 +42,8 @@ class HgcrocEmulator :
     rate_dn_slope: float = 0.140068
     time_dn_slope: float = 87.7649
     time_peak: float = 77.732
-    clock_cycle: float = 25.0 #ns
-    timing_jitter: float = 25.0 / 100. #ns - pretty arbitrarily chosen
+    clock_cycle: float = 25.0  # ns
+    timing_jitter: float = 25.0 / 100.0  # ns - pretty arbitrarily chosen
     n_adcs: int = 10
     i_soi: int = 2
     noise: bool = True
-

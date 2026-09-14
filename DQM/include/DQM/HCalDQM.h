@@ -30,7 +30,7 @@ namespace dqm {
 class HCalDQM : public framework::Analyzer {
  public:
   /** Constructor */
-  HCalDQM(const std::string &name, framework::Process &process);
+  HCalDQM(const std::string& name, framework::Process& process);
 
   /** Destructor */
   ~HCalDQM() {}
@@ -40,23 +40,23 @@ class HCalDQM : public framework::Analyzer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Process the event and make histograms ro summaries.
    *
    * @param event The event to analyze.
    */
-  void analyze(const framework::Event &event) override;
+  void analyze(const framework::Event& event) override;
 
-  bool skipHit(const ldmx::HcalID &id) {
+  bool skipHit(const ldmx::HcalID& id) {
     const auto section{id.section()};
     return (section != section_ && section_ != -1);
   }
-  void analyzeRecHits(const std::vector<ldmx::HcalHit> &hits);
-  void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit> &hits);
+  void analyzeRecHits(const std::vector<ldmx::HcalHit>& hits);
+  void analyzeSimHits(const std::vector<ldmx::SimCalorimeterHit>& hits);
 
-  bool hitPassesVeto(const ldmx::HcalHit &hit, int section) {
+  bool hitPassesVeto(const ldmx::HcalHit& hit, int section) {
     if (hit.getPE() < pe_veto_threshold_ || hit.getTime() > max_hit_time_) {
       return true;
     }

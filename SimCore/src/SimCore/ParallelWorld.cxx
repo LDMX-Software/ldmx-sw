@@ -4,7 +4,7 @@
 #include "Framework/Configure/Parameters.h"
 
 namespace simcore {
-ParallelWorld::ParallelWorld(G4GDMLParser *parser, G4String worldName)
+ParallelWorld::ParallelWorld(G4GDMLParser* parser, G4String worldName)
     : G4VUserParallelWorld(worldName),
       parser_(parser),
       aux_info_reader_(
@@ -15,16 +15,16 @@ ParallelWorld::~ParallelWorld() { delete aux_info_reader_; }
 void ParallelWorld::Construct() {}
 
 void ParallelWorld::ConstructSD() {
-  G4VPhysicalVolume *world_physical = GetWorld();
-  G4LogicalVolume *world_logical = world_physical->GetLogicalVolume();
+  G4VPhysicalVolume* world_physical = GetWorld();
+  G4LogicalVolume* world_logical = world_physical->GetLogicalVolume();
 
-  G4LogicalVolume *parallel_world_logical =
+  G4LogicalVolume* parallel_world_logical =
       parser_->GetWorldVolume()->GetLogicalVolume();
   aux_info_reader_->readGlobalAuxInfo();
 
   for (int index = 0; index < parallel_world_logical->GetNoDaughters();
        index++) {
-    G4VPhysicalVolume *physical_vol =
+    G4VPhysicalVolume* physical_vol =
         parallel_world_logical->GetDaughter(index);
     ldmx_log(debug) << "Adding : " << physical_vol->GetName()
                     << " to parallel world.";

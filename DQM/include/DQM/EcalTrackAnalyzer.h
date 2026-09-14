@@ -1,7 +1,7 @@
 /**
  * @file EcalTrackAnalyzer.h
  * @brief Analysis of ECAL tracks produced by ACTS track finder
- * @author Tamas Almos Vami (UCSB)  
+ * @author Tamas Almos Vami (UCSB)
  */
 
 #ifndef DQM_ECALTRACKANALYZER_H

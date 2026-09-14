@@ -6,10 +6,11 @@ from ._differ import Differ
 from ._plotter import plotter
 
 
-log = logging.getLogger('performance')
+log = logging.getLogger("performance")
+
 
 @plotter
-def event_timing(d : Differ, out_dir = None) :
+def event_timing(d: Differ, out_dir=None):
     """Plot time it took to process events
 
     Parameters
@@ -21,12 +22,12 @@ def event_timing(d : Differ, out_dir = None) :
     # just plotting the __ALL__ branch which represents all processors in the sequence,
     # however, if we introduce some introspection into the Differ class, we could deduce
     # the other branch names and plot the duration of different processors specifically
-    for processor in ['__ALL__']:
-        branch = f'performance/by_event/{processor}./{processor}.duration_'
-        log.info(f'plotting event time for {processor}')
+    for processor in ["__ALL__"]:
+        branch = f"performance/by_event/{processor}./{processor}.duration_"
+        log.info(f"plotting event time for {processor}")
         d.plot1d(
             branch,
-            f'{processor} Event Time [s]',
+            f"{processor} Event Time [s]",
             out_dir=out_dir,
-            legend_kw={'loc': 'upper right'}
+            legend_kw={"loc": "upper right"},
         )

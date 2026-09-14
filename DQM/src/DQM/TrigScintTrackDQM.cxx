@@ -2,8 +2,8 @@
 
 namespace dqm {
 
-TrigScintTrackDQM::TrigScintTrackDQM(const std::string &name,
-                                     framework::Process &process)
+TrigScintTrackDQM::TrigScintTrackDQM(const std::string& name,
+                                     framework::Process& process)
     : framework::Analyzer(name, process) {}
 
 void TrigScintTrackDQM::onProcessStart() {
@@ -25,7 +25,7 @@ void TrigScintTrackDQM::onProcessStart() {
   // through and set overflow boolean.
 }
 
-void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
+void TrigScintTrackDQM::configure(framework::config::Parameters& ps) {
   track_collection_name_ = ps.get<std::string>("track_collection");
   pass_name_ = ps.get<std::string>("pass_name").c_str();
 
@@ -33,7 +33,7 @@ void TrigScintTrackDQM::configure(framework::config::Parameters &ps) {
                   << " pass name =" << pass_name_;
 }
 
-void TrigScintTrackDQM::analyze(const framework::Event &event) {
+void TrigScintTrackDQM::analyze(const framework::Event& event) {
   // Get the collection of TrigScintTrack digitized tracks if the exists
   if (not event.exists(track_collection_name_, pass_name_)) return;
   const std::vector<ldmx::TrigScintTrack> trig_scint_tracks =
@@ -41,7 +41,7 @@ void TrigScintTrackDQM::analyze(const framework::Event &event) {
                                                 pass_name_);
 
   // Loop through all TrigScint tracks in the event
-  for (const ldmx::TrigScintTrack &track : trig_scint_tracks) {
+  for (const ldmx::TrigScintTrack& track : trig_scint_tracks) {
     histograms_.fill("centroid", track.getCentroid());
     histograms_.fill("residual", track.getResidual());
     histograms_.fill("n_clusters", track.getNclusters());

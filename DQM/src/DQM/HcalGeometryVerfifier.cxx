@@ -2,7 +2,7 @@
 namespace dqm {
 
 void HcalGeometryVerifier::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   hcal_sim_hits_collection_ = parameters.get<std::string>("sim_coll_name");
   hcal_rec_hits_collection_ = parameters.get<std::string>("rec_coll_name");
   hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
@@ -10,13 +10,13 @@ void HcalGeometryVerifier::configure(
   stop_on_error_ = parameters.get<bool>("stop_on_error");
   tolerance_ = parameters.get<double>("tolerance_");
 }
-void HcalGeometryVerifier::analyze(const framework::Event &event) {
+void HcalGeometryVerifier::analyze(const framework::Event& event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
       hcal_sim_hits_collection_, hcal_sim_hits_pass_name_);
   const auto hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
       hcal_rec_hits_collection_, hcal_rec_hits_pass_name_);
 
-  for (const auto &hit : hcal_sim_hits) {
+  for (const auto& hit : hcal_sim_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     const auto position{hit.getPosition()};
     auto ok{hitOk(id, {position[0], position[1], position[2]})};
@@ -39,7 +39,7 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
         break;
     }
   }
-  for (const auto &hit : hcal_rec_hits) {
+  for (const auto& hit : hcal_rec_hits) {
     const ldmx::HcalID id{static_cast<unsigned int>(hit.getID())};
     auto ok{hitOk(id, {hit.getXPos(), hit.getYPos(), hit.getZPos()})};
     histograms_.fill("passes_rec", ok);
@@ -64,8 +64,8 @@ void HcalGeometryVerifier::analyze(const framework::Event &event) {
 
 }  // Analyze
 bool HcalGeometryVerifier::hitOk(const ldmx::HcalID id,
-                                 const std::array<double, 3> &position) {
-  const auto &geometry = getCondition<ldmx::HcalGeometry>(
+                                 const std::array<double, 3>& position) {
+  const auto& geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   auto [index_along, index_across, index_through]{determineIndices(id)};
   const auto center_vec = geometry.getStripCenterPosition(id);
@@ -124,7 +124,7 @@ bool HcalGeometryVerifier::hitOk(const ldmx::HcalID id,
 }
 std::array<int, 3> HcalGeometryVerifier::determineIndices(
     const ldmx::HcalID id) {
-  const auto &geometry = getCondition<ldmx::HcalGeometry>(
+  const auto& geometry = getCondition<ldmx::HcalGeometry>(
       ldmx::HcalGeometry::CONDITIONS_OBJECT_NAME);
   const auto orientation{geometry.getScintillatorOrientation(id)};
   const auto is_lr{id.section() == ldmx::HcalID::HcalSection::LEFT ||

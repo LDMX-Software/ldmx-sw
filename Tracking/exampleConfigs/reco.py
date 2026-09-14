@@ -50,7 +50,7 @@ from pathlib import Path
 p.output_files = ["test_8gev_electrons_withTracking.root"]
 
 # lower log level so 'info' and above messages can be printed
-#p.term_log_level = 1
+# p.term_log_level = 1
 
 # Number of events
 p.max_events = n_evts

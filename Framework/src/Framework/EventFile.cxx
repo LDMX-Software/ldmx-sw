@@ -12,8 +12,8 @@
 
 namespace framework {
 
-EventFile::EventFile(const framework::config::Parameters &params,
-                     const std::string &filename, EventFile *parent,
+EventFile::EventFile(const framework::config::Parameters& params,
+                     const std::string& filename, EventFile* parent,
                      bool is_output_file, bool is_single_output,
                      bool is_loopable)
     : file_name_(filename),
@@ -76,7 +76,7 @@ EventFile::EventFile(const framework::config::Parameters &params,
 
     // Get the tree name from the configuration
     auto tree_name{params.get<std::string>("tree_name")};
-    tree_ = static_cast<TTree *>(file_->Get(tree_name.c_str()));
+    tree_ = static_cast<TTree*>(file_->Get(tree_name.c_str()));
     if (!tree_) {
       if (not skip_corrupted) {
         EXCEPTION_RAISE("FileError", "File '" + file_name_ +
@@ -91,29 +91,27 @@ EventFile::EventFile(const framework::config::Parameters &params,
   importRunHeaders();
 }
 
-EventFile::EventFile(const framework::config::Parameters &params,
-                     const std::string &filename, bool is_loopable)
+EventFile::EventFile(const framework::config::Parameters& params,
+                     const std::string& filename, bool is_loopable)
     : EventFile(params, filename, nullptr, false, false, is_loopable) {}
 
-EventFile::EventFile(const framework::config::Parameters &params,
-                     const std::string &filename)
+EventFile::EventFile(const framework::config::Parameters& params,
+                     const std::string& filename)
     : EventFile(params, filename, nullptr, false, false, false) {}
 
-EventFile::EventFile(const framework::config::Parameters &params,
-                     const std::string &filename, EventFile *parent,
+EventFile::EventFile(const framework::config::Parameters& params,
+                     const std::string& filename, EventFile* parent,
                      bool is_single_output)
     : EventFile(params, filename, parent, true, is_single_output, false) {}
 
 EventFile::~EventFile() {
   // Before an output file, the Event tree needs to be written.
-  if (is_output_file_) {
+  if (tree_ && is_output_file_) {
     // make sure we are in output file before writing
     file_->cd();
     tree_->Write();
+    file_->Close();
   }
-
-  // Close the file
-  file_->Close();
 }
 
 bool EventFile::isCorrupted() const {
@@ -121,7 +119,7 @@ bool EventFile::isCorrupted() const {
   return (!tree_ or file_->IsZombie() or file_->GetNkeys() == 0);
 }
 
-void EventFile::addDrop(const std::string &rule) {
+void EventFile::addDrop(const std::string& rule) {
   int offset;
   bool is_keep = false, is_drop = false, is_ignore = false;
   // keywords must appear at the start of the rule string
@@ -223,14 +221,14 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
 
         file_->cd();  // go into output file
 
-        for (auto const &rule_pair : pre_clone_rules_)
+        for (auto const& rule_pair : pre_clone_rules_)
           parent_->tree_->SetBranchStatus(rule_pair.first.c_str(),
                                           rule_pair.second);
 
         tree_ = parent_->tree_->CloneTree(0);
 
         // reactivate any drop branches (drop) on input tree
-        for (auto const &rule : reactivate_rules_)
+        for (auto const& rule : reactivate_rules_)
           parent_->tree_->SetBranchStatus(rule.c_str(), 1);
       }
       event_->setInputTree(parent_->tree_);
@@ -287,7 +285,7 @@ bool EventFile::nextEvent(bool storeCurrentEvent) {
   return event_ ? event_->nextEvent() : true;
 }
 
-void EventFile::setupEvent(Event *evt) {
+void EventFile::setupEvent(Event* evt) {
   event_ = evt;
   if (is_output_file_) {
     // we are an output file
@@ -321,7 +319,7 @@ int EventFile::skipToEvent(int offset) {
   return ientry_;
 }
 
-void EventFile::updateParent(EventFile *parent) {
+void EventFile::updateParent(EventFile* parent) {
   parent_ = parent;
 
   // we can assume parent_->tree_ is valid
@@ -333,14 +331,14 @@ void EventFile::updateParent(EventFile *parent) {
   file_->cd();
 
   // need to turn on/off the same branches as in the initial setup...
-  for (auto const &rule_pair : pre_clone_rules_)
+  for (auto const& rule_pair : pre_clone_rules_)
     parent_->tree_->SetBranchStatus(rule_pair.first.c_str(), rule_pair.second);
 
   // Copy over addresses from the new parent
   parent_->tree_->CopyAddresses(tree_);
 
   // and reactivate any dropping rules
-  for (auto const &rule : reactivate_rules_)
+  for (auto const& rule : reactivate_rules_)
     parent_->tree_->SetBranchStatus(rule.c_str(), 1);
 
   // Reset the entry index_ with the new parent index_
@@ -362,7 +360,7 @@ void EventFile::writeRunTree() {
   // Check for the existence of the run tree in the file.
   // If it already exists, throw an exception.
   // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
-  auto run_tree{static_cast<TTree *>(file_->Get("LDMX_Run"))};
+  auto run_tree{static_cast<TTree*>(file_->Get("LDMX_Run"))};
   if (run_tree) {
     EXCEPTION_RAISE("RunTree",
                     "RunTree 'LDMX_Run' already exists in output file '" +
@@ -383,41 +381,41 @@ void EventFile::writeRunTree() {
   run_tree = new TTree("LDMX_Run", "LDMX run header");
 
   // create the branch on this tree
-  ldmx::RunHeader *the_handle = nullptr;
+  ldmx::RunHeader* the_handle = nullptr;
   run_tree->Branch("RunHeader", "ldmx::RunHeader", &the_handle, 32000, 3);
+  // ROOT allocates a RunHeader when given a null pointer and leaves
+  // ownership with the caller, so take it to avoid leaking it
+  std::unique_ptr<ldmx::RunHeader> root_allocated(the_handle);
 
   // copy over the run headers into the tree
-  for (auto &[num, header_pair] : run_map_) {
-    the_handle = header_pair.second;
+  for (auto& [num, run_header] : run_map_) {
+    the_handle = run_header.get();
     run_tree->Fill();
-    if (header_pair.first) delete header_pair.second;
   }
 
   run_tree->Write();
 }
 
-void EventFile::writeRunHeader(ldmx::RunHeader &run_header) {
-  int run_number = run_header.getRunNumber();
+void EventFile::writeRunHeader(std::shared_ptr<ldmx::RunHeader> run_header) {
+  int run_number = run_header->getRunNumber();
 
   if (run_map_.find(run_number) != run_map_.end()) {
     EXCEPTION_RAISE("RunMap", "Run map already contains a run with number '" +
                                   std::to_string(run_number) + "'.");
   }
 
-  run_map_[run_number] = std::make_pair(false, &run_header);
-
-  return;
+  run_map_[run_number] = run_header;
 }
 
-ldmx::RunHeader *EventFile::getRunHeaderPtr(int run_number) {
+ldmx::RunHeader* EventFile::getRunHeaderPtr(int run_number) {
   if (run_map_.find(run_number) != run_map_.end()) {
-    return run_map_.at(run_number).second;
+    return run_map_.at(run_number).get();
   }
   return nullptr;
 }
 
-ldmx::RunHeader &EventFile::getRunHeader(int run_number) {
-  ldmx::RunHeader *rh{this->getRunHeaderPtr(run_number)};
+ldmx::RunHeader& EventFile::getRunHeader(int run_number) {
+  ldmx::RunHeader* rh{this->getRunHeaderPtr(run_number)};
   if (rh != nullptr) {
     return *rh;
   }
@@ -439,12 +437,11 @@ void EventFile::importRunHeaders() {
     TTreeReaderValue<ldmx::RunHeader> old_run_header(old_run_tree, "RunHeader");
     // TODO check that setup went correctly
     while (old_run_tree.Next()) {
-      auto *old_run_header_ptr = old_run_header.Get();
+      auto* old_run_header_ptr = old_run_header.Get();
       if (old_run_header_ptr != nullptr) {
-        // copy input run tree into run map
-        // We should consider moving to a shared_ptr instead of 'new'
-        run_map_[old_run_header_ptr->getRunNumber()] =
-            std::make_pair(true, new ldmx::RunHeader(*old_run_header_ptr));
+        int run_number = old_run_header_ptr->getRunNumber();
+        run_map_[run_number] =
+            std::make_shared<ldmx::RunHeader>(*old_run_header_ptr);
       }
     }
   }

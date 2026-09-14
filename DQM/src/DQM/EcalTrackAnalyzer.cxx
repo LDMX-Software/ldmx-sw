@@ -95,7 +95,8 @@ void EcalTrackAnalyzer::analyze(const framework::Event& event) {
 
     // 2D correlations
     histograms_.fill("track_nhits_vs_chi2", nhits, chi2);
-    histograms_.fill("track_nhits_vs_chi2_ndf", nhits, (ndf > 0) ? chi2 / ndf : 0.0);
+    histograms_.fill("track_nhits_vs_chi2_ndf", nhits,
+                     (ndf > 0) ? chi2 / ndf : 0.0);
     histograms_.fill("track_chi2_vs_nhits", chi2, nhits);
     histograms_.fill("track_p_vs_chi2", p, chi2);
     histograms_.fill("track_p_vs_nhits", p, nhits);

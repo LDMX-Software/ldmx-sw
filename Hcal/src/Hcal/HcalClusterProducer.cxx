@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <iostream>
+#include <list>
 
 #include "Hcal/MyClusterWeight.h"
 #include "Recon/TemplatedClusterFinder.h"

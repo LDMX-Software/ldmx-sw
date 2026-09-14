@@ -6,7 +6,7 @@
 
 namespace trigscint {
 
-void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
+void TestBeamClusterProducer::configure(framework::config::Parameters& ps) {
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
@@ -36,7 +36,7 @@ void TestBeamClusterProducer::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void TestBeamClusterProducer::produce(framework::Event &event) {
+void TestBeamClusterProducer::produce(framework::Event& event) {
   // parameters.
   // a cluster seeding threshold
   // a clustering threshold -- a lower boundary for being added at all (zero
@@ -108,7 +108,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
   // 1. store all the channel digi content in channel order
   auto i_digi{0};
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     // these are unordered hits, and this collection is zero-suppressed
     // map the index of the digi to the channel index
     ldmx_log(debug) << "Digi has PE count " << digi.getPE() << " and energy "
@@ -193,7 +193,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
     // non-existing indices. so while what i do below means that i don't need to
     // erase hits, i'd rather find a way to do that and skip this book keeping:
     bool has_used = false;
-    for (const auto &index : v_used_indices_) {
+    for (const auto& index : v_used_indices_) {
       if (index == itr->first) {
         if (verbose_ > 1) {
           ldmx_log(warn) << "Attempting to re-use hit at channel " << itr->first
@@ -253,7 +253,7 @@ void TestBeamClusterProducer::produce(framework::Event &event) {
 
         // need to check again for backwards hits
         has_used = false;
-        for (const auto &index : v_used_indices_) {
+        for (const auto& index : v_used_indices_) {
           if (index == itr_back->first) {
             if (verbose_ > 1) {
               ldmx_log(warn) << "Attempting to re-use hit at channel "

@@ -103,7 +103,7 @@ class FourPoleShape : public PulseShape {
 
  private:
   double tp_, tp2_;
-  double A_, B_;
+  double a_, b_;
   double peak_amp_;  ///< g(t_peak), used for normalisation.
 };
 

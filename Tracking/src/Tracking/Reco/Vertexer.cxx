@@ -44,7 +44,6 @@ void Vertexer::onProcessStart() {
   h_tz0_vs_rz0_ =
       new TH2F("h_tz0_vs_rz0", "h_tz0_vs_rz0", 100, -40, 40, 100, -40, 40);
 
-  gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
   /*
@@ -90,34 +89,9 @@ void Vertexer::produce(framework::Event& event) {
   nevents_++;
   // auto start = std::chrono::high_resolution_clock::now();
 
-  // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer;
-  Linearizer::Config linearizer_config;
-  linearizer_config.bField = b_field_;
-  linearizer_config.propagator = propagator_;
-  Linearizer linearizer(linearizer_config);
-
-  // Set up Billoir Vertex Fitter
-  using VertexFitter = Acts::FullBilloirVertexFitter;
-
-  // Alternatively one can use
-  // using VertexFitter =
-  //  Acts::FullBilloirVertexFitter<tracking::sim::utils::boundTrackParameters,Linearizer>;
-
-  VertexFitter::Config vertex_fitter_cfg;
-  VertexFitter billoir_fitter(vertex_fitter_cfg);
-  //  mg Aug 2024 .. State doesn't exist in v36 and isn't used here anyway
-  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
-
-  // Unconstrained fit
-  // See
-  // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
-  // For constraint implementation
-
-  //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_,
-  //  bctx_);
-  // mg Aug 2024 ... VertexingOptions template change in v36
-  Acts::VertexingOptions vf_options(gctx_, bctx_);
+  // Note: FullBilloirVertexFitter setup commented out — fit() is not called
+  // and v46 Config now requires extractParameters/trackLinearizer delegates.
+  // Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrive the two track collections
 

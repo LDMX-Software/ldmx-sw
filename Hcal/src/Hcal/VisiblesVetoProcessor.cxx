@@ -16,7 +16,7 @@
 
 namespace hcal {
 void VisiblesVetoProcessor::buildBDTFeatureVector(
-    const ldmx::VisiblesVetoResult &result) {
+    const ldmx::VisiblesVetoResult& result) {
   bdt_features_.push_back(result.getNLayersHit());
   bdt_features_.push_back(result.getXStd());
   bdt_features_.push_back(result.getYStd());
@@ -32,7 +32,7 @@ void VisiblesVetoProcessor::buildBDTFeatureVector(
 }
 
 void VisiblesVetoProcessor::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
   // Load BDT ONNX file
   rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
@@ -78,12 +78,12 @@ void VisiblesVetoProcessor::clearProcessor() {
   r_mean_from_photon_track_ = 0.;
 }
 
-void VisiblesVetoProcessor::produce(framework::Event &event) {
+void VisiblesVetoProcessor::produce(framework::Event& event) {
   ldmx::VisiblesVetoResult result;
 
   clearProcessor();
 
-  const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
+  const auto& particle_map{event.getMap<int, ldmx::SimParticle>(
       "SimParticles", sim_particles_pass_name_)};
 
   // Get target scoring plane hits for recoil electron
@@ -93,10 +93,10 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
   std::vector<double> gamma_p(3);
   std::vector<double> gamma_x0(3);
   if (recoil_from_tracking_) {
-    const auto &recoil_tracks{
+    const auto& recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
     // Fill this in later when you know how to use it
-    for (auto &track : recoil_tracks) {
+    for (auto& track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
       auto trk_pos = track.getPositionAtTarget();
       auto trk_mom = track.getMomentumAtTarget();
@@ -110,10 +110,10 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+      const auto& target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
           sp_collection_, sp_pass_name_);
-      for (auto const &it : particle_map) {
-        for (auto const &sphit : target_sp_hits) {
+      for (auto const& it : particle_map) {
+        for (auto const& sphit : target_sp_hits) {
           if (sphit.getPosition()[2] > 0) {
             if (it.first == sphit.getTrackID()) {
               if (it.second.getPdgID() == 11 &&
@@ -136,12 +136,12 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
   }
 
   // Get Hcal reconstructed hits and loop through them to build features
-  const auto &hcal_rec_hits =
+  const auto& hcal_rec_hits =
       event.getCollection<ldmx::HcalHit>(rec_coll_name_, rec_pass_name_);
 
   double z_mean = 0.;  // need this when calculating z_std_
   std::vector<int> layers_hit;
-  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+  for (const ldmx::HcalHit& hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID det_id(hit.getID());
       if (det_id.getSection() != 0) {  // skip hits that aren't in main Hcal
@@ -177,7 +177,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
 
       // Calculate isolated hits
       double closest_point = 9999.;
-      for (const ldmx::HcalHit &hit2 : hcal_rec_hits) {
+      for (const ldmx::HcalHit& hit2 : hcal_rec_hits) {
         if (hit2.getEnergy() > 0.) {
           ldmx::HcalID det_i_d2(hit2.getID());
           if (det_i_d2.getLayerID() == det_id.getLayerID()) {
@@ -219,7 +219,7 @@ void VisiblesVetoProcessor::produce(framework::Event &event) {
     r_mean_from_photon_track_ /= summed_det_;
   }
 
-  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+  for (const ldmx::HcalHit& hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID det_id(hit.getID());
       if (det_id.getSection() == 0) {

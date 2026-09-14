@@ -40,7 +40,7 @@ class EcalProcessFilter : public simcore::UserAction {
 
   void stepping(const G4Step* step) override;
 
-  // void PostUserTrackingAction(const G4Track*) override;
+  // void postUserTrackingAction(const G4Track*) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -48,7 +48,7 @@ class EcalProcessFilter : public simcore::UserAction {
    * @param aTrack The Geant4 track.
    * @param currentTrackClass The current track classification.
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
+  G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
       const G4ClassificationOfNewTrack& currentTrackClass) override;
 

@@ -251,6 +251,8 @@ class GSFProcessor(Processor):
         Path to the location of the magnetic field map.
     tagger_tracking : bool
         Whether tracking in the tagger.
+    tagger_start_x : float
+        ACTS x [mm] of the tagger GSF start surface, upstream of tagger L1.
     out_trk_collection : str
         Name of the output Track collection.
     track_collection : str
@@ -276,6 +278,7 @@ class GSFProcessor(Processor):
     propagator_max_steps: int = 1000
     field_map: str = ""
     tagger_tracking: bool = True
+    tagger_start_x: float = -617.0
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"
     meas_collection: str = "DigiTaggerSimHits"
@@ -473,6 +476,7 @@ class TrackerVetoProcessor(Processor):
     sim_particles_passname: str = ""
     input_collection_events_passname: str = ""
 
+
 @processor("tracking::reco::StripFitProcessor", "Tracking")
 class StripFitProcessor(Processor):
     """Fits a pulse shape to each RawSiStripHit to extract amplitude and time.
@@ -499,9 +503,9 @@ class StripFitProcessor(Processor):
         If > 0, discard fits with chi2/ndf above this value (default -1 = off).
     """
 
-    in_collection: str = 'RawSiStripHits'
-    in_pass: str = ''
-    out_collection: str = 'FittedSiStripHits'
+    in_collection: str = "SimSiStripHits"
+    in_pass: str = ""
+    out_collection: str = "FittedSiStripHits"
     t_scan_min_ns: float = -50.0
     t_scan_max_ns: float = 150.0
     t_scan_step_ns: float = 1.0
@@ -594,9 +598,9 @@ class StripClusterProcessor(Processor):
         Max chi2/ndf for a fitted hit to be used; <= 0 disables (default -1).
     """
 
-    in_collection: str = 'FittedSiStripHits'
-    in_pass: str = ''
-    out_collection: str = 'StripMeasurements'
+    in_collection: str = "FittedSiStripHits"
+    in_pass: str = ""
+    out_collection: str = "StripMeasurements"
     seed_threshold: float = 4.0
     neighbor_threshold: float = 3.0
     cluster_threshold: float = 4.0
@@ -604,4 +608,3 @@ class StripClusterProcessor(Processor):
     time_window_ns: float = -1.0
     neighbor_delta_t_ns: float = -1.0
     max_chi2_ndf: float = -1.0
-

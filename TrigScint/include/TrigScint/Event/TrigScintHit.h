@@ -36,12 +36,12 @@ class TrigScintHit : public ldmx::HcalHit {
   /**
    * Clear the data in the object.
    */
-  void clear(Option_t *option = "");
+  void clear(Option_t* option = "");
 
   /**
    * Print out the object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const TrigScintHit &d);
+  friend std::ostream& operator<<(std::ostream& o, const TrigScintHit& d);
 
   /**
    * Set hit bar ID.

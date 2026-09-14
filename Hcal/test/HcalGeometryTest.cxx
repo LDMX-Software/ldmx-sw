@@ -25,18 +25,18 @@ class HcalCheckPositionMap : public framework::Analyzer {
   std::string hcal_sim_hits_pass_name_{""};
 
  public:
-  HcalCheckPositionMap(const std::string &name, framework::Process &p)
+  HcalCheckPositionMap(const std::string& name, framework::Process& p)
       : framework::Analyzer(name, p) {}
   ~HcalCheckPositionMap() {}
 
-  void configure(framework::config::Parameters &parameters) override {
+  void configure(framework::config::Parameters& parameters) override {
     hcal_sim_hits_pass_name_ =
         parameters.get<std::string>("hcal_sim_hits_pass_name", "");
   }
 
   void onProcessStart() final override {}
 
-  void analyze(const framework::Event &event) final override {
+  void analyze(const framework::Event& event) final override {
     const auto sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
         "HcalSimHits", hcal_sim_hits_pass_name_);
 
@@ -55,7 +55,7 @@ DECLARE_ANALYZER(hcal::test::HcalCheckPositionMap)
  */
 TEST_CASE("Hcal Geometry test", "[Hcal][functionality]") {
   const std::string config_file{"hcal_geometry_test_config.py"};
-  char **args{nullptr};
+  char** args{nullptr};
   auto cfg{framework::config::run("ldmxcfg.Process.last_process", config_file,
                                   args, 0)};
   auto p{std::make_unique<framework::Process>(cfg)};

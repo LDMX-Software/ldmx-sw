@@ -120,7 +120,6 @@ class TrackProcessFilter(UserAction):
         """
         return TrackProcessFilter("GammaToMuPair")
 
-
     def aprime_to_fcp():
         """Configuration used to tag all A' --> fcp+ fcp-
         tracks to persist them to the event.

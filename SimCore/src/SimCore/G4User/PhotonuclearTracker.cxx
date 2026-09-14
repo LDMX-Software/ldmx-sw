@@ -21,14 +21,14 @@ PhotonuclearTracker::PhotonuclearTracker(
   instance = this;  // Set the static instance pointer
 }
 
-void PhotonuclearTracker::BeginOfEventAction(const G4Event* event) {
+void PhotonuclearTracker::beginOfEventAction(const G4Event* event) {
   // Clear all data structures for the new event
   pn_interactions_.clear();
   secondary_to_pn_index_.clear();
   descendant_ancestry_.clear();
 }
 
-void PhotonuclearTracker::EndOfEventAction(const G4Event* event) {
+void PhotonuclearTracker::endOfEventAction(const G4Event* event) {
   ldmx_log(debug) << "Event complete, recorded " << pn_interactions_.size()
                   << " PN interactions";
 }
@@ -80,7 +80,8 @@ void PhotonuclearTracker::stepping(const G4Step* step) {
   pn_interaction.setTarget(target_z, target_a, target_material);
 
   // Set interaction metadata
-  pn_interaction.setInteractionVolume(incident_track->GetVolume()->GetName());
+  G4VPhysicalVolume* volume{incident_track->GetVolume()};
+  pn_interaction.setInteractionVolume(volume ? volume->GetName() : "null");
   pn_interaction.setProcessName("photonNuclear");
 
   // Record all immediate secondaries
@@ -117,7 +118,7 @@ void PhotonuclearTracker::stepping(const G4Step* step) {
                   << secondaries->size() << " secondaries";
 }
 
-void PhotonuclearTracker::PreUserTrackingAction(const G4Track* track) {
+void PhotonuclearTracker::preUserTrackingAction(const G4Track* track) {
   // Propagate ancestry information to new tracks
   int track_id = track->GetTrackID();
   int parent_id = track->GetParentID();
@@ -134,7 +135,7 @@ void PhotonuclearTracker::PreUserTrackingAction(const G4Track* track) {
   }
 }
 
-void PhotonuclearTracker::PostUserTrackingAction(const G4Track* track) {
+void PhotonuclearTracker::postUserTrackingAction(const G4Track* track) {
   int track_id = track->GetTrackID();
 
   // Check if this track is a descendant of a PN secondary

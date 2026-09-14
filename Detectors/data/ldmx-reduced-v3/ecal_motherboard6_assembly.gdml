@@ -363,6 +363,8 @@
     <volume name="nohole_motherboard6_assembly">
       <materialref ref="FR4"/>
       <solidref ref="nohole_motherboard6_assembly-SOL"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="FR4MaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="EcalRegionVis"/>
     </volume>
   </structure>
 

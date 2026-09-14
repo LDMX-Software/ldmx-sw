@@ -17,15 +17,13 @@ setup_library(
 find_package(ONNXRuntime 1.2.0)
 
 find_package(Eigen3 CONFIG REQUIRED)
-
-# Find ACTS for track finding in ECAL
-find_package(Acts REQUIRED COMPONENTS Core)
+# Acts is set up by the top-level CMakeLists.txt
 
 setup_library(module Ecal
               dependencies ROOT::Physics
                            Framework::Framework Recon::Event Recon::Recon Tools::Tools DetDescr::DetDescr
                            ONNXRuntime::Interface Ecal::Event Tracking::Event Tracking::Tracking SimCore::Event
-                           Eigen3::Eigen ActsCore
+                           Eigen3::Eigen Acts::Core
 )
 
 setup_test(dependencies Ecal::Ecal)

@@ -1,21 +1,24 @@
 name: Apply clang tools
 on:
   pull_request:
+      types: [opened, ready_for_review]
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   clang-tools:
     runs-on: ubuntu-latest
     steps:
     - uses: extractions/setup-just@v4
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: 'recursive'
+        fetch-depth: ${{ github.ref == 'refs/heads/trunk' && 0 || 1 }}
     - name: get trunk HEAD_REF for comparison
       if: github.ref != 'refs/heads/trunk'
       run: |
@@ -24,21 +27,31 @@ jobs:
         git remote set-branches origin trunk
         git fetch --depth=1 --no-tags
     - run: just install-denv init configure
-    - name: run clang-format and clang-tidy on the changed C++ files
+    - name: format and tidy the changed C++ files
       if: github.ref != 'refs/heads/trunk'
       run: |
         just format-cpp-diff
         just tidy-cpp-diff
-    - name: run clang-format and clang-tidy on all C++ files
-      if: github.ref == 'refs/heads/trunk'
-      run: |
-        just format-cpp
-        just tidy-cpp-all
-    - name: auto-commit changes
-      if: github.ref != 'refs/heads/trunk'
-      run: |
         git config user.name 'github-actions[bot]'
         git config user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
-        git commit -m "Apply clang-format and clang-tidy" || exit 0
+        git commit -m "apply clang-format and clang-tidy" || exit 0
         git push origin HEAD:${GITHUB_HEAD_REF}
+    - name: check format and tidy on all C++ files
+      if: github.ref == 'refs/heads/trunk'
+      run: |
+        just format-cpp-all
+        just tidy-cpp-all
+        git config --global user.name clang-tidy-bot
+        git config --global user.email clang-tidy-bot@users.noreply.github.com
+        git switch -c sunday-clang-tidy
+        git add .
+        git commit -m "apply clang-format and clang-tidy over all files" || exit 0
+        git push -u origin sunday-clang-tidy
+        gh pr create \
+          --base main \
+          --head sunday-clang-tidy \
+          --title "apply clang-tidy over all files" \
+          --body "PR created by weekly clang-tidy, it is now free to be modified/closed/merged.\n\nModifications may be necessary since clang-tidy can sometimes break compilation during its auto-fix attempt."
+      env:
+        GH_TOKEN: ${{ github.token }}

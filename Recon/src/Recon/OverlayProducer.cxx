@@ -2,7 +2,7 @@
 
 namespace recon {
 
-void OverlayProducer::configure(framework::config::Parameters &parameters) {
+void OverlayProducer::configure(framework::config::Parameters& parameters) {
   params_ = parameters;
 
   // name of file containing events to be overlaid, and a list of collections to
@@ -38,17 +38,17 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
                   << "\n\t sim pass name = " << sim_passname_
                   << "\n\t overlay pass name = " << overlay_passname_;
   ldmx_log(debug) << "\n\t overlayCaloHitCollections = ";
-  for (const auto &coll : calo_collections_) {
+  for (const auto& coll : calo_collections_) {
     ldmx_log(debug) << coll << "; ";
   }
 
   ldmx_log(debug) << "\n\t overlayTrackerHitCollections = ";
-  for (const std::string &coll : tracker_collections_) {
+  for (const std::string& coll : tracker_collections_) {
     ldmx_log(debug) << coll << "; ";
   }
 
   ldmx_log(debug) << "\n\t overlayParticleCollections = ";
-  for (const std::string &coll : particle_collections_) {
+  for (const std::string& coll : particle_collections_) {
     ldmx_log(debug) << coll << "; ";
   }
 
@@ -78,9 +78,9 @@ void OverlayProducer::configure(framework::config::Parameters &parameters) {
   return;
 }  // end configure()
 
-void OverlayProducer::onNewRun(const ldmx::RunHeader &) {
+void OverlayProducer::onNewRun(const ldmx::RunHeader&) {
   /// set up random seeds
-  const auto &rnss = getCondition<framework::RandomNumberSeedService>(
+  const auto& rnss = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   rndm_ = std::make_unique<TRandom2>(rnss.getSeed("OverlayProducer::rndm"));
   rndm_time_ =
@@ -99,7 +99,7 @@ void OverlayProducer::onNewRun(const ldmx::RunHeader &) {
                  << start_event << ").";
 }  // end onNewRun()
 
-void OverlayProducer::produce(framework::Event &event) {
+void OverlayProducer::produce(framework::Event& event) {
   // using nextEvent to loop, we need to loop over overlay events and in an
   // inner loop, loop over collections, and store them. after all pileup events
   // have been added, the vector of collections is iterated over and added to
@@ -118,7 +118,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
   // get the calo hits_ collections that we want to overlay, by looping over
   // the list of collections passed to the producer : calo_collections_
-  for (const auto &coll_name : calo_collections_) {
+  for (const auto& coll_name : calo_collections_) {
     // search for the collection name in the list of collections that
     // need contribs to be added, contrib_collections_
     bool needs_contribs_added{std::find(contrib_collections_.begin(),
@@ -136,7 +136,7 @@ void OverlayProducer::produce(framework::Event &event) {
       calo_collection_map[coll_name + out_coll_postfix_] = simhits_calo;
       // after copying, perform track ID encodings;
       // the main sample gets the event index 0 by default
-      for (auto &simhit : calo_collection_map[coll_name + out_coll_postfix_]) {
+      for (auto& simhit : calo_collection_map[coll_name + out_coll_postfix_]) {
         simhit.encodeTracks(
             [this](int id, unsigned enc, unsigned idx) {
               return encodeTrack(id, enc, idx);
@@ -154,7 +154,7 @@ void OverlayProducer::produce(framework::Event &event) {
     // might need the simhits in the hit map.
     if (needs_contribs_added) {
       ldmx_log(trace) << "Collection " << coll_name << " needs contribs added";
-      for (const ldmx::SimCalorimeterHit &simhit : simhits_calo) {
+      for (const ldmx::SimCalorimeterHit& simhit : simhits_calo) {
         ldmx_log(trace) << simhit;
         // this copies the hit, its ID and its coordinates directly
         hit_map[coll_name + out_coll_postfix_][simhit.getID()] = simhit;
@@ -173,12 +173,12 @@ void OverlayProducer::produce(framework::Event &event) {
 
   // get the SimTrackerHit collections that we want to overlay, by looping
   // over the list of collections passed to the producer : tracker_collections_
-  for (const auto &coll_name : tracker_collections_) {
+  for (const auto& coll_name : tracker_collections_) {
     auto simhits_tracker =
         event.getCollection<ldmx::SimTrackerHit>(coll_name, sim_passname_);
     tracker_collection_map[coll_name + out_coll_postfix_] = simhits_tracker;
     // after copying, perform track ID encoding
-    for (auto &simhit : tracker_collection_map[coll_name + out_coll_postfix_]) {
+    for (auto& simhit : tracker_collection_map[coll_name + out_coll_postfix_]) {
       int encoded_track_id =
           encodeTrack(simhit.getTrackID(), track_id_encoding_, (unsigned)0);
       simhit.setTrackID(encoded_track_id);
@@ -191,7 +191,7 @@ void OverlayProducer::produce(framework::Event &event) {
     ldmx_log(debug) << "in loop: start of collection " << coll_name
                     << "in loop: printing current sim event: ";
 
-    for (const ldmx::SimTrackerHit &simhit : simhits_tracker) {
+    for (const ldmx::SimTrackerHit& simhit : simhits_tracker) {
       ldmx_log(trace) << simhit;
     }
   }  // over tracker collections for sim event
@@ -200,10 +200,10 @@ void OverlayProducer::produce(framework::Event &event) {
 
   // get the SimParticle collections that we want to overlay, by looping
   // over the list of collections passed to the producer : particle_collections_
-  for (const auto &coll_name : particle_collections_) {
+  for (const auto& coll_name : particle_collections_) {
     auto sim_particles =
         event.getMap<int, ldmx::SimParticle>(coll_name, sim_passname_);
-    auto &output_map = particle_collection_map[coll_name + out_coll_postfix_];
+    auto& output_map = particle_collection_map[coll_name + out_coll_postfix_];
 
     ldmx_log(debug) << "in loop: size of sim particles map " << coll_name
                     << " is " << sim_particles.size();
@@ -213,7 +213,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
     // need to copy SimParticles individually because of std::map key
     // immutability
-    for (auto &[track_id, particle] : sim_particles) {
+    for (auto& [track_id, particle] : sim_particles) {
       int encoded_track_id =
           encodeTrack(track_id, track_id_encoding_, (unsigned)0);
       output_map[encoded_track_id] = particle;
@@ -323,7 +323,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
         ldmx_log(trace) << "in loop: printing overlay event: ";
 
-        for (ldmx::SimCalorimeterHit &overlay_hit : overlay_hits) {
+        for (ldmx::SimCalorimeterHit& overlay_hit : overlay_hits) {
           ldmx_log(trace) << overlay_hit;
 
           // update relevant parameters with overlay modifications
@@ -340,7 +340,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
           if (needs_contribs_added) {  // special treatment for (for now only)
                                        // ecal
-            auto &this_coll_hit_map{
+            auto& this_coll_hit_map{
                 hit_map[calo_collections_[i_coll] + out_coll_postfix_]};
             int overlay_hit_id = overlay_hit.getID();
             if (this_coll_hit_map.find(overlay_hit_id) ==
@@ -349,7 +349,7 @@ void OverlayProducer::produce(framework::Event &event) {
               ldmx_log(trace)
                   << "No existing simhit found for ID " << overlay_hit_id
                   << "; copying overlay hit to output collection";
-              auto &output_hit = this_coll_hit_map[overlay_hit_id];
+              auto& output_hit = this_coll_hit_map[overlay_hit_id];
               output_hit = overlay_hit;  // copy hit
 
               // we need to do some backflips to get the contribs correct later
@@ -402,7 +402,7 @@ void OverlayProducer::produce(framework::Event &event) {
       /* ----------- now do simtracker hits_ overlay ----------- */
 
       // loop over the SimTrackerHit collections that we want to overlay
-      for (const auto &coll : tracker_collections_) {
+      for (const auto& coll : tracker_collections_) {
         auto overlay_tracker_hits{
             overlay_event_.getCollection<ldmx::SimTrackerHit>(
                 coll, overlay_passname_)};
@@ -414,7 +414,7 @@ void OverlayProducer::produce(framework::Event &event) {
 
         ldmx_log(trace) << "in loop: printing overlay event: ";
 
-        for (auto &overlay_hit : overlay_tracker_hits) {
+        for (auto& overlay_hit : overlay_tracker_hits) {
           auto overlay_time{overlay_hit.getTime() + time_offset};
           overlay_hit.setTime(overlay_time);
           auto overlay_track_id{encodeTrack(overlay_hit.getTrackID(),
@@ -435,7 +435,7 @@ void OverlayProducer::produce(framework::Event &event) {
       }  // over tracker_collections_
 
       /* ----------- finally do SimParticles overlay ----------- */
-      for (const auto &coll : particle_collections_) {
+      for (const auto& coll : particle_collections_) {
         auto overlay_particles{overlay_event_.getMap<int, ldmx::SimParticle>(
             coll, overlay_passname_)};
 
@@ -443,11 +443,11 @@ void OverlayProducer::produce(framework::Event &event) {
                         << overlay_particles.size();
 
         std::string out_coll_name_particles{coll + out_coll_postfix_};
-        auto &output_map = particle_collection_map[out_coll_name_particles];
+        auto& output_map = particle_collection_map[out_coll_name_particles];
 
         ldmx_log(trace) << "in loop: printing overlay event: ";
 
-        for (auto &[track_id, particle] : overlay_particles) {
+        for (auto& [track_id, particle] : overlay_particles) {
           int new_track_id =
               encodeTrack(track_id, track_id_encoding_, i_ev + 1);
 
@@ -476,7 +476,7 @@ void OverlayProducer::produce(framework::Event &event) {
     ldmx_log(trace) << "Hits in hit_map after overlay of "
                     << contrib_collections_[i_coll] << "Overlay :";
 
-    for (auto &map_hit :
+    for (auto& map_hit :
          hit_map[contrib_collections_[i_coll] + out_coll_postfix_]) {
       ldmx_log(trace) << map_hit.second;
 
@@ -498,31 +498,31 @@ void OverlayProducer::produce(framework::Event &event) {
   // done collecting hits_.
 
   // now we can write the calo collections to the event bus
-  for (auto &[name, coll] : calo_collection_map) {
+  for (auto& [name, coll] : calo_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
 
     ldmx_log(trace) << "List of hits_ added: ";
-    for (auto &hit : coll) {
+    for (auto& hit : coll) {
       ldmx_log(trace) << hit;
     }
     event.add(name, coll);
   }
 
   // and now for the tracker hits_
-  for (auto &[name, coll] : tracker_collection_map) {
+  for (auto& [name, coll] : tracker_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
     ldmx_log(trace) << "List of hits_ added: ";
-    for (auto &hit : coll) {
+    for (auto& hit : coll) {
       ldmx_log(trace) << hit;
     }
     event.add(name, coll);
   }
 
   // and finally for sim particles
-  for (auto &[name, coll] : particle_collection_map) {
+  for (auto& [name, coll] : particle_collection_map) {
     ldmx_log(debug) << "Writing " << name << " to event bus.";
     ldmx_log(trace) << "List of particles added: ";
-    for (auto &[track_id, particle] : coll) {
+    for (auto& [track_id, particle] : coll) {
       ldmx_log(trace) << "Track ID: " << track_id << " --- " << particle;
     }
     event.add(name, coll);

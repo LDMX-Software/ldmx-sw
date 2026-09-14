@@ -13,12 +13,12 @@ struct EventDump {
   std::vector<ldmx_int::EcalTP> ecal_tps_;
 
   EventDump() : event_(0), ecal_tps_() {}
-  bool readFromFile(FILE *file) {
+  bool readFromFile(FILE* file) {
     if (!fread(&event_, sizeof(uint64_t), 1, file)) return false;
     ldmx_int::readManyFromFile(ecal_tps_, file);
     return true;
   }
-  bool writeToFile(FILE *file) {
+  bool writeToFile(FILE* file) {
     fwrite(&event_, sizeof(uint64_t), 1, file);
     ldmx_int::writeManyToFile(ecal_tps_, file);
     return true;
@@ -27,7 +27,7 @@ struct EventDump {
 
 class DiscreteInputs {
  public:
-  DiscreteInputs(const char *fileName) : file_(fopen(fileName, "rb")) {
+  DiscreteInputs(const char* fileName) : file_(fopen(fileName, "rb")) {
     if (!file_) {
       std::cout << "ERROR: cannot read '" << fileName << "'" << std::endl;
     }
@@ -42,10 +42,10 @@ class DiscreteInputs {
            event_.ecal_tps_.size());
     return true;
   }
-  const EventDump &event() { return event_; }
+  const EventDump& event() { return event_; }
 
  private:
-  FILE *file_;
+  FILE* file_;
   EventDump event_;
 };
 

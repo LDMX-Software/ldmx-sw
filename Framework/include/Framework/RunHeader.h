@@ -77,27 +77,27 @@ class RunHeader {
   int getRunNumber() const { return run_number_; }
 
   /** @return The name of the detector used to create the events. */
-  const std::string &getDetectorName() const { return detector_name_; }
+  const std::string& getDetectorName() const { return detector_name_; }
 
   /** Set the name of the detector that was used in this run */
-  void setDetectorName(const std::string &det) { detector_name_ = det; }
+  void setDetectorName(const std::string& det) { detector_name_ = det; }
 
   /**
    * @return The git SHA-1 associated with the software tag used
    * to generate this file.
    */
-  const std::string &getSoftwareTag() const { return software_tag_; }
+  const std::string& getSoftwareTag() const { return software_tag_; }
 
   /**
    * @return The ldmx-sw version used to generate this file
    */
-  const std::string &getLdmxswVersion() const { return ldmxsw_version_; }
+  const std::string& getLdmxswVersion() const { return ldmxsw_version_; }
 
   /** @return A short description of the run. */
-  const std::string &getDescription() const { return description_; }
+  const std::string& getDescription() const { return description_; }
 
   /** Set the description of this run */
-  void setDescription(const std::string &des) { description_ = des; }
+  void setDescription(const std::string& des) { description_ = des; }
 
   /**
    * Get the start time of the run in seconds since epoch.
@@ -154,12 +154,12 @@ class RunHeader {
    * @param name The name of the parameter.
    * @return The parameter value.
    */
-  int getIntParameter(const std::string &name) const {
+  int getIntParameter(const std::string& name) const {
     return int_parameters_.at(name);
   }
 
   /// Get a const reference to all int parameters
-  const std::map<std::string, int> &getIntParameters() const {
+  const std::map<std::string, int>& getIntParameters() const {
     return int_parameters_;
   }
 
@@ -169,7 +169,7 @@ class RunHeader {
    * @param name The name of the parameter.
    * @param value The value of the parameter.
    */
-  void setIntParameter(const std::string &name, int value) {
+  void setIntParameter(const std::string& name, int value) {
     int_parameters_[name] = value;
   }
 
@@ -179,12 +179,12 @@ class RunHeader {
    * @param name The name of the parameter.
    * @return value The parameter value.
    */
-  float getFloatParameter(const std::string &name) const {
+  float getFloatParameter(const std::string& name) const {
     return float_parameters_.at(name);
   }
 
   /// Get a const reference to all float parameters
-  const std::map<std::string, float> &getFloatParameters() const {
+  const std::map<std::string, float>& getFloatParameters() const {
     return float_parameters_;
   }
 
@@ -194,7 +194,7 @@ class RunHeader {
    * @param name The name of the parameter.
    * @param value The parameter value.
    */
-  void setFloatParameter(const std::string &name, float value) {
+  void setFloatParameter(const std::string& name, float value) {
     float_parameters_[name] = value;
   }
 
@@ -204,12 +204,12 @@ class RunHeader {
    * @param name The name of the parameter.
    * @return value The parameter value.
    */
-  std::string getStringParameter(const std::string &name) const {
+  std::string getStringParameter(const std::string& name) const {
     return string_parameters_.at(name);
   }
 
   /// Get a const reference to all string parameters
-  const std::map<std::string, std::string> &getStringParameters() const {
+  const std::map<std::string, std::string>& getStringParameters() const {
     return string_parameters_;
   }
 
@@ -219,7 +219,7 @@ class RunHeader {
    * @param name The name of the parameter.
    * @param value The parameter value.
    */
-  void setStringParameter(const std::string &name, std::string value) {
+  void setStringParameter(const std::string& name, std::string value) {
     string_parameters_[name] = value;
   }
 
@@ -230,7 +230,7 @@ class RunHeader {
    *
    * @param[in] s ostream to write to
    */
-  void stream(std::ostream &s) const;
+  void stream(std::ostream& s) const;
 
   /** Print a string desciption of this object. */
   void print() const;
@@ -246,7 +246,7 @@ class RunHeader {
    * @param[in] h RunHeader to write out
    * @return modified ostream
    */
-  friend std::ostream &operator<<(std::ostream &s, const ldmx::RunHeader &h) {
+  friend std::ostream& operator<<(std::ostream& s, const ldmx::RunHeader& h) {
     h.stream(s);
     return s;
   }

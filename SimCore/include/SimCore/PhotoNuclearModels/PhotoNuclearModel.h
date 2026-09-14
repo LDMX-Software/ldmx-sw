@@ -35,7 +35,7 @@ class PhotoNuclearModel {
    * @param[in] parameters python configuration
    */
   PhotoNuclearModel(const std::string& name,
-                    const framework::config::Parameters& parameters){};
+                    const framework::config::Parameters& parameters) {};
   virtual ~PhotoNuclearModel() = default;
 
   /**

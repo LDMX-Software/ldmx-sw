@@ -5,14 +5,14 @@
 
 namespace dqm {
 
-void EcalShowerFeatures::configure(framework::config::Parameters &ps) {
+void EcalShowerFeatures::configure(framework::config::Parameters& ps) {
   ecal_veto_name_ = ps.get<std::string>("ecal_veto_name");
   ecal_veto_pass_ = ps.get<std::string>("ecal_veto_pass");
 
   return;
 }
 
-void EcalShowerFeatures::analyze(const framework::Event &event) {
+void EcalShowerFeatures::analyze(const framework::Event& event) {
   auto veto{
       event.getObject<ldmx::EcalVetoResult>(ecal_veto_name_, ecal_veto_pass_)};
 
@@ -27,13 +27,13 @@ void EcalShowerFeatures::analyze(const framework::Event &event) {
   histograms_.fill("y_std", veto.getYStd());
   histograms_.fill("avg_layer_hit", veto.getAvgLayerHit());
   histograms_.fill("std_layer_hit", veto.getStdLayerHit());
-  for (const auto &energy : veto.getElectronContainmentEnergy()) {
+  for (const auto& energy : veto.getElectronContainmentEnergy()) {
     histograms_.fill("e_containment_energy", energy);
   }
-  for (const auto &energy : veto.getPhotonContainmentEnergy()) {
+  for (const auto& energy : veto.getPhotonContainmentEnergy()) {
     histograms_.fill("ph_containment_energy", energy);
   }
-  for (const auto &energy : veto.getOutsideContainmentEnergy()) {
+  for (const auto& energy : veto.getOutsideContainmentEnergy()) {
     histograms_.fill("out_containment_energy", energy);
   }
 

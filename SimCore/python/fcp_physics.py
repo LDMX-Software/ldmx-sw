@@ -4,6 +4,7 @@ This module is independent of the dark brem configuration. It handles
 gamma -> fcp+ fcp- conversion on SM photons.
 """
 
+
 class FCPPhysics:
     """Parameters for the FCP physics constructor
 
@@ -21,8 +22,8 @@ class FCPPhysics:
 
     def __init__(self):
         self.enable = False
-        self.fcp_mass = 0.       # MeV
-        self.fcp_charge = 0.1    # units of e
+        self.fcp_mass = 0.0  # MeV
+        self.fcp_charge = 0.1  # units of e
         self.fcp_pdg_id = 17
 
     def activate(self, fcp_mass, fcp_charge=0.1):

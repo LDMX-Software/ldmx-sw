@@ -10,7 +10,7 @@ class TrackerDigiDQM : public framework::Analyzer {
   /**
    */
   TrackerDigiDQM(const std::string& name, framework::Process& process)
-      : framework::Analyzer(name, process){};
+      : framework::Analyzer(name, process) {};
 
   /// Destructor
   ~TrackerDigiDQM() = default;

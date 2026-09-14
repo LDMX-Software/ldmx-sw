@@ -23,17 +23,17 @@ class TrigScintTrack {
   /**
    * Class constructor.
    */
-  TrigScintTrack(){};
+  TrigScintTrack() {};
 
   /**
    * Class destructor.
    */
-  virtual ~TrigScintTrack(){};
+  virtual ~TrigScintTrack() {};
 
   /**
    * Print a description of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const TrigScintTrack &d);
+  friend std::ostream& operator<<(std::ostream& o, const TrigScintTrack& d);
 
   /**
    * Reset the TrigScintTrack object.
@@ -246,7 +246,7 @@ class TrigScintTrack {
   /**
    * Sort by track residual
    */
-  bool operator<(const TrigScintTrack &rhs) const {
+  bool operator<(const TrigScintTrack& rhs) const {
     return this->getResidual() < rhs.getResidual();
   }
 

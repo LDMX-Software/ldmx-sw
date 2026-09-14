@@ -10,7 +10,7 @@
 
 namespace recon {
 
-void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
+void TrackDeDxMassEstimator::configure(framework::config::Parameters& ps) {
   fit_res_c_ = ps.get<double>("fit_res_c");
   fit_res_k_ = ps.get<double>("fit_res_k");
   input_pass_name_ = ps.get<std::string>("input_pass_name");
@@ -20,7 +20,7 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters &ps) {
                  << track_collection_;
 }
 
-void TrackDeDxMassEstimator::produce(framework::Event &event) {
+void TrackDeDxMassEstimator::produce(framework::Event& event) {
   std::vector<ldmx::TrackDeDxMassEstimate> mass_estimates;
 
   if (!event.exists(track_collection_, input_pass_name_)) {

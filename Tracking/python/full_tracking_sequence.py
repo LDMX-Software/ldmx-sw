@@ -100,6 +100,9 @@ def full_tracking_sequence(
 
     TrackGeo.get_instance().set_detector(detector)
 
+    # ACTS x 1 mm inside tagger volume upstream edge (v16: 2.5 mm further out)
+    tagger_start_x = -619.5 if "v16" in detector else -617.0
+
     # ------------------------------------------------------------------
     # Truth seeder
     # ------------------------------------------------------------------
@@ -164,7 +167,7 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("TaggerRawSiStripHits"),
+            out_raw_collection=tagged("TaggerSimSiStripHits"),
         )
 
         digi_recoil = tracking.DigitizationProcessor(
@@ -178,13 +181,13 @@ def full_tracking_sequence(
             depletion_voltage=70.0,
             noise_electrons=1000.0,
             threshold_electrons=3000.0,
-            out_raw_collection=tagged("RecoilRawSiStripHits"),
+            out_raw_collection=tagged("RecoilSimSiStripHits"),
         )
 
         fit_tagger = tracking.StripFitProcessor(
             instance_name=tagged("StripFitTagger"),
             in_collection=digi_tagger.out_raw_collection,
-            out_collection=tagged("TaggerFittedSiStripHits"),
+            out_collection=tagged("TaggerFittedHits"),
             t_scan_min_ns=-50.0,
             t_scan_max_ns=150.0,
             t_scan_step_ns=1.0,
@@ -193,7 +196,7 @@ def full_tracking_sequence(
         fit_recoil = tracking.StripFitProcessor(
             instance_name=tagged("StripFitRecoil"),
             in_collection=digi_recoil.out_raw_collection,
-            out_collection=tagged("RecoilFittedSiStripHits"),
+            out_collection=tagged("RecoilFittedHits"),
             t_scan_min_ns=-50.0,
             t_scan_max_ns=150.0,
             t_scan_step_ns=1.0,
@@ -220,9 +223,12 @@ def full_tracking_sequence(
         tagger_meas_collection = cluster_tagger.out_collection
         recoil_meas_collection = cluster_recoil.out_collection
         digi_sequence = [
-            digi_tagger,    digi_recoil,
-            fit_tagger,     fit_recoil,
-            cluster_tagger, cluster_recoil,
+            digi_tagger,
+            digi_recoil,
+            fit_tagger,
+            fit_recoil,
+            cluster_tagger,
+            cluster_recoil,
         ]
         charge_digi_processors = {
             "fit_tagger": fit_tagger,
@@ -238,6 +244,9 @@ def full_tracking_sequence(
         instance_name=tagged("SeedTagger"),
         input_hits_collection=tagger_meas_collection,
         out_seed_collection=tagged("TaggerRecoSeeds"),
+        # Perigee upstream of all tagger sensors.
+        # World boundary is at ACTS x = -650 mm.
+        perigee_location=[tagger_start_x, 0.0, 0.0],
         pmin=0.03,
         pmax=63.0,
         d0min=-36.9,
@@ -308,6 +317,7 @@ def full_tracking_sequence(
     gsf_tagger = tracking.GSFProcessor(
         instance_name=tagged("Tagger_GSF"),
         tagger_tracking=True,
+        tagger_start_x=tagger_start_x,
         track_collection=greedy_solver_tagger.out_trk_collection,
         meas_collection=tagger_meas_collection,
         out_trk_collection=tagged("GSFTaggerTracks"),
@@ -537,8 +547,9 @@ def recoil_sequence(
         full.dqm_digi_recoil,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 
@@ -594,8 +605,9 @@ def tagger_sequence(
         full.dqm_digi_tagger,
     ]
 
-    processors = {k: v for k, v in vars(full).items()
-                  if k not in ("sequence", "dqm_sequence")}
+    processors = {
+        k: v for k, v in vars(full).items() if k not in ("sequence", "dqm_sequence")
+    }
     return TrackingSequence(sequence, dqm_sequence, **processors)
 
 

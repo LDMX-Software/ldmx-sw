@@ -24,11 +24,11 @@ DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy,
   min_cluster_hit_mult_ = minClusterHitMult;
 }
 
-std::vector<std::vector<const ldmx::CalorimeterHit *> >
+std::vector<std::vector<const ldmx::CalorimeterHit*> >
 DBScanClusterBuilder::runDBSCAN(
-    const std::vector<const ldmx::CalorimeterHit *> &hits_) {
+    const std::vector<const ldmx::CalorimeterHit*>& hits_) {
   const int n = hits_.size();
-  std::vector<std::vector<const ldmx::CalorimeterHit *> > idx_clusters;
+  std::vector<std::vector<const ldmx::CalorimeterHit*> > idx_clusters;
   std::vector<unsigned int> tried;
   tried.reserve(n);
   std::vector<unsigned int> used;
@@ -49,7 +49,7 @@ DBScanClusterBuilder::runDBSCAN(
       }
     }
     if (n_nearby >= min_cluster_hit_mult_) {
-      std::vector<const ldmx::CalorimeterHit *> idx_cluster{
+      std::vector<const ldmx::CalorimeterHit*> idx_cluster{
           hits_[i]};  // start a cluster
       used.push_back(i);
       ldmx_log(debug) << "- starting a cluster from " << i;
@@ -80,7 +80,7 @@ DBScanClusterBuilder::runDBSCAN(
 }
 
 void DBScanClusterBuilder::fillClusterInfoFromHits(
-    ldmx::CaloCluster *cl, std::vector<const ldmx::CalorimeterHit *> hits_,
+    ldmx::CaloCluster* cl, std::vector<const ldmx::CalorimeterHit*> hits_,
     bool logEnergyWeight, bool saveHitContribs) {
   float e(0), x(0), y(0), z(0), xx(0), yy(0), zz(0), n(0);
   float w = 1;  // weight
@@ -89,9 +89,9 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
   std::vector<float> raw_yvals{};
   std::vector<float> raw_zvals{};
   std::vector<float> raw_evals{};
-  std::vector<const ldmx::CalorimeterHit *> constituent_hits;
+  std::vector<const ldmx::CalorimeterHit*> constituent_hits;
 
-  for (const ldmx::CalorimeterHit *h : hits_) {
+  for (const ldmx::CalorimeterHit* h : hits_) {
     if (h->getEnergy() < min_hit_energy_) continue;
     if (logEnergyWeight) w = log(h->getEnergy()) - log(min_hit_energy_);
     e += h->getEnergy();

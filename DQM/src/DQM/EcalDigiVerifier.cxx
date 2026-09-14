@@ -3,7 +3,7 @@
 
 namespace dqm {
 
-void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
+void EcalDigiVerifier::configure(framework::config::Parameters& ps) {
   ecal_sim_hit_coll_ = ps.get<std::string>("ecal_sim_hit_coll");
   ecal_sim_hit_pass_ = ps.get<std::string>("ecal_sim_hit_pass");
   ecal_rec_hit_coll_ = ps.get<std::string>("ecal_rec_hit_coll");
@@ -15,7 +15,7 @@ void EcalDigiVerifier::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void EcalDigiVerifier::analyze(const framework::Event &event) {
+void EcalDigiVerifier::analyze(const framework::Event& event) {
   // get truth information sorted into an ID based map
   std::vector<ldmx::SimCalorimeterHit> ecal_sim_hits =
       event.getCollection<ldmx::SimCalorimeterHit>(ecal_sim_hit_coll_,
@@ -23,8 +23,8 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
 
   // sort sim hits by ID
   std::sort(ecal_sim_hits.begin(), ecal_sim_hits.end(),
-            [](const ldmx::SimCalorimeterHit &lhs,
-               const ldmx::SimCalorimeterHit &rhs) {
+            [](const ldmx::SimCalorimeterHit& lhs,
+               const ldmx::SimCalorimeterHit& rhs) {
               return lhs.getID() < rhs.getID();
             });
 
@@ -33,7 +33,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
 
   // sort rec hits by ID
   std::sort(ecal_rec_hits.begin(), ecal_rec_hits.end(),
-            [](const ldmx::EcalHit &lhs, const ldmx::EcalHit &rhs) {
+            [](const ldmx::EcalHit& lhs, const ldmx::EcalHit& rhs) {
               return lhs.getID() < rhs.getID();
             });
 
@@ -49,7 +49,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   std::set<int> my_costum_mod_ids_set;
 
   // Loop on the ecal rechits
-  for (const ldmx::EcalHit &rec_hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& rec_hit : ecal_rec_hits) {
     num_rec_hits++;
 
     // Building up an ID that has layer + module information
@@ -82,7 +82,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
     // get information for this hit
     int num_sim_hits = 0;
     double total_sim_energy_dep = 0.;
-    for (const ldmx::SimCalorimeterHit &sim_hit : ecal_sim_hits) {
+    for (const ldmx::SimCalorimeterHit& sim_hit : ecal_sim_hits) {
       if (raw_id == sim_hit.getID()) {
         num_sim_hits += sim_hit.getNumberOfContribs();
         total_sim_energy_dep += sim_hit.getEdep();
@@ -116,7 +116,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   }  // end loop on rec hits
 
   std::map<int, int> module_hits;
-  for (const int &my_costum_mod_id : my_costum_mod_ids) {
+  for (const int& my_costum_mod_id : my_costum_mod_ids) {
     module_hits[my_costum_mod_id]++;
   }
 
@@ -124,7 +124,7 @@ void EcalDigiVerifier::analyze(const framework::Event &event) {
   // this would be nice if not hardcoded...
   num_mod_with_0hits = num_layers_ * 7 - my_costum_mod_ids_set.size();
 
-  for (const auto &module_hit : module_hits) {
+  for (const auto& module_hit : module_hits) {
     if (module_hit.second == 1) {
       num_mod_with_1hits++;
     } else if (module_hit.second == 2) {

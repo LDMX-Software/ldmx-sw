@@ -3,11 +3,11 @@
 
 namespace trigscint {
 
-TruthHitProducer::TruthHitProducer(const std::string &name,
-                                   framework::Process &process)
+TruthHitProducer::TruthHitProducer(const std::string& name,
+                                   framework::Process& process)
     : Producer(name, process) {}
 
-void TruthHitProducer::configure(framework::config::Parameters &parameters) {
+void TruthHitProducer::configure(framework::config::Parameters& parameters) {
   input_collection_ = parameters.getParameter<std::string>("input_collection");
   input_pass_name_ = parameters.getParameter<std::string>("input_pass_name");
   output_collection_ =
@@ -22,7 +22,7 @@ void TruthHitProducer::configure(framework::config::Parameters &parameters) {
                  << "\nOutput collection:    " << output_collection_;
 }
 
-void TruthHitProducer::produce(framework::Event &event) {
+void TruthHitProducer::produce(framework::Event& event) {
   // Check if the collection exists.  If not, don't bother processing the event.
   if (!event.exists(input_collection_, input_pass_name_)) {
     ldmx_log(error) << "No input collection called " << input_collection_ << "_"
@@ -44,7 +44,7 @@ void TruthHitProducer::produce(framework::Event &event) {
   std::vector<ldmx::SimCalorimeterHit> truth_beam_electrons;
 
   // TODO: Convert this to using a for_each and lambda
-  for (const auto &sim_hit : sim_hits) {
+  for (const auto& sim_hit : sim_hits) {
     bool keep{false};
     // check if hit is from beam electron and, if so, add to output collection
     for (int i = 0; i < sim_hit.getNumberOfContribs(); i++) {

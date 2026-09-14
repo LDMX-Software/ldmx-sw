@@ -9,11 +9,11 @@
 
 namespace hcal {
 
-HcalVetoProcessor::HcalVetoProcessor(const std::string &name,
-                                     framework::Process &process)
+HcalVetoProcessor::HcalVetoProcessor(const std::string& name,
+                                     framework::Process& process)
     : Producer(name, process) {}
 
-void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
+void HcalVetoProcessor::configure(framework::config::Parameters& parameters) {
   total_pe_threshold_ = parameters.get<double>("pe_threshold");
   max_time_ = parameters.get<double>("max_time");
   output_coll_name_ = parameters.get<std::string>("output_coll_name");
@@ -56,7 +56,7 @@ void HcalVetoProcessor::configure(framework::config::Parameters &parameters) {
   inverse_skim_ = parameters.get<bool>("inverse_skim");
 }
 
-void HcalVetoProcessor::produce(framework::Event &event) {
+void HcalVetoProcessor::produce(framework::Event& event) {
   // Get the collection of sim particles from the event
   const std::vector<ldmx::HcalHit> hcal_rec_hits =
       event.getCollection<ldmx::HcalHit>(input_hit_coll_name_,
@@ -98,8 +98,8 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   int num_valid_hits{0};
   int num_non_recoil_hits{0};
 
-  const ldmx::HcalHit *max_pe_hit{&default_max_hit_};
-  for (const ldmx::HcalHit &hcal_hit : hcal_rec_hits) {
+  const ldmx::HcalHit* max_pe_hit{&default_max_hit_};
+  for (const ldmx::HcalHit& hcal_hit : hcal_rec_hits) {
     num_total_hits++;
     // If the hit time is outside the readout window, don't consider it.
     if (hcal_hit.getTime() >= max_time_) {
@@ -198,9 +198,9 @@ void HcalVetoProcessor::produce(framework::Event &event) {
   event.add(output_coll_name_, result);
 }
 
-std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
+std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks& tracks,
                                                 ldmx::TrackStateType ts_type,
-                                                const std::string &ts_title) {
+                                                const std::string& ts_title) {
   // Vector to hold the new track state variables
   std::vector<float> new_track_states;
 
@@ -208,7 +208,7 @@ std::vector<float> HcalVetoProcessor::trackProp(const ldmx::Tracks &tracks,
   if (tracks.empty()) return new_track_states;
 
   // Otherwise loop on the tracks
-  for (auto &track : tracks) {
+  for (auto& track : tracks) {
     // Get track state for ts_type
     auto trk_ts = track.getTrackState(ts_type);
     // Continue if there's no value

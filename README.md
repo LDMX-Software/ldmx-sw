@@ -57,7 +57,7 @@ And then you can run ldmx-sw with a configuration script of your choice.
 denv fire my-config.py
 ```
 More detail on configuration scripts and analyzing the output files
-is given in the first section of the [online manual](ldmx-software.github.io).
+is given in the first section of the [online manual](https://ldmx-software.github.io).
 
 ### Developing
 For development, we use a few more tools to help track our changes and share commands

@@ -1,3 +1,5 @@
+# use format defined in .clang-format
+FormatStyle: "file"
 # comma-separated list of globs to enable or disable (`-` prefix)
 # this one disables all and then enables readability-identifier-naming
 Checks: "-*,readability-identifier-naming"

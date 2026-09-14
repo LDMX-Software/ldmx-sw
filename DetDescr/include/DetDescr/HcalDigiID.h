@@ -126,7 +126,7 @@ class HcalDigiID : public HcalAbstractID {
    * @return[out] An ostream object with the string representation of
    *    HcalDigiID inserted.
    */
-  friend std::ostream &operator<<(std::ostream &o, const ldmx::HcalDigiID &id);
+  friend std::ostream& operator<<(std::ostream& o, const ldmx::HcalDigiID& id);
 
   static void createInterpreters();
 };

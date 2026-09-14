@@ -29,7 +29,7 @@ class LinearTrackFinder : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  LinearTrackFinder(const std::string &name, framework::Process &process);
+  LinearTrackFinder(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~LinearTrackFinder() = default;
@@ -43,14 +43,14 @@ class LinearTrackFinder : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   int n_events_{0};
@@ -68,12 +68,12 @@ class LinearTrackFinder : public TrackingGeometryUser {
 
   // Find tracks from seeds by taking the seeds with lowest chi2 for each RecHit
   std::vector<ldmx::StraightTrack> findTracks(
-      const std::vector<ldmx::StraightTrack> &track_seeds);
+      const std::vector<ldmx::StraightTrack>& track_seeds);
 
   // Helper function to check if a measurement's position is already used
   bool isPositionUsed(
-      const ldmx::Measurement &measurement,
-      const std::set<std::tuple<float, float, float>> &used_sensor_positions);
+      const ldmx::Measurement& measurement,
+      const std::set<std::tuple<float, float, float>>& used_sensor_positions);
 
 };  // LinearTrackFinder
 
