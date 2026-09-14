@@ -7,6 +7,8 @@
 
 #include "TrigScint/QIEAnalyzer.h"
 
+#include <algorithm>
+
 namespace trigscint {
 
 QIEAnalyzer::QIEAnalyzer(const std::string& name, framework::Process& process)
@@ -18,6 +20,9 @@ void QIEAnalyzer::configure(framework::config::Parameters& parameters) {
   peds_ = parameters.get<std::vector<double> >("pedestals");
   gain_ = parameters.get<std::vector<double> >("gain");
   start_sample_ = parameters.get<int>("start_sample");
+  // bounded by the h_out_ array size
+  n_ev_displays_ =
+      std::clamp(parameters.get<int>("n_event_displays"), 0, n_ev_);
 
   ldmx_log(trace) << "In configure(), got parameters "
                   << "\n\t inputCollection = " << input_col_
@@ -60,19 +65,24 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
                       << ", got charge[" << i_t << "] = " << q.at(i_t);
       if (ev_nb < n_ev_ && bar < n_channels_) {
         // stick within the predefined histogram array
+        const bool display{ev_nb < n_ev_displays_};
         //		  h_out_[evNb][bar]->Fill(iT+start_sample_, q.at(iT));
-        h_out_[ev_nb][bar]->SetBinContent(i_t + start_sample_, q.at(i_t));
-        h_out_[ev_nb][bar]->SetBinError(i_t + start_sample_,
-                                        fabs(q_err.at(i_t)));
+        if (display) {
+          h_out_[ev_nb][bar]->SetBinContent(i_t + start_sample_, q.at(i_t));
+          h_out_[ev_nb][bar]->SetBinError(i_t + start_sample_,
+                                          fabs(q_err.at(i_t)));
+        }
         if (tdc.at(i_t) < 63) {
           ldmx_log(info) << "Found fired TDC = " << tdc.at(i_t)
                          << " at time sample " << i_t << " in channel " << bar
                          << " and event " << ev_nb;
           // for some reason, the style settings are washed out later...
-          h_out_[ev_nb][bar]->SetLineColor(kRed + 1);
-          h_out_[ev_nb][bar]->SetMarkerColor(
-              h_out_[ev_nb][bar]->GetLineColor());
-          h_out_[ev_nb][bar]->SetMarkerSize(0.2);
+          if (display) {
+            h_out_[ev_nb][bar]->SetLineColor(kRed + 1);
+            h_out_[ev_nb][bar]->SetMarkerColor(
+                h_out_[ev_nb][bar]->GetLineColor());
+            h_out_[ev_nb][bar]->SetMarkerSize(0.2);
+          }
 
           if (i_t + start_sample_ > 0)
             h_tdc_fire_chan_vs_event_->Fill(bar, ev_nb, i_t + start_sample_);
@@ -192,7 +202,7 @@ void QIEAnalyzer::onProcessStart() {
         qmax / 10);
   }
 
-  for (int i_e = 0; i_e < n_ev_; i_e++) {
+  for (int i_e = 0; i_e < n_ev_displays_; i_e++) {
     for (int i_b = 0; i_b < n_channels_; i_b++) {
       h_out_[i_e][i_b] =
           new TH1F(Form("hCharge_chan%i_ev%i", i_b, i_e),

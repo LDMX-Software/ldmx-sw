@@ -48,6 +48,8 @@ class QIEAnalyzer : public framework::Analyzer {
 
   // plotting stuff
   int n_ev_{200};
+  // events with per-channel charge histograms, at most n_ev_
+  int n_ev_displays_{200};
   int n_channels_{24};
   // int nTrkMax{100};
 

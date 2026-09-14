@@ -421,6 +421,8 @@ class QIEAnalyzer(Processor):
     input_collection: str = "QIEsamplesPad1"
     input_pass_name: str = ""
     start_sample: int = 2
+    # per-channel charge histograms for the first N events, at most 200
+    n_event_displays: int = 200
     gain: list[float] = [2.0e6] * 16
     pedestals: list[float] = [
         -4.6,
