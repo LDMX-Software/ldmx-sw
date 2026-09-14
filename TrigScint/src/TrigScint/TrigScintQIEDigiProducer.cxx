@@ -1,6 +1,7 @@
 #include "TrigScint/TrigScintQIEDigiProducer.h"
 
 #include <iostream>
+#include <map>
 
 #include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
@@ -64,6 +65,13 @@ void TrigScintQIEDigiProducer::configure(
 }
 
 void TrigScintQIEDigiProducer::produce(framework::Event& event) {
+  // no sim hits, e.g. real data
+  if (!event.exists(input_collection_, input_pass_name_)) {
+    ldmx_log(warn) << "No input collection " << input_collection_ << "_"
+                   << input_pass_name_ << " found; skipping";
+    return;
+  }
+
   // Need to handle seeding on the first event
   if (random_.get() == nullptr) {
     const auto& rseed = getCondition<framework::RandomNumberSeedService>(
@@ -102,8 +110,16 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
   // loop over sim hits and aggregate energy depositions for each detID
   const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_collection_, input_pass_name_)};
-  const auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      sim_particles_coll_name_, sim_particles_passname_)};
+  const bool has_sim_particles{
+      event.exists(sim_particles_coll_name_, sim_particles_passname_)};
+  if (!has_sim_particles) {
+    ldmx_log(debug) << "No " << sim_particles_coll_name_
+                    << " found; beamEfrac set to -1";
+  }
+  const auto particle_map{
+      has_sim_particles ? event.getMap<int, ldmx::SimParticle>(
+                              sim_particles_coll_name_, sim_particles_passname_)
+                        : std::map<int, ldmx::SimParticle>{}};
 
   for (const auto& sim_hit : sim_hits) {
     ldmx::TrigScintID id(sim_hit.getID());
@@ -172,9 +188,11 @@ void TrigScintQIEDigiProducer::produce(framework::Event& event) {
       qie_info.setTDC(smq_->outTdc(ex[bar_id]));
       qie_info.setCID(smq_->capId(ex[bar_id]));
 
-      // sim truth; dark-current-only bars get 0
-      qie_info.setBeamEfrac(
-          true_edep[bar_id] > 0 ? beam_edep[bar_id] / true_edep[bar_id] : 0.);
+      // sim truth; dark-current-only bars get 0, no SimParticles get -1
+      if (has_sim_particles) {
+        qie_info.setBeamEfrac(
+            true_edep[bar_id] > 0 ? beam_edep[bar_id] / true_edep[bar_id] : 0.);
+      }
 
       q_digis.push_back(qie_info);
     }
