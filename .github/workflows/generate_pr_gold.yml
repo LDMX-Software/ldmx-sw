@@ -62,7 +62,12 @@ jobs:
         repository: LDMX-Software/ci-data
         path: ci-data
         token: ${{ secrets.CI_DATA_PAT }}
-        
+        # skip the ~1 GB ESA VST raw data unless running that sample
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          /*
+          ${{ matrix.sample != 'esa_vst' && '!/esa_vst/*.dat.xz' || '' }}
+
     - name: Download ldmx-sw Package
       uses: actions/download-artifact@v8
       with:
