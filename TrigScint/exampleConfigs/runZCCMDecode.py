@@ -3,7 +3,7 @@
 from LDMX.Framework import ldmxcfg
 import sys
 
-p = ldmxcfg.Process('unpack')
+p = ldmxcfg.Process("unpack")
 
 # event limit (script passes max events elsewhere; keeping your original behavior)
 n_ev = 400000
@@ -26,9 +26,12 @@ from LDMX.TrigScint.zccm_format import ZCCMDecoder
 # IMPORTANT: ZCCMDecoder supports channel_map_file, not module_map_file
 dec = ZCCMDecoder(channel_map_file=map_file)
 import os
+
 module_map_file = os.path.join(
     os.path.dirname(map_file),
-    os.path.basename(map_file).replace("channelMap", "moduleMap").replace("ChannelMap", "ModuleMap")
+    os.path.basename(map_file)
+    .replace("channelMap", "moduleMap")
+    .replace("ChannelMap", "ModuleMap"),
 )
 dec.module_map_file = module_map_file
 

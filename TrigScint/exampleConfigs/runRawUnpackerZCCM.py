@@ -2,7 +2,7 @@ from LDMX.Framework import ldmxcfg
 from LDMX.Packing import rawio
 import sys
 
-p = ldmxcfg.Process('raw')
+p = ldmxcfg.Process("raw")
 
 RAWfileName = sys.argv[1]
 p.output_files = [sys.argv[2]]
@@ -17,7 +17,7 @@ p.sequence = [
         output_name="ZCCMoutput",
         frame_offset=0,
         subsystem=2,
-        contributor=1,   
+        contributor=1,
     )
 ]
 
