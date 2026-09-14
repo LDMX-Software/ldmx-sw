@@ -133,9 +133,13 @@ class Process {
    * Run through the processors and let them know
    * that we are starting a new run.
    *
+   * The header is written to the output file once the producers have
+   * filled it, so a killed job still leaves it behind.
+   *
    * @param[in] header RunHeader for the new run
+   * @param[in] out output file to write the header to, if any
    */
-  void newRun(ldmx::RunHeader& header);
+  void newRun(ldmx::RunHeader& header, EventFile* out);
 
   /**
    * File is being opened
