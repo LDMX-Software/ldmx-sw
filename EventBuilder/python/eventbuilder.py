@@ -15,21 +15,26 @@ class EventBuilder(ldmxcfg.Producer):
         Enable verbose parsing output.
     coherence_window_ns : int
         Coherence window in nanoseconds for collecting fragments from the same physics event.
+    min_subsystems : int
+        Minimum number of distinct subsystems required within the coherence window
+        to assemble an event. Default 2 (e.g. Run 182 has only ts + tracker); set
+        higher for runs that read out more subsystems.
     instance_name : str
         Instance name given to the Producer.
     """
 
     def __init__(self, dat_file=None, output_name='PhysicsEventData', verbose_parse=True,
-                 coherence_window_ns=5000000., instance_name='EventBuilder'):
+                 coherence_window_ns=5000000., min_subsystems=2, instance_name='EventBuilder'):
         super().__init__(instance_name, 'eventbuilder::EventBuilder', 'EventBuilder')
         self.dat_file = dat_file or ''
         self.output_name = output_name
         self.verbose_parse = verbose_parse
         self.coherence_window_ns = coherence_window_ns
+        self.min_subsystems = min_subsystems
 
 
 def from_dat_file(dat_file, output_name='PhysicsEventData', verbose_parse=True,
-                  coherence_window_ns=5000000., instance_name=None):
+                  coherence_window_ns=5000000., min_subsystems=2, instance_name=None):
     """Convenience factory to create a configured Builder.
 
     Example
@@ -42,4 +47,4 @@ def from_dat_file(dat_file, output_name='PhysicsEventData', verbose_parse=True,
         instance_name = f'EventBuilder_{os.path.basename(dat_file)}'
     return EventBuilder(dat_file=dat_file, output_name=output_name,
                         verbose_parse=verbose_parse, coherence_window_ns=coherence_window_ns,
-                        instance_name=instance_name)
+                        min_subsystems=min_subsystems, instance_name=instance_name)

@@ -39,7 +39,7 @@ public:
         return m_event_reference_time;
     }
 
-    bool try_build_event(long long coherence_window_ns, std::vector<DataFragment>& built_fragments) {
+    bool try_build_event(long long coherence_window_ns, int min_subsystems, std::vector<DataFragment>& built_fragments) {
         std::lock_guard<std::mutex> lock(m_mutex);
         if (m_fragments.empty()) return false;
 
@@ -61,9 +61,9 @@ public:
             }
         }
 
-        // Assemble if we have at least 3 subsystems (standard LDMX requirement)
-        // This ensures we don't create partial/incomplete events #FIXME - make this configurable or more flexible in the future
-        if (subsystems_found.size() < 3) {
+        // Require at least min_subsystems distinct subsystems in the window before
+        // assembling, so we don't emit partial events. Configurable.
+        if (subsystems_found.size() < static_cast<size_t>(min_subsystems)) {
             return false;
         }
 

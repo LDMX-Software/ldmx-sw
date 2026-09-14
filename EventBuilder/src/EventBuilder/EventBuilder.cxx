@@ -72,10 +72,14 @@ void EventBuilder::configure(framework::config::Parameters &ps) {
   if (ps.exists("coherence_window_ns")) {
     m_coherence_window_ns = ps.get<double>("coherence_window_ns");
   }
-  
+  if (ps.exists("min_subsystems")) {
+    m_min_subsystems = ps.get<int>("min_subsystems");
+  }
+
   ldmx_log(info) << "configure(): dat_file='" << m_input_file << "' output_name='" << m_output_name
                  << "' verbose_parse=" << (m_verbose_parse?"true":"false")
-                 << " coherence_window_ns=" << m_coherence_window_ns;
+                 << " coherence_window_ns=" << m_coherence_window_ns
+                 << " min_subsystems=" << m_min_subsystems;
   
   if (!m_input_file.empty()) {
     ldmx_log(info) << "configure(): opening file '" << m_input_file << "'";
@@ -215,7 +219,7 @@ void EventBuilder::produce(framework::Event &event) {
                                      fragment_ts > buffer_ref_time + m_coherence_window_ns)) {
             // This fragment is outside the current window - try to build the previous event
             std::vector<DataFragment> assembled_event_fragments;
-            if (m_event_buffer.try_build_event(m_coherence_window_ns, assembled_event_fragments) && 
+            if (m_event_buffer.try_build_event(m_coherence_window_ns, m_min_subsystems, assembled_event_fragments) &&
                 !assembled_event_fragments.empty()) {
                 // Output the complete event and return
                 ++m_event_id;
@@ -302,10 +306,16 @@ void EventBuilder::produce(framework::Event &event) {
                 }
                 
                 current_event_errors = 0;  // Reset for next event
+                // The fragment that tripped the window-close belongs to the NEXT
+                // event, not the one we just emitted. Buffer it here (the buffer is
+                // empty post-build, so this also resets the reference time) instead
+                // of dropping it -- otherwise every event after the first loses its
+                // triggering subsystem.
+                m_event_buffer.add_fragment(std::move(fragment));
                 return;  // Return the event to framework
             }
         }
-        
+
         // Add fragment to buffer (may start a new event batch if buffer was empty)
         m_event_buffer.add_fragment(std::move(fragment));
         
@@ -316,7 +326,7 @@ void EventBuilder::produce(framework::Event &event) {
     if (m_verbose_parse) ldmx_log(debug) << "reached EOF, flushing remaining events";
     
     std::vector<DataFragment> assembled_event_fragments;
-    while (m_event_buffer.try_build_event(m_coherence_window_ns, assembled_event_fragments)) {
+    while (m_event_buffer.try_build_event(m_coherence_window_ns, m_min_subsystems, assembled_event_fragments)) {
         if (assembled_event_fragments.empty()) break;
         
         // Mark truncated events (those flushed at EOF)

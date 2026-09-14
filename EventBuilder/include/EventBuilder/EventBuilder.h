@@ -36,6 +36,9 @@ class EventBuilder : public framework::Producer {
   packing::utility::Reader m_reader;
   std::string m_output_name{"BuilderOutput"};
   long long m_coherence_window_ns{5000000};  // 5 ms window for collecting fragments
+  // Minimum number of distinct subsystems required to assemble an event.
+  // Configurable (was a hardcoded 3); Run 182 only has ts + tracker, so 2.
+  int m_min_subsystems{2};
 
   // Performance metrics
   std::chrono::steady_clock::time_point m_start_time;
