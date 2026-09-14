@@ -231,8 +231,8 @@ class EventFile {
    * Write the map of run headers to the file as a TTree of RunHeader.
    *
    * Safe to call more than once; any run tree already in the file is
-   * overwritten. Process calls it as soon as the headers are known and
-   * again on close, so a killed job still leaves a usable file.
+   * overwritten. Process calls it once the producers have filled the headers
+   * and again on close, so a killed job still leaves a usable file.
    *
    * @param[in] completed true when closing cleanly. Only the final call
    * should pass true.

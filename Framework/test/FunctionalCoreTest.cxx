@@ -877,6 +877,8 @@ TEST_CASE("Output Completeness", "[Framework][functionality]") {
                     framework::exception::Exception);
     // present because it was written at open, not on close
     CHECK_FALSE(framework::test::isCompleted(output_file));
+    // and it carries what the producer put in it
+    CHECK_THAT(output_file, framework::test::IsGoodEventFile("test", 3, 1));
   }
 
   CHECK(framework::test::removeFile(output_file));

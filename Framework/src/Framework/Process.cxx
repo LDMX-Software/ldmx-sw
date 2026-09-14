@@ -212,10 +212,7 @@ void Process::run() {
     run_header_ = run_header.get();  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
-    // write early so a killed job still leaves a usable file
-    out_file.writeRunTree();
-
-    newRun(*run_header);
+    newRun(*run_header, &out_file);
 
     int total_tries = 0;  // total number of tries for entire run
     int num_tries = 0;    // number of tries for the current event number
@@ -347,9 +344,6 @@ void Process::run() {
 
         }  // check if in singleOutput mode
 
-        // write early so a killed job still leaves a usable file
-        out_file->writeRunTree();
-
       } else {
         // empty output file list, use inputFile as master file
         in_file.setupEvent(&the_event);
@@ -379,7 +373,7 @@ void Process::run() {
             run_header_ = rh;
             ldmx_log(info) << "Got new run header from '"
                            << master_file->getFileName() << "'";
-            newRun(*run_header_);
+            newRun(*run_header_, out_file);
           } else {
             // no header means no newRun, so conditions stay uninitialised
             EXCEPTION_RAISE(
@@ -493,7 +487,7 @@ TDirectory* Process::openHistoFile() {
   return owner;
 }
 
-void Process::newRun(ldmx::RunHeader& header) {
+void Process::newRun(ldmx::RunHeader& header, EventFile* out) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
 
@@ -513,6 +507,8 @@ void Process::newRun(ldmx::RunHeader& header) {
   if (performance_) performance_->stop(performance::Callback::beforeNewRun, 0);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
+  // header is final, so write it now in case we are killed
+  if (out) out->writeRunTree();
   if (performance_) performance_->start(performance::Callback::onNewRun, 0);
   conditions_.onNewRun(header);
   i_proc = 0;
