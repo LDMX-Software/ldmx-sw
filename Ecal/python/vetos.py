@@ -10,7 +10,7 @@ class EcalVetoProcessor(Processor):
     feature_list_name: str = "input"
     bdt_file: str = make_bdt_path("segmip")
     bdt_feature_config: str = "segmip"
-    roc_file: str = make_roc_path("RoC_v14_8gev")
+    roc_file: str = make_roc_path("RoC_v15_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
     ecal_sp_coll_name: str = "EcalScoringPlaneHits"
@@ -76,7 +76,9 @@ class EcalTrackFinderProcessor(Processor):
     min_momentum: float = 50.0  # MeV
     max_momentum: float = 10000.0  # MeV
     use_roc_energy: bool = True
-    roc_file: str = make_roc_path("RoC_v14_8gev")
+    roc_file: str = make_roc_path("RoC_v15_8gev")
+
+
 
 
 @processor("ecal::EcalRecoilRemovalProcessor", "Ecal")
@@ -86,7 +88,7 @@ class EcalRecoilRemovalProcessor(Processor):
 
     beam_energy: float = 8000.0
     num_ecal_layers: int = 32
-    rem_dist_file: str = make_roc_path("RoC_v14_8gev_95")
+    rem_dist_file: str = make_roc_path("RoC_v15_8gev_95")
     collection_name_included: str = "EcalRecHitsInc"
     collection_name_excluded: str = "EcalRecHitsExc"
     rec_coll_name: str = "EcalRecHits"
