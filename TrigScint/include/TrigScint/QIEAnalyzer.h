@@ -47,14 +47,15 @@ class QIEAnalyzer : public framework::Analyzer {
   int start_sample_{0};
 
   // plotting stuff
+  // events with per-channel charge histograms, at most n_ev_tdc_
   int n_ev_{200};
-  // events with per-channel charge histograms, at most n_ev_
-  int n_ev_displays_{200};
+  // events in the TDC fire map; also sizes h_out_
+  int n_ev_tdc_{200};
   int n_channels_{24};
   // int nTrkMax{100};
 
-  // match nev, nchan above
-  TH1F* h_out_[200][24];
+  // match n_ev_tdc_, n_channels_ above
+  TH1F* h_out_[200][24]{};
   TH1F* h_pe_[24];
   TH2F* h_pe_vs_t_[24];
   TH2F* h_ped_subtracted_avg_q_vs_t_[24];
