@@ -40,6 +40,7 @@ setup_library(module Tracking
                            ROOT::Physics
                            Tracking::Event
                            Ecal::Event
+                           TrigScint::Event
                            DetDescr::DetDescr
               sources ${SRC_FILES})
 
