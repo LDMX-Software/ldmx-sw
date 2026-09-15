@@ -350,22 +350,16 @@ void EventFile::updateParent(EventFile* parent) {
   return;
 }
 
-void EventFile::writeRunTree() {
+void EventFile::writeRunTree(bool completed) {
   if (not is_output_file_) {
     EXCEPTION_RAISE("MisCall",
                     "Cannot write the run tree on an input event file.");
   }
 
-  // store the run map into the output tree
-  // Check for the existence of the run tree in the file.
-  // If it already exists, throw an exception.
-  // TODO: Tree name shouldn't be hardcoded. Is this check really necessary?
-  auto run_tree{static_cast<TTree*>(file_->Get("LDMX_Run"))};
-  if (run_tree) {
-    EXCEPTION_RAISE("RunTree",
-                    "RunTree 'LDMX_Run' already exists in output file '" +
-                        file_name_ + "'.");
-  }
+  // TODO: Tree name shouldn't be hardcoded.
+
+  // stamp completion onto the headers before they go out
+  for (auto& [num, run_header] : run_map_) run_header->setCompleted(completed);
 
   /**
    * ROOT requires us to be in the correct directory when we create
@@ -378,11 +372,16 @@ void EventFile::writeRunTree() {
    * in the correct location.
    */
   file_->cd();
-  run_tree = new TTree("LDMX_Run", "LDMX run header");
+
+  // rebuild so the branch address stays valid across calls
+  delete run_tree_;
+  run_tree_ = nullptr;
+  file_->Delete("LDMX_Run;*");  // drop any earlier cycle
+  run_tree_ = new TTree("LDMX_Run", "LDMX run header");
 
   // create the branch on this tree
   ldmx::RunHeader* the_handle = nullptr;
-  run_tree->Branch("RunHeader", "ldmx::RunHeader", &the_handle, 32000, 3);
+  run_tree_->Branch("RunHeader", "ldmx::RunHeader", &the_handle, 32000, 3);
   // ROOT allocates a RunHeader when given a null pointer and leaves
   // ownership with the caller, so take it to avoid leaking it
   std::unique_ptr<ldmx::RunHeader> root_allocated(the_handle);
@@ -390,10 +389,11 @@ void EventFile::writeRunTree() {
   // copy over the run headers into the tree
   for (auto& [num, run_header] : run_map_) {
     the_handle = run_header.get();
-    run_tree->Fill();
+    run_tree_->Fill();
   }
 
-  run_tree->Write();
+  run_tree_->Write("", TObject::kOverwrite);
+  file_->Flush();  // get the key on disk before any kill
 }
 
 void EventFile::writeRunHeader(std::shared_ptr<ldmx::RunHeader> run_header) {

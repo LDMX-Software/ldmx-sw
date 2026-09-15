@@ -26,8 +26,10 @@ std::tuple<int, int> LDMXRoRHeader::subsystem(const std::string& name) {
 
 utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   valid_ = false;
+
   uint8_t sentinel;
   uint32_t zero;
+
   if (!(r >> version_ >> subsystem_ >> contributor_ >> sentinel)) {
     return r;
   }

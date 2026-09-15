@@ -7,6 +7,9 @@
 #ifndef TRIGSCINT_TRIGSCINTDIGIPRODUCER_H
 #define TRIGSCINT_TRIGSCINTDIGIPRODUCER_H
 
+#include <string>
+#include <vector>
+
 /*~~~~~~~~~~*/
 /*   ROOT   */
 /*~~~~~~~~~~*/
@@ -55,6 +58,11 @@ class TrigScintRecHitProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
+  /// Read per-channel gains and pedestals from a calibration file
+  void readCalib(const std::string& filename,
+                 std::vector<double>* gains,
+                 std::vector<double>* pedestals);
+
   /// Name of the input collection containing the sim hits
   std::string input_collection_;
 
@@ -80,6 +88,22 @@ class TrigScintRecHitProducer : public framework::Producer {
 
   /// Total number of photoelectrons per MIP
   int sample_of_interest_{2};
+
+  /// If true, read per-channel gains/pedestals from calib_file_
+  bool use_calib_file_{false};
+
+  /// Path to the per-channel calibration file
+  std::string calib_file_{""};
+
+  /// If > 0: integrate a fixed window starting at sample_of_interest_
+  /// If <= 0: integrate all samples
+  int integration_window_{0};
+
+  /// Per-channel gains read from the calibration file
+  std::vector<double> gains_;
+
+  /// Per-channel pedestals read from the calibration file
+  std::vector<double> pedestals_;
 };
 
 }  // namespace trigscint

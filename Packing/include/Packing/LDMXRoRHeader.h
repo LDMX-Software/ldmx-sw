@@ -93,6 +93,7 @@ class LDMXRoRHeader {
    * time.
    */
   uint64_t timestamp_;
+
 };
 
 }  // namespace packing
