@@ -2,6 +2,7 @@
 
 #include <G4Box.hh>
 #include <G4VisExtent.hh>
+#include <algorithm>
 
 #include "Framework/Exception/Exception.h"
 
@@ -31,20 +32,25 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
     auto recoil_volume_cfg = buildVolumeConfig(
         recoil_, recoil_layout_, tracker_y_length, tracker_z_length, "Recoil");
 
-    // Extend the recoil volume upstream so the low-x (ACTS) edge is at -1mm,
-    // placing the target (x=0) clearly inside the volume for the CKF Navigator.
-    // This only ever grows the volume: it applies when the recoil sits entirely
-    // downstream of low_x (the nominal geometries, where the envelope starts at
-    // +7mm and would leave the target outside). For reduced geometries the
-    // recoil can be entirely upstream of the target, in which case it already
-    // extends past low_x and must be left alone -- shrinking it there would
-    // produce a negative volume length.
+    // Extend the recoil volume upstream so the target (x=0) and the target
+    // scoring planes sit inside it for the Navigator. Thick targets (Ti
+    // 3.56mm, Al 8.89mm) put the upstream scoring plane several mm before
+    // x=0; a start point outside every volume fails truth-track propagation.
+    // Clamp to the tagger volume edge so the two configs never overlap.
+    // This only ever grows the volume: reduced geometries whose recoil
+    // already extends past low_x are left alone.
     {
+      double low_x = -8.0;  // mm
+      if (!vol_builder_configs.empty()) {
+        // tagger config was pushed first when present
+        const auto& tagger_cfg = vol_builder_configs.front();
+        low_x = std::max(
+            low_x, tagger_cfg.position[0] + tagger_cfg.length[0] / 2.0 + 1.0);
+      }
       double upstream_x =
           recoil_volume_cfg.position[0] - recoil_volume_cfg.length[0] / 2.0;
       double downstream_x =
           recoil_volume_cfg.position[0] + recoil_volume_cfg.length[0] / 2.0;
-      constexpr double low_x = -1.0;  // mm
       if (upstream_x > low_x) {
         recoil_volume_cfg.length[0] = downstream_x - low_x;
         recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
