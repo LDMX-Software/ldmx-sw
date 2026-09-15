@@ -92,6 +92,8 @@ class TrigScintQIEDigiProducer(Processor):
     input_collection: str = "TriggerPad3SimHits"
     input_pass_name: str = ""
     output_collection: str = "trigScintQIEDigisPad3"
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
     input_pulse_shape: str = "Expo"
     expo_k: float = 0.1
     expo_tmax: float = 5.0

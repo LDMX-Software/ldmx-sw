@@ -44,7 +44,8 @@ void TrigScintRecHitProducer::produce(framework::Event& event) {
 
     hit.setModuleID(0);
     hit.setBarID(digi.getChanID());
-    hit.setBeamEfrac(-1.);
+    // sim truth from the digi; -1 for data
+    hit.setBeamEfrac(digi.getBeamEfrac());
 
     // Set amplitude as the sum of the first two samples
     hit.setAmplitude(
