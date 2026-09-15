@@ -2,6 +2,7 @@
 
 #include <ctime>
 
+#include "TBranchElement.h"
 #include "TTreeReader.h"
 
 // LDMX
@@ -11,6 +12,20 @@
 #include "Framework/RunHeader.h"
 
 namespace framework {
+
+namespace {
+/**
+ * The class version the RunHeader branch of this tree was written with.
+ *
+ * @return 0 if there is no such branch to ask
+ */
+int onDiskRunHeaderVersion(TTree* run_tree) {
+  if (not run_tree) return 0;
+  auto* branch{dynamic_cast<TBranchElement*>(run_tree->GetBranch("RunHeader"))};
+  if (not branch) return 0;
+  return branch->GetClassVersion();
+}
+}  // namespace
 
 EventFile::EventFile(const framework::config::Parameters& params,
                      const std::string& filename, EventFile* parent,
@@ -423,6 +438,16 @@ ldmx::RunHeader& EventFile::getRunHeader(int run_number) {
                                    std::to_string(run_number));
 }
 
+std::vector<int> EventFile::getIncompleteRuns() const {
+  std::vector<int> incomplete;
+  // without the flag on disk we have nothing to judge by
+  if (not run_headers_have_completeness_) return incomplete;
+  for (const auto& [num, run_header] : run_map_) {
+    if (not run_header->isCompleted()) incomplete.push_back(num);
+  }
+  return incomplete;
+}
+
 void EventFile::importRunHeaders() {
   // choose which file to import from
   auto the_import_file{file_};  // if this is an input file
@@ -435,6 +460,10 @@ void EventFile::importRunHeaders() {
     // the file exist
     TTreeReader old_run_tree("LDMX_Run", the_import_file);
     TTreeReaderValue<ldmx::RunHeader> old_run_header(old_run_tree, "RunHeader");
+    // older headers stream into a default false, which means nothing
+    run_headers_have_completeness_ =
+        onDiskRunHeaderVersion(old_run_tree.GetTree()) >=
+        ldmx::RunHeader::VERSION_WITH_COMPLETED;
     // TODO check that setup went correctly
     while (old_run_tree.Next()) {
       auto* old_run_header_ptr = old_run_header.Get();

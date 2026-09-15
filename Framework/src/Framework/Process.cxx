@@ -42,6 +42,8 @@ Process::Process(const framework::config::Parameters& configuration)
   compression_setting_ = configuration.get<int>("compression_setting", 9);
   skip_corrupted_input_files_ =
       configuration.get<bool>("skip_corrupted_input_files", false);
+  allow_incomplete_input_files_ =
+      configuration.get<bool>("allow_incomplete_input_files", false);
 
   input_files_ = configuration.get<std::vector<std::string>>("input_files", {});
   output_files_ =
@@ -308,6 +310,30 @@ void Process::run() {
               "We should never get here. "
               "EventFile is corrupted but we aren't skipping corrupted inputs. "
               "EventFile should be throwing its own exceptions in this case.");
+        }
+      }
+
+      auto incomplete_runs{in_file.getIncompleteRuns()};
+      if (not incomplete_runs.empty()) {
+        std::string run_list;
+        for (int run : incomplete_runs) {
+          if (not run_list.empty()) run_list += ", ";
+          run_list += std::to_string(run);
+        }
+        if (allow_incomplete_input_files_) {
+          ldmx_log(warn) << "Input file '" << infilename << "' holds run(s) "
+                         << run_list
+                         << " that were never finished, so events are missing. "
+                            "Processing it anyway because "
+                            "'allow_incomplete_input_files' is set.";
+        } else {
+          EXCEPTION_RAISE(
+              "IncompleteInput",
+              "Input file '" + infilename + "' holds run(s) " + run_list +
+                  " that were never finished, so events are missing from the "
+                  "end of them. Set 'allow_incomplete_input_files' on the "
+                  "Process to read it anyway, but know that the sample it "
+                  "gives you is biased.");
         }
       }
 

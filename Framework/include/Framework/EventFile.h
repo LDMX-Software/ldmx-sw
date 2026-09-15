@@ -260,6 +260,20 @@ class EventFile {
   /// @return the name of the ROOT file being managed.
   const std::string& getFileName() { return file_name_; }
 
+  /**
+   * The runs in this file whose writer did not close cleanly.
+   *
+   * Events are missing from the end of any such run, so processing it silently
+   * would produce a biased sample.
+   *
+   * A file written before ldmx::RunHeader::VERSION_WITH_COMPLETED carries no
+   * completion flag. We cannot say anything about those runs, so they are left
+   * out rather than reported as incomplete.
+   *
+   * @return run numbers of the incomplete runs, empty if the file is whole
+   */
+  std::vector<int> getIncompleteRuns() const;
+
  private:
   /**
    * Fill the internal map of run numbers to RunHeader objects from the input
@@ -331,6 +345,9 @@ class EventFile {
 
   /// The run tree, owned by file_ once written
   TTree* run_tree_{nullptr};
+
+  /// True when the run headers we read were written with a completion flag
+  bool run_headers_have_completeness_{false};
 
   enableLogging("EventFile")
 };
