@@ -126,7 +126,8 @@ void EventBuilder::produce(framework::Event &event) {
         frame_header.read(m_reader);
         
         // Store location of end-of-frame for potential recovery
-        const long long frame_end = m_reader.tell() + frame_header.size();
+        const long long frame_end =
+            static_cast<long long>(m_reader.tell()) + frame_header.size();
         
         // Check if this is a data frame (channel 0) and not YAML
         if (frame_header.channel() != 0 || frame_header.probablyYaml()) {
