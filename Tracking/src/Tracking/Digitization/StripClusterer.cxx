@@ -71,19 +71,22 @@ std::vector<StripClusterer::ClusterCandidate> StripClusterer::findClusters(
   // -------------------------------------------------------------------------
   // Determine which strips are clusterable (≥ neighbor threshold) and which
   // can seed a cluster (≥ seed threshold + timing/chi2 cuts).
+  //
+  // Thresholds are in units of the per-strip noise RMS.  Each hit may carry its
+  // own measured noise (getNoise() > 0, from the real-data pedestal table);
+  // when it does not (MC), we fall back to the uniform ctor noise so the MC
+  // path is unchanged.
   // -------------------------------------------------------------------------
-  const double snr_neighbor = neighbor_threshold_ * noise_sigma_adc_;
-  const double snr_seed = seed_threshold_ * noise_sigma_adc_;
-
   std::set<int> clusterable_set;
   std::vector<int> seed_channels;
 
   for (const auto& [ch, hp] : channel_map) {
     const double amp = hp->getAmplitude();
-    if (amp >= snr_neighbor) {
+    const double noise = hitNoise(*hp);
+    if (amp >= neighbor_threshold_ * noise) {
       clusterable_set.insert(ch);
     }
-    if (amp >= snr_seed && passesSeedCuts(*hp)) {
+    if (amp >= seed_threshold_ * noise && passesSeedCuts(*hp)) {
       seed_channels.push_back(ch);
     }
   }
@@ -120,10 +123,11 @@ std::vector<StripClusterer::ClusterCandidate> StripClusterer::findClusters(
       const double amp = hit.getAmplitude();
 
       // Accumulate cluster quantities.
+      const double noise = hitNoise(hit);
       cand.strip_ids.push_back(cur_ch);
       cluster_total_amp += amp;
       cluster_weighted_t += amp * hit.getT0();
-      cluster_noise_sq += noise_sigma_adc_ * noise_sigma_adc_;
+      cluster_noise_sq += noise * noise;
 
       // Check nearest neighbours (strip ± 1).
       for (int delta : {-1, +1}) {

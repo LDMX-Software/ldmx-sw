@@ -2,13 +2,13 @@
 
 This is step 1 of the real-data tracker waveform chain:
 
-    1. compute_pedestals.py   (this script)  -> pedestals.json
-    2. decode_to_waveforms.py                 -> <output>.root (TrackerWaveforms)
-    3. plot_waveforms.py                      -> PNG figures
+    1. compute_pedestals.py       (this script)  -> pedestals.json
+    2. raw_to_measurements.py --stop-at fit      -> <output>.root (TrackerWaveforms)
+    3. plot_waveforms.py                          -> PNG figures
 
 Runs SingleSubsystemUnpacker -> RawTrackerDecoder -> PedestalCalculator on a
 baseline (pedestal) run, computing per-channel, per-sample mean and RMS noise,
-and writes them to a JSON file.  Pass that JSON to decode_to_waveforms.py for
+and writes them to a JSON file.  Pass that JSON to raw_to_measurements.py for
 physics runs.
 
 Usage
