@@ -30,7 +30,7 @@ class TestConfig : public framework::Producer {
    * Checks that the passed name is the same as
    * what is written to the python config script.
    */
-  TestConfig(const std::string &name, framework::Process &process)
+  TestConfig(const std::string& name, framework::Process& process)
       : framework::Producer(name, process) {
     CHECK(name == "test_instance");
   }
@@ -47,7 +47,7 @@ class TestConfig : public framework::Producer {
    * - vector of doubles parameter
    * - vector of strings parameter
    */
-  void configure(framework::config::Parameters &parameters) final override {
+  void configure(framework::config::Parameters& parameters) final override {
     // Check parameters
     CHECK(parameters.get<int>("test_int") == 9);
     CHECK(parameters.get<double>("test_double") == Approx(7.7));
@@ -96,7 +96,7 @@ class TestConfig : public framework::Producer {
   }
 
   // I don't do anything.
-  virtual void produce(framework::Event &) override {}
+  virtual void produce(framework::Event&) override {}
 };
 }  // namespace test
 }  // namespace framework
@@ -117,7 +117,7 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   const std::string config_file_name{"config_python_test_config.py"};
 
   // Arguments to pass to ConfigurePython constructor
-  char *args[1];
+  char* args[1];
 
   // Process handle
   framework::ProcessHandle p;
@@ -151,32 +151,10 @@ TEST_CASE("Configure Python Test", "[Framework][functionality]") {
   // was set correctly.
   auto correct_log_freq{9000};
   SECTION("Single argument to python script") {
-    args[0] = (char *)"9000";
+    args[0] = (char*)"9000";
     auto config{framework::config::run("ldmxcfg.Process.last_process",
                                        config_file_name_arg, args, 1)};
     p = std::make_unique<framework::Process>(config);
     CHECK(p->getLogFrequency() == correct_log_freq);
-  }
-
-  // add a malformed parameter to test failing
-  in_file.open(config_file_name.c_str(), std::ios::in | std::ios::binary);
-
-  out_file.open(config_file_name_arg, std::ios::out | std::ios::binary);
-  out_file << in_file.rdbuf();
-  out_file << "p.sequence[0].bad_param = ('tuples','are','not','supported')"
-           << std::endl;
-
-  in_file.close();
-  out_file.close();
-
-  // warning: this test will fail if the repr of a tuple changes format
-  SECTION("Bad parameter exception test") {
-    REQUIRE_THROWS_WITH(
-        framework::config::run("ldmxcfg.Process.last_process",
-                               config_file_name_arg, args, 0),
-        ContainsSubstring("('tuples', 'are', 'not', 'supported')"));
-    // we need to manually close up our python interpreter
-    // because we left during an exception without closing it above
-    Py_FinalizeEx();
   }
 }

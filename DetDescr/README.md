@@ -20,31 +20,35 @@ just configure -DBUILD_DETECTORID_BINDINGS=ON
 
 To use the DetectorID bindings, you import the `libDetDescr.so` shared library as if it was a regular Python module. 
 ``` python
-# Inside a python3 session within the LDMX container environment 
-import libDetDescr 
-# or 
-from libDetDescr import EcalID, HcalID # etc 
+# Inside a python3 session within the LDMX container environment
+import libDetDescr
+
+# or
+from libDetDescr import EcalID, HcalID  # etc
 ```
 
 To create a particular kind of DetectorID, you can either create a default ID, create it from a Raw integer (which you would typically obtain from the LDMX-sw events), or from the different pieces of the ID
 
 ``` python
-default_id = EcalID() # cell, layer, module = 0. Raw value = 335544320
-from_raw = EcalID(335810563) # cell = 3, layer = 2, module = 1
-from_pieces = EcalID(cell=1, layer=2, module=3) # Raw value = 335818753
+default_id = EcalID()  # cell, layer, module = 0. Raw value = 335544320
+from_raw = EcalID(335810563)  # cell = 3, layer = 2, module = 1
+from_pieces = EcalID(cell=1, layer=2, module=3)  # Raw value = 335818753
 ```
 
 Once you have a valid DetectorID, you can retrieve the corresponding pieces from methods with the same name as the piece and the raw value from the `.raw()` method. For example, say that we have an `HcalDigiID` that we read from an HcalDigis collection and we wanted to know what the corresponding `HcalID` would be. 
 
 ``` python
 from libDetDescr import HcalID, HcalDigiID
-rawHcalDigiID = 411042050 # Presumably from an HcalDigis collection somewhere
-digiID = HcalDigiID(rawHcalDigiID) 
+
+rawHcalDigiID = 411042050  # Presumably from an HcalDigis collection somewhere
+digiID = HcalDigiID(rawHcalDigiID)
 hcalID = HcalID(section=digiID.section(), layer=digiID.layer(), strip=digiID.strip())
-print(f"HcalDigiID [raw, section, layer, strip, end]  \
+print(
+    f"HcalDigiID [raw, section, layer, strip, end]  \
 ({digiID.raw()}, {digiID.section()}, {digiID.layer()}, {digiID.strip()}, {digiID.end()})\
 \n\t->HcalID [raw, section, layer, strip] \
-({hcalID.raw()}, {hcalID.section()}, {hcalID.layer()}, {hcalID.strip()})")
+({hcalID.raw()}, {hcalID.section()}, {hcalID.layer()}, {hcalID.strip()})"
+)
 ```
 This would tell us that 
 
@@ -62,9 +66,13 @@ for each raw id.
 ```python
 from libDetDescr import EcalID
 import numpy as np
+
+
 @np.vectorize
 def to_layer(rawid):
     return EcalID(int(rawid)).layer()
+
+
 # id is a np.array of raw ID numbers e.g. read in from the EcalSimHits_test.id_ branch of LDMX_Events
 layer = to_layer(id)
 ```
@@ -80,9 +88,9 @@ Boost.Python will automatically generate some documentation for each kind of
 DetectorID that you can access through the built-in help system in Python.
 
 ``` python
-# For documentation of the whole module, try 
+# For documentation of the whole module, try
 help(libDetDescr)
-# or for a particular type of ID 
+# or for a particular type of ID
 help(EcalID)
 ```
 

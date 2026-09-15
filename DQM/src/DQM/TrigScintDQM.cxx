@@ -5,7 +5,7 @@
 
 namespace dqm {
 
-TrigScintDQM::TrigScintDQM(const std::string &name, framework::Process &process)
+TrigScintDQM::TrigScintDQM(const std::string& name, framework::Process& process)
     : framework::Analyzer(name, process) {}
 
 void TrigScintDQM::onProcessStart() {
@@ -34,7 +34,7 @@ void TrigScintDQM::onProcessStart() {
                      1600, -100, 1500);
 }
 
-void TrigScintDQM::configure(framework::config::Parameters &ps) {
+void TrigScintDQM::configure(framework::config::Parameters& ps) {
   hit_collection_name_ = ps.get<std::string>("hit_collection");
   pad_name_ = ps.get<std::string>("pad");
   hit_passname_ = ps.get<std::string>("hit_passname");
@@ -43,7 +43,7 @@ void TrigScintDQM::configure(framework::config::Parameters &ps) {
                   << " pad name = " << pad_name_;
 }
 
-void TrigScintDQM::analyze(const framework::Event &event) {
+void TrigScintDQM::analyze(const framework::Event& event) {
   const std::vector<ldmx::SimCalorimeterHit> trig_scint_hits =
       event.getCollection<ldmx::SimCalorimeterHit>(hit_collection_name_,
                                                    hit_passname_);
@@ -53,7 +53,7 @@ void TrigScintDQM::analyze(const framework::Event &event) {
   histograms_.fill("n_hits", hit_count);
 
   double total_energy{0};
-  for (const ldmx::SimCalorimeterHit &hit : trig_scint_hits) {
+  for (const ldmx::SimCalorimeterHit& hit : trig_scint_hits) {
     ldmx::TrigScintID det_id(hit.getID());
 
     int bar = det_id.bar();

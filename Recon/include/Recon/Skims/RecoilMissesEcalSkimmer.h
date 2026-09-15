@@ -21,7 +21,7 @@ namespace recon {
 class RecoilMissesEcalSkimmer : public framework::Producer {
  public:
   /** Constructor */
-  RecoilMissesEcalSkimmer(const std::string &name, framework::Process &process);
+  RecoilMissesEcalSkimmer(const std::string& name, framework::Process& process);
 
   /** Destructor */
   ~RecoilMissesEcalSkimmer();
@@ -33,14 +33,14 @@ class RecoilMissesEcalSkimmer : public framework::Producer {
    * @param event The event to process.
    */
   // void produce override (framework::Event &event);
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
   /**
    * Configure the processor using the given user specified parameters.
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
  private:
   std::string ecal_sim_hits_pass_name_;

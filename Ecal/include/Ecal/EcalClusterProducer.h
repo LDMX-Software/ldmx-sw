@@ -25,9 +25,9 @@
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/IntermediateCluster.h"
 #include "Ecal/MyClusterWeight.h"
-#include "Ecal/TemplatedClusterFinder.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
+#include "Recon/TemplatedClusterFinder.h"
 
 //----------//
 //    STL   //

@@ -5,14 +5,14 @@
 
 namespace dqm {
 
-void EcalPnetVetoResults::configure(framework::config::Parameters &ps) {
+void EcalPnetVetoResults::configure(framework::config::Parameters& ps) {
   ecal_pnet_veto_name_ = ps.get<std::string>("ecal_pnet_veto_name");
   ecal_pnet_veto_pass_ = ps.get<std::string>("ecal_pnet_veto_pass");
 
   return;
 }
 
-void EcalPnetVetoResults::analyze(const framework::Event &event) {
+void EcalPnetVetoResults::analyze(const framework::Event& event) {
   auto veto{event.getObject<ldmx::EcalVetoResult>(ecal_pnet_veto_name_,
                                                   ecal_pnet_veto_pass_)};
 

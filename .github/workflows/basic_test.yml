@@ -14,13 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: 0
 
     - name: Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
+
+    - name: Cache ccache
+      uses: actions/cache@v6
+      with:
+        path: .cache/ccache
+        key: ccache-basic-${{ github.sha }}
+        restore-keys: |
+          ccache-basic-
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -29,5 +37,14 @@ jobs:
       shell: bash
 
     - name: Basic Tests for Functionality
-      run: just test 
+      run: just test
       shell: bash
+
+    # always upload the last test log unless the
+    # workflow was cancelled by a user on github
+    - name: Upload Test Log
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: ldmx-sw-basic-test-log-${{ github.sha }}
+        path: build/Testing/Temporary/LastTest.log

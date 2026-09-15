@@ -7,15 +7,16 @@ Takes raw data file after reformat (with run number)
 and runs single ended reconstruction
 """
 
-parser = argparse.ArgumentParser(f'ldmx fire {sys.argv[0]}')
-parser.add_argument('input_file')
-parser.add_argument('--pause',action='store_true')
+parser = argparse.ArgumentParser(f"ldmx fire {sys.argv[0]}")
+parser.add_argument("input_file")
+parser.add_argument("--pause", action="store_true")
 grp = parser.add_mutually_exclusive_group()
-parser.add_argument('--max_events',default=-1,type=int)
+parser.add_argument("--max_events", default=-1, type=int)
 arg = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
-p = ldmxcfg.Process('')
+
+p = ldmxcfg.Process("")
 p.max_events = arg.max_events
 p.term_log_level = 0
 p.log_frequency = 1000
@@ -23,33 +24,33 @@ p.log_frequency = 1000
 import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_testbeam0422_conditions
 import LDMX.Hcal.digi as hcal_digi
-import LDMX.Hcal.hgcrocFormat as hcal_format
+import LDMX.Hcal.hgcrocFormat as HcalFormat
 
-base_name = os.path.basename(arg.input_file).replace('.root','')
-dir_name  = os.path.dirname(arg.input_file)
-if not dir_name :
-    dir_name = '.'
+base_name = os.path.basename(arg.input_file).replace(".root", "")
+dir_name = os.path.dirname(arg.input_file)
+if not dir_name:
+    dir_name = "."
 
 p.input_files = [arg.input_file]
-p.output_files = [f'{dir_name}/reco_{base_name}.root']
+p.output_files = [f"{dir_name}/reco_{base_name}.root"]
 
 # sequence
-tbl = f'{os.environ["LDMX_BASE"]}/ldmx-sw/Hcal/data/testbeam_connections.csv'
+tbl = f"{os.environ['LDMX_BASE']}/ldmx-sw/Hcal/data/testbeam_connections.csv"
 p.sequence = [
-    # hcal_format.HcalRawDecoder(
+    # HcalFormat.HcalRawDecoder(
     #     input_names = ["Polarfire0Raw","Polarfire1Raw"],
     #     connections_table = tbl,
     #     output_name = 'HcalRawDigis'
     # ),
     hcal_digi.HcalSingleEndRecProducer(
-        coll_name = 'HcalRawDigis',
-        rec_coll_name = 'HcalSingleEndRecHits',
-        rec_pass_name = '',
+        coll_name="HcalRawDigis",
+        rec_coll_name="HcalSingleEndRecHits",
+        rec_pass_name="",
     ),
     hcal_digi.HcalDoubleEndRecProducer(
-        pass_name = '',
-        coll_name = 'HcalSingleEndRecHits',
-        rec_coll_name = 'HcalDoubleEndRecHits',
-        rec_pass_name = ''
-    )
+        pass_name="",
+        coll_name="HcalSingleEndRecHits",
+        rec_coll_name="HcalDoubleEndRecHits",
+        rec_pass_name="",
+    ),
 ]

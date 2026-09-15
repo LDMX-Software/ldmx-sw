@@ -33,12 +33,12 @@ class TrigScintCluster {
   /**
    * Print a description of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const TrigScintCluster &d);
+  friend std::ostream& operator<<(std::ostream& o, const TrigScintCluster& d);
 
   /**
    * Reset the TrigScintCluster object.
    */
-  void clear(Option_t *option = "");  // override;
+  void clear(Option_t* option = "");  // override;
 
   /**
    * Take in the hits that make up the cluster.
@@ -47,7 +47,7 @@ class TrigScintCluster {
    * @param hit The digi hit
    */
 
-  void addHit(uint idx, const ldmx::TrigScintHit *hit);
+  void addHit(uint idx, const ldmx::TrigScintHit* hit);
 
   /**
    * @param idx The digi collection index of the hit seeding the cluster
@@ -76,7 +76,7 @@ class TrigScintCluster {
    *The channel numbers of hits forming the cluster
    * @param hitIDs vector of channel numbers of hits forming the cluster
    */
-  void setIDs(std::vector<unsigned int> &hitIDs) { hit_ids_ = hitIDs; }
+  void setIDs(std::vector<unsigned int>& hitIDs) { hit_ids_ = hitIDs; }
 
   /**
    *The cluster centroid in x,y,z
@@ -129,12 +129,12 @@ class TrigScintCluster {
   double getCentroidZ() const { return centroid_z_; }
 
   /** Get vector of channel IDs of hits forming the cluster */
-  const std::vector<unsigned int> &getHitIDs() const { return hit_ids_; }
+  const std::vector<unsigned int>& getHitIDs() const { return hit_ids_; }
 
   /** Get the cluster centroid in units of channel nb */
   double getCentroid() const { return centroid_; }
 
-  bool operator<(const TrigScintCluster &rhs) const {
+  bool operator<(const TrigScintCluster& rhs) const {
     return this->getEnergy() < rhs.getEnergy();
   }
 

@@ -8,11 +8,11 @@
 
 namespace recon {
 
-EcalPreselectionSkimmer::EcalPreselectionSkimmer(const std::string &name,
-                                                 framework::Process &process)
+EcalPreselectionSkimmer::EcalPreselectionSkimmer(const std::string& name,
+                                                 framework::Process& process)
     : framework::Producer(name, process) {}
 
-void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
+void EcalPreselectionSkimmer::configure(framework::config::Parameters& ps) {
   use_rechits_ = ps.get<bool>("use_rechits", false);
 
   if (use_rechits_) {
@@ -44,19 +44,19 @@ void EcalPreselectionSkimmer::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void EcalPreselectionSkimmer::produce(framework::Event &event) {
+void EcalPreselectionSkimmer::produce(framework::Event& event) {
   bool passed_preselection{false};
 
   if (use_rechits_) {
     // Rechit-based preselection
-    const auto &ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
+    const auto& ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
         ecal_rec_hit_coll_, ecal_rec_hit_pass_);
 
     // Calculate sum of rechit energies and count hits
     double total_rec_energy{0.};
     int num_rec_hits{0};
 
-    for (const auto &rec_hit : ecal_rec_hits) {
+    for (const auto& rec_hit : ecal_rec_hits) {
       total_rec_energy += rec_hit.getEnergy();
       num_rec_hits++;
     }
@@ -79,9 +79,9 @@ void EcalPreselectionSkimmer::produce(framework::Event &event) {
   else {
     // Veto-based preselection (original logic)
     bool fiducial_decision{true};
-    const auto &ecal_veto{event.getObject<ldmx::EcalVetoResult>(
+    const auto& ecal_veto{event.getObject<ldmx::EcalVetoResult>(
         ecal_veto_name_, ecal_veto_pass_)};
-    const auto &mip_result{
+    const auto& mip_result{
         event.getObject<ldmx::EcalMipResult>(ecal_mip_name_, ecal_mip_pass_)};
 
     // Boolean to if we skim for fiducial / nonfiducial

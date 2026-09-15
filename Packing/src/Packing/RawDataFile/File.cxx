@@ -8,7 +8,7 @@
 namespace packing {
 namespace rawdatafile {
 
-File::File(const framework::config::Parameters &ps) {
+File::File(const framework::config::Parameters& ps) {
   is_output_ = ps.get<bool>("is_output");
   skip_unavailable_ = ps.get<bool>("skip_unavailable");
 
@@ -67,7 +67,7 @@ File::File(const framework::config::Parameters &ps) {
   }  // input or output file
 }
 
-bool File::connect(framework::Event &event) {
+bool File::connect(framework::Event& event) {
   event_ = &event;
   return true;
 }
@@ -83,7 +83,7 @@ bool File::nextEvent() {
   if (is_output_) {
     // dump buffers into event packet and write out
     std::map<uint16_t, std::vector<uint32_t>> the_subsys_data;
-    for (auto const &[id, name] : eid_to_name) {
+    for (auto const& [id, name] : eid_to_name) {
       if (skip_unavailable_ and not event_->exists(name, pass_name_)) continue;
       the_subsys_data[id] = event_->getCollection<uint32_t>(name, pass_name_);
     }
@@ -111,7 +111,7 @@ bool File::nextEvent() {
 
     event_->getEventHeader().setEventNumber(read_event.id());
 
-    for (auto &subsys : read_event.data()) {
+    for (auto& subsys : read_event.data()) {
       // construct name if not provided by default EID mappings
       if (eid_to_name.find(subsys.id()) == eid_to_name.end()) {
         std::cerr << subsys.id() << " unrecognized electronics ID."
@@ -125,7 +125,7 @@ bool File::nextEvent() {
   return true;
 }
 
-void File::writeRunHeader(ldmx::RunHeader &header) {
+void File::writeRunHeader(ldmx::RunHeader& header) {
   if (is_output_) {
     // use passed run number
     run_ = header.getRunNumber();

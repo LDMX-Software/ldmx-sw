@@ -13,7 +13,7 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(
   for (auto& stacking_action : stacking_actions_) {
     // Get proposed new track classification from this plugin.
     G4ClassificationOfNewTrack new_track_class =
-        stacking_action->ClassifyNewTrack(track, current_track_class);
+        stacking_action->classifyNewTrack(track, current_track_class);
 
     // Only set the current classification if the plugin changed it.
     if (new_track_class != current_track_class)
@@ -24,12 +24,12 @@ G4ClassificationOfNewTrack StackingAction::ClassifyNewTrack(
 }
 
 void StackingAction::NewStage() {
-  for (auto& stacking_action : stacking_actions_) stacking_action->NewStage();
+  for (auto& stacking_action : stacking_actions_) stacking_action->newStage();
 }
 
 void StackingAction::PrepareNewEvent() {
   for (auto& stacking_action : stacking_actions_)
-    stacking_action->PrepareNewEvent();
+    stacking_action->prepareNewEvent();
 }
 
 }  // namespace g4user

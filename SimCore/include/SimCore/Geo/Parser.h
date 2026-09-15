@@ -28,7 +28,7 @@ class Parser {
    *
    * @return The world volume.
    */
-  virtual G4VPhysicalVolume *getWorldVolume() = 0;
+  virtual G4VPhysicalVolume* getWorldVolume() = 0;
 
   /**
    * Get the name of the parsed detector.
@@ -48,8 +48,8 @@ class Parser {
   virtual ~Parser() = default;
 
   DECLARE_FACTORY(Parser, std::shared_ptr<Parser>,
-                  framework::config::Parameters &,
-                  simcore::ConditionsInterface &);
+                  framework::config::Parameters&,
+                  simcore::ConditionsInterface&);
 };  // Parser
 
 }  // namespace geo

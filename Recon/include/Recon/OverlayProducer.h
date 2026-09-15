@@ -2,7 +2,10 @@
 #define RECON_OVERLAYPRODUCER_H
 
 //---< C++ StdLib >---//
+#include <algorithm>
+#include <bitset>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,6 +17,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
+#include "Framework/Exception/Exception.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimTrackerHit.h"
@@ -25,7 +29,7 @@ namespace recon {
  */
 class OverlayProducer : public framework::Producer {
  public:
-  OverlayProducer(const std::string &name, framework::Process &process)
+  OverlayProducer(const std::string& name, framework::Process& process)
       : framework::Producer(name, process), overlay_event_{"overlay"} {}
 
   // Destructor
@@ -34,13 +38,13 @@ class OverlayProducer : public framework::Producer {
   /**
    * Configure the processor with input parameters from the python cofig
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * At the start of the run, the pileup overlay file is set up, and the
    * starting event number is chosen, using the RNSS.
    */
-  void onNewRun(const ldmx::RunHeader &) override;  // );    //
+  void onNewRun(const ldmx::RunHeader&) override;  // );    //
 
   /**
    * Based on the list of collections to overlay, and the desired number of
@@ -59,7 +63,20 @@ class OverlayProducer : public framework::Producer {
    * The resulting collections inherit the input collection name, with an
    * appended string "Overlay". This name is also currently hardwired.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
+
+  /**
+   * Encode track ID with overlay event information.
+   *
+   * Performs bitwise encoding on track ID integer with version and event
+   * index.
+   *
+   * VERSION DESCRIPTION
+   * - 0 : no encoding, leaves track_id alone
+   * - 1 : four bit version (27-31) plus three bit event index (24-26)
+   */
+  int encodeTrack(int track_id, const unsigned int encoding_version,
+                  const unsigned int event_index = 0);
 
   /**
    * At the start of processing, the pileup overlay file is set up.
@@ -96,6 +113,17 @@ class OverlayProducer : public framework::Producer {
    * combining sim and pileup
    */
   std::vector<std::string> tracker_collections_;
+
+  /**
+   * List of SimParticle collection(s) to loop over and add hits from,
+   * combining sim and pileup
+   */
+  std::vector<std::string> particle_collections_;
+
+  /**
+   * List of SimCalorimeterHit collections which keep track of hit contribs.
+   */
+  std::vector<std::string> contrib_collections_;
 
   /**
    * Pileup overlay events input pass name
@@ -189,14 +217,16 @@ class OverlayProducer : public framework::Producer {
   int start_event_max_{10000};
 
   /**
-   * For Ecal, overlay hits should be added as contribs.
-   * But these are required to be unique, by the Ecal rconstruction code.
-   * So assign a nonsensical trackID, incidentID, and PDG ID to the contribs
-   * from overlay. These are hardwired right here.
+   * Track ID encoding scheme version. Version is stored
+   * in first 4 bits after the sign bit in the track ID int
+   * variables (i.e. bits 28-31)
+   *
+   * If this variable is left as the hardcoded default 0, then
+   * the OverlayProducer will default to not managing track IDs,
+   * instead setting all equal to nonsense values as was the case
+   * before the introduction of this track ID management.
    */
-  int overlay_incident_id_{-1000};
-  int overlay_track_id_{-1000};
-  int overlay_pdg_code_{0};
+  unsigned track_id_encoding_{0};
 };
 }  // namespace recon
 

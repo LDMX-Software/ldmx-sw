@@ -6,12 +6,12 @@
 
 namespace trigscint {
 
-EventReadoutProducer::EventReadoutProducer(const std::string &name,
-                                           framework::Process &process)
+EventReadoutProducer::EventReadoutProducer(const std::string& name,
+                                           framework::Process& process)
     : Producer(name, process) {}
 
 void EventReadoutProducer::configure(
-    framework::config::Parameters &parameters) {
+    framework::config::Parameters& parameters) {
   // Configure this instance of the producer
   input_collection_ = parameters.get<std::string>("input_collection");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
@@ -31,7 +31,7 @@ void EventReadoutProducer::configure(
                   << "\nverbose          = " << verbose_;
 }
 
-void EventReadoutProducer::produce(framework::Event &event) {
+void EventReadoutProducer::produce(framework::Event& event) {
   // initialize QIE object for linearizing ADCs
   SimQIE qie;
 
@@ -39,7 +39,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
       input_collection_, input_pass_name_)};
 
   std::vector<trigscint::EventReadout> channel_readout_events;
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     trigscint::EventReadout out_event;
     auto adc{digi.getADC()};
     auto tdc{digi.getTDC()};
@@ -63,7 +63,7 @@ void EventReadoutProducer::produce(framework::Event &event) {
     int i_s = 0;
     [[maybe_unused]] int n_pos = 0;
     float early_ped = 0;
-    for (auto &val : adc) {
+    for (auto& val : adc) {
       float q = qie.adc2Q(val);
       charge.push_back(q);
       charge_err.push_back(qie.qErr(q));

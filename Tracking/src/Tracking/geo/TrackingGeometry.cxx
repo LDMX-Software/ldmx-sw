@@ -1,6 +1,8 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
 
+#include "Framework/Exception/Exception.h"
+
 namespace tracking::geo {
 
 /**
@@ -74,6 +76,37 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
 
   // Validation requires internet
   parser.Read(gdml_, false);
+
+  // Extract field map filename from GDML auxiliary data and resolve full path.
+  // GDML path: .../data/detectors/<det>/detector.gdml
+  // Field map:  .../data/fieldmap/<filename>
+  const G4GDMLAuxListType* aux_list = parser.GetAuxList();
+  for (const auto& aux : *aux_list) {
+    if (aux.type == "MagneticField") {
+      for (const auto& sub : *aux.auxList) {
+        if (sub.type == "File") {
+          boost::filesystem::path fmap(std::string(sub.value));
+          if (fmap.is_absolute()) {
+            field_map_file_ = fmap.string();
+          } else {
+            boost::filesystem::path prefix = boost::filesystem::path(gdml_)
+                                                 .parent_path()
+                                                 .parent_path()
+                                                 .parent_path();
+            field_map_file_ = (prefix / "fieldmap" / fmap).string();
+          }
+          break;
+        }
+      }
+      break;
+    }
+  }
+
+  if (field_map_file_.empty()) {
+    ldmx_log(warn) << "TrackingGeometry: no MagneticField/File auxiliary "
+                      "entry found in '"
+                   << gdml_ << "' — tracking will use a zero B-field";
+  }
 
   f_world_phys_vol_ = parser.GetWorldVolume();
 
@@ -158,11 +191,11 @@ void TrackingGeometry::dumpGeometry(const std::string& outputDir,
   size_t output_precision = 6;
 
   Acts::ObjVisualization3D obj_vis(output_precision, output_scalor);
-  Acts::ViewConfig container_view = Acts::ViewConfig({220, 220, 220});
-  Acts::ViewConfig volume_view = Acts::ViewConfig({220, 220, 0});
-  Acts::ViewConfig sensitive_view = Acts::ViewConfig({0, 180, 240});
-  Acts::ViewConfig passive_view = Acts::ViewConfig({240, 280, 0});
-  Acts::ViewConfig grid_view = Acts::ViewConfig({220, 0, 0});
+  Acts::ViewConfig container_view{.color = {220, 220, 220}};
+  Acts::ViewConfig volume_view{.color = {220, 220, 0}};
+  Acts::ViewConfig sensitive_view{.color = {0, 180, 240}};
+  Acts::ViewConfig passive_view{.color = {240, 280, 0}};
+  Acts::ViewConfig grid_view{.color = {220, 0, 0}};
 
   Acts::GeometryView3D::drawTrackingVolume(
       obj_vis, *(t_geometry_->highestTrackingVolume()), gctx, container_view,
@@ -248,7 +281,8 @@ Acts::Vector3 TrackingGeometry::convertG4Pos(const G4ThreeVector& g4pos) const {
 void TrackingGeometry::getSurfaces(
     std::vector<const Acts::Surface*>& surfaces) const {
   if (!t_geometry_)
-    throw std::runtime_error("TrackingGeometry::getSurfaces tGeometry is null");
+    EXCEPTION_RAISE("BadGeometry",
+                    "TrackingGeometry::getSurfaces tGeometry is null");
 
   const Acts::TrackingVolume* t_volume = t_geometry_->highestTrackingVolume();
   if (t_volume->confinedVolumes()) {

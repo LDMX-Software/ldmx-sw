@@ -59,7 +59,7 @@ class Reader {
    * @param[in] off number of bytes to move relative to dir
    * @param[in] dir location flag for the file, default is beginning
    */
-  void seek(int off, std::ios_base::seekdir dir = std::ios::beg) {
+  void seek(std::streampos off, std::ios_base::seekdir dir = std::ios::beg) {
     file_.seekg(off, dir);
   }
 
@@ -85,7 +85,7 @@ class Reader {
    *
    * @return int number of bytes relative to beginning of file
    */
-  int tell() { return file_.tellg(); }
+  std::streampos tell() { return file_.tellg(); }
 
   /**
    * Tell by number of words
@@ -93,8 +93,8 @@ class Reader {
    * @return int number of words relative to beginning of file
    */
   template <typename WordType>
-  int tell() {
-    return tell() / sizeof(WordType);
+  std::streamoff tell() {
+    return static_cast<std::streamoff>(file_.tellg()) / sizeof(WordType);
   }
 
   /**

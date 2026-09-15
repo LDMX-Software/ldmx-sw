@@ -74,7 +74,8 @@ class DarkBremInteraction : public framework::Producer {
    *      4 : 'Si',
    *      5 : 'Al',
    *      6 : 'W',
-   *      7 : 'PVT'
+   *      7 : 'PVT',
+   *      8 : 'Air'
    *    }
    *
    * This is kind of lazy, we could instead do a full LUT where we list all
@@ -97,9 +98,9 @@ class DarkBremInteraction : public framework::Producer {
       {"motherboard", 2},  // motherboards are PCB
       {"support", 5},      // support box is aluminum
       {"CFMix", 3},        // in v12, we called the Glue layers CFMix
-      {"C_volume", 1}  // in v12, we called the carbon cooling planes C but this
-                       // is too general for substr matching
-  };
+      {"C_volume", 1},     // in v12, we called the carbon cooling planes C but
+                           // this is too general for substr matching
+      {"Air", 8}};
 
   /**
    * The list of known elements assigning them to the bins that we are putting
@@ -131,7 +132,7 @@ class DarkBremInteraction : public framework::Producer {
   std::map<int, int> known_elements_ = {{1, 1},  {6, 2},  {8, 3},  {11, 4},
                                         {14, 5}, {20, 6}, {29, 7}, {39, 8},
                                         {71, 9}, {74, 10}};
-
+  std::string particle_coll_name_;
   std::string particle_passname_;
 };
 

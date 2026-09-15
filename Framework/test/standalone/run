@@ -1,0 +1,11 @@
+#!/bin/sh
+# test that standalone processors can be defined appropriately
+#
+# This file assumes it is being run from with the denv and is
+# being run from within this directory.
+
+set -o nounset
+set -o errexit
+
+fire standalone_config.py
+python3 check.py

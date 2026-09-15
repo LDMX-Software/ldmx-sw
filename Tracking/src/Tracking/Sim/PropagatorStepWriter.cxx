@@ -6,7 +6,7 @@
 #include <Acts/Propagator/ConstrainedStep.hpp>
 #include <Acts/Surfaces/Surface.hpp>
 
-#include "Acts/Geometry/DetectorElementBase.hpp"
+#include "Framework/Exception/Exception.h"
 // mg ... I don't think these are used, and they are not defined in acts v36
 // #include "Acts/Plugins/Identification/IdentifiedDetectorElement.hpp"
 // #include "Acts/Plugins/Identification/Identifier.hpp"
@@ -18,7 +18,7 @@ PropagatorStepWriter::PropagatorStepWriter(
     const tracking::sim::PropagatorStepWriter::Config& cfg)
     : m_cfg_(cfg), m_output_file_(cfg.root_file_) {
   if (m_cfg_.tree_name_.empty()) {
-    throw std::invalid_argument("Missing tree name");
+    EXCEPTION_RAISE("InvalidArgument", "Missing tree name");
   }
 
   // Setup ROOT I/O
@@ -165,9 +165,10 @@ bool PropagatorStepWriter::writeSteps(
       //      double accuracy =
       //      step.stepSize.value(Acts::ConstrainedStep::accuracy());
       double accuracy = step.stepSize.accuracy();
-      double actor = step.stepSize.value(Acts::ConstrainedStep::actor);
-      double aborter = step.stepSize.value(Acts::ConstrainedStep::aborter);
-      double user = step.stepSize.value(Acts::ConstrainedStep::user);
+      double actor = step.stepSize.value(Acts::ConstrainedStep::Type::Actor);
+      double aborter =
+          step.stepSize.value(Acts::ConstrainedStep::Type::Navigator);
+      double user = step.stepSize.value(Acts::ConstrainedStep::Type::User);
       double act2 = actor * actor;
       double acc2 = accuracy * accuracy;
       double abo2 = aborter * aborter;

@@ -1,8 +1,12 @@
+from LDMX.Framework import ConditionsObjectProvider, conditions_object_provider
 
-from LDMX.Framework import ldmxcfg
 
-
-class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
+@conditions_object_provider(
+    "TrackersTrackingGeometry",
+    "tracking::geo::TrackersTrackingGeometryProvider",
+    "Tracking",
+)
+class TrackersTrackingGeometryProvider(ConditionsObjectProvider):
     """The provider of the tracking geometry
 
     This is a singleton-class and is created when this module is imported.
@@ -12,20 +16,24 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
     the simulation, you would
 
         from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as trackgeo
-        trackgeo.get_instance().setDetector('ldmx-det-v12')
+        trackgeo.get_instance().set_detector('ldmx-det-v12')
 
-    The default detector is 'ldmx-det-v14'.
+    The default detector is 'ldmx-det-v15-8gev'.
     """
 
     __instance = None
 
+    detector: str = ""
+    tracker_y_length: float = 480.0
+    tracker_z_length: float = 240.0
+
     def get_instance():
-        if TrackersTrackingGeometryProvider.__instance == None:
+        if TrackersTrackingGeometryProvider.__instance is None:
             TrackersTrackingGeometryProvider()
 
         return TrackersTrackingGeometryProvider.__instance
 
-    def setDetector(self, det_name):
+    def set_detector(self, det_name):
         """Set the detector GDML based on the detector name
 
         Parameters
@@ -38,43 +46,54 @@ class TrackersTrackingGeometryProvider(ldmxcfg.ConditionsObjectProvider):
         LDMX.Detectors.makePath for definitions of the path making functions.
         """
 
-        from LDMX.Detectors import make_path as mP
-        print("Setting detector for tracking to "+det_name)
-        self.detector = mP.makeDetectorPath( det_name )
+        from LDMX.Detectors import make_path as mp
 
-    def __init__(self):
-        if TrackersTrackingGeometryProvider.__instance != None:
-            raise Exception('TrackersTrackingGeometryProvider is a singleton class and should only be retrieved using get_instance()')
+        print("Setting detector for tracking to " + det_name)
+        self.detector = mp.make_detector_path(det_name)
+
+    def __post_init__(self):
+        if TrackersTrackingGeometryProvider.__instance is not None:
+            raise Exception(
+                "TrackersTrackingGeometryProvider is a singleton class and "
+                "should only be retrieved using get_instance()"
+            )
         else:
-            super().__init__('TrackersTrackingGeometry', 'tracking::geo::TrackersTrackingGeometryProvider', 'Tracking')
-            self.setDetector('ldmx-det-v15-8gev')
-            #  acts x = global z
-            #   // global z:  -200 - 900/2 = -650 to -200 + 900/2 = 250 mm
-            #   // global y: -70 to 70
-            #   // global x: -240 to 240
-            self.tracker_y_length = 480.0 # in mm
-            self.tracker_z_length = 240.0 # in mm
+            self.set_detector("ldmx-det-v15-8gev")
             TrackersTrackingGeometryProvider.__instance = self
+
 
 TrackersTrackingGeometryProvider.get_instance()
 
-class GeometryContextProvider(ldmxcfg.ConditionsObjectProvider):
-    """provider of the geometry context condition"""
-    def __init__(self):
-        super().__init__('GeometryContext', 'tracking::geo::GeometryContextProvider', 'Tracking')
+
+@conditions_object_provider(
+    "GeometryContext", "tracking::geo::GeometryContextProvider", "Tracking"
+)
+class GeometryContextProvider(ConditionsObjectProvider):
+    """Provider of the geometry context condition."""
+
 
 geometry_context = GeometryContextProvider()
 
-class MagneticFieldContextProvider(ldmxcfg.ConditionsObjectProvider):
-    """provider of the magnetic field context condition"""
-    def __init__(self):
-        super().__init__('MagneticFieldContext', 'tracking::geo::MagneticFieldContextProvider', 'Tracking')
+
+@conditions_object_provider(
+    "MagneticFieldContext",
+    "tracking::geo::MagneticFieldContextProvider",
+    "Tracking",
+)
+class MagneticFieldContextProvider(ConditionsObjectProvider):
+    """Provider of the magnetic field context condition."""
+
 
 magfield_context = MagneticFieldContextProvider()
 
-class CalibrationContextProvider(ldmxcfg.ConditionsObjectProvider):
-    """provider of the calibration context condition"""
-    def __init__(self):
-        super().__init__('CalibrationContext', 'tracking::geo::CalibrationContextProvider', 'Tracking')
+
+@conditions_object_provider(
+    "CalibrationContext",
+    "tracking::geo::CalibrationContextProvider",
+    "Tracking",
+)
+class CalibrationContextProvider(ConditionsObjectProvider):
+    """Provider of the calibration context condition."""
+
 
 calibration_context = CalibrationContextProvider()

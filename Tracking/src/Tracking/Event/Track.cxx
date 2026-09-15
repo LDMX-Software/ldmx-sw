@@ -10,9 +10,7 @@ std::ostream& operator<<(std::ostream& o, const Track& c) {
            << ", n_hits: " << c.n_hits_ << ", n_outliers: " << c.n_outliers_
            << ", ndf: " << c.ndf_ << ", chi2: " << c.chi2_
            << ", truthProb: " << c.truth_prob_ << ", pdgID: " << c.pdg_id_
-           << ", perigee_pars: [" << c.perigee_pars_[0] << ", "
-           << c.perigee_pars_[1] << ", " << c.perigee_pars_[2] << ", "
-           << c.perigee_pars_[3] << ", " << c.perigee_pars_[4] << "] }";
+           << "] }";
 }
 
 }  // namespace ldmx

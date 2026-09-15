@@ -13,7 +13,7 @@ namespace recon {
 
 void SequentialTrigger::configure(framework::config::Parameters& ps) {
   trigger_list_ = ps.get<std::vector<std::string>>("trigger_list");
-  trigger_pass_names_ = ps.get<std::vector<std::string>>("trigger_passNames");
+  trigger_pass_names_ = ps.get<std::vector<std::string>>("trigger_pass_names");
   do_and_ = ps.get<bool>("do_and");
   do_or_ = ps.get<bool>("do_or");
   do_val_ = ps.get<bool>("do_val");

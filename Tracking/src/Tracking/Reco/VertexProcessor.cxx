@@ -9,12 +9,11 @@ using namespace framework;
 namespace tracking {
 namespace reco {
 
-VertexProcessor::VertexProcessor(const std::string &name,
-                                 framework::Process &process)
+VertexProcessor::VertexProcessor(const std::string& name,
+                                 framework::Process& process)
     : framework::Producer(name, process) {}
 
 void VertexProcessor::onProcessStart() {
-  gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
   h_m_ = new TH1F("m", "m", 100, 0., 1.);
@@ -40,56 +39,40 @@ void VertexProcessor::onProcessStart() {
   ldmx_log(info) << "Check if nullptr::" << sp_interpolated_b_field_.get();
 }
 
-void VertexProcessor::configure(framework::config::Parameters &parameters) {
+void VertexProcessor::configure(framework::config::Parameters& parameters) {
   // TODO:: the bfield map should be taken automatically
   field_map_ = parameters.get<std::string>("field_map");
 
   trk_coll_name_ = parameters.get<std::string>("trk_coll_name", "Tracks");
 
+  seeds_coll_name_ =
+      parameters.get<std::string>("seeds_coll_name", "RecoilTruthSeeds");
+
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }
 
-void VertexProcessor::produce(framework::Event &event) {
+void VertexProcessor::produce(framework::Event& event) {
   // TODO:: Move this to an external file
   // And move all this to a single time per processor not for each event!!
 
   nevents_++;
   auto start = std::chrono::high_resolution_clock::now();
-  auto &&stepper = Acts::EigenStepper<>{sp_interpolated_b_field_};
+  auto&& stepper = Acts::EigenStepper<>{sp_interpolated_b_field_};
 
   // Set up propagator with void navigator
   propagator_ = std::make_shared<VoidPropagator>(stepper);
 
-  // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer;
-  Linearizer::Config linearizer_config;
-  linearizer_config.bField = sp_interpolated_b_field_;
-  linearizer_config.propagator = propagator_;
-  Linearizer linearizer(linearizer_config);
-
-  // Set up Billoir Vertex Fitter
-  using VertexFitter = Acts::FullBilloirVertexFitter;
-
-  VertexFitter::Config vertex_fitter_cfg;
-
-  VertexFitter billoir_fitter(vertex_fitter_cfg);
-
-  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
-
-  // Unconstrained fit
-  // See
-  // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
-  // For constraint implementation
-
-  Acts::VertexingOptions vf_options(gctx_, bctx_);
+  // Note: FullBilloirVertexFitter setup commented out — fit() is not called yet
+  // and v46 Config now requires extractParameters/trackLinearizer delegates.
+  // Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrieve the track collection
-  const std::vector<ldmx::Track> tracks =
+  const auto& tracks =
       event.getCollection<ldmx::Track>(trk_coll_name_, input_pass_name_);
 
   // Retrieve the truth seeds
-  const std::vector<ldmx::Track> seeds =
-      event.getCollection<ldmx::Track>("RecoilTruthSeeds", input_pass_name_);
+  const auto& seeds =
+      event.getCollection<ldmx::Track>(seeds_coll_name_, input_pass_name_);
 
   if (tracks.size() < 1) return;
 
@@ -100,10 +83,11 @@ void VertexProcessor::produce(framework::Event &event) {
   // So should only be created once in principle.
   // There should be no perigeeSurface2
 
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(
+      Acts::Vector3(tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
+                    tracks.front().getPerigeeZ()));
   std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          tracks.front().getPerigeeX(), tracks.front().getPerigeeY(),
-          tracks.front().getPerigeeZ()));
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
   for (unsigned int i_track = 0; i_track < tracks.size(); i_track++) {
     Acts::BoundVector param_vec;
@@ -111,10 +95,10 @@ void VertexProcessor::produce(framework::Event &event) {
         tracks.at(i_track).getPhi(), tracks.at(i_track).getTheta(),
         tracks.at(i_track).getQoP(), tracks.at(i_track).getT();
 
-    Acts::BoundSquareMatrix cov_mat =
+    Acts::BoundMatrix cov_mat =
         tracking::sim::utils::unpackCov(tracks.at(i_track).getPerigeeCov());
-    auto part{Acts::GenericParticleHypothesis(Acts::ParticleHypothesis(
-        Acts::PdgParticle(tracks.at(i_track).getPdgID())))};
+    auto part{Acts::ParticleHypothesis(
+        Acts::PdgParticle(tracks.at(i_track).getPdgID()))};
     billoir_tracks.push_back(Acts::BoundTrackParameters(
         perigee_surface, param_vec, std::move(cov_mat), part));
   }
@@ -142,23 +126,24 @@ void VertexProcessor::produce(framework::Event &event) {
 
   if (seeds.size() == 2) {
     for (int i_seed = 0; i_seed < seeds.size(); i_seed++) {
-      std::shared_ptr<Acts::PerigeeSurface> perigee_surface2 =
-          Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
+      Acts::Vector3 seed_perigee_acts =
+          tracking::sim::utils::ldmx2Acts(Acts::Vector3(
               seeds.at(i_seed).getPerigeeX(), seeds.at(i_seed).getPerigeeY(),
               seeds.at(i_seed).getPerigeeZ()));
+      std::shared_ptr<Acts::PerigeeSurface> perigee_surface2 =
+          Acts::Surface::makeShared<Acts::PerigeeSurface>(seed_perigee_acts);
 
       Acts::BoundVector param_vec;
       param_vec << seeds.at(i_seed).getD0(), seeds.at(i_seed).getZ0(),
           seeds.at(i_seed).getPhi(), seeds.at(i_seed).getTheta(),
           seeds.at(i_seed).getQoP(), seeds.at(i_seed).getT();
 
-      Acts::BoundSquareMatrix cov_mat =
+      Acts::BoundMatrix cov_mat =
           tracking::sim::utils::unpackCov(seeds.at(i_seed).getPerigeeCov());
       int pion_pdg_id = 211;  // pi+
-      if (seeds.at(i_seed).q() < 0) pion_pdg_id = -211;
+      if (seeds.at(i_seed).getCharge() < 0) pion_pdg_id = -211;
       // BoundTrackParameters needs the particle hypothesis
-      auto part{Acts::GenericParticleHypothesis(
-          Acts::ParticleHypothesis(Acts::PdgParticle(pion_pdg_id)))};
+      auto part{Acts::ParticleHypothesis(Acts::PdgParticle(pion_pdg_id))};
       auto bound_seed_params = Acts::BoundTrackParameters(
           perigee_surface, param_vec, std::move(cov_mat), part);
 
@@ -190,7 +175,7 @@ void VertexProcessor::produce(framework::Event &event) {
 }
 
 void VertexProcessor::onProcessEnd() {
-  TFile *outfile = new TFile("VertexingResults.root", "RECREATE");
+  TFile* outfile = new TFile("VertexingResults.root", "RECREATE");
   outfile->cd();
 
   h_m_->Write();

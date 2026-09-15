@@ -148,11 +148,14 @@ class EcalVetoProcessor : public framework::Producer {
   float beam_energy_mev_{0};
 
   std::string bdt_file_name_;
+  std::string bdt_feature_config_;
   std::string roc_file_name_;
   std::vector<float> bdt_features_;
   std::string feature_list_name_;
 
   // Pass and collection names
+  std::string ecal_sp_coll_name_;
+  std::string target_sp_coll_name_;
   std::string sp_pass_name_;
   std::string rec_pass_name_;
   std::string rec_coll_name_;
@@ -160,6 +163,7 @@ class EcalVetoProcessor : public framework::Producer {
   std::string track_pass_name_;
   std::string track_collection_;
 
+  std::string sim_particles_coll_name_;
   std::string sim_particles_passname_;
   bool inverse_skim_{false};
 

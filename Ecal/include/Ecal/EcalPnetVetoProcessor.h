@@ -80,6 +80,7 @@ class EcalPnetVetoProcessor : public framework::Producer {
 
   std::string rec_coll_name_;
   std::string ecal_rec_hits_passname_;
+  std::string ecal_sp_coll_name_;
   std::string ecal_sp_hits_passname_;
   std::string track_pass_name_;
   std::string track_collection_;

@@ -21,7 +21,7 @@
 
 namespace dqm {
 
-void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
+void VisiblesCutflow::configure(framework::config::Parameters& parameters) {
   rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
       parameters.get<std::string>("bdt_file"));
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
@@ -44,6 +44,9 @@ void VisiblesCutflow::configure(framework::config::Parameters &parameters) {
 
   sp_collection_ = parameters.get<std::string>("sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   sim_particles_pass_name_ =
       parameters.get<std::string>("sim_particles_pass_name");
 
@@ -55,15 +58,15 @@ bool VisiblesCutflow::inList(std::vector<int> parents, int track_id) {
   return std::find(parents.begin(), parents.end(), track_id) != parents.end();
 }
 
-void VisiblesCutflow::analyze(const framework::Event &event) {
+void VisiblesCutflow::analyze(const framework::Event& event) {
   std::vector<float> bdt_features;
 
-  double decay_z;
+  double decay_z{-9999.};
 
-  const auto &particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_pass_name_)};
+  const auto& particle_map{event.getMap<int, ldmx::SimParticle>(
+      sim_particles_coll_name_, sim_particles_pass_name_)};
 
-  for (auto const &it : particle_map) {
+  for (auto const& it : particle_map) {
     std::vector<int> parents = it.second.getParents();
     for (int track_id : parents) {
       if (track_id == 0 && it.second.getPdgID() == -11) {
@@ -86,24 +89,27 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   bool found_recoil_e = false;
 
   if (recoil_from_tracking_) {
-    const auto &recoil_tracks{
+    const auto& recoil_tracks{
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
-    for (auto &track : recoil_tracks) {
+    for (auto& track : recoil_tracks) {
       // need to figure out how to best isolate candidate electron track
-      if (track.q() == 1 && track.getNhits() == 5) {
-        gamma_x0 = track.getPosition();
-        gamma_p[0] = -1. * track.getMomentum()[0];
-        gamma_p[1] = -1. * track.getMomentum()[1];
-        gamma_p[2] = 8000. - track.getMomentum()[2];
+      auto trk_pos = track.getPositionAtTarget();
+      auto trk_mom = track.getMomentumAtTarget();
+      if (track.getCharge() == 1 && track.getNhits() == 5 &&
+          trk_pos.size() == 3 && trk_mom.size() == 3) {
+        gamma_x0 = trk_pos;
+        gamma_p[0] = -1. * trk_mom[0];
+        gamma_p[1] = -1. * trk_mom[1];
+        gamma_p[2] = 8000. - trk_mom[2];
       }
     }
   } else {
     if (event.exists(sp_collection_, sp_pass_name_)) {
-      const auto &target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
+      const auto& target_sp_hits = event.getCollection<ldmx::SimTrackerHit>(
           sp_collection_, sp_pass_name_);
       bool found_rec = false;
-      for (auto const &it : particle_map) {
-        for (auto const &sphit : target_sp_hits) {
+      for (auto const& it : particle_map) {
+        for (auto const& sphit : target_sp_hits) {
           if (sphit.getPosition()[2] > 0) {
             if (it.first == sphit.getTrackID()) {
               if (it.second.getPdgID() == 622) {
@@ -154,9 +160,9 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   histograms_.fill("pass_acceptance", decay_z);
 
   // Get EcalRecHits, check that trigger is passed
-  const auto &ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
+  const auto& ecal_rec_hits = event.getCollection<ldmx::EcalHit>(
       ecal_rec_collection_, ecal_rec_pass_name_);
-  const auto &hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
+  const auto& hcal_rec_hits = event.getCollection<ldmx::HcalHit>(
       hcal_rec_collection_, hcal_rec_pass_name_);
 
   double trigger = 0.;
@@ -164,7 +170,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   double hcal_energy = 0.;
   bool hcal_containment = true;
 
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ecal_energy += hit.getEnergy();
       if (hit.getZPos() <= 541.722) {
@@ -172,7 +178,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
       }
     }
   }
-  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+  for (const ldmx::HcalHit& hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID det_id(hit.getID());
       if (det_id.getSection() != 0) {
@@ -200,7 +206,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
   }
   histograms_.fill("pass_tracker_veto", decay_z);
 
-  const auto &ecal_veto{event.getObject<ldmx::EcalVetoResult>(
+  const auto& ecal_veto{event.getObject<ldmx::EcalVetoResult>(
       ecal_veto_collection_, ecal_veto_pass_)};
   if (ecal_veto.getDisc() < ecal_bdt_cut_val_ && all_cuts_) {
     return;
@@ -233,7 +239,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
 
   double z_mean = 0.;  // need this when calculating z_std
   std::vector<int> layers_hit;
-  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+  for (const ldmx::HcalHit& hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       ldmx::HcalID det_id(hit.getID());
       if (det_id.getSection() != 0) {  // skip hits that aren't in main Hcal
@@ -272,7 +278,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
 
       // Calculate isolated hits
       double closest_point = 9999.;
-      for (const ldmx::HcalHit &hit2 : hcal_rec_hits) {
+      for (const ldmx::HcalHit& hit2 : hcal_rec_hits) {
         if (hit2.getEnergy() > 0.) {
           ldmx::HcalID det_i_d2(hit2.getID());
           if (fabs(hit2.getXPos()) > 1000 || fabs(hit2.getYPos()) > 1000) {
@@ -317,7 +323,7 @@ void VisiblesCutflow::analyze(const framework::Event &event) {
     r_mean_from_photon_track /= summed_det;
   }
 
-  for (const ldmx::HcalHit &hit : hcal_rec_hits) {
+  for (const ldmx::HcalHit& hit : hcal_rec_hits) {
     if (hit.getEnergy() > 0.) {
       if (fabs(hit.getXPos()) > 1000 || fabs(hit.getYPos()) > 1000) {
         continue;

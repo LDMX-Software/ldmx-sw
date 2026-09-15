@@ -8,7 +8,7 @@
 
 namespace ldmx {
 
-HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
+HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
     : framework::ConditionsObject(HcalGeometry::CONDITIONS_OBJECT_NAME) {
   scint_thickness_ = ps.get<double>("scint_thickness");
   scint_width_ = ps.get<double>("scint_width");
@@ -45,7 +45,7 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters &ps)
   }
 }
 std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
-    const std::vector<double> &globalPosition, const ldmx::HcalID &id) const {
+    const std::vector<double>& globalPosition, const ldmx::HcalID& id) const {
   const auto orientation{getScintillatorOrientation(id)};
   switch (id.section()) {
     case ldmx::HcalID::HcalSection::BACK:

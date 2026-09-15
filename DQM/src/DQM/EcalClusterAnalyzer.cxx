@@ -84,7 +84,7 @@ void EcalClusterAnalyzer::analyze(const framework::Event& event) {
   // Determine the truth information for the recoil electron
   std::vector<std::vector<float>> sp_electron_positions;
   const auto& ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
-      "EcalScoringPlaneHits", ecal_sp_hits_pass_name_)};
+      ecal_sp_hits_coll_name_, ecal_sp_hits_pass_name_)};
 
   std::vector<ldmx::SimTrackerHit> sorted_sp_hits = ecal_sp_hits;
   std::sort(sorted_sp_hits.begin(), sorted_sp_hits.end(),

@@ -1,33 +1,51 @@
-
+/**
+ * @file MyClusterWeight.h
+ * @brief Weight function for Ecal cluster merging decisions
+ */
 #ifndef ECAL_MYCLUSTERWEIGHT_H_
 #define ECAL_MYCLUSTERWEIGHT_H_
 
-#include <iostream>
+#include <cmath>
 
-#include "Ecal/IntermediateCluster.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Recon/WorkingCluster.h"
 
 namespace ecal {
 
+/**
+ * @class MyClusterWeight
+ * @brief Computes the weight (distance) between two Ecal clusters.
+ *
+ * The weight is used by TemplatedClusterFinder to decide which clusters
+ * to merge. Smaller weights indicate clusters that should be merged first.
+ * The weight is based on both transverse and longitudinal separation.
+ */
 class MyClusterWeight {
  public:
-  // returns weighting function, where smallest, weights will be combined first
-  double operator()(const IntermediateCluster& a,
-                    const IntermediateCluster& b) {
-    // Moliere radius_ of detector, roughly. In mm
+  using ClusterType = recon::WorkingCluster<ldmx::EcalHit>;
+
+  /**
+   * Compute the weight between two clusters.
+   *
+   * @param a First cluster
+   * @param b Second cluster
+   * @return Weight value (smaller = should merge first)
+   */
+  double operator()(const ClusterType& a, const ClusterType& b) {
+    // Moliere radius of detector, roughly. In mm
     double rmol = 10.00;
-    // Characteristic cluster longitudinal variable TO
-    // BE DETERMINED! in mm
+    // Characteristic cluster longitudinal variable in mm
     double dzchar = 100.0;
 
-    double a_e = a.centroid().E();
-    double a_x = a.centroid().Px();
-    double a_y = a.centroid().Py();
-    double a_z = a.centroid().Pz();
+    double a_e = a.energy();
+    double a_x = a.centroidX();
+    double a_y = a.centroidY();
+    double a_z = a.centroidZ();
 
-    double b_e = b.centroid().E();
-    double b_x = b.centroid().Px();
-    double b_y = b.centroid().Py();
-    double b_z = b.centroid().Pz();
+    double b_e = b.energy();
+    double b_x = b.centroidX();
+    double b_y = b.centroidY();
+    double b_z = b.centroidZ();
 
     double dijz;
     if (a_e >= b_e) {
@@ -36,19 +54,16 @@ class MyClusterWeight {
       dijz = a_z - b_z;
     }
 
-    double dij_t = pow(pow(a_x - b_x, 2) + pow(a_y - b_y, 2), 0.5);
+    double dij_t = std::sqrt(std::pow(a_x - b_x, 2) + std::pow(a_y - b_y, 2));
 
-    double weight_t = exp(pow(dij_t / rmol, 2)) - 1;
-    double weight_z = (exp(std::abs(dijz) / dzchar) - 1);
+    double weight_t = std::exp(std::pow(dij_t / rmol, 2)) - 1;
+    double weight_z = std::exp(std::abs(dijz) / dzchar) - 1;
 
     // Return the highest of the two weights
-    if (weight_t <= weight_z) {
-      return weight_z;
-    } else {
-      return weight_t;
-    }
+    return std::max(weight_t, weight_z);
   }
 };
+
 }  // namespace ecal
 
-#endif
+#endif  // ECAL_MYCLUSTERWEIGHT_H_

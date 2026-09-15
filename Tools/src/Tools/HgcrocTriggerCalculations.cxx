@@ -7,7 +7,7 @@
 namespace ldmx {
 
 HgcrocTriggerConditions::HgcrocTriggerConditions(
-    const conditions::IntegerTableCondition &ict, bool validate)
+    const conditions::IntegerTableCondition& ict, bool validate)
     : ict_{ict} {
   if (!validate) return;
   if (ict_.getColumnCount() < 5) {
@@ -54,7 +54,7 @@ unsigned int HgcrocTriggerCalculations::singleChannelCharge(
 }
 
 HgcrocTriggerCalculations::HgcrocTriggerCalculations(
-    const conditions::IntegerTableCondition &ict)
+    const conditions::IntegerTableCondition& ict)
     : conditions_{ict, true} {}
 
 void HgcrocTriggerCalculations::addDigi(unsigned int id, unsigned int tid,

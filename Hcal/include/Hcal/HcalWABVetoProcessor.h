@@ -27,7 +27,7 @@ namespace hcal {
 class HcalWABVetoProcessor : public framework::Producer {
  public:
   /** Constructor */
-  HcalWABVetoProcessor(const std::string &name, framework::Process &process);
+  HcalWABVetoProcessor(const std::string& name, framework::Process& process);
 
   /** Destructor */
   virtual ~HcalWABVetoProcessor() = default;
@@ -37,7 +37,7 @@ class HcalWABVetoProcessor : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -45,7 +45,7 @@ class HcalWABVetoProcessor : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   // Maximum sum of total ECAL and HCAL energy

@@ -57,13 +57,13 @@ class EventAction : public G4UserEventAction {
    * Implementation of begin of event hook.
    * @param event The Geant4 event.
    */
-  void BeginOfEventAction(const G4Event* event);
+  void BeginOfEventAction(const G4Event* event) override;
 
   /**
    * Implementation of end of event hook.
    * @param event The Geant4 event.
    */
-  void EndOfEventAction(const G4Event* event);
+  void EndOfEventAction(const G4Event* event) override;
 
   /**
    * Register a user action of type EventAction with this class.

@@ -2,7 +2,7 @@
 
 namespace ecal {
 
-void EcalVetoProcessor::onNewRun(const ldmx::RunHeader &rh) {
+void EcalVetoProcessor::onNewRun(const ldmx::RunHeader& rh) {
   profiling_map_["setup"] = 0.;
   profiling_map_["recoil_electron"] = 0.;
   profiling_map_["trajectories"] = 0.;
@@ -15,7 +15,7 @@ void EcalVetoProcessor::onNewRun(const ldmx::RunHeader &rh) {
 }
 
 void EcalVetoProcessor::buildBDTFeatureVector(
-    const ldmx::EcalVetoResult &result) {
+    const ldmx::EcalVetoResult& result) {
   // Base variables
   bdt_features_.push_back(result.getNReadoutHits());
   bdt_features_.push_back(result.getSummedDet());
@@ -29,17 +29,20 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdt_features_.push_back(result.getDeepestLayerHit());
   bdt_features_.push_back(result.getEcalBackEnergy());
   // MIP tracking
-
-  bdt_features_.push_back(-1.);  // NStraight
-  bdt_features_.push_back(-1.);  // FirstNearPHLayer
-  bdt_features_.push_back(-1.);  // NNearPHHits
-  bdt_features_.push_back(-1.);  // PhotonTerritoryHits
+  if (bdt_feature_config_ == "segmip") {
+    bdt_features_.push_back(-1.);  // NStraight
+    bdt_features_.push_back(-1.);  // FirstNearPHLayer
+    bdt_features_.push_back(-1.);  // NNearPHHits
+    bdt_features_.push_back(-1.);  // PhotonTerritoryHits
+  }
 
   // bdt_features_.push_back(result.getNStraightTracks());
   // bdt_features_.push_back(result.getFirstNearPhLayer());
   // bdt_features_.push_back(result.getNNearPhHits());
   // bdt_features_.push_back(result.getPhotonTerritoryHits());
-  // bdt_features_.push_back(result.getNTrackingHits());
+  if (bdt_feature_config_ == "wab_recrem") {
+    bdt_features_.push_back(result.getNTrackingHits());
+  }
   bdt_features_.push_back(result.getEPSep());
   bdt_features_.push_back(result.getEPDot());
   // Longitudinal segment variables
@@ -78,8 +81,9 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdt_features_.push_back(result.getOutContLayerMean()[0][2]);
 }
 
-void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
+void EcalVetoProcessor::configure(framework::config::Parameters& parameters) {
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
+  bdt_feature_config_ = parameters.get<std::string>("bdt_feature_config");
 
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
@@ -123,7 +127,11 @@ void EcalVetoProcessor::configure(framework::config::Parameters &parameters) {
 
   beam_energy_mev_ = parameters.get<double>("beam_energy");
   // Set the collection name as defined in the configuration
+  ecal_sp_coll_name_ = parameters.get<std::string>("ecal_sp_coll_name");
+  target_sp_coll_name_ = parameters.get<std::string>("target_sp_coll_name");
   sp_pass_name_ = parameters.get<std::string>("sp_pass_name");
+  sim_particles_coll_name_ =
+      parameters.get<std::string>("sim_particles_coll_name");
   collection_name_ = parameters.get<std::string>("collection_name");
   rec_pass_name_ = parameters.get<std::string>("rec_pass_name");
   rec_coll_name_ = parameters.get<std::string>("rec_coll_name");
@@ -162,7 +170,7 @@ void EcalVetoProcessor::clearProcessor() {
   std::fill(ecal_layer_time_.begin(), ecal_layer_time_.end(), 0);
 }
 
-void EcalVetoProcessor::produce(framework::Event &event) {
+void EcalVetoProcessor::produce(framework::Event& event) {
   auto start = std::chrono::high_resolution_clock::now();
   nevents_++;
 
@@ -187,7 +195,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
       std::chrono::duration<float, std::milli>(setup - start).count();
 
   if (!recoil_from_tracking_ &&
-      event.exists("EcalScoringPlaneHits", sp_pass_name_)) {
+      event.exists(ecal_sp_coll_name_, sp_pass_name_)) {
     ldmx_log(trace) << "   Loop through all of the sim particles and find the "
                        "recoil electron";
     //
@@ -196,16 +204,16 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
     // Get the collection of simulated particles from the event
     auto particle_map{event.getMap<int, ldmx::SimParticle>(
-        "SimParticles", sim_particles_passname_)};
+        sim_particles_coll_name_, sim_particles_passname_)};
 
     // Search for the recoil electron
     auto [recoil_track_id, recoil_electron] = analysis::getRecoil(particle_map);
 
     // Find ECAL SP hit for recoil electron
     auto ecal_sp_hits{event.getCollection<ldmx::SimTrackerHit>(
-        "EcalScoringPlaneHits", sp_pass_name_)};
+        ecal_sp_coll_name_, sp_pass_name_)};
     float pmax = 0;
-    for (ldmx::SimTrackerHit &sp_hit : ecal_sp_hits) {
+    for (ldmx::SimTrackerHit& sp_hit : ecal_sp_hits) {
       ldmx::SimSpecialID hit_id(sp_hit.getID());
       auto ecal_sp_momentum = sp_hit.getMomentum();
       auto ecal_sp_position = sp_hit.getPosition();
@@ -228,12 +236,12 @@ void EcalVetoProcessor::produce(framework::Event &event) {
     }
 
     // Find target SP hit for recoil electron
-    if (event.exists("TargetScoringPlaneHits", sp_pass_name_)) {
+    if (event.exists(target_sp_coll_name_, sp_pass_name_)) {
       std::vector<ldmx::SimTrackerHit> target_sp_hits =
-          event.getCollection<ldmx::SimTrackerHit>("TargetScoringPlaneHits",
+          event.getCollection<ldmx::SimTrackerHit>(target_sp_coll_name_,
                                                    sp_pass_name_);
       pmax = 0;
-      for (ldmx::SimTrackerHit &sp_hit : target_sp_hits) {
+      for (ldmx::SimTrackerHit& sp_hit : target_sp_hits) {
         ldmx::SimSpecialID hit_id(sp_hit.getID());
         auto target_sp_momentum = sp_hit.getMomentum();
         auto target_sp_position = sp_hit.getPosition();
@@ -269,11 +277,11 @@ void EcalVetoProcessor::produce(framework::Event &event) {
         event.getCollection<ldmx::Track>(track_collection_, track_pass_name_)};
 
     ldmx_log(trace) << "  Propagate the recoil ele to the ECAL";
-    ldmx::TrackStateType ts_type = ldmx::TrackStateType::AtECAL;
+    ldmx::TrackStateType ts_type = ldmx::AtECAL;
     auto recoil_track_states_ecal =
         ecal::trackProp(recoil_tracks, ts_type, "ecal");
     ldmx_log(trace) << "  Propagate the recoil ele to the Target";
-    ldmx::TrackStateType ts_type_target = ldmx::TrackStateType::AtTarget;
+    ldmx::TrackStateType ts_type_target = ldmx::AtTarget;
     auto recoil_track_states_target =
         ecal::trackProp(recoil_tracks, ts_type_target, "target");
 
@@ -483,7 +491,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   ldmx_log(trace)
       << "   Loop over the hits_ from the event to calculate the BDT features";
 
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     // Layer-wise quantities
     ldmx::EcalID id(hit.getID());
     ecal_layer_edep_raw_[id.layer()] =
@@ -592,7 +600,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
 
   n_tracking_hits_ = tracking_hit_list.size();
 
-  for (const auto &[id, energy] : cell_map_tight_iso_) {
+  for (const auto& [id, energy] : cell_map_tight_iso_) {
     if (energy > 0) summed_tight_iso_ += energy;
   }
 
@@ -646,7 +654,7 @@ void EcalVetoProcessor::produce(framework::Event &event) {
   }
 
   // Loop over hits_ a second time to find the standard deviations.
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(id);
     if (hit.getEnergy() > 0) {
@@ -973,13 +981,13 @@ void EcalVetoProcessor::onProcessEnd() {
 }
 /* Function to calculate the energy weighted shower centroid */
 ldmx::EcalID EcalVetoProcessor::getShowerCentroidIdAndRms(
-    const std::vector<ldmx::EcalHit> &ecal_rec_hits, float &shower_rms) {
+    const std::vector<ldmx::EcalHit>& ecal_rec_hits, float& shower_rms) {
   auto wgt_centroid_coords = std::make_pair<float, float>(0., 0.);
   float sum_edep = 0;
   ldmx::EcalID return_cell_id;
 
   // Calculate Energy Weighted Centroid
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     CellEnergyPair cell_energy_pair = std::make_pair(id, hit.getEnergy());
     auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(id);
@@ -999,7 +1007,7 @@ ldmx::EcalID EcalVetoProcessor::getShowerCentroidIdAndRms(
                                    : wgt_centroid_coords.second;
   // Find Nearest Cell to Centroid
   float max_dist = 1e6;
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     auto [rechit_x, rechit_y, rechit_z] = geometry_->getPosition(hit.getID());
     XYCoords centroid_coords = std::make_pair(rechit_x, rechit_y);
 
@@ -1023,19 +1031,19 @@ ldmx::EcalID EcalVetoProcessor::getShowerCentroidIdAndRms(
  * Function to load up empty vector of hit maps
  */
 void EcalVetoProcessor::fillHitMap(
-    const std::vector<ldmx::EcalHit> &ecal_rec_hits,
-    std::map<ldmx::EcalID, float> &cellMap) {
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+    const std::vector<ldmx::EcalHit>& ecal_rec_hits,
+    std::map<ldmx::EcalID, float>& cellMap) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     ldmx::EcalID id(hit.getID());
     cellMap.emplace(id, hit.getEnergy());
   }
 }
 
 void EcalVetoProcessor::fillIsolatedHitMap(
-    const std::vector<ldmx::EcalHit> &ecal_rec_hits,
-    ldmx::EcalID global_centroid, std::map<ldmx::EcalID, float> &cellMap,
-    std::map<ldmx::EcalID, float> &cellMapIso, bool do_tight) {
-  for (const ldmx::EcalHit &hit : ecal_rec_hits) {
+    const std::vector<ldmx::EcalHit>& ecal_rec_hits,
+    ldmx::EcalID global_centroid, std::map<ldmx::EcalID, float>& cellMap,
+    std::map<ldmx::EcalID, float>& cellMapIso, bool do_tight) {
+  for (const ldmx::EcalHit& hit : ecal_rec_hits) {
     auto isolated_hit = std::make_pair(true, ldmx::EcalID());
     ldmx::EcalID id(hit.getID());
     if (do_tight) {

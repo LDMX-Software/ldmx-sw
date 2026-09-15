@@ -3,12 +3,14 @@
 
 //---< C++ >---//
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 //---< Framework >---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
+#include "Framework/Logger.h"
 
 //---< ROOT >---//
 #include "TFile.h"
@@ -39,8 +41,8 @@ class EventFile {
    * @param[in] isSingleOutput true if only one output file is being written to
    * @param[in] isLoopable true for an input file where events can be reused
    */
-  EventFile(const framework::config::Parameters &params,
-            const std::string &filename, EventFile *parent, bool isOutputFile,
+  EventFile(const framework::config::Parameters& params,
+            const std::string& filename, EventFile* parent, bool isOutputFile,
             bool isSingleOutput, bool isLoopable);
 
   /**
@@ -55,8 +57,8 @@ class EventFile {
    * processing from the start when we hit the end of the event tree in
    * this input file (set in the call in the producer)
    */
-  EventFile(const framework::config::Parameters &param,
-            const std::string &fileName, bool isLoopable);
+  EventFile(const framework::config::Parameters& param,
+            const std::string& fileName, bool isLoopable);
 
   /**
    * Class constructor for cloning data from a "parent" file.
@@ -70,8 +72,8 @@ class EventFile {
    * @param[in] isSingleOutput boolean check if only one output file is being
    * written to
    */
-  EventFile(const framework::config::Parameters &param,
-            const std::string &fileName, EventFile *parent,
+  EventFile(const framework::config::Parameters& param,
+            const std::string& fileName, EventFile* parent,
             bool isSingleOutput = false);
 
   /**
@@ -85,8 +87,8 @@ class EventFile {
    * @param[in] params The parameters used to configure this EventFile.
    * @param[in] fileName The file name.
    */
-  EventFile(const framework::config::Parameters &params,
-            const std::string &fileName);
+  EventFile(const framework::config::Parameters& params,
+            const std::string& fileName);
 
   /**
    * Destructor
@@ -154,13 +156,13 @@ class EventFile {
    *
    * @param rule The rule for dropping collections.
    */
-  void addDrop(const std::string &rule);
+  void addDrop(const std::string& rule);
 
   /**
    * Set an Event object containing the event data to work with this file.
    * @param evt The Event object with event data.
    */
-  void setupEvent(Event *evt);
+  void setupEvent(Event* evt);
 
   /**
    * Change pointer to different parent file.
@@ -172,13 +174,13 @@ class EventFile {
    *
    * @param parent pointer to new parent file
    */
-  void updateParent(EventFile *parent);
+  void updateParent(EventFile* parent);
 
   /**
    * Get the Event object containing the event data.
    * @return The Event object containing event data.
    */
-  Event *getEvent() { return event_; };
+  Event* getEvent() { return event_; };
 
   /**
    * Prepare the next event.
@@ -220,22 +222,23 @@ class EventFile {
   /**
    * Write the run header into the run map
    *
-   * Any RunHeader passed here is not owned or cleaned up
-   * by this EventFile instance.
-   *
-   * @param runHeader The run header to write into the map
+   * @param runHeader shared pointer to the run header to store
    * @throw Exception if run number is already in run map
    */
-  void writeRunHeader(ldmx::RunHeader &runHeader);
+  void writeRunHeader(std::shared_ptr<ldmx::RunHeader> runHeader);
 
   /**
    * Write the map of run headers to the file as a TTree of RunHeader.
    *
-   * Deletes any RunHeaders that this instance of EventFile owns.
+   * Safe to call more than once; any run tree already in the file is
+   * overwritten. Process calls it once the producers have filled the headers
+   * and again on close, so a killed job still leaves a usable file.
    *
+   * @param[in] completed true when closing cleanly. Only the final call
+   * should pass true.
    * @throw Exception if call this function on a non-output file.
    */
-  void writeRunTree();
+  void writeRunTree(bool completed = false);
 
   /**
    * Update the RunHeader for a given run, if it exists in the input file.
@@ -243,7 +246,7 @@ class EventFile {
    * @return pointer to the header corresponding to the run number
    * @note the returned pointer will be nullptr if the run was not found
    */
-  ldmx::RunHeader *getRunHeaderPtr(int runNumber);
+  ldmx::RunHeader* getRunHeaderPtr(int runNumber);
 
   /**
    * Get the RunHeader for a given run, if it exists in the input file.
@@ -252,10 +255,10 @@ class EventFile {
    * @throw Exception if there is no RunHeader in the map with the given run
    * number.
    */
-  ldmx::RunHeader &getRunHeader(int runNumber);
+  ldmx::RunHeader& getRunHeader(int runNumber);
 
   /// @return the name of the ROOT file being managed.
-  const std::string &getFileName() { return file_name_; }
+  const std::string& getFileName() { return file_name_; }
 
  private:
   /**
@@ -269,8 +272,7 @@ class EventFile {
    *
    * Does not check if any run headers are getting overwritten!
    *
-   * Any RunHeaders read in from this function are owned by this instance
-   * of EventFile and are deleted in close().
+   * RunHeaders read in from this function are stored as shared_ptr.
    *
    * @note This function does nothing if parent_->file_ and file_ are nullptrs.
    */
@@ -296,16 +298,16 @@ class EventFile {
   bool is_loopable_{false};
 
   /// The backing TFile for this EventFile.
-  TFile *file_{nullptr};
+  TFile* file_{nullptr};
 
   /// The tree with event data.
-  TTree *tree_{nullptr};
+  TTree* tree_{nullptr};
 
   /// A parent file containing event data.
-  EventFile *parent_{nullptr};
+  EventFile* parent_{nullptr};
 
   /// The object containing the actual event data (trees and branches).
-  Event *event_{nullptr};
+  Event* event_{nullptr};
 
   /**
    * Pre-clone rules.
@@ -324,17 +326,13 @@ class EventFile {
    */
   std::vector<std::string> reactivate_rules_;
 
-  /**
-   * Map of run numbers to RunHeader objects
-   *
-   * The value object is a pair that should remain internal.
-   *  1. True if EventFile owns the RunHeader (and needs to clean it up)
-   *     - This happens when RunHeaders are imported from an input file
-   *  2. False if EventFile does not own the RunHeader
-   *     - This happens when the RunHeader is created by Process::run during
-   * production
-   */
-  std::map<int, std::pair<bool, ldmx::RunHeader *>> run_map_;
+  /// Map of run numbers to RunHeader objects (owned via shared_ptr)
+  std::map<int, std::shared_ptr<ldmx::RunHeader>> run_map_;
+
+  /// The run tree, owned by file_ once written
+  TTree* run_tree_{nullptr};
+
+  enableLogging("EventFile")
 };
 }  // namespace framework
 

@@ -86,7 +86,7 @@ void TaggerHitFilter::stepping(const G4Step* step) {
   layer_count_.insert(copy_number);
 }
 
-void TaggerHitFilter::EndOfEventAction(const G4Event* event) {
+void TaggerHitFilter::endOfEventAction(const G4Event* event) {
   checkAbortEvent(nullptr);
   layer_count_.clear();
 }

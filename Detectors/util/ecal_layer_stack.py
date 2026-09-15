@@ -11,7 +11,8 @@ In order to align with Geant4, we use the following units
 We keep a few reference tables so that all layers
 can access the properties of their materials.
 The materials that are copied from the PDG
-[Atomic and Nuclear Properties](https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
+[Atomic and Nuclear Properties](
+https://pdg.lbl.gov/2023/AtomicNuclearProperties/index.html)
 are kept as PDGMaterial in the materials dictionary and a few aliases of these
 materials are kept in material_aliases to be clear about the material names we
 use (in the GDML) and the material names from the PDG.
@@ -23,7 +24,8 @@ attribute the rest of its thickness to fiberglass (FR4 -> G10).
 
 The unit-conversion calculations are left in PDGMaterial for transparency.
 
-Natalia found [this study of the ALICE TRD](https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
+Natalia found [this study of the ALICE TRD](
+https://www-physics.lbl.gov/~gilg/PixelUpgradeMechanicsCooling/Material/Radiationlength.pdf)
 which is a helpful source of comparison to make sure we aren't wildly off.
 
 Here   | PDG
@@ -43,7 +45,9 @@ the polycarbonate in the PDG is 75% C, 5% H and 20% O which
 I deemed close enough.
 """
 
+import functools
 import json
+import operator
 import sys
 from dataclasses import asdict, dataclass
 
@@ -69,16 +73,13 @@ class PDGMaterial:
     radiation_length: float
     nuclear_interaction_length: float
 
-
-    def minimum_ionization_MeV_mm(self):
+    def minimum_ionization_mev_mm(self):
         """need to resolve the minimum ionization into MeV/mm units"""
         return (self.minimum_ionization * self.density) / 10
-
 
     def radiation_length_mm(self):
         """resolve the radiation length into mm units"""
         return (self.radiation_length / self.density) * 10
-
 
     def nuclear_interaction_length_mm(self):
         """resolve the nuclear interaction length into mm"""
@@ -104,104 +105,100 @@ class PDGMaterialEncoder(json.JSONEncoder):
 
 
 # This dictionary holds materials that are copied down from the PDG site
-materials = dict(
-    Kapton = PDGMaterial(
-        density = 1.420,
-        minimum_ionization = 1.820,
-        nuclear_interaction_length = 85.5,
-        radiation_length = 40.58
+materials = {
+    "Kapton": PDGMaterial(
+        density=1.420,
+        minimum_ionization=1.820,
+        nuclear_interaction_length=85.5,
+        radiation_length=40.58,
     ),
-    Al = PDGMaterial(
-        density = 2.699,
-        minimum_ionization = 1.615,
-        nuclear_interaction_length = 107.2,
-        radiation_length = 24.01
+    "Al": PDGMaterial(
+        density=2.699,
+        minimum_ionization=1.615,
+        nuclear_interaction_length=107.2,
+        radiation_length=24.01,
     ),
-    Ti = PDGMaterial(
-        density = 4.540,
-        minimum_ionization = 1.477,
-        nuclear_interaction_length = 126.2,
-        radiation_length = 16.16
+    "Ti": PDGMaterial(
+        density=4.540,
+        minimum_ionization=1.477,
+        nuclear_interaction_length=126.2,
+        radiation_length=16.16,
     ),
-    Air = PDGMaterial(
-        density = 1.205e-3,
-        minimum_ionization = 1.815,
-        nuclear_interaction_length = 90.1,
-        radiation_length = 36.62
+    "Air": PDGMaterial(
+        density=1.205e-3,
+        minimum_ionization=1.815,
+        nuclear_interaction_length=90.1,
+        radiation_length=36.62,
     ),
     # same as air, but with incorrect density
     # for comparing to past versions of the script with typo
-    SuperDenseAir = PDGMaterial(
-        density = 1.205,
-        minimum_ionization = 1.815,
-        nuclear_interaction_length = 90.1,
-        radiation_length = 36.62
+    "SuperDenseAir": PDGMaterial(
+        density=1.205,
+        minimum_ionization=1.815,
+        nuclear_interaction_length=90.1,
+        radiation_length=36.62,
     ),
-    Cu = PDGMaterial(
-        density = 8.960,
-        minimum_ionization = 1.403,
-        nuclear_interaction_length = 137.3,
-        radiation_length = 12.86
+    "Cu": PDGMaterial(
+        density=8.960,
+        minimum_ionization=1.403,
+        nuclear_interaction_length=137.3,
+        radiation_length=12.86,
     ),
     # this oxygen is oxygen gas
-    O = PDGMaterial(
-        density = 1.332e-3,
-        minimum_ionization = 1.801,
-        nuclear_interaction_length = 90.2,
-        radiation_length = 34.24
+    "O": PDGMaterial(
+        density=1.332e-3,
+        minimum_ionization=1.801,
+        nuclear_interaction_length=90.2,
+        radiation_length=34.24,
     ),
-    Na = PDGMaterial(
-        density = 0.9710,
-        minimum_ionization = 1.639,
-        nuclear_interaction_length = 102.6,
-        radiation_length = 27.74
+    "Na": PDGMaterial(
+        density=0.9710,
+        minimum_ionization=1.639,
+        nuclear_interaction_length=102.6,
+        radiation_length=27.74,
     ),
-    Si = PDGMaterial(
-        density = 2.329,
-        minimum_ionization = 1.664,
-        nuclear_interaction_length = 108.4,
-        radiation_length = 21.82
+    "Si": PDGMaterial(
+        density=2.329,
+        minimum_ionization=1.664,
+        nuclear_interaction_length=108.4,
+        radiation_length=21.82,
     ),
-    Ca = PDGMaterial(
-        density = 1.550,
-        minimum_ionization = 1.655,
-        nuclear_interaction_length = 119.8,
-        radiation_length = 16.14
+    "Ca": PDGMaterial(
+        density=1.550,
+        minimum_ionization=1.655,
+        nuclear_interaction_length=119.8,
+        radiation_length=16.14,
     ),
-    W = PDGMaterial(
-        density = 19.30,
-        minimum_ionization = 1.145,
-        nuclear_interaction_length = 191.9,
-        radiation_length = 6.76
+    "W": PDGMaterial(
+        density=19.30,
+        minimum_ionization=1.145,
+        nuclear_interaction_length=191.9,
+        radiation_length=6.76,
     ),
     # this carbon is 6 C carbon (amorphous)
     # with a lower density to represent carbon fiber
-    C = PDGMaterial(
-        density = 1.800,
-        minimum_ionization = 1.749,
-        nuclear_interaction_length = 85.8,
-        radiation_length = 42.70
+    "C": PDGMaterial(
+        density=1.800,
+        minimum_ionization=1.749,
+        nuclear_interaction_length=85.8,
+        radiation_length=42.70,
     ),
     # FR4 is a fire-retardant version of G10 with 7-8% bromide
-    G10 = PDGMaterial(
-        density = 1.800,
-        minimum_ionization = 1.762,
-        nuclear_interaction_length = 78.4,
-        radiation_length = 32.17
+    "G10": PDGMaterial(
+        density=1.800,
+        minimum_ionization=1.762,
+        nuclear_interaction_length=78.4,
+        radiation_length=32.17,
     ),
-    polycarbonate = PDGMaterial(
-        density = 1.200,
-        minimum_ionization = 1.886,
-        nuclear_interaction_length = 83.6,
-        radiation_length = 41.50
-    )
-)
+    "polycarbonate": PDGMaterial(
+        density=1.200,
+        minimum_ionization=1.886,
+        nuclear_interaction_length=83.6,
+        radiation_length=41.50,
+    ),
+}
 
-material_aliases = dict(
-    FR4 = 'G10',
-    Carbon = 'C',
-    Glue = 'polycarbonate'
-)
+material_aliases = {"FR4": "G10", "Carbon": "C", "Glue": "polycarbonate"}
 
 
 def get_material(name):
@@ -213,15 +210,13 @@ def get_material(name):
     return materials[material_aliases.get(name, name)]
 
 
-class Layer :
-    """class representing a single layer of a single material
-
-    """
+class Layer:
+    """class representing a single layer of a single material"""
 
     # 300 um for v14 and 400 um for v15
     SensDetThickness = 0.4
 
-    def __init__(self, name, thickness, sensitive = False) :
+    def __init__(self, name, thickness, sensitive=False):
         self.name = name
         self.thickness = thickness
         self.sensitive = sensitive
@@ -230,28 +225,35 @@ class Layer :
 
         self.nuclen = the_material.nuclear_interaction_length_mm()
         self.x0 = the_material.radiation_length_mm()
-        self.dEdx = the_material.minimum_ionization_MeV_mm()
+        self.dEdx = the_material.minimum_ionization_mev_mm()
 
-    def __str__(self) :
-        return f'{self.thickness:.2f} mm {self.name}'
+    def __str__(self):
+        return f"{self.thickness:.2f} mm {self.name}"
 
-    def air(t) :
-        return Layer('Air',t)
+    @staticmethod
+    def air(t):
+        return Layer("Air", t)
 
-    def tungsten(t) :
-        return Layer('W', t)
+    @staticmethod
+    def tungsten(t):
+        return Layer("W", t)
 
-    def pcb(*, thickness = 1.2, n_copper_layers = 8) :
-        """Estimate PCB layer properties with a layer of copper and a layer of fiberglass
+    @staticmethod
+    def pcb(*, thickness=1.2, n_copper_layers=8):
+        """Estimate PCB layer properties with a layer of copper and a layer of
+        fiberglass
 
-        The total thickness of the PCB is given as well as the expected number of copper layers.
-        The total thickness of the copper is then determined assuming that 2 of the copper layers
-        are 1 oz/ft^2 and the rest are 0.5 oz/ft^2.
+        The total thickness of the PCB is given as well as the expected number of
+        copper layers. The total thickness of the copper is then determined assuming
+        that 2 of the copper layers are 1 oz/ft^2 and the rest are 0.5 oz/ft^2.
         The rest of the PCB thickness is then attributed to the fiberglass.
         """
 
         if n_copper_layers < 3:
-            raise ValueError('This estimate for the PCB does not make sense if there are less than 3 copper layers.')
+            raise ValueError(
+                "This estimate for the PCB does not make sense if there are"
+                " less than 3 copper layers."
+            )
 
         # after dividing the copper weight (in oz/ft^2) by the density (in g/cm^3)
         # we need to scale by this factor to get the units into mm
@@ -259,37 +261,48 @@ class Layer :
         one_oz_ft2_per_one_g_cm3_to_mm = 0.305152
 
         copper_thickness = round(
-            ( # 2 1oz layers and the rest are 0.5oz layers
-                (2)*(1) + (n_copper_layers - 2)*(0.5)
-            )/materials['Cu'].density*one_oz_ft2_per_one_g_cm3_to_mm,
-            ndigits = 3 # round to the micron
+            (  # 2 1oz layers and the rest are 0.5oz layers
+                (2) * (1) + (n_copper_layers - 2) * (0.5)
+            )
+            / materials["Cu"].density
+            * one_oz_ft2_per_one_g_cm3_to_mm,
+            ndigits=3,  # round to the micron
         )
 
         if copper_thickness >= thickness:
-            raise ValueError(f'Total thickness of PCB provided {thickness} is smaller than thickness for {n_copper_layers} of copper {copper_thickness}.')
+            raise ValueError(
+                f"Total thickness of PCB provided {thickness} is smaller than"
+                f" thickness for {n_copper_layers} of copper {copper_thickness}."
+            )
 
         return [
-            Layer('Cu', copper_thickness),
-            Layer('FR4', thickness - copper_thickness)
+            Layer("Cu", copper_thickness),
+            Layer("FR4", thickness - copper_thickness),
         ]
 
-    def glue(t) :
-        return Layer('Glue', t)
+    @staticmethod
+    def glue(t):
+        return Layer("Glue", t)
 
-    def silicon() :
-        return Layer('Si',Layer.SensDetThickness,sensitive=True)
+    @staticmethod
+    def silicon():
+        return Layer("Si", Layer.SensDetThickness, sensitive=True)
 
-    def carbon(t) :
-        return Layer('Carbon',t)
+    @staticmethod
+    def carbon(t):
+        return Layer("Carbon", t)
 
+    @staticmethod
     def titanium_baseplate():
-        return Layer('Ti', 1)
+        return Layer("Ti", 1)
 
+    @staticmethod
     def aluminum_support_plane():
-        return Layer('Al', 3)
+        return Layer("Al", 3)
 
+    @staticmethod
     def kapton(t):
-        return Layer('Kapton', t)
+        return Layer("Kapton", t)
 
 
 @dataclass
@@ -377,59 +390,63 @@ class BiLayerSandwich:
 
     def material_stack(self):
         layers = []
-        layers.append(Layer.air(0.5)) #Front_Tolerance
-        if self.front > 0 :
+        layers.append(Layer.air(0.5))  # Front_Tolerance
+        if self.front > 0:
             layers.append(Layer.tungsten(self.front))
             layers.append(Layer.air(0.5))
         if self.front == 0:
-            layers.append(Layer.air(0.15)) # correction
-        layers.extend(Layer.pcb()) # PCB_dz
-        layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-        layers.extend(Layer.pcb()) # PCB_dz
-        layers.append(Layer.glue(0.1)) # Glue_dz
-        layers.append(Layer.silicon()) # Si_dz
-        layers.append(Layer.glue(0.2)) # GlueThick_dz
+            layers.append(Layer.air(0.15))  # correction
+        layers.extend(Layer.pcb())  # PCB_dz
+        layers.append(Layer.air(3.5))  # PCB_Motherboard_Gap
+        layers.extend(Layer.pcb())  # PCB_dz
+        layers.append(Layer.glue(0.1))  # Glue_dz
+        layers.append(Layer.silicon())  # Si_dz
+        layers.append(Layer.glue(0.2))  # GlueThick_dz
         if self.slice_test:
-            layers.extend([
-                Layer.kapton(0.05),
-                Layer('Cu', 0.017), # approx thickness of 0.5oz Cu layer
-                Layer.kapton(0.05),
-                Layer.titanium_baseplate()
-            ])
+            layers.extend(
+                [
+                    Layer.kapton(0.05),
+                    Layer("Cu", 0.017),  # approx thickness of 0.5oz Cu layer
+                    Layer.kapton(0.05),
+                    Layer.titanium_baseplate(),
+                ]
+            )
         else:
-            layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
-            if self.cooling == 0 :
-                layers.append(Layer.air(0.5)) # preshower_extra_air
-            if self.cooling > 0 :
+            layers.append(Layer.carbon(0.79))  # CarbonBasePlate_dz
+            if self.cooling == 0:
+                layers.append(Layer.air(0.5))  # preshower_extra_air
+            if self.cooling > 0:
                 layers.append(Layer.tungsten(self.cooling))
         if self.slice_test:
             layers.append(Layer.aluminum_support_plane())
         else:
-            layers.append(Layer.carbon(5.7)) # CarbonCoolingPlane_dz
+            layers.append(Layer.carbon(5.7))  # CarbonCoolingPlane_dz
         if self.slice_test:
-            layers.extend([
-                Layer.titanium_baseplate(),
-                Layer.kapton(0.05),
-                Layer('Cu', 0.017), # approx thickness of 0.5oz Cu layer
-                Layer.kapton(0.05),
-            ])
+            layers.extend(
+                [
+                    Layer.titanium_baseplate(),
+                    Layer.kapton(0.05),
+                    Layer("Cu", 0.017),  # approx thickness of 0.5oz Cu layer
+                    Layer.kapton(0.05),
+                ]
+            )
         else:
-            layers.append(Layer.carbon(0.79)) # CarbonBasePlate_dz
-            if self.cooling > 0 :
+            layers.append(Layer.carbon(0.79))  # CarbonBasePlate_dz
+            if self.cooling > 0:
                 layers.append(Layer.tungsten(self.cooling))
-        layers.append(Layer.glue(0.2)) # GlueThick_dz
-        layers.append(Layer.silicon()) # Si_dz
-        layers.append(Layer.glue(0.1)) # Glue_dz
-        layers.extend(Layer.pcb()) # PCB_dz
-        layers.append(Layer.air(3.5)) # PCB_Motherboard_Gap
-        if self.cooling == 0 : # sampling_section_offset
+        layers.append(Layer.glue(0.2))  # GlueThick_dz
+        layers.append(Layer.silicon())  # Si_dz
+        layers.append(Layer.glue(0.1))  # Glue_dz
+        layers.extend(Layer.pcb())  # PCB_dz
+        layers.append(Layer.air(3.5))  # PCB_Motherboard_Gap
+        if self.cooling == 0:  # sampling_section_offset
             layers.append(Layer.air(0.5))
             layers.append(Layer.air(0.5))
-        layers.extend(Layer.pcb()) # PCB_dz
+        layers.extend(Layer.pcb())  # PCB_dz
         return layers
 
 
-def print_gdml_list(**kwargs) :
+def print_gdml_list(**kwargs):
     """print a list (or lists) into GDML format to stdout
 
     The key-word arguments are 'name = l' where 'name' is the name
@@ -437,39 +454,42 @@ def print_gdml_list(**kwargs) :
     that will be injected into the GDML.
     """
 
-    for name, l in kwargs.items() :
-        newline_list = f'{l[0]:.1f}\n' + '\n'.join([f'                {v:.1f}' for v in l[1:]])
+    for name, values in kwargs.items():
+        newline_list = f"{values[0]:.1f}\n" + "\n".join(
+            [f"                {v:.1f}" for v in values[1:]]
+        )
         print(f'<matrix name="{name}"')
-        print( '        coldim="1"')
+        print('        coldim="1"')
         print(f'        values="{newline_list}"/>')
 
 
-def enumerate_absorber_dz(bilayers) :
-    """go through layers and keep track of the longitudinal depth (dz) of the absorber"""
+def enumerate_absorber_dz(bilayers):
+    """go through layers and keep track of the longitudinal depth (dz) of the
+    absorber"""
 
     cooling_tungsten_dz = []
     front_tungsten_dz = []
-    bilayer_absorber_cumulative = [0.]
+    bilayer_absorber_cumulative = [0.0]
     for bilayer in bilayers:
         cooling_tungsten_dz.append(bilayer.cooling)
         front_tungsten_dz.append(bilayer.front)
         bilayer_absorber_cumulative.append(
-            bilayer_absorber_cumulative[-1] + 2*bilayer.cooling + bilayer.front
+            bilayer_absorber_cumulative[-1] + 2 * bilayer.cooling + bilayer.front
         )
     return cooling_tungsten_dz, front_tungsten_dz, bilayer_absorber_cumulative
 
 
-def average(raw_weights) :
+def average(raw_weights):
     """rolling average of the weights between adjacent layers"""
     averaged = []
     # first to (n-1)th layers where n is the total number of layers
-    for i_layer in range(0,len(raw_weights)-1) :
-        averaged.append(0.5*(raw_weights[i_layer] + raw_weights[i_layer+1]))
+    for i_layer in range(0, len(raw_weights) - 1):
+        averaged.append(0.5 * (raw_weights[i_layer] + raw_weights[i_layer + 1]))
     averaged.append(raw_weights[-1])
     return averaged
 
 
-def materials_between_sensdet(layer_stack) :
+def materials_between_sensdet(layer_stack):
     """partition the input layer stack by the sensitive layers
 
     The returned object is a list of lists such that the sub-lists
@@ -479,19 +499,20 @@ def materials_between_sensdet(layer_stack) :
 
     mbs = []
     current = []
-    for layer in layer_stack :
-        if layer.sensitive :
+    for layer in layer_stack:
+        if layer.sensitive:
             mbs.append(current)
             current = []
-        else :
+        else:
             current.append(layer)
-    if len(current) > 0 :
+    if len(current) > 0:
         mbs.append(current)
     return mbs
 
 
-def calc_weights(layers_partitioned_by_sensdet) :
-    """calculate different material properties for the layer stacks between sensitive layers
+def calc_weights(layers_partitioned_by_sensdet):
+    """calculate different material properties for the layer stacks between
+    sensitive layers
 
     These material properties do not include the sensitive layers themselves since
     the partitioning drops them out (see materials_between_sensdet).
@@ -509,24 +530,28 @@ def calc_weights(layers_partitioned_by_sensdet) :
     """
 
     # Does not include sensitive detector layers
-    de_between_sensdet = [ ]
-    x0_between_sensdet = [ ]
-    l_between_sensdet  = [ ]
+    de_between_sensdet = []
+    x0_between_sensdet = []
+    l_between_sensdet = []
     # Does include sensitive detector layers
-    zpos_layer = [ ]
-    for section in layers_partitioned_by_sensdet :
-        de_between_sensdet.append(sum(l.thickness * l.dEdx for l in section))
-        x0_between_sensdet.append(sum(l.thickness / l.x0 for l in section))
-        l_between_sensdet.append(sum(l.thickness / l.nuclen for l in section))
+    zpos_layer = []
+    for section in layers_partitioned_by_sensdet:
+        de_between_sensdet.append(
+            sum(layer.thickness * layer.dEdx for layer in section)
+        )
+        x0_between_sensdet.append(sum(layer.thickness / layer.x0 for layer in section))
+        l_between_sensdet.append(
+            sum(layer.thickness / layer.nuclen for layer in section)
+        )
         last_layer_pos = 0.0
         if len(zpos_layer) > 0:
             last_layer_pos = zpos_layer[-1] + Layer.SensDetThickness
-        zpos_layer.append(last_layer_pos + sum(l.thickness for l in section))
-    #endfor - sections
+        zpos_layer.append(last_layer_pos + sum(layer.thickness for layer in section))
+    # endfor - sections
 
     de_between_sensdet = average(de_between_sensdet)
     x0_between_sensdet = average(x0_between_sensdet)
-    l_between_sensdet  = average(l_between_sensdet)
+    l_between_sensdet = average(l_between_sensdet)
 
     return de_between_sensdet, x0_between_sensdet, l_between_sensdet, zpos_layer
 
@@ -536,7 +561,7 @@ def print_weights(
     x0_between_sensdet,
     l_between_sensdet,
     zpos_layer,
-    output = sys.stdout
+    output=sys.stdout,
 ):
     """print the weights in a nice-ly formatted table
 
@@ -544,19 +569,39 @@ def print_weights(
     function so they can be called directly following each other.
     """
     output.write(
-        '{0:>5s} {1:>7s} {2:>6s} {3:>6s} {4:>6s}\n'.format(
-            'Layer', 'dE', 'X0', 'Lambda', 'Zpos'
+        "{:>5s} {:>7s} {:>6s} {:>6s} {:>6s}\n".format(
+            "Layer", "dE", "X0", "Lambda", "Zpos"
         )
     )
-    output.write('-----------------------------------\n')
-    for layer in range(len(de_between_sensdet)-1):
-        output.write(f'{layer+1:5d} {de_between_sensdet[layer]:7.3f} {x0_between_sensdet[layer]:6.3f} {l_between_sensdet[layer]:6.3f} {zpos_layer[layer]:6.3f}\n')
-    #endfor - layers
-    output.write('-----------------------------------\n')
-    output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-        'Sum', sum(de_between_sensdet[:-1]), sum(x0_between_sensdet[:-1]), sum(l_between_sensdet[:-1]), zpos_layer[-1] ))
-    output.write('{0:>5s} {1:7.3f} {2:6.3f} {3:6.3f} {4:6.3f}\n'.format(
-        'Back', de_between_sensdet[-1], x0_between_sensdet[-1], l_between_sensdet[-1], zpos_layer[-1]))
+    output.write("-----------------------------------\n")
+    for layer in range(len(de_between_sensdet) - 1):
+        output.write(
+            f"{layer + 1:5d}"
+            f" {de_between_sensdet[layer]:7.3f}"
+            f" {x0_between_sensdet[layer]:6.3f}"
+            f" {l_between_sensdet[layer]:6.3f}"
+            f" {zpos_layer[layer]:6.3f}\n"
+        )
+    # endfor - layers
+    output.write("-----------------------------------\n")
+    output.write(
+        "{:>5s} {:7.3f} {:6.3f} {:6.3f} {:6.3f}\n".format(
+            "Sum",
+            sum(de_between_sensdet[:-1]),
+            sum(x0_between_sensdet[:-1]),
+            sum(l_between_sensdet[:-1]),
+            zpos_layer[-1],
+        )
+    )
+    output.write(
+        "{:>5s} {:7.3f} {:6.3f} {:6.3f} {:6.3f}\n".format(
+            "Back",
+            de_between_sensdet[-1],
+            x0_between_sensdet[-1],
+            l_between_sensdet[-1],
+            zpos_layer[-1],
+        )
+    )
     output.flush()
 
 
@@ -571,17 +616,22 @@ command.__list__ = {}
 
 @command
 def print_layer_materials():
-    print(json.dumps({
-        name : {
-            attr: getattr(material, attr)()
-            for attr in [
-                'minimum_ionization_MeV_mm',
-                'radiation_length_mm',
-                'nuclear_interaction_length_mm'
-            ]
-        }
-        for name, material in materials.items()
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                name: {
+                    attr: getattr(material, attr)()
+                    for attr in [
+                        "minimum_ionization_mev_mm",
+                        "radiation_length_mm",
+                        "nuclear_interaction_length_mm",
+                    ]
+                }
+                for name, material in materials.items()
+            },
+            indent=2,
+        )
+    )
 
 
 @command
@@ -589,23 +639,27 @@ def ldmx_ecal_v14():
     """full LDMX Ecal v14 geometry"""
 
     bilayers = (
-        [BiLayerSandwich(front = 0.0, cooling = 0.0)] # absorber-less Pre-Shower
-        +[BiLayerSandwich(front = 1.0, cooling = 1.0)] # Section A
-        +[BiLayerSandwich(front = 2.0, cooling = 1.5)] # Section B
-        +9*[BiLayerSandwich(front = 3.5, cooling = 1.8)] # Section C
-        +5*[BiLayerSandwich(front = 7.0, cooling = 3.5)] # Section D
+        [BiLayerSandwich(front=0.0, cooling=0.0)]  # absorber-less Pre-Shower
+        + [BiLayerSandwich(front=1.0, cooling=1.0)]  # Section A
+        + [BiLayerSandwich(front=2.0, cooling=1.5)]  # Section B
+        + 9 * [BiLayerSandwich(front=3.5, cooling=1.8)]  # Section C
+        + 5 * [BiLayerSandwich(front=7.0, cooling=3.5)]  # Section D
     )
 
     # the way I designed the GDML did not include the Pre-Shower bilayer
     # in these lists because the Pre-Shower bilayer doesn't have any absorber
     ct, ft, bac = enumerate_absorber_dz(bilayers[1:])
-    print_gdml_list(cooling_tungsten_dz = ct,
-                    front_tungsten_dz = ft,
-                    bilayer_absorber_cumulative = bac)
+    print_gdml_list(
+        cooling_tungsten_dz=ct, front_tungsten_dz=ft, bilayer_absorber_cumulative=bac
+    )
 
     # adding two lists together just appends them, so I "sum" all the
     # bilayer material stacks into a single materal stack for the entire detector
-    layers = sum((bilayer.material_stack() for bilayer in bilayers), [])
+    layers = functools.reduce(
+        operator.iadd,
+        (bilayer.material_stack() for bilayer in bilayers),
+        [],
+    )
     # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
@@ -617,23 +671,27 @@ def ldmx_ecal_v15():
     """full LDMX Ecal v15 geometry"""
 
     bilayers = (
-        [BiLayerSandwich(front = 0.0, cooling = 0.0)] # absorber-less Pre-Shower
-        +[BiLayerSandwich(front = 1.0, cooling = 1.0)] # Section A
-        +[BiLayerSandwich(front = 2.0, cooling = 1.5)] # Section B
-        +9*[BiLayerSandwich(front = 4.0, cooling = 2.0)] # Section C
-        +4*[BiLayerSandwich(front = 8.0, cooling = 3.5)] # Section D
+        [BiLayerSandwich(front=0.0, cooling=0.0)]  # absorber-less Pre-Shower
+        + [BiLayerSandwich(front=1.0, cooling=1.0)]  # Section A
+        + [BiLayerSandwich(front=2.0, cooling=1.5)]  # Section B
+        + 9 * [BiLayerSandwich(front=4.0, cooling=2.0)]  # Section C
+        + 4 * [BiLayerSandwich(front=8.0, cooling=3.5)]  # Section D
     )
 
     # the way I designed the GDML did not include the Pre-Shower bilayer
     # in these lists because the Pre-Shower bilayer doesn't have any absorber
     ct, ft, bac = enumerate_absorber_dz(bilayers[1:])
-    print_gdml_list(cooling_tungsten_dz = ct,
-                    front_tungsten_dz = ft,
-                    bilayer_absorber_cumulative = bac)
+    print_gdml_list(
+        cooling_tungsten_dz=ct, front_tungsten_dz=ft, bilayer_absorber_cumulative=bac
+    )
 
     # adding two lists together just appends them, so I "sum" all the
     # bilayer material stacks into a single materal stack for the entire detector
-    layers = sum((bilayer.material_stack() for bilayer in bilayers), [])
+    layers = functools.reduce(
+        operator.iadd,
+        (bilayer.material_stack() for bilayer in bilayers),
+        [],
+    )
     # partition the material stack into groups separated by sensitive silicon
     mbs = materials_between_sensdet(layers)
     weights = calc_weights(mbs)
@@ -644,11 +702,19 @@ def ldmx_ecal_v15():
 def minildmx():
     Layer.SensDetThickness = 0.3
 
-    print('            |     Depth     |')
-    print('N Bi-Layers | X0    | mm    |')
-    for n in range(1,4):
-        layers = [Layer.kapton(0.1)]+n*BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()+[Layer.kapton(0.1)]
-        print(f'{n:>11} | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g} | {sum(layer.thickness for layer in layers):<5.3g} |')
+    print("            |     Depth     |")
+    print("N Bi-Layers | X0    | mm    |")
+    for n in range(1, 4):
+        layers = (
+            [Layer.kapton(0.1)]
+            + n * BiLayerSandwich(front=0, cooling=0, slice_test=True).material_stack()
+            + [Layer.kapton(0.1)]
+        )
+        print(
+            f"{n:>11}"
+            f" | {sum(layer.thickness / layer.x0 for layer in layers):<5.3g}"
+            f" | {sum(layer.thickness for layer in layers):<5.3g} |"
+        )
 
 
 @command
@@ -659,7 +725,9 @@ def bilayer_spec():
     if slice_test:
         Layer.SensDetThickness = 0.3
 
-    layers = 3*BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
+    layers = (
+        3 * BiLayerSandwich(front=0, cooling=0, slice_test=slice_test).material_stack()
+    )
 
     if include_kapton:
         layers.insert(0, Layer.kapton(0.1))
@@ -667,43 +735,54 @@ def bilayer_spec():
 
     totals_by_material = {}
 
-    print('Full Layer Stack')
-    print('Material, Depth / mm, Depth / X0')
+    print("Full Layer Stack")
+    print("Material, Depth / mm, Depth / X0")
     for layer in layers:
-        print(layer.name, layer.thickness, f'{layer.thickness / layer.x0:.3g}', sep=', ')
+        print(
+            layer.name,
+            layer.thickness,
+            f"{layer.thickness / layer.x0:.3g}",
+            sep=", ",
+        )
         if layer.name not in totals_by_material:
             totals_by_material[layer.name] = 0.0
         totals_by_material[layer.name] += layer.thickness
 
     print()
-    print('Total Depths')
-    print('Material, Depth / mm, Depth / X0')
+    print("Total Depths")
+    print("Material, Depth / mm, Depth / X0")
     for material, depth in totals_by_material.items():
-        print(material, f'{depth:.3g}', f'{depth/get_material(material).radiation_length_mm():.3g}', sep=', ')
+        print(
+            material,
+            f"{depth:.3g}",
+            f"{depth / get_material(material).radiation_length_mm():.3g}",
+            sep=", ",
+        )
 
 
 @command
 def pcb():
-    print('Layers')
-    total_mm, total_x0 = (0,0)
+    print("Layers")
+    total_mm, total_x0 = (0, 0)
     for layer in Layer.pcb():
         print(layer.name, layer.thickness)
         total_mm += layer.thickness
         total_x0 += layer.thickness / layer.x0
 
-    print('\nTotal')
-    print(f'{total_mm:.3g} mm')
-    print(f'{total_x0:.3g} X0')
+    print("\nTotal")
+    print(f"{total_mm:.3g} mm")
+    print(f"{total_x0:.3g} X0")
 
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', choices = list(command.__list__))
+    parser.add_argument("command", choices=list(command.__list__))
     args = parser.parse_args()
 
     command.__list__[args.command]()
 
 
-if __name__ == '__main__' :
+if __name__ == "__main__":
     main()

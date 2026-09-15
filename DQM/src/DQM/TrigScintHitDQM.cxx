@@ -2,8 +2,8 @@
 
 namespace dqm {
 
-TrigScintHitDQM::TrigScintHitDQM(const std::string &name,
-                                 framework::Process &process)
+TrigScintHitDQM::TrigScintHitDQM(const std::string& name,
+                                 framework::Process& process)
     : framework::Analyzer(name, process) {}
 
 void TrigScintHitDQM::onProcessStart() {
@@ -43,21 +43,20 @@ void TrigScintHitDQM::onProcessStart() {
   // through and set overflow boolean.
 }
 
-void TrigScintHitDQM::configure(framework::config::Parameters &ps) {
+void TrigScintHitDQM::configure(framework::config::Parameters& ps) {
   hit_collection_name_ = ps.get<std::string>("hit_collection");
   pad_name_ = ps.get<std::string>("pad").c_str();
 
-  trig_scint_passname_ = ps.get<std::string>("trig_scint_passname");
+  pass_name_ = ps.get<std::string>("pass_name");
 
   ldmx_log(debug) << "In TrigScintHitDQM::configure, got parameters "
                   << hit_collection_name_ << " and " << pad_name_;
 }
 
-void TrigScintHitDQM::analyze(const framework::Event &event) {
+void TrigScintHitDQM::analyze(const framework::Event& event) {
   // Get the collection of TrigScintHit digitized hits if the exists
   const std::vector<ldmx::TrigScintHit> trig_scint_hits =
-      event.getCollection<ldmx::TrigScintHit>(hit_collection_name_,
-                                              trig_scint_passname_);
+      event.getCollection<ldmx::TrigScintHit>(hit_collection_name_, pass_name_);
 
   // Get the total hit count
   int hit_count = trig_scint_hits.size();
@@ -70,7 +69,7 @@ void TrigScintHitDQM::analyze(const framework::Event &event) {
 
   // Loop through all TrigScint hits in the event
 
-  for (const ldmx::TrigScintHit &hit : trig_scint_hits) {
+  for (const ldmx::TrigScintHit& hit : trig_scint_hits) {
     histograms_.fill("pe", hit.getPE());
     histograms_.fill("hit_time", hit.getTime());
     histograms_.fill("id", hit.getBarID());

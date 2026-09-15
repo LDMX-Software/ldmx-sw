@@ -13,5 +13,12 @@
 #pragma link C++ class ldmx::EventWeights + ;
 #pragma link C++ class ldmx::HepMC3GenEvent + ;
 #pragma link C++ class std::vector < ldmx::HepMC3GenEvent> + ;
+#pragma link C++ class ldmx::PhotonuclearInteraction + ;
+#pragma link C++ class ldmx::PhotonuclearInteraction::ParticleInfo + ;
+#pragma link C++ class std::vector < ldmx::PhotonuclearInteraction> + ;
+#pragma link C++ class ldmx::CascadeStep + ;
+#pragma link C++ class std::vector < ldmx::CascadeStep> + ;
+#pragma link C++ class ldmx::CascadeHistory + ;
+#pragma link C++ class std::map < int, ldmx::CascadeHistory> + ;
 
 #endif

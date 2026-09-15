@@ -16,7 +16,7 @@ import uproot
 from ._file import File
 
 
-class Differ :
+class Differ:
     """Differ allowing easy comparison of "similar" files
 
     The basic requirement of all files passed is that the columns
@@ -53,35 +53,39 @@ class Differ :
 
     """
 
-    def __init__(self, grp_name, output_type,  *args) :
-        def open_file(arg) :
-            if isinstance(arg, (list,tuple)) :
+    def __init__(self, grp_name, output_type, *args):
+        def open_file(arg):
+            if isinstance(arg, (list, tuple)):
                 return File(*arg)
-            elif isinstance(arg, File) :
+            elif isinstance(arg, File):
                 return arg
-            else :
-                raise KeyError(f'Argument provided {arg} is not a ComparePlots.File or a tuple of arguments for its constructor')
+            else:
+                raise KeyError(
+                    f"Argument provided {arg} is not a"
+                    " ComparePlots.File or a tuple of"
+                    " arguments for its constructor"
+                )
 
         self.grp_name = grp_name
         self.files = list(map(open_file, args))
         self.output_type = output_type
 
-    def __repr__(self) :
+    def __repr__(self):
         """Short form representation of a Differ"""
-        return f'Differ ({self.grp_name}) {self.files}'
+        return f"Differ ({self.grp_name}) {self.files}"
 
     def plot1d(
         self,
         histname,
         xlabel,
-        ylabel = 'Count',
-        yscale = 'log',
-        ylim = (None,None),
-        out_dir = None,
-        file_name = None,
-        legend_kw = dict(),
-        rebin = 1,
-        **hist_kwargs
+        ylabel="Count",
+        yscale="log",
+        ylim=(None, None),
+        out_dir=None,
+        file_name=None,
+        legend_kw=None,
+        rebin=1,
+        **hist_kwargs,
     ):
         """Plot a 1D histogram, overlaying the File entries
 
@@ -110,25 +114,26 @@ class Differ :
         out_dir : str
             Directory in which to write the plotting file
         file_name : str
-            Name of file, no extension (default: histname name with directory separators removed)
+            Name of file, no extension
+            (default: histname name with directory
+            separators removed)
         hist_kwargs : dict
             All other key-word arguments are passed into each File.plot1d
         """
-        fig = matplotlib.pyplot.figure('differ',figsize=(11,8))
+        if legend_kw is None:
+            legend_kw = {}
+        fig = matplotlib.pyplot.figure("differ", figsize=(11, 8))
         raw_ax, ratio_ax = fig.subplots(
-            nrows = 2,
-            sharex = 'col',
-            height_ratios = [2, 1],
-            gridspec_kw = dict(
-                hspace = 0.05
-            )
+            nrows=2, sharex="col", height_ratios=[2, 1], gridspec_kw={"hspace": 0.05}
         )
 
         raw_histograms = []
-        for f in self.files :
+        for f in self.files:
             try:
                 h = f.get(histname)
-                art = h[hist.rebin(rebin)].plot1d(ax=raw_ax, **f.hist_kwargs, **hist_kwargs)
+                art = h[hist.rebin(rebin)].plot1d(
+                    ax=raw_ax, **f.hist_kwargs, **hist_kwargs
+                )
                 raw_histograms.append((h, art))
             except uproot.KeyInFileError:
                 f.log.warn(f"Key {histname} doesn't exist in {self}, skipping")
@@ -139,8 +144,8 @@ class Differ :
         raw_ax.set_yscale(yscale)
         raw_ax.set_ylim(*ylim)
 
-        if 'title' not in legend_kw :
-            legend_kw['title'] = self.grp_name
+        if "title" not in legend_kw:
+            legend_kw["title"] = self.grp_name
 
         raw_ax.legend(**legend_kw)
 
@@ -154,24 +159,26 @@ class Differ :
                 ratio = num_h.values() / den_h.values()
             mplhep.histplot(
                 ratio,
-                bins = bins,
-                ax = ratio_ax,
-                yerr = hist.intervals.ratio_uncertainty(
-                    num = num_h.values(),
-                    denom = den_h.values(),
-                    uncertainty_type = 'poisson-ratio'
+                bins=bins,
+                ax=ratio_ax,
+                yerr=hist.intervals.ratio_uncertainty(
+                    num=num_h.values(),
+                    denom=den_h.values(),
+                    uncertainty_type="poisson-ratio",
                 ),
-                histtype='errorbar',
-                color = num_art[0].stairs.get_edgecolor()
+                histtype="errorbar",
+                color=num_art[0].stairs.get_edgecolor(),
             )
 
-        ratio_ax.set_ylabel('Ratio')
+        ratio_ax.set_ylabel("Ratio")
         ratio_ax.set_xlabel(xlabel)
 
-        if out_dir is None :
+        if out_dir is None:
             matplotlib.pyplot.show()
-        else :
-            if file_name is None :
-                file_name = re.sub(r'^.*/','',histname)
-            fig.savefig(os.path.join(out_dir,file_name)+ self.output_type, bbox_inches='tight')
+        else:
+            if file_name is None:
+                file_name = re.sub(r"^.*/", "", histname)
+            fig.savefig(
+                os.path.join(out_dir, file_name) + self.output_type, bbox_inches="tight"
+            )
             fig.clf()

@@ -21,3 +21,6 @@ setup_library(
 )
 
 setup_python(package_name LDMX/Biasing)
+
+# run all *.py files in test during testing
+setup_test(config_dir test)

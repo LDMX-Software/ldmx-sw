@@ -14,7 +14,7 @@ setup_library(
 
 setup_library(module Hcal
               dependencies ROOT::Physics 
-              Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr 
+              Framework::Framework Recon::Event Recon::Recon Tools::Tools DetDescr::DetDescr 
               Tracking::Event Ecal::Event Hcal::Event
 )
 

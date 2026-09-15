@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdexcept>
+#include "Framework/Exception/Exception.h"
 
 /*
  * Original Author T. K. Nelson
@@ -52,13 +52,13 @@ static const ChargeCarrier ELECTRON(-1, 1268.0, -2.33, 92.0, -0.57, 1.3E+17,
 static const ChargeCarrier HOLE(1, 406.9, -2.23, 54.3, -0.57, 2.35E+17, 2.4,
                                 0.88, -0.146);
 
-static ChargeCarrier getCarrier(int charge) {
+inline ChargeCarrier getCarrier(int charge) {
   if (charge == -1)
     return ELECTRON;
   else if (charge == 1)
     return HOLE;
   else
-    throw std::invalid_argument("No ChargeCarrier for charge specified");
+    EXCEPTION_RAISE("InvalidArgument", "No ChargeCarrier for charge specified");
 }
 
 }  // namespace digitization

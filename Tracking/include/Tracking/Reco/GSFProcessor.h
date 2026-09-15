@@ -19,7 +19,7 @@
 #include "Acts/Definitions/Common.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
-#include "Acts/EventData/TrackParameters.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/Utilities/Logger.hpp"
 
 // geometry
@@ -34,17 +34,17 @@
 
 // propagation testing
 #include "Acts/MagneticField/ConstantBField.hpp"
-#include "Acts/Propagator/AbortList.hpp"
-#include "Acts/Propagator/ActionList.hpp"
-#include "Acts/Propagator/DenseEnvironmentExtension.hpp"
-#include "Acts/Propagator/EigenStepper.hpp"
+#include "Acts/Propagator/ActorList.hpp"
+#include "Acts/Propagator/EigenStepperDenseExtension.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
+#include "Tracking/EigenStepper.h"
 
 // Kalman Filter
 
@@ -55,7 +55,6 @@
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
 #include "Acts/TrackFinding/MeasurementSelector.hpp"
-#include "Acts/TrackFitting/GainMatrixSmoother.hpp"
 #include "Acts/TrackFitting/GainMatrixUpdater.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 
@@ -80,8 +79,8 @@
 #include "Tracking/Sim/BFieldXYZUtils.h"
 
 using ActionList =
-    Acts::ActionList<Acts::detail::SteppingLogger, Acts::MaterialInteractor>;
-using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
+    Acts::ActorList<Acts::detail::SteppingLogger, Acts::MaterialInteractor,
+                    Acts::EndOfWorldReached>;
 
 // using GsfPropagator = Acts::Propagator<
 //                         Acts::MultiEigenStepperLoop<
@@ -94,7 +93,8 @@ using AbortList = Acts::AbortList<Acts::EndOfWorldReached>;
 using MultiStepper = Acts::MultiEigenStepperLoop<>;
 using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
-using BetheHeitlerApprox = Acts::AtlasBetheHeitlerApprox<6, 5>;
+using GsfExtrapPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -107,7 +107,7 @@ class GSFProcessor final : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  GSFProcessor(const std::string &name, framework::Process &process);
+  GSFProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~GSFProcessor() = default;
@@ -123,7 +123,7 @@ class GSFProcessor final : public TrackingGeometryUser {
    * This is where you could create single-processors, multi-event
    * calculation objects.
    */
-  void onNewRun(const ldmx::RunHeader &rh) override;
+  void onNewRun(const ldmx::RunHeader& rh) override;
 
   /**
    *
@@ -135,14 +135,14 @@ class GSFProcessor final : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   // Forms the layer to acts map
@@ -164,8 +164,13 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Processing time counter
   // double processing_time_{0.};
 
-  /// Time profiling data for performance analysis
-  std::map<std::string, double> profiling_map_;
+  int nevents_{0};
+  int n_input_tracks_{0};
+  int n_gsf_failed_{0};
+  int n_output_tracks_{0};
+  int n_target_extrap_failed_{0};
+  int n_ecal_extrap_failed_{0};
+  double processing_time_{0.};
 
   // refitting of tracks
   // bool kf_refit_{false};
@@ -218,8 +223,8 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string seed_coll_name_{"seedTracks"};
 
   /// Gaussian Sum Fitter instance for track refitting
-  std::unique_ptr<const Acts::GaussianSumFitter<
-      GsfPropagator, BetheHeitlerApprox, Acts::VectorMultiTrajectory>>
+  std::unique_ptr<
+      const Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>>
       gsf_;
 
   /// Collection name for input tracks to be refit
@@ -267,18 +272,26 @@ class GSFProcessor final : public TrackingGeometryUser {
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
 
+  /// ACTS x of the tagger GSF start surface [mm]
+  double tagger_start_x_{-617.};
+
   /// Propagator for track extrapolation using eigen stepper
   std::unique_ptr<const Propagator> propagator_;
 
   /// Layer ID to ACTS Surface mapping for hit surface lookup
-  std::unordered_map<unsigned int, const Acts::Surface *> layer_surface_map_;
+  std::unordered_map<unsigned int, const Acts::Surface*> layer_surface_map_;
 
-  // Track Extrapolator Tool
-  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<Propagator>>
+  // Track Extrapolator Tool (VoidNavigator to reach surfaces outside geometry)
+  std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
       trk_extrap_;
 
-  /// Beam origin surface at z=-700 mm (tagger track initialization)
+  /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via
+  /// VoidNavigator)
   std::shared_ptr<Acts::Surface> beam_origin_surface_;
+
+  /// Tagger GSF start surface at x=tagger_start_x_ in ACTS
+  std::shared_ptr<Acts::Surface> tagger_start_surface_;
 
   /// Target surface at z=0 mm (recoil track initialization, perigee output)
   std::shared_ptr<Acts::Surface> target_surface_;

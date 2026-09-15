@@ -1,0 +1,6 @@
+/vis/open OGLIX
+/vis/scene/create
+/vis/scene/add/volume
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointThetaPhi 180 0
+/vis/viewer/zoom 4

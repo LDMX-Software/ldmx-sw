@@ -58,6 +58,28 @@ plots in the "fail" directory.
 > **Note:** Artifacts are only persisted on 
 > [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
 
+### Validation Report
+
+`compare.py` also writes `results.json` with the KS probability `p` and the maximum KS distance `D`
+of every histogram pair, plus a PNG of each plot.
+After all samples finish, `make_report.py` builds a static HTML report with the failing plots ranked
+by `D`, worst first. `D` is used for ranking since `p` underflows to zero for most failures at 10k events.
+Each sample page can filter by status, folder (processor) and minimum `D`, and search histogram names.
+
+The report is always uploaded as the `validation-report` artifact of the run. When the
+`VALIDATION_REPORTS_DEPLOY_KEY` secret is available, it is also pushed to the `gh-pages` branch of
+[LDMX-Software/validation-reports](https://github.com/LDMX-Software/validation-reports) and linked in the PR comment:
+
+- `https://ldmx-software.github.io/validation-reports/pr-<N>/` lists the runs of a PR, newest first
+- `https://ldmx-software.github.io/validation-reports/pr-<N>/run-<run id>-<attempt>/` is one run
+
+Only the newest 5 runs of each PR are kept. The `prune_validation_reports.yml` workflow runs weekly,
+removes the reports of PRs closed more than 90 days ago (`KEEP_CLOSED_DAYS`) and squashes the
+`gh-pages` history so the repository stays under the 1 GB GitHub Pages limit.
+
+Build a report locally from unpacked plot archives (one directory per sample):
+`python3 .github/actions/validate/make_report.py <sample dirs> --out site/run-local`
+
 ### Local Equivalence
 
 When validating, this action is roughly equivalent to the following procedure.

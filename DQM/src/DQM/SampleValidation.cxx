@@ -11,17 +11,20 @@
 namespace dqm {
 
 void SampleValidation::configure(framework::config::Parameters& ps) {
+  target_scoring_plane_coll_name_ =
+      ps.get<std::string>("target_scoring_plane_coll_name");
   target_scoring_plane_passname_ =
       ps.get<std::string>("target_scoring_plane_passname");
+  sim_particles_coll_name_ = ps.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
 void SampleValidation::analyze(const framework::Event& event) {
   // Grab the SimParticle Map and Target Scoring Plane Hits
   auto target_sp_hits(event.getCollection<ldmx::SimTrackerHit>(
-      "TargetScoringPlaneHits", target_scoring_plane_passname_));
+      target_scoring_plane_coll_name_, target_scoring_plane_passname_));
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      sim_particles_coll_name_, sim_particles_passname_)};
 
   std::vector<int> primary_daughters;
 
@@ -110,7 +113,7 @@ void SampleValidation::analyze(const framework::Event& event) {
 float SampleValidation::pdgidLabel(const int pdgid) {
   // initially assign label as "anything else"/overflow value,
   // only change if the pdg id is something of interest
-  int label = 18;
+  int label = 20;
   if (pdgid == -11) label = 0;    // e+
   if (pdgid == 11) label = 1;     // e-
   if (pdgid == -13) label = 2;    // μ+
@@ -144,7 +147,9 @@ float SampleValidation::pdgidLabel(const int pdgid) {
   // dark photon, need pdg id for other models like ALPs and SIMPs
   if (pdgid == 622) label = 17;
 
-  if (label == 18) {
+  if (pdgid == 17) label = 18;   // fcp-
+  if (pdgid == -17) label = 19;  // fcp+
+  if (label == 20) {
     ldmx_log(debug) << "Unrecognized PDG ID: " << pdgid
                     << ", assigning to 'else'";
   }

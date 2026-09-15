@@ -1,7 +1,5 @@
 #include "Tracking/geo/GeometryContext.h"
 
-#include <stdexcept>  // Include for std::logic_error
-
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
@@ -10,9 +8,9 @@ namespace tracking::geo {
 
 const std::string GeometryContext::NAME = "TrackingGeometryContext";
 
-GeometryContext::GeometryContext() : framework::ConditionsObject(NAME) {
-  acts_gc_ = this;
-}
+GeometryContext::GeometryContext()
+    : framework::ConditionsObject(NAME),
+      acts_gc_(Acts::GeometryContext(this)) {}
 
 const Acts::GeometryContext& GeometryContext::get() const { return acts_gc_; }
 
@@ -22,8 +20,7 @@ void GeometryContext::loadTransformations(const tgSurfMap& surf_map) {
 
   for (auto entry : surf_map) {
     alignment_map_[entry.first] =
-        static_cast<const DetectorElement*>(
-            (entry.second)->associatedDetectorElement())
+        static_cast<const DetectorElement*>((entry.second)->surfacePlacement())
             ->uncorrectedTransform();
   }
 }
@@ -51,7 +48,8 @@ void GeometryContext::addAlignCorrection(unsigned int sensorId,
   // Add the correction to the alignment map
 
   if (alignment_map_.count(sensorId) < 1) {
-    throw std::logic_error("GeometryContext:: could not addAlignCorrection");
+    EXCEPTION_RAISE("BadGeometry",
+                    "GeometryContext:: could not addAlignCorrection");
   }
 
   if (active) {

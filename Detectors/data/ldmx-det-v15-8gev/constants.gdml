@@ -10,7 +10,8 @@
 
 <!-- 
     Target
---> 
+-->
+
 <!-- position -->
 <constant name="target_z" value="0.0*mm" />
 <!-- Tungsten X0 = .3504 cm.  Target thickeness = .1X0 -->
@@ -43,8 +44,11 @@
 <constant name="trigger_pad_dim_x"          value="target_dim_x" />
 <constant name="trigger_pad_dim_y"          value="target_dim_y" />
 <constant name="trigger_bar_dx"             value="30"/>
-<constant name="trigger_bar_dy"             value="3.05"/>   
+<constant name="trigger_bar_dy"             value="3.0"/>   
 <constant name="number_of_bars"             value="24"/>
+<constant name="sipm_thickness"             value="0.05*mm"/>
+<constant name="sipm_dy"                    value="2*mm"/>
+<constant name="sipm_dz"                    value="2*mm"/>
 
 <constant name="trigger_pad_offset"    
           value="(target_dim_y - (number_of_bars*trigger_bar_dy + (number_of_bars - 1)*trigger_pad_bar_gap))/2" />
@@ -54,6 +58,13 @@
           value="1.4248*mm" />
 <constant name="trig_scint_pad12_separation"
           value="60"/>
+<!--Trigger pad x follows the beam curve and is determined a priori
+    If the z values of the trigger pads change, these must be recalculated-->
+<constant name="trigger_pad1_x"      
+          value="-21.5*mm" />
+<constant name="trigger_pad2_x"      
+          value="-19*mm" />
+
 <constant name="trigger_pad1_z"
           value="- trig_scint_pad12_separation - trigger_pad_thickness/2 - clearance" />
 <constant name="trigger_pad2_z"    
@@ -66,6 +77,26 @@
 <constant name="trig_scint_area_envelope_y" value="magnet_gap_dy - 5" />
 <constant name="trig_scint_area_envelope_z" 
           value="-trigger_pad1_z + trigger_pad_thickness + 2*clearance"/>
+
+
+<!-- Light-pipe bar dimensions for TS-->
+
+<!--
+The distance between TSPad3 and the SiPMs is the shortest, and the other
+two sets of light pipes have length added equal to the displacement due to beam curvature. The displacements are stored as negative values, so are
+subtracted here to make them positive lengths.
+-->
+<constant name="trigger_light_pipe3_dx"        value="36.24*mm"/>
+<constant name="trigger_light_pipe2_dx"        value="trigger_light_pipe3_dx - trigger_pad2_x"/>
+<constant name="trigger_light_pipe1_dx"        value="trigger_light_pipe3_dx - trigger_pad1_x"/>
+<!--The dy and thickness of the light pipes should match that of the scintillator bars-->
+<constant name="trigger_light_pipe_dy"         value="trigger_bar_dy"/>
+<constant name="trigger_light_pipe_thickness"  value="trigger_pad_bar_thickness"/>
+
+<constant name="tspad1_envelope_x"             value="trigger_bar_dx + trigger_light_pipe1_dx + sipm_thickness"/> 
+<constant name="tspad2_envelope_x"             value="trigger_bar_dx + trigger_light_pipe2_dx + sipm_thickness"/> 
+<constant name="tspad3_envelope_x"             value="trigger_bar_dx + trigger_light_pipe3_dx + sipm_thickness"/>
+
 
 <!--
   Tracker common variables 
@@ -149,6 +180,12 @@
 <constant name="trigger_pad2_actual_z"
     value="ts_center_z + (trig_scint_area_envelope_z/2 - trigger_pad_thickness/2)" />
 
+<!-- Target parent volume dimensions -->
+<!-- Moved here due to dependence on other constants-->>
+<constant name="target_area_envelope_x" value="magnet_gap_dx - 5" />
+<constant name="target_area_envelope_y" value="magnet_gap_dy - 5" />
+<constant name="target_area_envelope_z" 
+          value="2*(target_thickness/2 + 2*clearance + + trigger_gap_from_target + trigger_pad_thickness)" />
 
 <!--
    HCal

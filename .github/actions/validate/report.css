@@ -1,0 +1,35 @@
+:root{--bg:#fafafa;--fg:#1d1d1f;--mute:#6b6b70;--card:#fff;--line:#e2e2e6;
+--bad:#c62828;--warn:#b26a00;--good:#2e7d32;--acc:#1f5fbf}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--fg:#e8e8ea;--mute:#9a9aa0;
+--card:#1e1e21;--line:#333338;--bad:#ef6b6b;--warn:#e0a040;--good:#6cc070;--acc:#6ea2f5}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,sans-serif}
+header{padding:16px 24px;border-bottom:1px solid var(--line)}
+header h1{margin:0;font-size:20px}
+header .meta{color:var(--mute);font-size:13px}
+a{color:var(--acc)}
+main{padding:16px 24px}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mute);font-weight:600}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.fail,.missing{color:var(--bad)}.new{color:var(--warn)}.pass{color:var(--good)}
+.msgs{margin:0;padding-left:18px;color:var(--mute);font-size:12px}
+.wrap{overflow-x:auto}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
+@media (max-width:800px){.layout{grid-template-columns:1fr}}
+aside{position:sticky;top:0;align-self:start;max-height:100vh;overflow:auto}
+aside label{display:block;margin:10px 0 4px;color:var(--mute);font-size:12px}
+aside input,aside select{width:100%;padding:5px;background:var(--card);color:var(--fg);
+border:1px solid var(--line);border-radius:4px}
+.folders div{display:flex;justify-content:space-between;padding:2px 4px;cursor:pointer;
+border-radius:3px;font-size:12px}
+.folders div:hover,.folders div.on{background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px}
+.card img{width:100%;display:block;background:#fff;cursor:zoom-in}
+.card .k{font-family:ui-monospace,monospace;font-size:12px;word-break:break-all}
+.card .s{color:var(--mute);font-size:12px;font-variant-numeric:tabular-nums}
+.noimg{padding:30px;text-align:center;color:var(--mute)}
+#count{color:var(--mute);margin-bottom:10px}
+#more{margin:16px auto;display:block;padding:6px 14px}

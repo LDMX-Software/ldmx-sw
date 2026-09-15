@@ -2,7 +2,6 @@
 
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
 ]>
 <gdml xmlns:gdml="http://cern.ch/2001/Schemas/GDML" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -46,9 +45,8 @@
   
   
   </define>
-  <materials> 
-    &materials;
-  </materials>
+
+
   <solids>
     <box lunit="mm" name="tagger_active_sensor_box" 
        x="si_active_sensor_dx" y="si_active_sensor_dy" z="si_sensor_thickness"/>
@@ -67,16 +65,18 @@
     <volume name="tagger_sensor_vol">
       <materialref ref="Silicon"/>
       <solidref ref="tagger_sensor_box"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="SiliconMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="TaggerRegionVis"/>
       <physvol name="tagger_active_sensor">
-      <volumeref ref="Tagger_active_Sensor_vol"/>
-      <position name="tagger_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
+	<volumeref ref="Tagger_active_Sensor_vol"/>
+	<position name="tagger_active_sensor_pos" unit="mm" x="0.0" y="0.0" z="0.0"/>
       </physvol>
     </volume>
     
     <!-- define tagger physical volumes inside envelope volume --> 
     <volume name="tagger">
       <materialref ref="Air"/>
-      <solidref ref="tagger_box"/>
+      <solidref ref="tagger_box"/>      
       <!-- removing the sensors since reduced-LDMX will not have a tagger tracker --> 
       <auxiliary auxtype="Region" auxvalue="tagger"/>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>

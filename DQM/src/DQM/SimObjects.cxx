@@ -10,6 +10,7 @@ namespace dqm {
 
 void SimObjects::configure(framework::config::Parameters& ps) {
   sim_pass_ = ps.get<std::string>("sim_pass");
+  sim_particles_coll_name_ = ps.get<std::string>("sim_particles_coll_name");
   sim_particles_map_passname_ =
       ps.get<std::string>("sim_particles_map_passname");
   return;
@@ -41,30 +42,32 @@ void SimObjects::onProcessStart() {
   };
 
   // create sim particles histograms
-  histograms_.create("SimParticles.E", "Vertex Total Energy [MeV]", 800, 0.,
-                     8000.);
-  histograms_.create("SimParticles.px", "Vertex Momentum in x-Direction [MeV]",
-                     50, 0., 500.);
-  histograms_.create("SimParticles.py", "Vertex Momentum in y-Direction [MeV]",
-                     50, 0., 500.);
-  histograms_.create("SimParticles.pz", "Vertex Momentum in z-Direction [MeV]",
-                     400, 0., 4000.);
-  histograms_.create("SimParticles.time", "Global Time of Creation [ns]", 50,
-                     0., 10.);
-  histograms_.create("SimParticles.pdg", "PDG ID of Particle", 201, -100, 100);
-  histograms_.create("SimParticles.x", "Vertex x-Position [mm]", 401, -200,
-                     200);
-  histograms_.create("SimParticles.y", "Vertex y-Position [mm]", 401, -200,
-                     200);
-  histograms_.create("SimParticles.z", "Vertex z-Position [mm]", 171, -700,
-                     1000.);
-  histograms_.create("SimParticles.process", "Creator Process Type",
-                     creator_process_labels);
-  histograms_.create("SimParticles.track_id", "Track ID of Particle", 100, 0,
-                     1000);
-  histograms_.create("SimParticles.parent", "Track ID of Parent", 100, 0, 1000);
-  histograms_.create("SimParticles.children", "Track IDs of Children", 100, 0,
-                     1000);
+  histograms_.create(sim_particles_coll_name_ + ".E",
+                     "Vertex Total Energy [MeV]", 800, 0., 8000.);
+  histograms_.create(sim_particles_coll_name_ + ".px",
+                     "Vertex Momentum in x-Direction [MeV]", 50, 0., 500.);
+  histograms_.create(sim_particles_coll_name_ + ".py",
+                     "Vertex Momentum in y-Direction [MeV]", 50, 0., 500.);
+  histograms_.create(sim_particles_coll_name_ + ".pz",
+                     "Vertex Momentum in z-Direction [MeV]", 400, 0., 4000.);
+  histograms_.create(sim_particles_coll_name_ + ".time",
+                     "Global Time of Creation [ns]", 50, 0., 10.);
+  histograms_.create(sim_particles_coll_name_ + ".pdg", "PDG ID of Particle",
+                     201, -100, 100);
+  histograms_.create(sim_particles_coll_name_ + ".x", "Vertex x-Position [mm]",
+                     401, -200, 200);
+  histograms_.create(sim_particles_coll_name_ + ".y", "Vertex y-Position [mm]",
+                     401, -200, 200);
+  histograms_.create(sim_particles_coll_name_ + ".z", "Vertex z-Position [mm]",
+                     171, -700, 1000.);
+  histograms_.create(sim_particles_coll_name_ + ".process",
+                     "Creator Process Type", creator_process_labels);
+  histograms_.create(sim_particles_coll_name_ + ".track_id",
+                     "Track ID of Particle", 100, 0, 1000);
+  histograms_.create(sim_particles_coll_name_ + ".parent", "Track ID of Parent",
+                     100, 0, 1000);
+  histograms_.create(sim_particles_coll_name_ + ".children",
+                     "Track IDs of Children", 100, 0, 1000);
 
   // create pn children histograms
   histograms_.create("pn_child.E", "Vertex Total Energy [MeV]", 800, 0., 8000.);
@@ -129,7 +132,7 @@ void SimObjects::createTrackerHists(const std::string& coll_name) {
 void SimObjects::analyze(const framework::Event& event) {
   static std::vector<framework::ProductTag> sp_maps, calo_colls, track_colls;
   if (sp_maps.empty()) {
-    sp_maps = event.searchProducts("SimParticles", "", "");
+    sp_maps = event.searchProducts(sim_particles_coll_name_, "", "");
     if (sp_maps.size() != 1) {
       ldmx_log(warn) << sp_maps.size() << " SimParticle maps which is not one!";
     }
@@ -148,21 +151,22 @@ void SimObjects::analyze(const framework::Event& event) {
   for (auto const& [track_id, particle] : particle_map) {
     auto const& momentum{particle.getMomentum()};
     auto const& vertex{particle.getVertex()};
-    histograms_.fill("SimParticles.E", particle.getEnergy());
-    histograms_.fill("SimParticles.px", momentum.at(0));
-    histograms_.fill("SimParticles.py", momentum.at(1));
-    histograms_.fill("SimParticles.pz", momentum.at(2));
-    histograms_.fill("SimParticles.time", particle.getTime());
-    histograms_.fill("SimParticles.pdg", particle.getPdgID());
-    histograms_.fill("SimParticles.x", vertex.at(0));
-    histograms_.fill("SimParticles.y", vertex.at(1));
-    histograms_.fill("SimParticles.z", vertex.at(2));
-    histograms_.fill("SimParticles.process", particle.getProcessType());
-    histograms_.fill("SimParticles.track_id", track_id);
+    histograms_.fill(sim_particles_coll_name_ + ".E", particle.getEnergy());
+    histograms_.fill(sim_particles_coll_name_ + ".px", momentum.at(0));
+    histograms_.fill(sim_particles_coll_name_ + ".py", momentum.at(1));
+    histograms_.fill(sim_particles_coll_name_ + ".pz", momentum.at(2));
+    histograms_.fill(sim_particles_coll_name_ + ".time", particle.getTime());
+    histograms_.fill(sim_particles_coll_name_ + ".pdg", particle.getPdgID());
+    histograms_.fill(sim_particles_coll_name_ + ".x", vertex.at(0));
+    histograms_.fill(sim_particles_coll_name_ + ".y", vertex.at(1));
+    histograms_.fill(sim_particles_coll_name_ + ".z", vertex.at(2));
+    histograms_.fill(sim_particles_coll_name_ + ".process",
+                     particle.getProcessType());
+    histograms_.fill(sim_particles_coll_name_ + ".track_id", track_id);
     for (auto const& parent : particle.getParents())
-      histograms_.fill("SimParticles.parent", parent);
+      histograms_.fill(sim_particles_coll_name_ + ".parent", parent);
     for (auto const& child : particle.getDaughters())
-      histograms_.fill("SimParticles.children", child);
+      histograms_.fill(sim_particles_coll_name_ + ".children", child);
 
     // PN particles are special
     if (particle.getProcessType() ==

@@ -12,6 +12,13 @@
 
 // --- ACTS --- //
 
+// Propagator
+
+#include "Acts/Propagator/Propagator.hpp"
+#include "Tracking/EigenStepper.h"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
+
 // Vertexing
 
 #include "Acts/Vertexing/FullBilloirVertexFitter.hpp"
@@ -23,13 +30,6 @@
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
-// Propagator
-
-#include "Acts/Propagator/EigenStepper.hpp"
-#include "Acts/Propagator/Propagator.hpp"
-// #include "Acts/Propagator/Navigator.hpp"
-// #include "Acts/Propagator/StandardAborters.hpp"
-
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
@@ -39,7 +39,9 @@
 #include "TLorentzVector.h"
 
 // Propagator with void navigator
-using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
+#include "Acts/Propagator/VoidNavigator.hpp"
+using VoidPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -53,7 +55,7 @@ class VertexProcessor : public framework::Producer {
    * @param process The process running this producer.
    */
 
-  VertexProcessor(const std::string &name, framework::Process &process);
+  VertexProcessor(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~VertexProcessor() = default;
@@ -66,18 +68,17 @@ class VertexProcessor : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  private:
   /// The contexts - TODO: they should move to some global location, I guess
-  Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
 
   // Event counter
@@ -93,6 +94,8 @@ class VertexProcessor : public framework::Producer {
 
   std::string trk_coll_name_{"Tracks"};
 
+  std::string seeds_coll_name_{"RecoilTruthSeeds"};
+
   std::string input_pass_name_{""};
 
   // The propagator
@@ -101,9 +104,9 @@ class VertexProcessor : public framework::Producer {
   // Processing time counter
   double processing_time_{0.};
 
-  TH1F *h_m_;
-  TH1F *h_m_truth_filter_;
-  TH1F *h_m_truth_;
+  TH1F* h_m_;
+  TH1F* h_m_truth_filter_;
+  TH1F* h_m_truth_;
 };
 
 }  // namespace reco

@@ -2,11 +2,11 @@
 
 namespace trigscint {
 
-TrigScintDigiProducer::TrigScintDigiProducer(const std::string &name,
-                                             framework::Process &process)
+TrigScintDigiProducer::TrigScintDigiProducer(const std::string& name,
+                                             framework::Process& process)
     : Producer(name, process) {}
 
-void TrigScintDigiProducer::configure(framework::config::Parameters &ps) {
+void TrigScintDigiProducer::configure(framework::config::Parameters& ps) {
   // Configure this instance of the producer
   strips_per_array_ = ps.get<int>("number_of_strips");
   number_of_arrays_ = ps.get<int>("number_of_arrays");
@@ -16,14 +16,15 @@ void TrigScintDigiProducer::configure(framework::config::Parameters &ps) {
   input_collection_ = ps.get<std::string>("input_collection");
   input_pass_name_ = ps.get<std::string>("input_pass_name");
   output_collection_ = ps.get<std::string>("output_collection");
+  sim_particles_coll_name_ = ps.get<std::string>("sim_particles_coll_name");
   sim_particles_passname_ = ps.get<std::string>("sim_particles_passname");
 }
 
-void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader &) {
+void TrigScintDigiProducer::onNewRun(const ldmx::RunHeader&) {
   noise_generator_ = std::make_unique<ldmx::NoiseGenerator>(mean_noise_, false);
   noise_generator_->setNoiseThreshold(1);
   // Set up seeds
-  const auto &rseed = getCondition<framework::RandomNumberSeedService>(
+  const auto& rseed = getCondition<framework::RandomNumberSeedService>(
       framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
 
   noise_generator_->seedGenerator(
@@ -43,7 +44,7 @@ ldmx::TrigScintID TrigScintDigiProducer::generateRandomID(int module) {
   return temp_id;
 }
 
-void TrigScintDigiProducer::produce(framework::Event &event) {
+void TrigScintDigiProducer::produce(framework::Event& event) {
   std::map<ldmx::TrigScintID, int> cell_pes, cell_min_p_es;
   std::map<ldmx::TrigScintID, float> xpos, ypos, zpos, edep, time, beam_frac;
   std::set<ldmx::TrigScintID> noise_hit_i_ds;
@@ -54,10 +55,10 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
   const auto sim_hits{event.getCollection<ldmx::SimCalorimeterHit>(
       input_collection_, input_pass_name_)};
   auto particle_map{event.getMap<int, ldmx::SimParticle>(
-      "SimParticles", sim_particles_passname_)};
+      sim_particles_coll_name_, sim_particles_passname_)};
 
   int module{-1};
-  for (const auto &sim_hit : sim_hits) {
+  for (const auto& sim_hit : sim_hits) {
     ldmx::TrigScintID id(sim_hit.getID());
 
     // Just set the module ID to use for noise hits here.  Given that
@@ -174,7 +175,7 @@ void TrigScintDigiProducer::produce(framework::Event &event) {
 
   ldmx::TrigScintID temp_id;
 
-  for (auto &noise_hit_pe : noise_hits_pe) {
+  for (auto& noise_hit_pe : noise_hits_pe) {
     ldmx::TrigScintHit hit;
     // generate random ID from remaining cells
     do {

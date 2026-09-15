@@ -37,7 +37,7 @@ class FiducialFlag {
   /**
    * Print a description of this object.
    */
-  friend std::ostream &operator<<(std::ostream &o, const FiducialFlag &d);
+  friend std::ostream& operator<<(std::ostream& o, const FiducialFlag& d);
 
   /**
    * Reset the FiducialFlag object.

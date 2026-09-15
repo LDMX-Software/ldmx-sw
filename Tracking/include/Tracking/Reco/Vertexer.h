@@ -17,6 +17,13 @@
 #include "Acts/Definitions/Common.hpp"
 #include "Acts/Definitions/Units.hpp"
 
+// Propagator
+
+#include "Acts/Propagator/Propagator.hpp"
+#include "Tracking/EigenStepper.h"
+// #include "Acts/Propagator/Navigator.hpp"
+// #include "Acts/Propagator/StandardAborters.hpp"
+
 // Vertexing
 
 #include "Acts/Vertexing/FullBilloirVertexFitter.hpp"
@@ -29,18 +36,13 @@
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
-// Propagator
-
-#include "Acts/Propagator/EigenStepper.hpp"
-#include "Acts/Propagator/Propagator.hpp"
-// #include "Acts/Propagator/Navigator.hpp"
-// #include "Acts/Propagator/StandardAborters.hpp"
-
 // Geometry
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 
 // Propagator with void navigator
-using VoidPropagator = Acts::Propagator<Acts::EigenStepper<>>;
+#include "Acts/Propagator/VoidNavigator.hpp"
+using VoidPropagator =
+    Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 
 namespace tracking {
 namespace reco {
@@ -62,7 +64,6 @@ class Vertexer : public framework::Producer {
                               const std::vector<ldmx::Track>& recoil_tracks);
 
  private:
-  Acts::GeometryContext gctx_;
   Acts::MagneticFieldContext bctx_;
 
   int nevents_{0};

@@ -1,0 +1,11 @@
+/vis/open OGLIX 900x900-1+0
+/vis/scene/create
+/vis/scene/add/volume em_calorimeters_PV
+/vis/sceneHandler/attach
+/vis/viewer/set/viewpointVector -1 1 -1
+/vis/viewer/addCutawayPlane 0 0 -2 m 0 -1 0
+/vis/viewer/addCutawayPlane 0 0 -2 m 1 0 0
+/vis/viewer/set/style s
+/vis/scene/add/volume hadronic_calorimeter_PV
+
+

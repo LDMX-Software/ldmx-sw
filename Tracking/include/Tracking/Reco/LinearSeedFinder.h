@@ -31,7 +31,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
    * @param name The name of the instance of this object.
    * @param process The process running this producer.
    */
-  LinearSeedFinder(const std::string &name, framework::Process &process);
+  LinearSeedFinder(const std::string& name, framework::Process& process);
 
   /// Destructor
   virtual ~LinearSeedFinder() = default;
@@ -48,7 +48,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -56,7 +56,7 @@ class LinearSeedFinder : public TrackingGeometryUser {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
  protected:
   // Function to find seeds based on 2 Recoil points and 1 EcalRecHit
@@ -72,21 +72,21 @@ class LinearSeedFinder : public TrackingGeometryUser {
   // Fitting function: fit a straight line in 3D using 3 points (1 degree of
   // freedom)
   std::tuple<double, double, double, double, std::vector<double>> fit3DLine(
-      const std::array<double, 3> &first_recoil,
-      const std::array<double, 3> &second_recoil,
-      const std::array<double, 3> &ecal);
+      const std::array<double, 3>& first_recoil,
+      const std::array<double, 3>& second_recoil,
+      const std::array<double, 3>& ecal);
 
   // Helper function: calculate distance between 2 3D points
-  double calculateDistance(const std::array<double, 3> &point1,
-                           const std::array<double, 3> &point2);
+  double calculateDistance(const std::array<double, 3>& point1,
+                           const std::array<double, 3>& point2);
 
   // Do 3D hit reconstruction using an axial measurement and a stereo
   // measurement according to geometric projections
-  Acts::Vector3 simple3DHitV2(const ldmx::Measurement &axial,
-                              const Acts::Surface &axial_surface,
-                              const ldmx::Measurement &stereo,
-                              const Acts::Surface &stereo_surface,
-                              const ldmx::SimTrackerHit &hitOnTarget,
+  Acts::Vector3 simple3DHitV2(const ldmx::Measurement& axial,
+                              const Acts::Surface& axial_surface,
+                              const ldmx::Measurement& stereo,
+                              const Acts::Surface& stereo_surface,
+                              const ldmx::SimTrackerHit& hitOnTarget,
                               std::vector<ldmx::SimTrackerHit> pair_sim_hits);
 
   // Makes all combinations of sensor measurements to use in the seeding
@@ -97,24 +97,24 @@ class LinearSeedFinder : public TrackingGeometryUser {
                                ldmx::SimTrackerHit>>>>
   processMeasurements(
       const std::vector<std::tuple<ldmx::Measurement, ldmx::SimTrackerHit,
-                                   ldmx::SimTrackerHit>> &measurements,
-      const geo::TrackersTrackingGeometry &tg);
+                                   ldmx::SimTrackerHit>>& measurements,
+      const geo::TrackersTrackingGeometry& tg);
 
   // Calculate chi2 of the fit
-  double globalChiSquare(const std::array<double, 3> &first_sensor,
-                         const std::array<double, 3> &second_sensor,
-                         const std::array<double, 3> &ecal_hit, double a_x,
+  double globalChiSquare(const std::array<double, 3>& first_sensor,
+                         const std::array<double, 3>& second_sensor,
+                         const std::array<double, 3>& ecal_hit, double a_x,
                          double a_y, double b_x, double b_y);
 
   // Function to find the number of unique layers hit (to determine if we have
   // enough points to fit)
-  int uniqueLayersHit(const std::vector<ldmx::Measurement> &digi_points);
+  int uniqueLayersHit(const std::vector<ldmx::Measurement>& digi_points);
 
   // Helper functions:
-  std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3 &vec);
+  std::array<double, 3> convertToLdmxStdArray(const Acts::Vector3& vec);
   std::tuple<Acts::Vector3, Acts::Vector3, Acts::Vector3> getSurfaceVectors(
-      const Acts::Surface &surface);
-  double dotProduct(const Acts::Vector3 &v1, const Acts::Vector3 &v2);
+      const Acts::Surface& surface);
+  double dotProduct(const Acts::Vector3& v1, const Acts::Vector3& v2);
   std::array<double, 3> getPointAtZ(std::array<double, 3> target,
                                     std::array<double, 3> measurement,
                                     double z_target);

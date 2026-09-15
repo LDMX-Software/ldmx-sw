@@ -6,6 +6,7 @@
 #include "Framework/EventProcessor.h"
 
 //---< Tracking >---//
+#include "Tracking/Event/Track.h"
 #include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Tracking/Sim/SeedToTrackParamMaker.h"
 #include "Tracking/Sim/TrackingUtils.h"
@@ -21,9 +22,6 @@
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Seeding/Seed.hpp"
-#include "Acts/Seeding/SeedFilter.hpp"
-#include "Acts/Seeding/SpacePointGrid.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 #include "Acts/Utilities/Intersection.hpp"
 
@@ -78,15 +76,16 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   bool groupStrips(const std::vector<ldmx::Measurement>& measurements,
                    const std::vector<int> strategy);
 
-  void findSeedsFromMap(ldmx::Tracks& seeds, const ldmx::Measurements& pmeas);
+  void findSeedsFromMap(std::vector<ldmx::Track>& seeds,
+                        const ldmx::Measurements& pmeas);
 
  private:
   ldmx::Track seedTracker(const ldmx::Measurements& vmeas, double xOrigin,
                           const Acts::Vector3& perigee_location,
                           const ldmx::Measurements& pmeas_tgt);
 
-  void lineParabolaToHelix(const Acts::ActsVector<5> parameters,
-                           Acts::ActsVector<5>& helix_parameters,
+  void lineParabolaToHelix(const Acts::Vector<5> parameters,
+                           Acts::Vector<5>& helix_parameters,
                            Acts::Vector3 ref);
 
   Acts::Vector3 b_field_;
@@ -112,6 +111,7 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::string tagger_trks_collection_{"TaggerTracks"};
   std::string input_pass_name_{""};
 
+  std::string sim_particles_coll_name_;
   std::string sim_particles_passname_;
   std::string tagger_trks_event_collection_passname_;
   std::string sim_particles_event_passname_;

@@ -1,9 +1,11 @@
 #include "Tracking/Reco/GreedyAmbiguitySolver.h"
 
 #include <algorithm>
+#include <chrono>
+#include <iomanip>
 
 #include "Acts/EventData/SourceLink.hpp"
-#include "Acts/EventData/TrackHelpers.hpp"
+#include "Acts/Utilities/TrackHelpers.hpp"
 
 namespace tracking {
 namespace reco {
@@ -172,11 +174,13 @@ void GreedyAmbiguitySolver::configure(
   meas_collection_ =
       parameters.get<std::string>("meas_collection", "DigiTaggerSimHits");
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
-  n_meas_min_ = parameters.get<int>("nMeasurementsMin", 5);
-  maximum_shared_hits_ = parameters.get<int>("maximumSharedHits", 1);
+  n_meas_min_ = parameters.get<int>("n_measurements_min", 5);
+  maximum_shared_hits_ = parameters.get<int>("maximum_shared_hits", 1);
 }
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {
+  auto t_start = std::chrono::high_resolution_clock::now();
+
   GreedyAmbiguitySolver::State state;
   std::vector<ldmx::Track> out_tracks;
 
@@ -184,17 +188,21 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
 
   if (!event.exists(track_collection_, input_pass_name_)) {
     ldmx_log(debug) << "Track collection not found, exiting";
+    ++nevents_;
     return;
   }
-  auto tracks{
-      event.getCollection<ldmx::Track>(track_collection_, input_pass_name_)};
+  const auto& tracks =
+      event.getCollection<ldmx::Track>(track_collection_, input_pass_name_);
 
   if (!event.exists(meas_collection_, input_pass_name_)) {
     ldmx_log(debug) << "Measurement collection not found, exiting";
+    ++nevents_;
     return;
   }
-  auto measurements{event.getCollection<ldmx::Measurement>(meas_collection_,
-                                                           input_pass_name_)};
+  const auto& measurements = event.getCollection<ldmx::Measurement>(
+      meas_collection_, input_pass_name_);
+
+  n_input_tracks_ += static_cast<int>(tracks.size());
 
   computeInitialState(tracks, measurements, state, tg,
                       tracking::sim::utils::sourceLinkHash,
@@ -209,16 +217,33 @@ void GreedyAmbiguitySolver::produce(framework::Event& event) {
     }
   }
 
+  n_output_tracks_ += static_cast<int>(out_tracks.size());
+
   event.add(out_trk_collection_, out_tracks);
 
-  // for (auto iTrack : initial_state.selectedTracks) {
-  //     std::cout << event.getEventNumber() << " " << iTrack << " " <<
-  //     initial_state.trackChi2[iTrack] << " " <<
-  //     initial_state.measurementsPerTrack[iTrack].size() << std::endl;
-  // }
+  auto t_end = std::chrono::high_resolution_clock::now();
+  processing_time_ +=
+      std::chrono::duration<double, std::milli>(t_end - t_start).count();
+  ++nevents_;
+}
 
-  ldmx_log(info) << " Resolved to " << state.selected_tracks_.size()
-                 << " tracks from " << " " << tracks.size();
+void GreedyAmbiguitySolver::onProcessEnd() {
+  double avg_in =
+      nevents_ > 0 ? static_cast<double>(n_input_tracks_) / nevents_ : 0.;
+  double avg_out =
+      nevents_ > 0 ? static_cast<double>(n_output_tracks_) / nevents_ : 0.;
+  double retention =
+      n_input_tracks_ > 0 ? 100.0 * n_output_tracks_ / n_input_tracks_ : 0.;
+  ldmx_log(info) << "--------------------------------- ";
+  ldmx_log(info) << "GAS: " << n_output_tracks_ << " output tracks / "
+                 << n_input_tracks_ << " input tracks";
+  ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
+                 << processing_time_ / nevents_ << " ms";
+  ldmx_log(info) << "AVG tracks in/event:  " << std::fixed
+                 << std::setprecision(1) << avg_in;
+  ldmx_log(info) << "AVG tracks out/event: " << std::fixed
+                 << std::setprecision(1) << avg_out << " (" << std::fixed
+                 << std::setprecision(1) << retention << "% retained)";
 }
 
 }  // namespace reco

@@ -44,7 +44,6 @@ void Vertexer::onProcessStart() {
   h_tz0_vs_rz0_ =
       new TH2F("h_tz0_vs_rz0", "h_tz0_vs_rz0", 100, -40, 40, 100, -40, 40);
 
-  gctx_ = Acts::GeometryContext();
   bctx_ = Acts::MagneticFieldContext();
 
   /*
@@ -90,40 +89,15 @@ void Vertexer::produce(framework::Event& event) {
   nevents_++;
   // auto start = std::chrono::high_resolution_clock::now();
 
-  // Track linearizer in the proximity of the vertex location
-  using Linearizer = Acts::HelicalTrackLinearizer;
-  Linearizer::Config linearizer_config;
-  linearizer_config.bField = b_field_;
-  linearizer_config.propagator = propagator_;
-  Linearizer linearizer(linearizer_config);
-
-  // Set up Billoir Vertex Fitter
-  using VertexFitter = Acts::FullBilloirVertexFitter;
-
-  // Alternatively one can use
-  // using VertexFitter =
-  //  Acts::FullBilloirVertexFitter<tracking::sim::utils::boundTrackParameters,Linearizer>;
-
-  VertexFitter::Config vertex_fitter_cfg;
-  VertexFitter billoir_fitter(vertex_fitter_cfg);
-  //  mg Aug 2024 .. State doesn't exist in v36 and isn't used here anyway
-  //  VertexFitter::State state(sp_interpolated_bField_->makeCache(bctx_));
-
-  // Unconstrained fit
-  // See
-  // https://github.com/acts-project/acts/blob/main/Tests/UnitTests/Core/Vertexing/FullBilloirVertexFitterTests.cpp#L149
-  // For constraint implementation
-
-  //  Acts::VertexingOptions<Acts::BoundTrackParameters> vfOptions(gctx_,
-  //  bctx_);
-  // mg Aug 2024 ... VertexingOptions template change in v36
-  Acts::VertexingOptions vf_options(gctx_, bctx_);
+  // Note: FullBilloirVertexFitter setup commented out — fit() is not called
+  // and v46 Config now requires extractParameters/trackLinearizer delegates.
+  // Acts::VertexingOptions vf_options(gctx_, bctx_);
 
   // Retrive the two track collections
 
-  const std::vector<ldmx::Track> tracks_1 =
+  const auto& tracks_1 =
       event.getCollection<ldmx::Track>(trk_c_name_1_, input_pass_name_);
-  const std::vector<ldmx::Track> tracks_2 =
+  const auto& tracks_2 =
       event.getCollection<ldmx::Track>(trk_c_name_2_, input_pass_name_);
 
   ldmx_log(debug) << "Retrieved track collections" << std::endl
@@ -136,10 +110,11 @@ void Vertexer::produce(framework::Event& event) {
 
   // TODO:: The perigee surface should be common between all tracks.
 
+  Acts::Vector3 perigee_acts = tracking::sim::utils::ldmx2Acts(Acts::Vector3(
+      tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
+      tracks_1.front().getPerigeeZ()));
   std::shared_ptr<Acts::PerigeeSurface> perigee_surface =
-      Acts::Surface::makeShared<Acts::PerigeeSurface>(Acts::Vector3(
-          tracks_1.front().getPerigeeX(), tracks_1.front().getPerigeeY(),
-          tracks_1.front().getPerigeeZ()));
+      Acts::Surface::makeShared<Acts::PerigeeSurface>(perigee_acts);
 
   // Monitoring of tagger and recoil tracks
   taggerRecoilMonitoring(tracks_1, tracks_2);
@@ -238,8 +213,8 @@ void Vertexer::taggerRecoilMonitoring(
   // double t_theta, r_theta;
   // double t_z0, r_z0;
 
-  t_p = t_trk.q() / t_trk.getQoP();
-  r_p = r_trk.q() / r_trk.getQoP();
+  t_p = t_trk.getCharge() / t_trk.getQoP();
+  r_p = r_trk.getCharge() / r_trk.getQoP();
 
   h_delta_d0_->Fill(t_trk.getD0() - r_trk.getD0());
   h_delta_z0_->Fill(t_trk.getZ0() - r_trk.getZ0());

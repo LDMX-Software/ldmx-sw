@@ -8,6 +8,7 @@ on:
 env:
   LDMX_DOCKER_TAG: ldmx/dev:latest
   LDMX_NUM_EVENTS: 10000
+  LDMX_LOG_LEVEL: 1
 
 jobs:
   compile-ldmx-sw:
@@ -16,13 +17,13 @@ jobs:
       job_matrix: ${{steps.gen-mat.outputs.job_matrix}}
     steps:
     - name: Checkout ldmx-sw
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: 0
 
     - name : Install just
-      uses: extractions/setup-just@v3
+      uses: extractions/setup-just@v4
 
     - name: Compile and Install ldmx-sw
       run: | 
@@ -34,7 +35,7 @@ jobs:
       run: tar cf ldmx-sw-package.tar install/ .github/
 
     - name: Upload ldmx-sw Package
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ldmx-sw-build-${{ github.sha }}
         path: ldmx-sw-package.tar
@@ -51,19 +52,19 @@ jobs:
     strategy:
       matrix: ${{fromJson(needs.compile-ldmx-sw.outputs.job_matrix)}}
     steps:
-    - uses: actions/checkout@v6
-    - uses: extractions/setup-just@v3
+    - uses: actions/checkout@v7
+    - uses: extractions/setup-just@v4
     - run: just install-denv init
     
     - name: Checkout ci-data
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: LDMX-Software/ci-data
         path: ci-data
         token: ${{ secrets.CI_DATA_PAT }}
         
     - name: Download ldmx-sw Package
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: ldmx-sw-build-${{ github.sha }}
 
@@ -74,18 +75,17 @@ jobs:
 
     - name: Run Validation
       id: validation
-      uses: ./.github/actions/validate
-      with:
-        sample: ${{matrix.sample}}
-        no_comp: true
+      run: just run-validation ${{matrix.sample}} true
+      shell: bash
 
     - name: Upload New Golden Histograms
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{matrix.sample}}-new-gold
         path: |
           ${{steps.validation.outputs.hists}}
           ${{steps.validation.outputs.log}}
+          ${{steps.validation.outputs.timing}}
 
   push-new-gold:
     needs: [generation]
@@ -93,10 +93,10 @@ jobs:
     steps:
     - name: Download All the Gold
       id: download
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
 
     - name: Checkout ci-data
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: LDMX-Software/ci-data
         path: ci-data
@@ -112,6 +112,7 @@ jobs:
           error "No artifacts matching '${artifacts_d}/*-new-gold'."
           exit 1
         fi
+        > ci-data/gold.time
         for sample_d in ${artifacts_d}/*-new-gold; do
           sample=$(basename ${sample_d})
           sample=${sample%%-new-gold}
@@ -119,6 +120,7 @@ jobs:
           mkdir -p ci-data/${sample}
           mv ${sample_d}/hist.root ci-data/${sample}/gold.root
           mv ${sample_d}/output.log ci-data/${sample}/gold.log
+          cat ${sample_d}/timing.txt >> ci-data/gold.time
         done
         echo "${GITHUB_REF##refs/tags/}" | tee ci-data/label
 

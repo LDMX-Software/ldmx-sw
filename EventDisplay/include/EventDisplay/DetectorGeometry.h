@@ -56,7 +56,7 @@ class DetectorGeometry {
   /**
    * Get the single instance of this class.
    */
-  static const DetectorGeometry &getInstance() {
+  static const DetectorGeometry& getInstance() {
     static const DetectorGeometry detector_geometry;
     return detector_geometry;
   }
@@ -67,7 +67,7 @@ class DetectorGeometry {
    * @param hit HcalHit to find real space hit for
    * @return BoundingBox in real space
    */
-  BoundingBox getBoundingBox(const ldmx::HcalHit &hit) const;
+  BoundingBox getBoundingBox(const ldmx::HcalHit& hit) const;
 
   /**
    * Calculate real space coordinates of a cluster of hits.
@@ -77,7 +77,7 @@ class DetectorGeometry {
    * @param hitVec vector of HcalHits to find a "center" for
    * @return BoundingBox in real space
    */
-  BoundingBox getBoundingBox(const std::vector<ldmx::HcalHit> &hitVec) const;
+  BoundingBox getBoundingBox(const std::vector<ldmx::HcalHit>& hitVec) const;
 
   /**
    * Get bounding box for the input section.
@@ -93,7 +93,7 @@ class DetectorGeometry {
    * @param id EcalID for the hit
    * @return HexPrism
    */
-  HexPrism getHexPrism(const ldmx::EcalID &id) const;
+  HexPrism getHexPrism(const ldmx::EcalID& id) const;
 
   /**
    * Get HexPrism for a tower
@@ -131,7 +131,7 @@ class DetectorGeometry {
    * @param recoilHit SimTrackerHit in recoil tracker
    * @return BoundingBox that bounds the hit
    */
-  BoundingBox getBoundingBox(const ldmx::SimTrackerHit &recoilHit) const;
+  BoundingBox getBoundingBox(const ldmx::SimTrackerHit& recoilHit) const;
 
  private:
   /**

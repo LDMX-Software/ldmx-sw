@@ -65,6 +65,11 @@ class SimulatorBase : public framework::Producer {
 
   std::vector<std::string> post_init_commands_;
 
+  /**
+   * prepare a new event before entering into the Geant4 simulation
+   */
+  virtual void prepEvent(framework::Event& event);
+
   /*
    *
    * On succesful event, update event header properties like total PN/EN energy
@@ -82,6 +87,11 @@ class SimulatorBase : public framework::Producer {
    * Save hits from sensitive detectors.
    */
   virtual void saveSDHits(framework::Event& event);
+
+  /*
+   * Save photonuclear interactions if tracking is enabled.
+   */
+  virtual void savePhotonuclearInteractions(framework::Event& event);
 
   virtual void produce(framework::Event& event) override = 0;
 

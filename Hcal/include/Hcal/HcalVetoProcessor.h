@@ -28,7 +28,7 @@ namespace hcal {
 class HcalVetoProcessor : public framework::Producer {
  public:
   /** Constructor */
-  HcalVetoProcessor(const std::string &name, framework::Process &process);
+  HcalVetoProcessor(const std::string& name, framework::Process& process);
 
   /** Destructor */
   virtual ~HcalVetoProcessor() = default;
@@ -38,7 +38,7 @@ class HcalVetoProcessor : public framework::Producer {
    *
    * @param parameters Set of parameters used to configure this processor.
    */
-  void configure(framework::config::Parameters &parameters) override;
+  void configure(framework::config::Parameters& parameters) override;
 
   /**
    * Run the processor and create a collection of results which
@@ -46,7 +46,7 @@ class HcalVetoProcessor : public framework::Producer {
    *
    * @param event The event to process.
    */
-  void produce(framework::Event &event) override;
+  void produce(framework::Event& event) override;
 
   /**
    * Return a vector of parameters for a propagated recoil track
@@ -55,9 +55,9 @@ class HcalVetoProcessor : public framework::Producer {
    * @param[in] ts_title The track state title, most likely "hcal"
    * @returns Vector of parameters for a propagated recoil track
    */
-  std::vector<float> trackProp(const ldmx::Tracks &tracks,
+  std::vector<float> trackProp(const ldmx::Tracks& tracks,
                                ldmx::TrackStateType ts_type,
-                               const std::string &ts_title);
+                               const std::string& ts_title);
 
  private:
   /** Total PE threshold. */

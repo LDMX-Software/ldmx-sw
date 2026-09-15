@@ -43,7 +43,7 @@ class TargetBremFilter : public simcore::UserAction {
    *
    * @param event Geant4 event object.
    */
-  void EndOfEventAction(const G4Event*) override;
+  void endOfEventAction(const G4Event*) override;
 
   /**
    * Classify a new track which postpones track processing.
@@ -51,7 +51,7 @@ class TargetBremFilter : public simcore::UserAction {
    * @param aTrack The Geant4 track.
    * @param currentTrackClass The current track classification.
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
+  G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
       const G4ClassificationOfNewTrack& currentTrackClass) override;
 
@@ -67,6 +67,14 @@ class TargetBremFilter : public simcore::UserAction {
 
   /// Brem gamma energy treshold
   double brem_energy_threshold_{2500};
+
+  /// Maximum and Minimum brem gamma angle relative to beam axis [rad].
+  double brem_theta_min_;
+  double brem_theta_max_;
+
+  /// Maximum and Minimum electron-photon separation in eta-phi space.
+  double dral_min_;
+  double dral_max_;
 
   /// Flag indicating if the recoil electron track should be killed
   bool kill_recoil_{false};

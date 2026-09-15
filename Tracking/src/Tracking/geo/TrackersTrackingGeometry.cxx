@@ -1,5 +1,11 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
 
+#include <G4Box.hh>
+#include <G4VisExtent.hh>
+#include <algorithm>
+
+#include "Framework/Exception/Exception.h"
+
 namespace tracking::geo {
 
 const std::string TrackersTrackingGeometry::NAME = "TrackersTrackingGeometry";
@@ -8,18 +14,60 @@ TrackersTrackingGeometry::TrackersTrackingGeometry(
     const Acts::GeometryContext& gctx, const std::string& gdml,
     double tracker_y_length, double tracker_z_length)
     : TrackingGeometry(NAME, gctx, gdml) {
+  std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> vol_builder_configs;
+
   tagger_ = findDaughterByName(f_world_phys_vol_, "tagger_PV");
-  buildTaggerLayoutMap(tagger_, "tagger");
-  Acts::CuboidVolumeBuilder::VolumeConfig tagger_volume_cfg = buildVolumeConfig(
-      tagger_, tagger_layout_, tracker_y_length, tracker_z_length, "Tagger");
+  if (tagger_) {
+    buildTaggerLayoutMap(tagger_, "tagger");
+    vol_builder_configs.push_back(buildVolumeConfig(
+        tagger_, tagger_layout_, tracker_y_length, tracker_z_length, "Tagger"));
+  } else {
+    ldmx_log(warn) << "No tagger_PV found in detector — skipping tagger "
+                      "tracking volume";
+  }
 
   recoil_ = findDaughterByName(f_world_phys_vol_, "recoil_PV");
-  buildRecoilLayoutMap(recoil_, "recoil");
-  Acts::CuboidVolumeBuilder::VolumeConfig recoil_volume_cfg = buildVolumeConfig(
-      recoil_, recoil_layout_, tracker_y_length, tracker_z_length, "Recoil");
+  if (recoil_) {
+    buildRecoilLayoutMap(recoil_, "recoil");
+    auto recoil_volume_cfg = buildVolumeConfig(
+        recoil_, recoil_layout_, tracker_y_length, tracker_z_length, "Recoil");
 
-  std::vector<Acts::CuboidVolumeBuilder::VolumeConfig> vol_builder_configs{
-      tagger_volume_cfg, recoil_volume_cfg};
+    // Extend the recoil volume upstream so the target (x=0) and the target
+    // scoring planes sit inside it for the Navigator. Thick targets (Ti
+    // 3.56mm, Al 8.89mm) put the upstream scoring plane several mm before
+    // x=0; a start point outside every volume fails truth-track propagation.
+    // Clamp to the tagger volume edge so the two configs never overlap.
+    // This only ever grows the volume: reduced geometries whose recoil
+    // already extends past low_x are left alone.
+    {
+      double low_x = -8.0;  // mm
+      if (!vol_builder_configs.empty()) {
+        // tagger config was pushed first when present
+        const auto& tagger_cfg = vol_builder_configs.front();
+        low_x = std::max(
+            low_x, tagger_cfg.position[0] + tagger_cfg.length[0] / 2.0 + 1.0);
+      }
+      double upstream_x =
+          recoil_volume_cfg.position[0] - recoil_volume_cfg.length[0] / 2.0;
+      double downstream_x =
+          recoil_volume_cfg.position[0] + recoil_volume_cfg.length[0] / 2.0;
+      if (upstream_x > low_x) {
+        recoil_volume_cfg.length[0] = downstream_x - low_x;
+        recoil_volume_cfg.position[0] = (downstream_x + low_x) / 2.0;
+      }
+    }
+
+    vol_builder_configs.push_back(recoil_volume_cfg);
+  } else {
+    ldmx_log(warn) << "No recoil_PV found in detector — skipping recoil "
+                      "tracking volume";
+  }
+
+  if (vol_builder_configs.empty()) {
+    ldmx_log(warn) << "No tracker volumes found — tracking geometry will be "
+                      "empty";
+    return;
+  }
 
   // Create the builder
   Acts::CuboidVolumeBuilder cvb;
@@ -74,8 +122,8 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
             findDaughterByName(l_vol->GetDaughter(i),
                                "LDMXRecoilL14ModuleVolume_component0_physvol");
         if (!component0_volume)
-          throw std::runtime_error(
-              "Could not find component0 volume for L14 Recoil");
+          EXCEPTION_RAISE("BadGeometry",
+                          "Could not find component0 volume for L14 Recoil");
         active_sensor = findDaughterByName(
             component0_volume,
             "LDMXRecoilL14ModuleVolume_component0Sensor0_physvol");
@@ -90,8 +138,8 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
             findDaughterByName(l_vol->GetDaughter(i),
                                "LDMXRecoilL56ModuleVolume_component0_physvol");
         if (!component0_volume)
-          throw std::runtime_error(
-              "Could not find component0 volume for L56 Recoil");
+          EXCEPTION_RAISE("BadGeometry",
+                          "Could not find component0 volume for L56 Recoil");
         active_sensor = findDaughterByName(
             component0_volume,
             "LDMXRecoilL56ModuleVolume_component0Sensor0_physvol");
@@ -106,11 +154,11 @@ void TrackersTrackingGeometry::buildRecoilLayoutMap(G4VPhysicalVolume* pvol,
       }
 
       else
-        throw std::runtime_error("Could not build recoil layout");
+        EXCEPTION_RAISE("BadGeometry", "Could not build recoil layout");
 
       if (!active_sensor)
-        throw std::runtime_error(
-            "Could not find ActiveSensor for recoil volume");
+        EXCEPTION_RAISE("BadGeometry",
+                        "Could not find ActiveSensor for recoil volume");
 
       Acts::Transform3 ref2_transform = Acts::Transform3::Identity();
 
@@ -356,14 +404,15 @@ std::shared_ptr<Acts::PlaneSurface> TrackersTrackingGeometry::getSurfacePtr(
   // Create an alignable detector element and assign it to the surface.
   // The default transformation is the surface parsed transformation
 
-  auto det_element = std::make_shared<DetectorElement>(
-      surface, surface_transform_tracker, thickness);
+  auto det_element = std::make_shared<tracking::geo::DetectorElement>(
+      std::static_pointer_cast<Acts::Surface>(surface),
+      surface_transform_tracker, thickness);
 
   // This is the call that modify the behaviour of surface->transform(gctx)
   // After this call each surface will use the underlying detectorElement
   // transformation which will take care of effectively reading the gctx
 
-  surface->assignDetectorElement(std::move(*det_element));
+  surface->assignSurfacePlacement(*det_element);
   det_elements_.push_back(det_element);
 
   return surface;
@@ -390,12 +439,21 @@ TrackersTrackingGeometry::buildVolumeConfig(
   };
 
   ldmx_log(trace) << sub_det_position;
-  // Get the size of the volume
-  G4Box* sub_det_box = (G4Box*)(detector->GetLogicalVolume()->GetSolid());
+  // Get the size of the volume along the beam axis (G4 z -> ACTS x).
+  // The solid may be a G4Box or a boolean solid (e.g. G4SubtractionSolid
+  // for the reduced-geometry recoil), so use GetExtent() for generality.
+  G4VSolid* sub_det_solid = detector->GetLogicalVolume()->GetSolid();
+  double z_half;
+  auto* sub_det_box = dynamic_cast<G4Box*>(sub_det_solid);
+  if (sub_det_box) {
+    z_half = sub_det_box->GetZHalfLength();
+  } else {
+    G4VisExtent extent = sub_det_solid->GetExtent();
+    z_half = (extent.GetZmax() - extent.GetZmin()) / 2.0;
+  }
 
   // In tracker coordinates. Add 1mm to compensate for the movement above
-  double x_length =
-      2 * (sub_det_box->GetZHalfLength() + 1) * Acts::UnitConstants::mm;
+  double x_length = 2 * (z_half + 1) * Acts::UnitConstants::mm;
   ldmx_log(info) << "x_length = " << x_length
                  << " y_length = " << tracker_y_length
                  << " z_length = " << tracker_z_length;
@@ -405,7 +463,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
   sub_det_volume_config.name = volumeName;
 
   // Vacuum material
-  Acts::Material subdet_mat = Acts::Material();
+  Acts::Material subdet_mat = Acts::Material::Vacuum();
   sub_det_volume_config.volumeMaterial =
       std::make_shared<Acts::HomogeneousVolumeMaterial>(subdet_mat);
 
@@ -419,7 +477,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
     lcfg.surfaces = layer.second;
 
     // Get the surface thickness
-    double clearance = 0.01;
+    double clearance = 1.0;  // mm
     double thickness = layer.second.front()
                            ->surfaceMaterial()
                            ->materialSlab(Acts::Vector2{0., 0.})

@@ -86,7 +86,14 @@ class GreedyAmbiguitySolver final : public TrackingGeometryUser {
    */
   void produce(framework::Event& event) override;
 
+  void onProcessEnd() override;
+
  private:
+  int nevents_{0};
+  int n_input_tracks_{0};
+  int n_output_tracks_{0};
+  double processing_time_{0.};
+
   /// Maximum amount of shared hits per track.
   std::uint32_t maximum_shared_hits_{1};
   /// Maximum number of iterations

@@ -24,11 +24,11 @@ DBScanClusterBuilder::DBScanClusterBuilder(float minHitEnergy,
   min_cluster_hit_mult_ = minClusterHitMult;
 }
 
-std::vector<std::vector<const ldmx::CalorimeterHit *> >
+std::vector<std::vector<const ldmx::CalorimeterHit*> >
 DBScanClusterBuilder::runDBSCAN(
-    const std::vector<const ldmx::CalorimeterHit *> &hits_) {
+    const std::vector<const ldmx::CalorimeterHit*>& hits_) {
   const int n = hits_.size();
-  std::vector<std::vector<const ldmx::CalorimeterHit *> > idx_clusters;
+  std::vector<std::vector<const ldmx::CalorimeterHit*> > idx_clusters;
   std::vector<unsigned int> tried;
   tried.reserve(n);
   std::vector<unsigned int> used;
@@ -49,7 +49,7 @@ DBScanClusterBuilder::runDBSCAN(
       }
     }
     if (n_nearby >= min_cluster_hit_mult_) {
-      std::vector<const ldmx::CalorimeterHit *> idx_cluster{
+      std::vector<const ldmx::CalorimeterHit*> idx_cluster{
           hits_[i]};  // start a cluster
       used.push_back(i);
       ldmx_log(debug) << "- starting a cluster from " << i;
@@ -80,8 +80,8 @@ DBScanClusterBuilder::runDBSCAN(
 }
 
 void DBScanClusterBuilder::fillClusterInfoFromHits(
-    ldmx::CaloCluster *cl, std::vector<const ldmx::CalorimeterHit *> hits_,
-    bool logEnergyWeight) {
+    ldmx::CaloCluster* cl, std::vector<const ldmx::CalorimeterHit*> hits_,
+    bool logEnergyWeight, bool saveHitContribs) {
   float e(0), x(0), y(0), z(0), xx(0), yy(0), zz(0), n(0);
   float w = 1;  // weight
   float sumw = 0;
@@ -89,9 +89,9 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
   std::vector<float> raw_yvals{};
   std::vector<float> raw_zvals{};
   std::vector<float> raw_evals{};
-  std::vector<const ldmx::CalorimeterHit *> constituent_hits;
+  std::vector<const ldmx::CalorimeterHit*> constituent_hits;
 
-  for (const ldmx::CalorimeterHit *h : hits_) {
+  for (const ldmx::CalorimeterHit* h : hits_) {
     if (h->getEnergy() < min_hit_energy_) continue;
     if (logEnergyWeight) w = log(h->getEnergy()) - log(min_hit_energy_);
     e += h->getEnergy();
@@ -103,11 +103,13 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
     zz += w * h->getZPos() * h->getZPos();
     n += 1;
     sumw += w;
-    raw_xvals.push_back(h->getXPos());
-    raw_yvals.push_back(h->getYPos());
-    raw_zvals.push_back(h->getZPos());
-    raw_evals.push_back(h->getEnergy());
-    constituent_hits.emplace_back(h);
+    if (saveHitContribs) {
+      raw_xvals.push_back(h->getXPos());
+      raw_yvals.push_back(h->getYPos());
+      raw_zvals.push_back(h->getZPos());
+      raw_evals.push_back(h->getEnergy());
+      constituent_hits.emplace_back(h);
+    }
   }  // over hits_
   x /= sumw;  // now is <x_>
   y /= sumw;
@@ -122,11 +124,13 @@ void DBScanClusterBuilder::fillClusterInfoFromHits(
   cl->setNHits(n);
   cl->setCentroidXYZ(x, y, z);
   cl->setRMSXYZ(xx, yy, zz);
-  cl->setHitValsX(raw_xvals);
-  cl->setHitValsY(raw_yvals);
-  cl->setHitValsZ(raw_zvals);
-  cl->setHitValsE(raw_evals);
-  cl->addHits(constituent_hits);  // associate used hits_ to cluster
+  if (saveHitContribs) {
+    cl->setHitValsX(raw_xvals);
+    cl->setHitValsY(raw_yvals);
+    cl->setHitValsZ(raw_zvals);
+    cl->setHitValsE(raw_evals);
+    cl->addHits(constituent_hits);  // associate used hits_ to cluster
+  }
 
   if (raw_xvals.size() > 2) {
     // skip fits for 'vertical' clusters

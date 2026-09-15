@@ -99,7 +99,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
   }
 }
 
-void TargetENProcessFilter::EndOfEventAction(const G4Event*) {
+void TargetENProcessFilter::endOfEventAction(const G4Event*) {
   reaction_occurred_ = false;
 }
 }  // namespace biasing

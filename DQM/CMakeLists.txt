@@ -6,9 +6,9 @@ project(DQM DESCRIPTION "Data quality management tools."
 )
 
 setup_library(module DQM
-              dependencies ROOT::Physics 
+              dependencies ROOT::Physics
                            Framework::Framework Recon::Event Tools::Tools DetDescr::DetDescr
-                           Ecal::Event SimCore::Event Hcal::Event Tracking::Event TrigScint::Event
+                           Ecal::Event SimCore::Event SimCore::Bertini Hcal::Event Tracking::Event TrigScint::Event
 )
 
 setup_python(package_name LDMX/DQM)

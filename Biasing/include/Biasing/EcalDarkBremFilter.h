@@ -78,7 +78,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param event unused
    */
-  void BeginOfEventAction(const G4Event* event) override;
+  void beginOfEventAction(const G4Event* event) override;
 
   /**
    * We return the classification of the track done by the PartialEnergySorter,
@@ -88,12 +88,12 @@ class EcalDarkBremFilter : public simcore::UserAction {
    * Checks a new track for being an A' above threshold_
    *  if it is an A', sets the found_ap_ member
    *
-   * @see PartialEnergySort::ClassifyNewTrack
+   * @see PartialEnergySort::classifyNewTrack
    * @param aTrack The Geant4 track.
    * @param currentTrackClass The current track classification.
    * @returns current track classification
    */
-  G4ClassificationOfNewTrack ClassifyNewTrack(
+  G4ClassificationOfNewTrack classifyNewTrack(
       const G4Track* aTrack,
       const G4ClassificationOfNewTrack& currentTrackClass) override;
 
@@ -105,9 +105,9 @@ class EcalDarkBremFilter : public simcore::UserAction {
    * We take this opportunity to make sure that the A'
    * has been found.
    *
-   * @see PartialEnergySort::NewStage
+   * @see PartialEnergySort::newStage
    */
-  void NewStage() override;
+  void newStage() override;
 
   /**
    * Make sure A' is saved.
@@ -119,7 +119,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
    *
    * @param track G4Track to check if it is an A'
    */
-  void PostUserTrackingAction(const G4Track* track) override;
+  void postUserTrackingAction(const G4Track* track) override;
 
  private:
   /**
@@ -129,16 +129,6 @@ class EcalDarkBremFilter : public simcore::UserAction {
    * @return true if originated in desired volume
    */
   bool inDesiredVolume(const G4Track*) const;
-
-  /**
-   * Helper to abort an event with a message
-   *
-   * Tells the RunManger to abort the current event
-   * after displaying the input message.
-   *
-   * @param[in] reason reason for aborting the event
-   */
-  void AbortEvent(const std::string& reason) const;
 
  private:
   /**
@@ -159,7 +149,7 @@ class EcalDarkBremFilter : public simcore::UserAction {
   /**
    * Have we found the A' yet?
    *
-   * Reset to false in BeginOfEventAction
+   * Reset to false in beginOfEventAction
    */
   bool found_ap_;
 

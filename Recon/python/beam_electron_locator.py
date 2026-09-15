@@ -1,9 +1,9 @@
-"""Configuration for beam electron locator 
+"""Configuration for beam electron locator
 
 Attributes:
 -------------
 input_collection : string
-    Name of the input collection, should be one that holds sim hits 
+    Name of the input collection, should be one that holds sim hits
 input_pass_name : string
     Pass name of the input collection
 output_collection : string
@@ -16,21 +16,20 @@ min_granularity_mm : float
     The maximum distance between SimHits that are grouped together as one beam electron
 verbose : boolean
     If set to true, more information is spit out to either Info or Debug log level
-
-# We need the ldmx configuration package to construct the processor objects
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class BeamElectronLocator(ldmxcfg.Producer) :
+@processor("recon::BeamElectronLocator", "Recon")
+class BeamElectronLocator(Processor):
     """The name is purely conventional to match the C++ class name for clarity
 
     Examples
     --------
 
     from LDMX.Recon.beamElectronLocator import BeamElectronLocator
-    beamEleFinder= BeamELectronLocator('beamEleFinder')
+    beamEleFinder= BeamElectronLocator('beamEleFinder')
 
     You can change the parameters after creating this object.
         beamEleFinder.my_parameter = 50
@@ -39,18 +38,14 @@ class BeamElectronLocator(ldmxcfg.Producer) :
         p.sequence.append( beamEleFinder )
     """
 
-    def __init__(self, name ):
-        super().__init__( name , "recon::BeamElectronLocator" , 'Recon' )
-
-        self.input_collection = "truthBeamElectronsTarget"
-        self.input_pass_name  = ""
-        self.output_collection = "BeamElectronTruthInfo"
-        self.granularity_x_mm = 20./8.
-        self.granularity_y_mm = 80./48.
-        self.min_granularity_mm = 0.1
-        self.min_x_mm = -10.
-        self.max_x_mm = 10.
-        self.min_y_mm = -40.
-        self.max_y_mm = 40.
-        self.verbose = False
-
+    input_collection: str = "truthBeamElectronsTarget"
+    input_pass_name: str = ""
+    output_collection: str = "BeamElectronTruthInfo"
+    granularity_x_mm: float = 2.5
+    granularity_y_mm: float = 80.0 / 48.0
+    min_granularity_mm: float = 0.1
+    min_x_mm: float = -10.0
+    max_x_mm: float = 10.0
+    min_y_mm: float = -40.0
+    max_y_mm: float = 40.0
+    verbose: bool = False

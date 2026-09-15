@@ -8,19 +8,21 @@ Examples
     p.sequence.append( electron_counter )
 """
 
-from LDMX.Framework import ldmxcfg
+from LDMX.Framework import Processor, processor
 
 
-class ElectronCounter(ldmxcfg.Producer) :
+@processor("recon::ElectronCounter", "Recon")
+class ElectronCounter(Processor):
     """Configuration for the event beam electron counter"""
 
-    def __init__(self,n_sim_beam_electrons,name="ElectronCounter") :
-        super().__init__(name,'recon::ElectronCounter','Recon')
+    simulated_electron_number: int = 1
+    input_collection: str = "TriggerPadTracksY"
+    input_pass_name: str = "truth"
+    output_collection: str = "BeamElectronCount"
+    use_simulated_electron_number: bool = False
 
-        self.input_collection = "TriggerPadTracksY"
-        self.input_pass_name = "truth"
-        self.output_collection = "BeamElectronCount"
-        self.simulated_electron_number = n_sim_beam_electrons
-        self.use_simulated_electron_number = False
-electron_counter = ElectronCounter(1, "ElectronCounter")
 
+electron_counter = ElectronCounter(
+    simulated_electron_number=1,
+    instance_name="ElectronCounter",
+)

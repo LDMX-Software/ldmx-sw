@@ -40,8 +40,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * @param ci The conditions needed to build the detector.
    */
   DetectorConstruction(std::shared_ptr<simcore::geo::Parser> parser,
-                       framework::config::Parameters &parameters,
-                       ConditionsInterface &ci);
+                       framework::config::Parameters& parameters,
+                       ConditionsInterface& ci);
 
   /**
    * Class destructor.
@@ -52,7 +52,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
    * Construct the detector.
    * @return The top volume of the detector.
    */
-  G4VPhysicalVolume *Construct();
+  G4VPhysicalVolume* Construct();
 
   /**
    */
@@ -72,7 +72,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction {
   framework::config::Parameters parameters_;
 
   /// interface to conditions to be passed to SDs
-  simcore::ConditionsInterface &conditions_interface_;
+  simcore::ConditionsInterface& conditions_interface_;
 
   /// Enable logging
   enableLogging("DetectorConstruction")

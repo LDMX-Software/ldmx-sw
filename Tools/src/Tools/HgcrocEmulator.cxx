@@ -3,7 +3,7 @@
 
 namespace ldmx {
 
-HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters &ps) {
+HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters& ps) {
   // settings of readout chip that are the same for all chips
   //  used  in actual digitization
   noise_ = ps.get<bool>("noise");
@@ -43,9 +43,9 @@ void HgcrocEmulator::seedGenerator(uint64_t seed) {
 }
 
 bool HgcrocEmulator::digitize(
-    const int &channelID,
-    std::vector<std::pair<double, double>> &arriving_pulses,
-    std::vector<ldmx::HgcrocDigiCollection::Sample> &digiToAdd) const {
+    const int& channelID,
+    std::vector<std::pair<double, double>>& arriving_pulses,
+    std::vector<ldmx::HgcrocDigiCollection::Sample>& digiToAdd) const {
   // step 0: prepare ourselves for emulation
   digiToAdd.clear();  // make sure it is clean
 
@@ -68,8 +68,8 @@ bool HgcrocEmulator::digitize(
   //  ==> makes sure that puleses are merged towards higher ones
   std::sort(
       arriving_pulses.begin(), arriving_pulses.end(),
-      [](const std::pair<double, double> &a,
-         const std::pair<double, double> &b) { return a.first > b.first; });
+      [](const std::pair<double, double>& a,
+         const std::pair<double, double>& b) { return a.first > b.first; });
 
   // step 1: gather voltages into groups separated by (programmable) ns, single
   // pass
@@ -236,7 +236,7 @@ bool HgcrocEmulator::digitize(
 }  // HgcrocEmulator::digitize
 
 std::vector<ldmx::HgcrocDigiCollection::Sample> HgcrocEmulator::noiseDigi(
-    const int &channel, const double &soi_amplitude) const {
+    const int& channel, const double& soi_amplitude) const {
   // get chip conditions from emulator
   double pedestal{this->pedestal(channel)};
   double gain{this->gain(channel)};

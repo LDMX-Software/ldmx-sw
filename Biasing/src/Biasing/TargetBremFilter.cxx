@@ -17,6 +17,11 @@
 #include "SimCore/G4User/UserEventInformation.h"
 #include "SimCore/G4User/UserTrackInformation.h"
 
+/*~~~~~~~~~~~~~*/
+/*  C++ StdLib */
+/*~~~~~~~~~~~~~*/
+#include <cmath>
+
 namespace biasing {
 
 TargetBremFilter::TargetBremFilter(const std::string& name,
@@ -24,12 +29,23 @@ TargetBremFilter::TargetBremFilter(const std::string& name,
     : simcore::UserAction(name, parameters) {
   recoil_max_p_threshold_ = parameters.get<double>("recoil_max_p_threshold");
   brem_energy_threshold_ = parameters.get<double>("brem_min_energy_threshold");
+  brem_theta_min_ = parameters.get<double>("brem_theta_min");
+  brem_theta_max_ = parameters.get<double>("brem_theta_max");
+  dral_min_ = parameters.get<double>("dral_min");
+  dral_max_ = parameters.get<double>("dral_max");
   kill_recoil_ = parameters.get<bool>("kill_recoil_track");
+
+  ldmx_log(info) << "TargetBremFilter configured:"
+                 << " recoil_max_p_threshold=" << recoil_max_p_threshold_
+                 << " brem_min_energy_threshold=" << brem_energy_threshold_
+                 << " brem_theta=[" << brem_theta_min_ << ", "
+                 << brem_theta_max_ << "]"
+                 << " dral=[" << dral_min_ << ", " << dral_max_ << "]";
 }
 
 TargetBremFilter::~TargetBremFilter() {}
 
-G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
+G4ClassificationOfNewTrack TargetBremFilter::classifyNewTrack(
     const G4Track* track, const G4ClassificationOfNewTrack& currentTrackClass) {
   // get the PDGID of the track.
   G4int pdg_id = track->GetParticleDefinition()->GetPDGEncoding();
@@ -49,6 +65,8 @@ G4ClassificationOfNewTrack TargetBremFilter::ClassifyNewTrack(
 }
 
 void TargetBremFilter::stepping(const G4Step* step) {
+  double last_dral = -1;
+  double last_theta = -1;
   // Get the track associated with this step.
   auto track{step->GetTrack()};
 
@@ -105,20 +123,27 @@ void TargetBremFilter::stepping(const G4Step* step) {
   auto track_volume = track->GetNextVolume();
   if (track_volume == recoil_physical_volume or
       track_volume == world_physical_volume) {
-    // If the recoil electron
+    // If the recoil electron momentum is too high, abort
     if (track->GetMomentum().mag() >= recoil_max_p_threshold_) {
+      ldmx_log(trace) << "Abort: recoil p=" << track->GetMomentum().mag()
+                      << " MeV >= threshold=" << recoil_max_p_threshold_;
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
-    // Get the electron secondries
+    // Get the electron secondaries
     bool has_brem_candidate = false;
     if (auto secondaries = step->GetSecondary(); secondaries->size() == 0) {
+      ldmx_log(trace) << "Abort: no secondaries produced";
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     } else {
+      ldmx_log(trace) << "Exiting target: recoil p ="
+                      << track->GetMomentum().mag() << " MeV, "
+                      << secondaries->size() << " secondaries";
+
       for (auto& secondary_track : *secondaries) {
         auto electron = G4Electron::Definition();
         auto ebrem_process =
@@ -129,25 +154,66 @@ void TargetBremFilter::stepping(const G4Step* step) {
 
         if (ebrem_process &&
             secondary_track->GetKineticEnergy() > brem_energy_threshold_) {
-          auto track_info{simcore::UserTrackInformation::get(secondary_track)};
-          track_info->tagBremCandidate();
+          // Check if secondary is photon
+          auto secondary_pdg_id =
+              secondary_track->GetParticleDefinition()->GetPDGEncoding();
+          if (secondary_pdg_id != 22) continue;
 
-          getEventInfo()->incBremCandidateCount();
+          // Brem angle
+          auto momentum = secondary_track->GetMomentum();
+          double theta = std::atan2(std::sqrt(momentum.x() * momentum.x() +
+                                              momentum.y() * momentum.y()),
+                                    momentum.z());
+          bool pass_brem_theta =
+              theta >= brem_theta_min_ && theta <= brem_theta_max_;
 
-          has_brem_candidate = true;
+          // Maximum and Minimum angle between outgoing Brem photons and
+          // electrons
+          auto gamma_mom = secondary_track->GetMomentum();
+          auto electron_mom = track->GetMomentum();
+          double gamma_eta = gamma_mom.eta();
+          double gamma_phi = gamma_mom.phi();
+          double electron_eta = electron_mom.eta();
+          double electron_phi = electron_mom.phi();
+
+          double dphi = std::atan2(std::sin(electron_phi - gamma_phi),
+                                   std::cos(electron_phi - gamma_phi));
+          double dral = std::sqrt((electron_eta - gamma_eta) *
+                                      (electron_eta - gamma_eta) +
+                                  dphi * dphi);
+          bool pass_dral = dral >= dral_min_ && dral <= dral_max_;
+
+          last_theta = theta;
+          last_dral = dral;
+
+          ldmx_log(trace) << "  photon E="
+                          << secondary_track->GetKineticEnergy()
+                          << " MeV, theta=" << theta
+                          << " (pass=" << pass_brem_theta << ")"
+                          << ", dR=" << dral << " (pass=" << pass_dral << ")";
+
+          if (pass_brem_theta && pass_dral) {
+            auto track_info{
+                simcore::UserTrackInformation::get(secondary_track)};
+            track_info->tagBremCandidate();
+
+            getEventInfo()->incBremCandidateCount();
+
+            has_brem_candidate = true;
+          }
         }
       }
     }
 
     if (!has_brem_candidate) {
+      ldmx_log(trace) << "Abort: no brem candidate passed cuts";
       track->SetTrackStatus(fKillTrackAndSecondaries);
       G4RunManager::GetRunManager()->AbortEvent();
       return;
     }
 
-    /*
-    std::cout << "[TargetBremFilter] : Found brem candidate" << std::endl;
-     */
+    ldmx_log(info) << "ACCEPTED: brem candidate with theta=" << last_theta
+                   << ", dR=" << last_dral;
 
     // Check if the recoil electron should be killed.  If not, postpone
     // its processing until the brem gamma has been processed.
@@ -163,7 +229,7 @@ void TargetBremFilter::stepping(const G4Step* step) {
   }
 }
 
-void TargetBremFilter::EndOfEventAction(const G4Event*) {}
+void TargetBremFilter::endOfEventAction(const G4Event*) {}
 }  // namespace biasing
 
 DECLARE_ACTION(biasing::TargetBremFilter)

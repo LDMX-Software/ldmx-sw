@@ -1,23 +1,12 @@
+"""Package to configure the ECal trigger digitization"""
 
-"""Package to configure the ECal trigger digitization
-
-
-All classes are derived versions of LDMX.Framework.ldmxcfg.Producer
-with helpful member functions.
-
-"""
-
-from LDMX.Framework.ldmxcfg import Producer
+from LDMX.Framework import Processor, processor
 
 
-class EcalTrigPrimDigiProducer(Producer) :
-    """Configuration for EcalTrigPrimDigiProducer
+@processor("ecal::EcalTrigPrimDigiProducer", "Ecal")
+class EcalTrigPrimDigiProducer(Processor):
+    digi_coll_name: str = "EcalDigis"
+    digi_pass_name: str = ""
 
-    """
-
-    def __init__(self, instance_name = 'ecalTrigDigis') :
-        super().__init__(instance_name , 'ecal::EcalTrigPrimDigiProducer','Ecal')
-        self.digi_coll_name = "EcalDigis"
-        self.digi_pass_name = ""
-
-
+    def __post_init__(self):
+        self.instance_name = "ecalTrigDigis"

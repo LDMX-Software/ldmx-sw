@@ -6,10 +6,11 @@
 
 namespace trigscint {
 
-void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
+void TrigScintClusterProducer::configure(framework::config::Parameters& ps) {
   seed_ = ps.get<double>("seed_threshold");
   min_thr_ = ps.get<double>("clustering_threshold");
   max_width_ = ps.get<int>("max_cluster_width");
+  ampl_weighting_ = ps.get<bool>("ampl_weighting");
   input_collection_ = ps.get<std::string>("input_collection");
   pass_name_ = ps.get<std::string>("input_pass_name");
   output_collection_ = ps.get<std::string>("output_collection");
@@ -22,6 +23,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
     ldmx_log(info) << "Got parameters: \nSeed threshold:   " << seed_
                    << "\nClustering threshold: " << min_thr_
                    << "\nMax cluster width: " << max_width_
+                   << "\nAmplitude weighting: " << ampl_weighting_
                    << "\nExpected pad hit time: " << pad_time_
                    << "\nMax hit time delay: " << time_tolerance_
                    << "\nVertical bar start index:     " << vert_bar_start_idx_
@@ -34,7 +36,7 @@ void TrigScintClusterProducer::configure(framework::config::Parameters &ps) {
   return;
 }
 
-void TrigScintClusterProducer::produce(framework::Event &event) {
+void TrigScintClusterProducer::produce(framework::Event& event) {
   // parameters.
   // a cluster seeding threshold
   // a clustering threshold -- a lower boundary for being added at all (zero
@@ -141,7 +143,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
   // 1. store all the channel digi content in channel order
   auto i_digi{0};
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     // these are unordered hits, and this collection is zero-suppressed
     // map the index of the digi to the channel index
 
@@ -216,7 +218,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
     // non-existing indices. so while what i do below means that i don't need to
     // erase hits, i'd rather find a way to do that and skip this book keeping:
     bool has_used = false;
-    for (const auto &index : v_used_indices_) {
+    for (const auto& index : v_used_indices_) {
       if (index == itr->first) {
         if (verbose_ > 1) {
           ldmx_log(warn) << "Attempting to re-use hit at channel " << itr->first
@@ -276,7 +278,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
         // need to check again for backwards hits
         has_used = false;
-        for (const auto &index : v_used_indices_) {
+        for (const auto& index : v_used_indices_) {
           if (index == itr_back->first) {
             if (verbose_ > 1) {
               ldmx_log(warn) << "Attempting to re-use hit at channel "
@@ -402,8 +404,10 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       }  // if adding another hit, going forward, was allowed
 
       // done adding hits to cluster. calculate centroid
-      centroid_ /= val_;  // final weighting step: divide by total
-      centroid_ -= 1;     // shift back to actual channel center
+
+      centroid_ /=
+          sumw_;       // final weighting step: divide by total amplitude sum
+      centroid_ -= 1;  // shift back to actual channel center
 
       ldmx::TrigScintCluster cluster;
 
@@ -445,6 +449,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
       val_e_ = 0;
       beam_e_ = 0;
       time_ = 0;
+      sumw_ = 0;
       // book keep which channels have already been added to a cluster
       v_added_indices_.resize(0);
 
@@ -464,8 +469,7 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
     }
   }  // over channels
 
-  if (trig_scint_clusters.size() > 0)
-    event.add(output_collection_, trig_scint_clusters);
+  event.add(output_collection_, trig_scint_clusters);
 
   hit_channel_map_.clear();
   // book keep which channels have already been added to a cluster
@@ -476,13 +480,21 @@ void TrigScintClusterProducer::produce(framework::Event &event) {
 
 void TrigScintClusterProducer::addHit(uint idx, ldmx::TrigScintHit hit) {
   float ampl = hit.getPE();
-  val_ += ampl;
+  float w = 1;
+  if (ampl_weighting_) {  // if choosing to PE-weight centroid positions
+    w = ampl;
+  }
+
   float energy = hit.getEnergy();
   val_e_ += energy;
 
-  centroid_ += (idx + 1) * ampl;  // need non-zero weight of channel 0. shifting
-                                  // centroid back by 1 in the end
-  // this number gets divided by val at the end
+  val_ += ampl;
+  centroid_ += (idx + 1) * w;  // need non-zero weight of channel 0. shifting
+                               // centroid back by 1 in the end
+                               // this number gets divided by val at the end
+
+  sumw_ += w;
+
   v_added_indices_.push_back(idx);
 
   beam_e_ += hit.getBeamEfrac() * energy;

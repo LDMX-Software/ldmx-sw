@@ -175,12 +175,13 @@ bool SeedToTrackParamMaker::karimakiFit(
 
 /// see
 /// https://acode-browser.usatlas.bnl.gov/lxr/source/athena/InnerDetector/InDetRecTools/SiTrackMakerTool_xk/src/SiTrackMaker_xk.cxx
-template <typename external_spacepoint_t>
-bool SeedToTrackParamMaker::fitSeedAtlas(
-    const Acts::Seed<external_spacepoint_t>& seed, std::array<double, 9>& data,
-    const Acts::Transform3& Tp, const double& bFieldZ) {
-  return FitSeedAtlas(seed.sp(), data, Tp, bFieldZ);
-}
+// Acts::Seed<T> removed in v47 — fitSeedAtlas(Seed) unused, commented out
+// template <typename external_spacepoint_t>
+// bool SeedToTrackParamMaker::fitSeedAtlas(
+//     const Acts::Seed<external_spacepoint_t>& seed, std::array<double, 9>& data,
+//     const Acts::Transform3& Tp, const double& bFieldZ) {
+//   return FitSeedAtlas(seed.sp(), data, Tp, bFieldZ);
+// }
 
 // double H = 0.0015; //kTesla
 
@@ -272,11 +273,12 @@ bool SeedToTrackParamMaker::fitSeedAtlas(
   return true;
 }
 
-template <typename external_spacepoint_t>
-bool SeedToTrackParamMaker::fitSeedLinPar(
-    const Acts::Seed<external_spacepoint_t>& seed, std::vector<double>& data) {
-  return true;
-}
+// Acts::Seed<T> removed in v47 — fitSeedLinPar(Seed) unused, commented out
+// template <typename external_spacepoint_t>
+// bool SeedToTrackParamMaker::fitSeedLinPar(
+//     const Acts::Seed<external_spacepoint_t>& seed, std::vector<double>& data) {
+//   return true;
+// }
 
 }  // namespace sim
 }  // namespace tracking

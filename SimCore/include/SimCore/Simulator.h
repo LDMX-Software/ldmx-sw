@@ -38,6 +38,7 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/APrimePhysics.h"
+#include "SimCore/Bertini/CascadeHistoryStore.h"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/Event/HepMC3GenEvent.h"

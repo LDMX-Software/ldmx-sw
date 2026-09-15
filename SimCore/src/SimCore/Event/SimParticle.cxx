@@ -118,4 +118,16 @@ SimParticle::ProcessType SimParticle::findProcessType(
     return ProcessType::unknown;
   }
 }
+
+void SimParticle::encodeTracks(
+    std::function<int(int, unsigned int, unsigned int)> encodeFunc,
+    const unsigned int encoding_version, const unsigned int event_index) {
+  for (auto& daughter_track : this->daughters_) {
+    daughter_track = encodeFunc(daughter_track, encoding_version, event_index);
+  }  // over daughters
+  for (auto& parent_track : this->parents_) {
+    parent_track = encodeFunc(parent_track, encoding_version, event_index);
+  }  // over parents
+}
+
 }  // namespace ldmx

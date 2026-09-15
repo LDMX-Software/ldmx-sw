@@ -19,7 +19,7 @@ namespace biasing {
  * makes a step and has secondaries within that step going to
  * the input process, we add its change in energy to the running
  * total for the event. When the PartialEnergySorter has run out
- * of "high" energy particles to process (when NewStage is called)
+ * of "high" energy particles to process (when newStage is called)
  * we check if the running total is high enough to keep the event.
  *
  * @see PartialEnergySorter
@@ -56,7 +56,7 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
    *
    * @param[in] event not used
    */
-  void BeginOfEventAction(const G4Event* event) override;
+  void beginOfEventAction(const G4Event* event) override;
 
   /**
    * We follow the simulation along each step and check
@@ -85,10 +85,10 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
    * enough energy has gone to the products of
    * the input process.
    *
-   * @see PartialEnergySort::NewStage
-   * @see AbortEvent
+   * @see PartialEnergySort::newStage
+   * @see abortEvent
    */
-  void NewStage() override;
+  void newStage() override;
 
  private:
   /**
@@ -119,16 +119,6 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
    */
   void save(const G4Track* track) const;
 
-  /**
-   * Helper to abort an event with a message
-   *
-   * Tells the RunManger to abort the current event
-   * after displaying the input message.
-   *
-   * @param[in] reason reason for aborting the event
-   */
-  void AbortEvent(const std::string& reason) const;
-
  private:
   /**
    * Minimum energy [MeV] that the process products need to have
@@ -149,7 +139,7 @@ class MidShowerNuclearBkgdFilter : public simcore::UserAction {
   /**
    * Total energy gone to the process in the current event
    *
-   * Reset to 0. in BeginOfEventAction
+   * Reset to 0. in beginOfEventAction
    */
   double total_process_energy_{0.};
 

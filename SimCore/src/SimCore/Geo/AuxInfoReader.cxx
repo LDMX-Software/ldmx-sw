@@ -53,6 +53,8 @@ void AuxInfoReader::readGlobalAuxInfo() {
       createMagneticField(aux_val, aux_info.auxList);
     } else if (aux_type == "Region") {
       createRegion(aux_val, aux_info.auxList);
+    } else if (aux_type == "ColorMode") {
+      selectColorMode(aux_val);
     } else if (aux_type == "VisAttributes") {
       createVisAttributes(aux_val, aux_info.auxList);
     } else if (aux_type == "DetectorVersion") {
@@ -105,6 +107,13 @@ void AuxInfoReader::assignAuxInfoToVolumes() {
                                              "' was not found!");
         }
       } else if (aux_type == "VisAttributes") {
+        // Same as when registering visattributes, must match mode (if in use)
+        auto match = std::find(universal_visattributes_.begin(),
+                               universal_visattributes_.end(), aux_val);
+        if (match == universal_visattributes_.end() && color_mode_ != "" &&
+            aux_val.find(color_mode_) == std::string::npos) {
+          continue;
+        }
         const G4String& vis_name = aux_val;
         G4VisAttributes* vis_attributes =
             VisAttributesStore::getInstance()->getVisAttributes(vis_name);
@@ -252,6 +261,33 @@ void AuxInfoReader::createRegion(const G4String& name,
 }
 // NOLINTEND
 
+void AuxInfoReader::selectColorMode(const G4String& mode) {
+  // Chooses which coloring scheme to use for the visattributes
+  // Currently (March 2026) there are two modes implemented:
+  //    Region: Only visattributes with "Region" in the name will be applied
+  //    Material: Only visattributes with "Material" in the name will be applied
+  // The Region mode colors all volumes in the same subdetector the same color
+  // For example, all volumes in the HCal will be colored orange
+  // The Material mode colors each volume based on which material it's made from
+  //'Unimportant' materials (like glue) are left uncolored or invisible
+  // To add more modes follow these steps:
+  // 1) Make more visattributes in 'visattributes.gdml'
+  //       Your new attribute names must share a common string, like "Region"
+  // 2) Add the shared string as a valid option in this function
+
+  std::vector<std::string> valid_modes = {"Region", "Material"};
+
+  auto match = std::find(valid_modes.begin(), valid_modes.end(), mode);
+
+  if (match == valid_modes.end()) {
+    EXCEPTION_RAISE("InvalidMode", "Color mode setting " + mode +
+                                       " doesn't match any available modes!");
+  }
+
+  // If the input matches a valid mode (doesn't matter which one), proceed
+  color_mode_ = mode;
+}
+
 void AuxInfoReader::createVisAttributes(const G4String& name,
                                         const G4GDMLAuxListType* auxInfoList) {
   std::array<G4double, 4> rgba = {1., 1., 1., 1.};
@@ -261,6 +297,24 @@ void AuxInfoReader::createVisAttributes(const G4String& name,
   G4bool force_solid = false;
   G4double line_width = 1.0;
   G4VisAttributes::LineStyle line_style = G4VisAttributes::unbroken;
+
+  // There are some visattributes which should be accepted regardless of mode
+  universal_visattributes_ = {
+      "InvisibleNoDau", "InvisibleShowDau", "NoDau",     "GrayWireFrame",
+      "BlueWireFrame",  "BlueSolid",        "Invisible", "SpVis"};
+  auto match = std::find(universal_visattributes_.begin(),
+                         universal_visattributes_.end(), name);
+
+  // If a visattribute is not universal, a color mode is set, and the
+  // visattribute doesn't match the current mode, don't register it
+  if (match == universal_visattributes_.end() && color_mode_ != "" &&
+      name.find(color_mode_) == std::string::npos) {
+    ldmx_log(debug) << "VisAttribute " << name
+                    << " doesn't match current mode. Skipping...";
+    return;
+    // Note that if color mode is not set, the last visattributes
+    // defined for each volume will be the active ones
+  }
 
   for (const auto& aux_info : *auxInfoList) {
     G4String aux_type = aux_info.type;

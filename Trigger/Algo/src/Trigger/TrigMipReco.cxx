@@ -14,19 +14,19 @@ void TrigMipReco::configure(framework::config::Parameters& ps) {
 
   max_layer_ = ps.get<int>("max_layer", 32);
   // mm
-  search_radius_ = ps.get<float>("search_radius", 50.0f);
+  search_radius_ = ps.get<double>("search_radius", 50.0);
   min_track_length_ = ps.get<int>("min_track_length", 5);
   // MeV; Change as needed
-  isolation_e_cut_ = ps.get<float>("isolation_e_cut", 180.0f);
-  hole_fraction_max_ = ps.get<float>("hole_fraction_max", 0.2f);
+  isolation_e_cut_ = ps.get<double>("isolation_e_cut", 180.0);
+  hole_fraction_max_ = ps.get<double>("hole_fraction_max", 0.2);
 
   if (calorimeter_type_is_hcal_) {
     // MIP peak is 10-11 MeV
-    hcal_min_energy_ = ps.get<float>("hcal_min_energy", 8.0f);
+    hcal_min_energy_ = ps.get<double>("hcal_min_energy", 8.0);
   } else {  // ECAL
     // MIP peak around 17 MeV
-    ecal_min_energy_ = ps.get<float>("ecal_min_energy", 3.0f);
-    ecal_max_energy_ = ps.get<float>("ecal_max_energy", 26.0f);
+    ecal_min_energy_ = ps.get<double>("ecal_min_energy", 3.0);
+    ecal_max_energy_ = ps.get<double>("ecal_max_energy", 26.0);
   }
 }
 

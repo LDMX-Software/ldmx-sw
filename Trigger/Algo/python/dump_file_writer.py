@@ -1,12 +1,9 @@
+from LDMX.Framework import Processor, processor
 
-from LDMX.Framework.ldmxcfg import Analyzer
 
+@processor("trigger::DumpFileWriter", "Trigger")
+class DumpFileWriter(Processor):
+    """Configuration for DumpFileWriter"""
 
-class DumpFileWriter(Analyzer) :
-    """Configuration for DumpFileWriter
-    """
-
-    def __init__(self, instance_name = 'myDumpFileWriter') :
-        super().__init__(instance_name , 'trigger::DumpFileWriter','Trigger')
-        self.ecal_trig_digis_passname = ""
-        self.ecal_trig_digis_event_passname = ""
+    ecal_trig_digis_passname: str = ""
+    ecal_trig_digis_event_passname: str = ""

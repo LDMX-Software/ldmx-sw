@@ -8,10 +8,11 @@
 #include "Acts/MagneticField/BFieldMapUtils.hpp"
 #include "Acts/MagneticField/InterpolatedBFieldMap.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Utilities/AxisFwd.hpp"
+#include "Acts/Utilities/AxisDefinitions.hpp"
 #include "Acts/Utilities/Grid.hpp"
 #include "Acts/Utilities/Interpolation.hpp"
 #include "Acts/Utilities/Result.hpp"
+#include "Framework/Exception/Exception.h"
 
 static const double DIPOLE_OFFSET = 400.;  // 400 mm
 
@@ -210,8 +211,8 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
         localToGlobalBin,
     GenericTransformPos transformPosition,
     GenericTransformBField transformMagneticField,
-    const std::string& fieldMapFile, Acts::ActsScalar lengthUnit,
-    Acts::ActsScalar BFieldUnit, bool firstOctant, bool rotateAxes) {
+    const std::string& fieldMapFile, double lengthUnit, double BFieldUnit,
+    bool firstOctant, bool rotateAxes) {
   /// [1] Read in field map file
   // Grid position points in x, y and z
   std::vector<double> x_pos;
@@ -228,6 +229,10 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
   b_field.reserve(k_default_size);
   // [1] Read in file and fill values
   std::ifstream map_file(fieldMapFile.c_str(), std::ios::in);
+  if (!map_file.is_open()) {
+    EXCEPTION_RAISE("BadConf", "BFieldXYZUtils: cannot open field map file '" +
+                                   fieldMapFile + "'");
+  }
   std::string line;
   double pos_x = 0., pos_y = 0., pos_z = 0.;
   double bx = 0., by = 0., bz = 0.;
@@ -251,9 +256,14 @@ inline InterpolatedMagneticField3 makeMagneticFieldMapXyzFromText(
   map_file.close();
 
   if (!header_found) {
-    std::cout << "MAP LOADING ERROR:: line containing the word 'Header' not "
-                 "found in the BMap."
-              << std::endl;
+    EXCEPTION_RAISE("BadConf",
+                    "BFieldXYZUtils: no 'Header' line found in field map "
+                    "file '" +
+                        fieldMapFile + "'");
+  }
+  if (b_field.empty()) {
+    EXCEPTION_RAISE("BadConf", "BFieldXYZUtils: no field data read from '" +
+                                   fieldMapFile + "'");
   }
 
   x_pos.shrink_to_fit();

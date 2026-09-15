@@ -20,8 +20,16 @@ void XsecBiasingOperator::StartRun() {
     process_manager_ =
         G4KaonZeroLong::KaonZeroLongDefinition()->GetProcessManager();
   } else {
-    EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
-                                     this->getParticleToBias() + "'.");
+    // Fallback: look up arbitrary particles via G4ParticleTable
+    // This supports custom particles like A' ("A^1") and any future additions
+    auto* particle = G4ParticleTable::GetParticleTable()->FindParticle(
+        this->getParticleToBias());
+    if (particle) {
+      process_manager_ = particle->GetProcessManager();
+    } else {
+      EXCEPTION_RAISE("BiasSetup", "Invalid particle type '" +
+                                       this->getParticleToBias() + "'.");
+    }
   }
 
   ldmx_log(info) << "Biasing particles of type " << this->getParticleToBias();

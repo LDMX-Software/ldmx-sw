@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 
 #include <iostream>
+#include <memory>
 #include <set>
 
 #include "Framework/Event.h"
@@ -26,7 +27,7 @@ volatile std::sig_atomic_t preemption_received_ = 0;
 
 namespace framework {
 
-Process::Process(const framework::config::Parameters &configuration)
+Process::Process(const framework::config::Parameters& configuration)
     : conditions_{*this} {
   config_ = configuration;
 
@@ -57,12 +58,12 @@ Process::Process(const framework::config::Parameters &configuration)
 
   auto libs{configuration.get<std::vector<std::string>>("libraries", {})};
   std::set<std::string> libraries_loaded;
-  for (const auto &lib : libs) {
+  for (const auto& lib : libs) {
     if (libraries_loaded.find(lib) != libraries_loaded.end()) {
       continue;
     }
 
-    void *handle = dlopen(lib.c_str(), RTLD_NOW);
+    void* handle = dlopen(lib.c_str(), RTLD_NOW);
     if (handle == nullptr) {
       EXCEPTION_RAISE("LibraryLoadFailure",
                       "Error loading library '" + lib + "':" + dlerror());
@@ -141,7 +142,7 @@ Process::~Process() {
   // need to delete the performance object so that it is
   // written before we close the histogram file below
   if (performance_) delete performance_;
-  for (EventProcessor *ep : sequence_) {
+  for (EventProcessor* ep : sequence_) {
     delete ep;
   }
   if (histo_t_file_) {
@@ -206,12 +207,12 @@ void Process::run() {
 
     for (auto rule : drop_keep_rules_) out_file.addDrop(rule);
 
-    ldmx::RunHeader run_header(run_for_generation_);
-    run_header.setRunStart(std::time(nullptr));  // set run starting
-    run_header_ = &run_header;  // give handle to run header to process
+    auto run_header = std::make_shared<ldmx::RunHeader>(run_for_generation_);
+    run_header->setRunStart(std::time(nullptr));  // set run starting
+    run_header_ = run_header.get();  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
-    newRun(run_header);
+    newRun(*run_header, &out_file);
 
     int total_tries = 0;  // total number of tries for entire run
     int num_tries = 0;    // number of tries for the current event number
@@ -234,7 +235,7 @@ void Process::run() {
       total_tries++;
       num_tries++;
 
-      ldmx::EventHeader &eh = the_event.getEventHeader();
+      ldmx::EventHeader& eh = the_event.getEventHeader();
       eh.setRun(run_for_generation_);
       eh.setEventNumber(n_events_processed + 1);
       eh.setTimestamp(TTimeStamp());
@@ -263,9 +264,9 @@ void Process::run() {
 
     onFileClose(out_file);
 
-    run_header.setRunEnd(std::time(nullptr));
-    run_header.setNumTries(total_tries);
-    out_file.writeRunTree();
+    run_header->setRunEnd(std::time(nullptr));
+    run_header->setNumTries(total_tries);
+    out_file.writeRunTree(not preemption_received_);
 
     // Give a warning that this filter has very low efficiency
     if (n_events_processed < total_tries / 10000) {  // integer division is okay
@@ -279,7 +280,7 @@ void Process::run() {
   } else {
     // there are input files
 
-    EventFile *out_file(0);
+    EventFile* out_file(0);
 
     bool single_output = false;
     if (output_files_.size() == 1) {
@@ -314,7 +315,7 @@ void Process::run() {
       onFileOpen(in_file);
 
       // configure event file that will be iterated over
-      EventFile *master_file;
+      EventFile* master_file;
       if (!output_files_.empty()) {
         // setup new output file if either
         // 1) we are not in single output mode
@@ -367,15 +368,19 @@ void Process::run() {
         // notify for new run if necessary
         if (the_event.getEventHeader().getRun() != was_run) {
           was_run = the_event.getEventHeader().getRun();
-          ldmx::RunHeader *rh{master_file->getRunHeaderPtr(was_run)};
+          ldmx::RunHeader* rh{master_file->getRunHeaderPtr(was_run)};
           if (rh != nullptr) {
             run_header_ = rh;
             ldmx_log(info) << "Got new run header from '"
                            << master_file->getFileName() << "'";
-            newRun(*run_header_);
+            newRun(*run_header_, out_file);
           } else {
-            ldmx_log(warn) << "Run header for run " << was_run
-                           << " was not found!";
+            // no header means no newRun, so conditions stay uninitialised
+            EXCEPTION_RAISE(
+                "MissingRunHeader",
+                "Run header for run " + std::to_string(was_run) +
+                    " was not found in '" + master_file->getFileName() +
+                    "'. Conditions cannot be initialised without it.");
           }
         }
 
@@ -411,7 +416,7 @@ void Process::run() {
       the_event.onEndOfFile();
 
       if (out_file and !single_output) {
-        out_file->writeRunTree();
+        out_file->writeRunTree(not preemption_received_);
         delete out_file;
         out_file = nullptr;
       }
@@ -424,7 +429,7 @@ void Process::run() {
     if (out_file) {
       // close outFile
       //  outFile would survive to here in single output mode
-      out_file->writeRunTree();
+      out_file->writeRunTree(not preemption_received_);
       delete out_file;
       out_file = nullptr;
     }
@@ -453,15 +458,15 @@ int Process::getRunNumber() const {
   return (event_header_) ? (event_header_->getRun()) : (run_for_generation_);
 }
 
-TDirectory *Process::makeHistoDirectory(const std::string &dirName) {
+TDirectory* Process::makeHistoDirectory(const std::string& dirName) {
   auto owner{openHistoFile()};
-  TDirectory *child = owner->mkdir((char *)dirName.c_str());
+  TDirectory* child = owner->mkdir((char*)dirName.c_str());
   if (child) child->cd();
   return child;
 }
 
-TDirectory *Process::openHistoFile() {
-  TDirectory *owner{nullptr};
+TDirectory* Process::openHistoFile() {
+  TDirectory* owner{nullptr};
 
   if (histo_filename_.empty()) {
     // trying to write histograms/ntuples but no file defined
@@ -482,7 +487,7 @@ TDirectory *Process::openHistoFile() {
   return owner;
 }
 
-void Process::newRun(ldmx::RunHeader &header) {
+void Process::newRun(ldmx::RunHeader& header, EventFile* out) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
 
@@ -502,6 +507,8 @@ void Process::newRun(ldmx::RunHeader &header) {
   if (performance_) performance_->stop(performance::Callback::beforeNewRun, 0);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
+  // header is final, so write it now in case we are killed
+  if (out) out->writeRunTree();
   if (performance_) performance_->start(performance::Callback::onNewRun, 0);
   conditions_.onNewRun(header);
   i_proc = 0;
@@ -517,7 +524,7 @@ void Process::newRun(ldmx::RunHeader &header) {
   ldmx_log(info) << header;
 }
 
-bool Process::process(int n, int n_try, Event &event) const {
+bool Process::process(int n, int n_try, Event& event) const {
   if ((log_frequency_ != -1) && ((n + 1) % log_frequency_ == 0) &&
       (n_try < 2)) {
     // only printout event counter if we've enabled log frequency, the event
@@ -540,7 +547,7 @@ bool Process::process(int n, int n_try, Event &event) const {
       if (performance_)
         performance_->stop(performance::Callback::process, i_proc);
     }
-  } catch (AbortEventException &) {
+  } catch (AbortEventException&) {
     if (performance_) {
       performance_->stop(performance::Callback::process, i_proc);
       performance_->stop(performance::Callback::process, 0);
@@ -555,7 +562,7 @@ bool Process::process(int n, int n_try, Event &event) const {
   return true;
 }
 
-void Process::onFileOpen(EventFile &file) const {
+void Process::onFileOpen(EventFile& file) const {
   if (performance_) performance_->start(performance::Callback::onFileOpen, 0);
   std::size_t i_proc{0};
   for (auto proc : sequence_) {
@@ -569,7 +576,7 @@ void Process::onFileOpen(EventFile &file) const {
   if (performance_) performance_->stop(performance::Callback::onFileOpen, 0);
 }
 
-void Process::onFileClose(EventFile &file) const {
+void Process::onFileClose(EventFile& file) const {
   if (performance_) performance_->start(performance::Callback::onFileClose, 0);
   std::size_t i_proc{0};
   for (auto proc : sequence_) {

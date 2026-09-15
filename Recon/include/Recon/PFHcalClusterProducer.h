@@ -30,6 +30,7 @@ class PFHcalClusterProducer : public framework::Producer {
  private:
   bool single_cluster_{true};
   bool log_energy_weight_{true};
+  bool save_hit_contribs_{true};
 
   float min_hit_energy_{0};
   float cluster_hit_dist_{100.};

@@ -50,14 +50,14 @@ Simply choose the version of ldmx-sw you wish to use with your project.
 ```
 mkdir my-project
 cd my-project
-denv init ldmx/pro:v4.0.1 # or some other ldmx-sw version
+denv init ldmx/pro:v4.7.1 # or some other ldmx-sw version
 ```
 And then you can run ldmx-sw with a configuration script of your choice.
 ```
 denv fire my-config.py
 ```
 More detail on configuration scripts and analyzing the output files
-is given in the first section of the [online manual](ldmx-software.github.io).
+is given in the first section of the [online manual](https://ldmx-software.github.io).
 
 ### Developing
 For development, we use a few more tools to help track our changes and share commands

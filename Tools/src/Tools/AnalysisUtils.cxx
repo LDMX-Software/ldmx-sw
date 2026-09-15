@@ -25,20 +25,52 @@
 
 namespace analysis {
 
-std::tuple<int, const ldmx::SimParticle *> getRecoil(
-    const std::map<int, ldmx::SimParticle> &particleMap) {
+std::tuple<int, const ldmx::SimParticle*> getRecoil(
+    const std::map<int, ldmx::SimParticle>& particleMap) {
   // The recoil electron is "produced" in the dark brem geneartion
-  for (const auto &[trackID, particle] : particleMap) {
+  for (const auto& [trackID, particle] : particleMap) {
     if (particle.getPdgID() == 11 and
         particle.getProcessType() ==
             ldmx::SimParticle::ProcessType::eDarkBrem) {
-      return {trackID, &particle};
+      return {trackID, &particleMap.at(trackID)};
     }
   }
   // only get here if recoil electron was not "produced" by dark brem
   //   in this case (bkgd), we interpret the primary electron as also the recoil
   //   electron
-  return {1, &(particleMap.at(1))};
+  if (particleMap.find(1) != particleMap.end()) {
+    return {1, &(particleMap.at(1))};
+  } else {
+    // need to account for overlay tracks, which replace track ID
+    // 1 with 134217729 in the main sample and with 150994945 in the
+    // pileup
+    // this code right now is decidedly NOT future proof and only handles a
+    // single encoding version
+    return {134217729, &(particleMap.at(134217729))};
+  }
+}
+
+std::tuple<int, const ldmx::SimParticle*> getBremPhoton(
+    const std::map<int, ldmx::SimParticle>& particleMap) {
+  int brem_track_id = -1;
+  double brem_energy = -9999.0;
+  for (const auto& [trackID, particle] : particleMap) {
+    // find the highest energy photon generated at the target
+    if (particle.getEnergy() > brem_energy  // if the energy is greatest yet
+        && particle.getVertex()[2] > -5.0 &&
+        particle.getVertex()[2] <
+            5.0  // if the particle originates near the target
+        && particle.getPdgID() == 22) {  // and the particle is a photon
+      brem_track_id = trackID;
+      brem_energy = particle.getEnergy();
+    }
+  }  //
+  if (brem_track_id != -1 && brem_energy != -9999.0) {
+    return {brem_track_id, &particleMap.at(brem_track_id)};
+  } else {
+    // if no brem photon is found
+    return {1, nullptr};
+  }
 }
 
 // Search the recoil electrons daughters for a photon
@@ -46,8 +78,8 @@ std::tuple<int, const ldmx::SimParticle *> getRecoil(
 //
 
 bool doesParticleHavePNDaughters(
-    const ldmx::SimParticle &gamma,
-    const std::map<int, ldmx::SimParticle> &particleMap) {
+    const ldmx::SimParticle& gamma,
+    const std::map<int, ldmx::SimParticle>& particleMap) {
   for (auto daughter_id : gamma.getDaughters()) {
     if (particleMap.find(daughter_id) != std::end(particleMap)) {
       const auto daughter{particleMap.at(daughter_id)};
@@ -61,9 +93,9 @@ bool doesParticleHavePNDaughters(
   return false;
 }
 
-const ldmx::SimParticle *getPNGamma(
-    const std::map<int, ldmx::SimParticle> &particleMap,
-    const ldmx::SimParticle *recoil, const float &energyThreshold) {
+const ldmx::SimParticle* getPNGamma(
+    const std::map<int, ldmx::SimParticle>& particleMap,
+    const ldmx::SimParticle* recoil, const float& energyThreshold) {
   auto recoil_daughters{recoil->getDaughters()};
   for (auto recoil_daughter_id : recoil_daughters) {
     // Have we stored the recoil daughter?
