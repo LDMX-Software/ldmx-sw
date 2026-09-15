@@ -180,6 +180,14 @@ class Process {
    */
   bool skip_corrupted_input_files_;
 
+  /**
+   * allow the Process to read input files whose runs never finished
+   *
+   * For experts. Such a file is missing events off the end of a run, so the
+   * sample it gives is biased.
+   */
+  bool allow_incomplete_input_files_;
+
   /** Storage controller */
   StorageControl storage_controller_;
 
