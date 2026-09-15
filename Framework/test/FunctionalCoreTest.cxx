@@ -883,3 +883,104 @@ TEST_CASE("Output Completeness", "[Framework][functionality]") {
 
   CHECK(framework::test::removeFile(output_file));
 }  // output completeness test
+
+/**
+ * Test that an incomplete input file is refused unless an expert asks for it.
+ *
+ * A run that never finished is missing events off its end, so running over it
+ * without knowing gives a biased sample.
+ *
+ * What does this test?
+ *  - an input file holding an unfinished run raises by default
+ *  - allow_incomplete_input_files lets the same file through
+ *  - a complete file is untouched by either setting
+ */
+TEST_CASE("Incomplete Input", "[Framework][functionality]") {
+  framework::config::Parameters process;
+  process.add("compression_setting", 9);
+  process.add("max_tries_per_event", 1);
+  process.add("log_frequency", -1);
+  process.add("term_log_level", 4);
+  process.add("file_log_level", 4);
+  process.add<std::string>("log_file_name", "");
+  process.add<std::string>("tree_name", "LDMX_Events");
+
+  framework::config::Parameters producer_parameters;
+  producer_parameters.add<std::string>("class_name",
+                                       "framework::test::TestProducer");
+  producer_parameters.add<std::string>("instance_name", "TestProducer");
+  producer_parameters.add("create_run_header", true);
+
+  framework::config::Parameters analyzer_parameters;
+  analyzer_parameters.add<std::string>("class_name",
+                                       "framework::test::TestAnalyzer");
+  analyzer_parameters.add<std::string>("instance_name", "TestAnalyzer");
+
+  const std::string complete_file{"test_incompletein_complete_events.root"};
+  const std::string incomplete_file{"test_incompletein_incomplete_events.root"};
+
+  // one file that closes cleanly and one that dies partway
+  {
+    auto make_inputs = process;
+    make_inputs.add<std::string>("pass_name", "makeInputs");
+    make_inputs.add<std::vector<framework::config::Parameters>>(
+        "sequence", {producer_parameters});
+    make_inputs.add("output_files", std::vector<std::string>{complete_file});
+    make_inputs.add<std::string>("histogram_file", "");
+    make_inputs.add("max_events", 3);
+    make_inputs.add("run", 3);
+    REQUIRE(framework::test::runProcess(make_inputs));
+    REQUIRE(framework::test::isCompleted(complete_file));
+  }
+  {
+    auto make_inputs = process;
+    make_inputs.add<std::string>("pass_name", "makeInputs");
+    auto producer = producer_parameters;
+    producer.add("throw_after", 3);  // die partway, as a preemption would
+    make_inputs.add<std::vector<framework::config::Parameters>>("sequence",
+                                                                {producer});
+    make_inputs.add("output_files", std::vector<std::string>{incomplete_file});
+    make_inputs.add<std::string>("histogram_file", "");
+    make_inputs.add("max_events", 5);
+    make_inputs.add("run", 4);
+    REQUIRE_THROWS_AS(framework::test::runProcess(make_inputs),
+                      framework::exception::Exception);
+    REQUIRE_FALSE(framework::test::isCompleted(incomplete_file));
+  }
+
+  process.add<std::string>("pass_name", "test");
+  std::string hist_file_path = "test_incompletein_hists.root";
+  process.add("histogram_file", hist_file_path);
+  process.add<std::vector<framework::config::Parameters>>(
+      "sequence", {analyzer_parameters});
+
+  SECTION("an unfinished run is refused") {
+    process.add("input_files", std::vector<std::string>{incomplete_file});
+    CHECK_THROWS_AS(framework::test::runProcess(process),
+                    framework::exception::Exception);
+  }
+
+  SECTION("an unfinished run is refused even alongside good files") {
+    process.add("input_files",
+                std::vector<std::string>{complete_file, incomplete_file});
+    CHECK_THROWS_AS(framework::test::runProcess(process),
+                    framework::exception::Exception);
+  }
+
+  SECTION("experts can ask for it anyway") {
+    process.add("input_files", std::vector<std::string>{incomplete_file});
+    process.add("allow_incomplete_input_files", true);
+    CHECK(framework::test::runProcess(process));
+    CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(1 + 2 + 3));
+  }
+
+  SECTION("a complete run is let through") {
+    process.add("input_files", std::vector<std::string>{complete_file});
+    CHECK(framework::test::runProcess(process));
+    CHECK_THAT(hist_file_path, framework::test::IsGoodhistogramFile(1 + 2 + 3));
+  }
+
+  CHECK(framework::test::removeFile(hist_file_path));
+  CHECK(framework::test::removeFile(incomplete_file));
+  CHECK(framework::test::removeFile(complete_file));
+}  // incomplete input test

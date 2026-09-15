@@ -57,9 +57,23 @@ namespace ldmx {
  * ## v7
  * Add the completed_ member so a consumer can tell a complete file from one
  * whose writer died partway through.
+ *
+ * ### Interop with v6 and earlier
+ * Those versions have no completed_ on disk, so reading one leaves the member
+ * at its default of false. A reader cannot tell such a run apart from one that
+ * was cut short, so it has to look at the class version of the run tree
+ * (VERSION_WITH_COMPLETED) before trusting the flag.
  */
 class RunHeader {
  public:
+  /**
+   * The first class version that writes completed_.
+   *
+   * Run headers read out of a file written with an earlier version say nothing
+   * about whether their run finished.
+   */
+  static constexpr int VERSION_WITH_COMPLETED{7};
+
   /**
    * Constructor.
    *
