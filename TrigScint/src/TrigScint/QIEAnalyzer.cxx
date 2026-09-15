@@ -7,6 +7,8 @@
 
 #include "TrigScint/QIEAnalyzer.h"
 
+#include <algorithm>
+
 namespace trigscint {
 
 QIEAnalyzer::QIEAnalyzer(const std::string& name, framework::Process& process)
@@ -18,6 +20,8 @@ void QIEAnalyzer::configure(framework::config::Parameters& parameters) {
   peds_ = parameters.get<std::vector<double> >("pedestals");
   gain_ = parameters.get<std::vector<double> >("gain");
   start_sample_ = parameters.get<int>("start_sample");
+  // bounded by the h_out_ array size
+  n_ev_ = std::clamp(parameters.get<int>("n_event_displays"), 0, n_ev_tdc_);
 
   ldmx_log(trace) << "In configure(), got parameters "
                   << "\n\t inputCollection = " << input_col_
@@ -58,21 +62,26 @@ void QIEAnalyzer::analyze(const framework::Event& event) {
     for (int i_t = 0; i_t < q.size(); i_t++) {
       ldmx_log(debug) << "in event " << ev_nb << "; channel " << bar
                       << ", got charge[" << i_t << "] = " << q.at(i_t);
-      if (ev_nb < n_ev_ && bar < n_channels_) {
+      if (ev_nb < n_ev_tdc_ && bar < n_channels_) {
         // stick within the predefined histogram array
+        const bool display{ev_nb < n_ev_};
         //		  h_out_[evNb][bar]->Fill(iT+start_sample_, q.at(iT));
-        h_out_[ev_nb][bar]->SetBinContent(i_t + start_sample_, q.at(i_t));
-        h_out_[ev_nb][bar]->SetBinError(i_t + start_sample_,
-                                        fabs(q_err.at(i_t)));
+        if (display) {
+          h_out_[ev_nb][bar]->SetBinContent(i_t + start_sample_, q.at(i_t));
+          h_out_[ev_nb][bar]->SetBinError(i_t + start_sample_,
+                                          fabs(q_err.at(i_t)));
+        }
         if (tdc.at(i_t) < 63) {
           ldmx_log(info) << "Found fired TDC = " << tdc.at(i_t)
                          << " at time sample " << i_t << " in channel " << bar
                          << " and event " << ev_nb;
           // for some reason, the style settings are washed out later...
-          h_out_[ev_nb][bar]->SetLineColor(kRed + 1);
-          h_out_[ev_nb][bar]->SetMarkerColor(
-              h_out_[ev_nb][bar]->GetLineColor());
-          h_out_[ev_nb][bar]->SetMarkerSize(0.2);
+          if (display) {
+            h_out_[ev_nb][bar]->SetLineColor(kRed + 1);
+            h_out_[ev_nb][bar]->SetMarkerColor(
+                h_out_[ev_nb][bar]->GetLineColor());
+            h_out_[ev_nb][bar]->SetMarkerSize(0.2);
+          }
 
           if (i_t + start_sample_ > 0)
             h_tdc_fire_chan_vs_event_->Fill(bar, ev_nb, i_t + start_sample_);
@@ -203,7 +212,7 @@ void QIEAnalyzer::onProcessStart() {
 
   h_tdc_fire_chan_vs_event_ = new TH2F(
       "h_tdc_fire_chan_vs_event", ";channel with TDC < 63;event number",
-      n_channels_, -0.5, n_channels_ - 0.5, n_ev_, 0, n_ev_);
+      n_channels_, -0.5, n_channels_ - 0.5, n_ev_tdc_, 0, n_ev_tdc_);
 
   ldmx_log(debug) << "done setting up histograms";
 
