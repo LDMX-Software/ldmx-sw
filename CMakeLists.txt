@@ -135,6 +135,9 @@ add_subdirectory(Biasing)
 add_subdirectory(Detectors)
 add_subdirectory(MagFieldMap)
 
+# needs to be after all of the libraries have been defined
+export_compile_info()
+
 build_test()
 add_test(
   NAME PythonConfigParameterSet
