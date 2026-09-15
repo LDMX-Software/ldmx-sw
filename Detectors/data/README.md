@@ -26,6 +26,7 @@ collaborators understand what the detector is meant to describe.
 - `det`: the full LDMX detector
 - `ti`: the full detector but using a Ti target instead of W
 - `lyso`: the full detector but using a LYSO target instead of W
+- `al`: the full detector but using an Al target instead of W
 - `hcal-prototype`: the HCal prototype detector used during testbeam
 - `reduced`: reduced LDMX to be ran in 2024
 
@@ -37,6 +38,7 @@ collaborators understand what the detector is meant to describe.
 - `ldmx-lyso-r3-v14-8gev` : version 14 of the full LDMX detector updated for an 8GeV beam, but with the target changed to 2 layers of LYSO bars, r1 was removed in ldmx-sw v4.4.7, r2 was removed in 4.4.8
 - `ldmx-det-v15-8gev` : like version 14 but contains air instead of vacuum
 - `ldmx-det-v16-8gev` : like version 15 but with the 2025 design report tagger and recoil trackers
+- `ldmx-ti-v16-8gev`, `ldmx-al-v16-8gev`, `ldmx-lyso-r4-v16-8gev`, `ldmx-det-v16-8gev-no-cals` : v16 counterparts of the v15 variants; the Ti target is now 0.1 X0 (3.56 mm)
 
 ### Archived geometries
 Previously used geometries can be found under the `archived` directory. In case you need to use any of these, ran `tar -xf` on them and move them back under `data` and then re-configure and re-install ldmx-sw (all detector directories under `data/` are included in the install location):
