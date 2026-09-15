@@ -1019,9 +1019,12 @@ class RawSiStripDQM(Processor):
     n_hybrids: int = 4
 
     def __post_init__(self):
-        self.histogram("n_raw_hits", "Raw hits per event", 100, 0, 40000)
+        # fixed by the readout (channels x APV triggers); window around the
+        # expected count so a dropped hybrid is resolved
+        self.histogram("n_raw_hits", "Raw hits per event", 200, 24800, 26800)
         self.histogram("raw_read_error", "Read error flag", 10, -0.5, 9.5)
-        self.histogram("n_waveforms", "Waveforms per event", 100, 0, 200)
+        # ESA run 111 peaks at 32, tail reaches 90
+        self.histogram("n_waveforms", "Waveforms per event", 100, 0, 100)
         self.histogram("waveform_n_triggers", "APV triggers", 12, -0.5, 11.5)
         self.histogram("waveform_peak_trigger", "Peak trigger", 12, -0.5, 11.5)
         self.histogram("fit_converged", "Fit converged", 2, -0.5, 1.5)
