@@ -25,6 +25,11 @@ parser.add_argument(
     default=10,
     type=int,
 )
+parser.add_argument(
+    "--detector",
+    help="detector to simulate and reconstruct with",
+    default="ldmx-det-v16-8gev",
+)
 args = parser.parse_args()
 
 from LDMX.Framework import ldmxcfg
@@ -50,13 +55,13 @@ from LDMX.SimCore import simulator
 from LDMX.SimCore import generators
 
 sim = simulator.Simulator("uniform-electrons")
-sim.set_detector("ldmx-det-v14-8gev", include_scoring_planes_minimal=True)
+sim.set_detector(args.detector, include_scoring_planes_minimal=True)
 sim.description = "Electrons with uniformly sampled energy and angle shot from target"
 # GPS generator
 sim.generators = [
     generators.Gps(
-        "uniform-electrons",
-        [
+        instance_name="uniform-electrons",
+        init_commands=[
             # electrons
             "/gps/particle e-",
             # position distribution: all from the same point, generator smears beam spot
@@ -91,6 +96,10 @@ sim.generators = [
 from LDMX.Tracking import tracking
 
 import LDMX.Tracking.geo
+from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
+
+# the ACTS geometry must match the simulated detector
+TrackGeo.get_instance().set_detector(args.detector)
 
 # Truth seeder
 # Runs truth tracking producing tracks from target scoring plane hits for Recoil
@@ -98,6 +107,8 @@ import LDMX.Tracking.geo
 # Truth tracks can be used for assessing tracking performance or using as seeds
 truth_tracking = tracking.TruthSeedProcessor()
 truth_tracking.debug = True
+# nothing is shot into the tagger, so only seed the recoil
+truth_tracking.skip_tagger = True
 truth_tracking.recoil_seeds_collection = "RecoilTruthSeeds"
 truth_tracking.pdg_ids = [11]
 truth_tracking.scoring_hits_coll_name = "TargetScoringPlaneHits"
@@ -151,7 +162,6 @@ seeder_recoil.z0max = 10.0
 # CKF Options
 tracking_recoil = tracking.CKFProcessor("Recoil_TrackFinder")
 tracking_recoil.dumpobj = False
-tracking_recoil.debug = True
 tracking_recoil.propagator_step_size = 1000.0  # mm
 tracking_recoil.bfield = -1.5  # in T #From looking at the BField map
 tracking_recoil.const_b_field = False
@@ -161,9 +171,6 @@ tracking_recoil.const_b_field = False
 tracking_recoil.seed_coll_name = "RecoilTruthSeeds"
 tracking_recoil.out_trk_collection = "RecoilTracks"
 
-# smear the hits used for finding/fitting
-tracking_recoil.trackID = -1  # 1
-tracking_recoil.pdg_id = -9999  # 11
 tracking_recoil.measurement_collection = digi_recoil.out_collection
 tracking_recoil.min_hits = 5
 
@@ -175,11 +182,13 @@ tracking_dqm = dqm.TrackingRecoDQM()
 seed_recoil_dqm = dqm.TrackingRecoDQM("SeedRecoilDQM")
 seed_recoil_dqm.track_collection = seeder_recoil.out_seed_collection
 seed_recoil_dqm.truth_collection = "RecoilTruthTracks"
+seed_recoil_dqm.measurement_collection = digi_recoil.out_collection
 seed_recoil_dqm.title = ""
 
 recoil_dqm = dqm.TrackingRecoDQM("RecoilDQM")
 recoil_dqm.track_collection = tracking_recoil.out_trk_collection
 recoil_dqm.truth_collection = "RecoilTruthTracks"
+recoil_dqm.measurement_collection = digi_recoil.out_collection
 recoil_dqm.title = ""
 
 # This sequence runs the digitization in the tagger and recoil
