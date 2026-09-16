@@ -42,9 +42,9 @@ void TrackingGeometryUser::loadBField(const std::string& path,
 
   const Acts::RotationMatrix3 rot{distortion.rotationMatrix()};
   const Acts::RotationMatrix3 rot_inv{rot.transpose()};
-  const Acts::Vector3 translation{distortion.translation};
-  const Acts::Vector3 pivot{distortion.pivot};
-  const double scale{distortion.scale};
+  const Acts::Vector3 translation{distortion.translation_};
+  const Acts::Vector3 pivot{distortion.pivot_};
+  const double scale{distortion.scale_};
 
   // undo the distortion, then the nominal ACTS -> map transform
   auto transform_pos = [rot_inv, translation, pivot](const Acts::Vector3& pos) {
@@ -59,8 +59,8 @@ void TrackingGeometryUser::loadBField(const std::string& path,
   ldmx_log(info) << "B-field distortion active (LDMX frame): translation ("
                  << translation(1) << ", " << translation(2) << ", "
                  << translation(0) << ") mm, rotation ("
-                 << distortion.rotation(1) << ", " << distortion.rotation(2)
-                 << ", " << distortion.rotation(0) << ") rad about ("
+                 << distortion.rotation_(1) << ", " << distortion.rotation_(2)
+                 << ", " << distortion.rotation_(0) << ") rad about ("
                  << pivot(1) << ", " << pivot(2) << ", " << pivot(0)
                  << ") mm, scale " << scale;
 
@@ -89,11 +89,11 @@ BFieldDistortion TrackingGeometryUser::bFieldDistortion(
   // LDMX (x, y, z) -> ACTS (z, x, y); a cyclic permutation, so the rotation
   // angles reorder the same way as the positions
   BFieldDistortion distortion;
-  distortion.translation =
+  distortion.translation_ =
       Acts::Vector3(translation[2], translation[0], translation[1]);
-  distortion.rotation = Acts::Vector3(rotation[2], rotation[0], rotation[1]);
-  distortion.pivot = Acts::Vector3(pivot[2], pivot[0], pivot[1]);
-  distortion.scale = parameters.get<double>("bfield_scale", 1.);
+  distortion.rotation_ = Acts::Vector3(rotation[2], rotation[0], rotation[1]);
+  distortion.pivot_ = Acts::Vector3(pivot[2], pivot[0], pivot[1]);
+  distortion.scale_ = parameters.get<double>("bfield_scale", 1.);
   return distortion;
 }
 
