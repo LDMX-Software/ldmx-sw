@@ -78,10 +78,11 @@ Step 2 — decode → subtract → build waveforms (per physics run)
 --------------------------------------------------------------
 
 ```bash
-just fire Tracking/exampleConfigs/decode_to_waveforms.py -- \
+just fire Tracking/exampleConfigs/raw_to_measurements.py -- \
     --dat /sdf/data/hps/users/mgignac/hardware/data/LDMX/Run_182_20251213_174649.dat \
     --pedestal-file pedestals.json \
     --max-events 5 \
+    --stop-at fit \
     --output tracker_waveforms_run182.root
 # → [TrackerPedestalProvider] Loaded 2560 channel pedestals from 'pedestals.json'
 # → [SiStripWaveformBuilder] Built N waveforms (>=4 samples @5s, streak>=5 @3s) from 25800 hits

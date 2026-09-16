@@ -1,0 +1,57 @@
+{
+  "_comment": [
+    "Tracker DAQ map for the ESA slice test (Detectors/data/ldmx-reduced-v3).",
+    "Maps (feb_id, hybrid_id) -> Acts surface id + strip transform.  All four",
+    "hybrids are serviced by a single FEB (0).  Layer ordering, per hardware:",
+    "  station 1 = hybrid 0 (stereo) + hybrid 1 (axial)",
+    "  station 2 = hybrid 3 (stereo) + hybrid 2 (axial)",
+    "In each station the stereo sensor sits upstream (more negative z) and the",
+    "axial sensor downstream.",
+    "layer_id is the Acts surface id, keyed as vol*1000 + layer*100 + sensor",
+    "(TrackingGeometry.cxx:327); recoil volume = 3.  The sensor suffix (00/01)",
+    "follows z-order, so the upstream stereo sensor is xx00 and the downstream",
+    "axial one is xx01." 
+  ],
+  "sensors": [
+    {
+      "feb": 0,
+      "hybrid": 0,
+      "station": 1,
+      "orientation": "stereo",
+      "layer_id": 3100,
+      "n_strips": 640,
+      "first_strip": 0,
+      "reversed": false
+    },
+    {
+      "feb": 0,
+      "hybrid": 1,
+      "station": 1,
+      "orientation": "axial",
+      "layer_id": 3101,
+      "n_strips": 640,
+      "first_strip": 0,
+      "reversed": false
+    },
+    {
+      "feb": 0,
+      "hybrid": 2,
+      "station": 2,
+      "orientation": "axial",
+      "layer_id": 3201,
+      "n_strips": 640,
+      "first_strip": 0,
+      "reversed": false
+    },
+    {
+      "feb": 0,
+      "hybrid": 3,
+      "station": 2,
+      "orientation": "stereo",
+      "layer_id": 3200,
+      "n_strips": 640,
+      "first_strip": 0,
+      "reversed": false
+    }
+  ]
+}
