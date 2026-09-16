@@ -5,8 +5,9 @@ from LDMX.Framework import ldmxcfg
 # Create a process
 p = ldmxcfg.Process("test_ecal_out_of_time_digis")
 
-# Set the maximum number of events
-p.max_events = 2000
+# one event per 1ns step of the arrival time scan below
+n_steps = 75
+p.max_events = n_steps
 
 # Set the output file name
 p.output_files = ["ecal_digi_out_of_time_test.root"]
@@ -40,6 +41,7 @@ fake_sim_hits = ldmxcfg.make_processor(
     max_energy=energy_of_hit,
     min_time=-30.0,
     max_time=45.0,
+    n_steps=n_steps,
 )
 
 p.sequence = [

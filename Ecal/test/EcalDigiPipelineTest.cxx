@@ -172,7 +172,7 @@ class EcalFakeSimHits : public framework::Producer {
 
   /**
    * The step between energies (times) is calculated depending on the min, max
-   * energy (time) and the total number of sim hits_ you desire.
+   * energy (time) and the number of steps to take to get there.
    */
   double energy_step_;
   double time_step_;
@@ -195,9 +195,11 @@ class EcalFakeSimHits : public framework::Producer {
     // so the default arrival time of 1ns is an in-time hit
     min_time_ = ps.get<double>("min_time", 1.);
     max_time_ = ps.get<double>("max_time", 1.);
+    // should match the number of events the process runs
+    int n_steps = ps.get<int>("n_steps", NUM_TEST_SIM_HITS);
 
-    energy_step_ = (max_energy_ - min_energy_) / NUM_TEST_SIM_HITS;
-    time_step_ = (max_time_ - min_time_) / NUM_TEST_SIM_HITS;
+    energy_step_ = (max_energy_ - min_energy_) / n_steps;
+    time_step_ = (max_time_ - min_time_) / n_steps;
 
     curr_energy_ = min_energy_;
     curr_time_ = min_time_;
