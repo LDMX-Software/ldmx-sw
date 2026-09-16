@@ -31,8 +31,14 @@ class EventBuilder(Processor):
     min_subsystems: int = 2
 
 
-def from_dat_file(dat_file, output_name="PhysicsEventData", verbose_parse=True,
-                  coherence_window_ns=5000000.0, min_subsystems=2, instance_name=None):
+def from_dat_file(
+    dat_file,
+    output_name="PhysicsEventData",
+    verbose_parse=True,
+    coherence_window_ns=5000000.0,
+    min_subsystems=2,
+    instance_name=None,
+):
     """Convenience factory to create a configured EventBuilder.
 
     Example
