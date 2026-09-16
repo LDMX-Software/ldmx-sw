@@ -76,7 +76,7 @@ from LDMX.Framework import ldmxcfg
 from LDMX.EventBuilder import eventbuilder
 import sys
 
-p = ldmxcfg.Process('unpack')
+p = ldmxcfg.Process("unpack")
 p.run = 1
 p.max_events = 100
 p.verbose_parse = True
