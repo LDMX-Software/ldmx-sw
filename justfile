@@ -76,11 +76,22 @@ check-validation archive:
     fi
     # unpack the logs so we can compare them
     tar xzf ${_archive} gold.log output.log
-    # use sed replace (by blank) to run the diff without the initial HH:MM:SS timestamp
-    if ! diff  -I '^#' <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' gold.log) <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' output.log) > log.diff; then
-      # do not error out (don't set rc here) if diff is non-zero, the timestamps printed out
-      # by some processors prevent a full text diff so we do the character
-      # count check below to look for big changes
+    # mask what changes on every run so only real differences are reported:
+    # HH:MM:SS and epoch prefixes, the PYTHIA date, the commit, per event timing
+    _mask_run_stamps() {
+      sed -E \
+        -e 's/^[0-9]{2}:[0-9]{2}:[0-9]{2}/ /' \
+        -e 's/^[0-9]{10} /EPOCH /' \
+        -e 's/Now is .* at [0-9:]+/Now is DATE/' \
+        -e 's/revision = [0-9a-f]+/revision = SHA/' \
+        -e '/[Tt]ime\/[Ee]vent/ s/[0-9]+(\.[0-9]+)?(e[-+]?[0-9]+)?/N/g' \
+        "$1"
+    }
+    _mask_run_stamps gold.log > gold.masked.log
+    _mask_run_stamps output.log > output.masked.log
+    if ! diff -I '^#' gold.masked.log output.masked.log > log.diff; then
+      # do not error out (don't set rc here) if diff is non-zero,
+      # the character count check below looks for big changes
       _n_diff_lines=$(grep -c '^[<>]' log.diff || echo 0)
       warn "Text Differences Between Logs (${_n_diff_lines} lines differ)"
       start_group diff gold.log output.log
@@ -89,8 +100,8 @@ check-validation archive:
     fi
     # check character count of logs, allowing up to 0.5% difference to avoid
     # false positives from minor run-to-run output variations
-    ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
-    nnew=$(wc --chars output.log | cut -f 1 -d ' ')
+    ngold=$(wc --chars gold.masked.log | cut -f 1 -d ' ')
+    nnew=$(wc --chars output.masked.log | cut -f 1 -d ' ')
     if (( ngold != nnew )); then
       if (( ngold > 0 )); then
         char_diff_pct=$(( (nnew - ngold) * 100 / ngold ))
