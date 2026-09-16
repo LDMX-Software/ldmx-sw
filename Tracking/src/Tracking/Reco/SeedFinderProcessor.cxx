@@ -1,5 +1,8 @@
 #include "Tracking/Reco/SeedFinderProcessor.h"
 
+#include <set>
+#include <sstream>
+
 #include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
 #include "Eigen/Dense"
@@ -68,6 +71,24 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   loc1cut_ = parameters.get<double>("loc1cut", 0.3);
   strategies_ =
       parameters.get<std::vector<std::string>>("strategies", {"0,1,2,3,4"});
+
+  // parse each "l0,l1,..." string into a layer list
+  strategy_layers_.clear();
+  for (const auto& strategy : strategies_) {
+    std::vector<int> layers;
+    std::stringstream ss(strategy);
+    std::string token;
+    while (std::getline(ss, token, ',')) {
+      if (!token.empty()) layers.push_back(std::stoi(token));
+    }
+    // the line+parabola fit needs at least 5 distinct layers
+    std::set<int> distinct(layers.begin(), layers.end());
+    if (distinct.size() < 5) {
+      EXCEPTION_RAISE("BadConf", "Seeding strategy '" + strategy +
+                                     "' has fewer than 5 distinct layers");
+    }
+    strategy_layers_.push_back(layers);
+  }
   inflate_factors_ = parameters.get<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
   bfield_ = parameters.get<double>("bfield", 1.5);
@@ -157,24 +178,13 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   ldmx_log(debug) << "Preparing the strategies";
 
-  groups_map_.clear();
-  //  set the seeding strategy
-  //  strategy is a list of layers from which to  make the seed
-  //  this must include 5 layers; layer_ numbering starts at 0.
-  //  std::vector<int> strategy = {9,10,11,12,13};
-  std::vector<int> strategy = {0, 1, 2, 3, 4};
-  bool success = groupStrips(measurements, strategy);
-  if (success) findSeedsFromMap(seed_tracks, target_pseudo_meas);
-
-  //  currently, we only use a single strategy but eventually
-  //  we will use more.  Below is an example of how to add them
-  /*
-  groups_map.clear();
-  strategy = {9,10,11,12,13};
-  success = GroupStrips(measurements,strategy);
-  if (success)
-    FindSeedsFromMap(seed_tracks, target_pseudo_meas);
-  */
+  //  a strategy is a list of layers from which to make the seed
+  //  layer_ numbering starts at 0
+  for (const auto& strategy : strategy_layers_) {
+    groups_map_.clear();
+    if (groupStrips(measurements, strategy))
+      findSeedsFromMap(seed_tracks, target_pseudo_meas);
+  }
 
   groups_map_.clear();
   // output_tree_->Fill();
@@ -454,7 +464,7 @@ bool SeedFinderProcessor::groupStrips(
 
   }  // loop meas
 
-  if (groups_map_.size() < 5)
+  if (groups_map_.size() < strategy.size())
     return false;
   else
     return true;
@@ -468,10 +478,11 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
                                            const ldmx::Measurements& pmeas) {
   std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter =
       groups_map_.begin();
-  // Vector of iterators
-  constexpr size_t k = 5;
+  // Vector of iterators, one per grouped layer
+  const int k = groups_map_.size();
+  if (k < 1) return;
   std::vector<std::vector<const ldmx::Measurement*>::iterator> it;
-  it.reserve(k);
+  it.resize(k);
 
   unsigned int ikey = 0;
   for (auto& key : groups_map_) {
@@ -495,7 +506,7 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
     */
 
     std::vector<ldmx::Measurement> meas_for_seeds;
-    meas_for_seeds.reserve(5);
+    meas_for_seeds.reserve(k);
 
     ldmx_log(debug) << " Grouping ";
 
@@ -509,7 +520,7 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
                 return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
               });
 
-    if (meas_for_seeds.size() < 5) {
+    if (meas_for_seeds.size() < k) {
       nmissing_++;
       return;
     }
@@ -519,9 +530,9 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
     Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
                           perigee_location_[2]};
 
-    ldmx::Track seed_track =
-        seedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
-                    perigee, pmeas);
+    ldmx::Track seed_track = seedTracker(
+        meas_for_seeds, meas_for_seeds.at(k / 2).getGlobalPosition()[0],
+        perigee, pmeas);
 
     bool fail = false;
 

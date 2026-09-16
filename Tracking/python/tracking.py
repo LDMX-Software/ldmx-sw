@@ -127,6 +127,8 @@ class SeedFinderProcessor(Processor):
         Uncertainty in the sensitive direction for the seed hits.
     v_error : float
         Uncertainty in the insensitive direction for the seed hits.
+    strategies : list of str
+        Seeding strategies, each a comma separated list of at least 5 layers.
     """
 
     perigee_location: list[float] = []
@@ -137,7 +139,7 @@ class SeedFinderProcessor(Processor):
     z0max: float = 60.0
     phicut: float = 0.1
     thetacut: float = 0.2
-    strategies: list[str] = []
+    strategies: list[str] = ["0,1,2,3,4"]
     bfield: float = 1.5
     input_hits_collection: str = "TaggerSimHits"
     out_seed_collection: str = "SeedTracks"
