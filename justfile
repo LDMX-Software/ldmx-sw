@@ -103,6 +103,28 @@ check-validation archive:
         fi
       fi
     fi
+    # count log messages per severity, catches e.g. a fatal appearing or going away
+    _count_levels() {
+      grep -oE '^\[ [^]]* \] -?[0-9]+ +(trace|debug|info|warn|error|fatal):' "$1" |
+        awk '{sub(":", "", $NF); n[$NF]++} END {for (l in n) print l, n[l]}'
+    }
+    declare -A _gold_n _new_n
+    while read -r l n; do _gold_n[$l]=$n; done < <(_count_levels gold.log)
+    while read -r l n; do _new_n[$l]=$n; done < <(_count_levels output.log)
+    _counts=""
+    _changed=""
+    for l in fatal error warn info debug trace; do
+      g=${_gold_n[$l]:-0}
+      n=${_new_n[$l]:-0}
+      _counts+=" ${l}=${g}/${n}"
+      if (( g != n )); then
+        _changed+=" ${l} ${g} -> ${n};"
+      fi
+    done
+    echo "Log message counts (gold/new):${_counts}"
+    if [[ -n "${_changed}" ]]; then
+      warn "Log message counts changed:${_changed%;}"
+    fi
     # compare total wall-clock run time if gold.time is available in the archive
     # gold.time has one line per sample: "<sample> <seconds>"
     # timing.txt has one line for this job: "<sample> <seconds>"
