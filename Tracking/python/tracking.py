@@ -123,6 +123,8 @@ class SeedFinderProcessor(Processor):
         The name of the sim particles collection.
     sim_particles_passname : str
         The pass name of the sim particles.
+    tagger_trks_collection : str
+        Tagger track collection used for the target pseudo-measurements.
     tagger_trks_event_collection_passname : str
         The pass name of the tagger tracks event collection.
     sim_particles_event_passname : str
@@ -132,7 +134,16 @@ class SeedFinderProcessor(Processor):
     v_error : float
         Uncertainty in the insensitive direction for the seed hits.
     strategies : list of str
-        Seeding strategies, each a comma separated list of at least 5 layers.
+        Seeding strategies, each a comma separated list of at least 5 distinct
+        layers (4 when a target constraint is enabled).
+    use_target_constraint : bool
+        Put the tagger track position at the target into the seed fit,
+        one seed per tagger track.
+    use_beamspot_constraint : bool
+        Put the beam spot at the target into the seed fit when no tagger
+        track constraint is available.
+    beamspot_sigma : list of float
+        Beam spot sigma at the target in local (u, v) [mm].
     """
 
     perigee_location: list[float] = []
@@ -144,12 +155,16 @@ class SeedFinderProcessor(Processor):
     phicut: float = 0.1
     thetacut: float = 0.2
     strategies: list[str] = ["0,1,2,3,4"]
+    use_target_constraint: bool = False
+    use_beamspot_constraint: bool = False
+    beamspot_sigma: list[float] = [5.77, 23.1]
     bfield: float = 1.5
     input_hits_collection: str = "TaggerSimHits"
     out_seed_collection: str = "SeedTracks"
     input_pass_name: str = ""
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_passname: str = ""
+    tagger_trks_collection: str = "TaggerTracks"
     tagger_trks_event_collection_passname: str = ""
     sim_particles_event_passname: str = ""
     u_error: float = 0.006

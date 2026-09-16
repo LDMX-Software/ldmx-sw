@@ -77,12 +77,14 @@ class SeedFinderProcessor : public TrackingGeometryUser {
                    const std::vector<int> strategy);
 
   void findSeedsFromMap(std::vector<ldmx::Track>& seeds,
-                        const ldmx::Measurements& pmeas);
+                        const ldmx::Measurements& pmeas,
+                        const ldmx::Measurements& fit_constraints);
 
  private:
+  /// Fit the strips plus an optional target constraint (nullptr = none)
   ldmx::Track seedTracker(const ldmx::Measurements& vmeas, double xOrigin,
                           const Acts::Vector3& perigee_location,
-                          const ldmx::Measurements& pmeas_tgt);
+                          const ldmx::Measurement* constraint);
 
   void lineParabolaToHelix(const Acts::Vector<5> parameters,
                            Acts::Vector<5>& helix_parameters,
@@ -148,6 +150,14 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<std::string> strategies_{};
   /// Layer lists parsed from strategies_, one per strategy.
   std::vector<std::vector<int>> strategy_layers_{};
+  /// Put tagger track positions at the target into the seed fit.
+  bool use_target_constraint_{false};
+  /// Put the beam spot into the seed fit when no tagger track exists.
+  bool use_beamspot_constraint_{false};
+  /// Beam spot sigma at the target in local (u, v) [mm].
+  std::vector<double> beamspot_sigma_{5.77, 23.1};
+  /// Target surface the constraints live on.
+  std::shared_ptr<Acts::Surface> target_surface_;
   double bfield_{1.5};
 
   std::vector<float> xhit_;
