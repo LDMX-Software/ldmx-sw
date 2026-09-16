@@ -79,6 +79,11 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   beamspot_sigma_ =
       parameters.get<std::vector<double>>("beamspot_sigma", {5.77, 23.1});
 
+  if (use_target_constraint_ && tagger_trks_collection_.empty()) {
+    EXCEPTION_RAISE("BadConf",
+                    "use_target_constraint needs a tagger_trks_collection");
+  }
+
   // 5 fit parameters: one equation per strip, two per target constraint
   const size_t min_layers =
       (use_target_constraint_ || use_beamspot_constraint_) ? 4 : 5;
@@ -130,11 +135,25 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   const auto& measurements = event.getCollection<ldmx::Measurement>(
       input_hits_collection_, input_pass_name_);
 
+  // tagger tracks give the target position; an empty name disables it
   std::vector<ldmx::Track> tagger_tracks;
-  if (event.exists(tagger_trks_collection_,
-                   tagger_trks_event_collection_passname_)) {
-    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
-                                                     input_pass_name_);
+  if (!tagger_trks_collection_.empty()) {
+    // prefer this pass so a re-reco does not see two copies
+    std::string pass = tagger_trks_event_collection_passname_;
+    if (pass.empty() &&
+        event.exists(tagger_trks_collection_, event.getPassName())) {
+      pass = event.getPassName();
+    }
+    if (event.exists(tagger_trks_collection_, pass)) {
+      tagger_tracks =
+          event.getCollection<ldmx::Track>(tagger_trks_collection_, pass);
+    } else if (!warned_ambiguous_tagger_ &&
+               event.exists(tagger_trks_collection_, pass, false)) {
+      ldmx_log(warn) << "Several '" << tagger_trks_collection_
+                     << "' collections found, set "
+                        "tagger_trks_event_collection_passname to pick one";
+      warned_ambiguous_tagger_ = true;
+    }
   }
 
   const auto& tgt_surf = target_surface_;
@@ -606,9 +625,7 @@ void SeedFinderProcessor::findSeedsFromMap(
       // If I didn't use the target pseudo measurements in the track finding
       // I can use them for compatibility with the tagger track
 
-      // TODO this should protect against running this check on tagger seeder.
-      // This is true only if this seeder is not run twice on the tagger after
-      // already having tagger tracks available.
+      // the tagger seeder has no tagger_trks_collection, so pmeas is empty
       if (pmeas.size() > 0) {
         // I can have multiple target pseudo measurements
         // A seed is rejected if it is found incompatible with all the target

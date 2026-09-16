@@ -158,6 +158,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<double> beamspot_sigma_{5.77, 23.1};
   /// Target surface the constraints live on.
   std::shared_ptr<Acts::Surface> target_surface_;
+  /// Warn only once about several tagger track collections.
+  bool warned_ambiguous_tagger_{false};
   double bfield_{1.5};
 
   std::vector<float> xhit_;

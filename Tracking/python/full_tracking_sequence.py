@@ -244,6 +244,8 @@ def full_tracking_sequence(
         instance_name=tagged("SeedTagger"),
         input_hits_collection=tagger_meas_collection,
         out_seed_collection=tagged("TaggerRecoSeeds"),
+        # the tagger has no upstream tracks to constrain it
+        tagger_trks_collection="",
         # Perigee upstream of all tagger sensors.
         # World boundary is at ACTS x = -650 mm.
         perigee_location=[tagger_start_x, 0.0, 0.0],

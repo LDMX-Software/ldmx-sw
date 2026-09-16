@@ -125,6 +125,7 @@ class SeedFinderProcessor(Processor):
         The pass name of the sim particles.
     tagger_trks_collection : str
         Tagger track collection used for the target pseudo-measurements.
+        Empty disables them, as required for the tagger seeder itself.
     tagger_trks_event_collection_passname : str
         The pass name of the tagger tracks event collection.
     sim_particles_event_passname : str
