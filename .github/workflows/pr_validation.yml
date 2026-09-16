@@ -318,9 +318,10 @@ jobs:
               reasons[$sample]="${lines[1]:-0}"
             fi
 
-            # Read check messages if available
+            # Read check messages if available, only timing regressions go to the
+            # comment, all timing lines stay on the report page
             if [[ -f "$dir/check_messages.txt" ]]; then
-              check_details[$sample]=$(cat "$dir/check_messages.txt" | sed 's/^/- /')
+              check_details[$sample]=$(grep -vE '^(Timing for |Timing within |Timing anomaly for )' "$dir/check_messages.txt" | sed 's/^/- /' || true)
             fi
           done
 
