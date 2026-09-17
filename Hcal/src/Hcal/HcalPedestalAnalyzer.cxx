@@ -3,6 +3,8 @@
 
 #include "Hcal/HcalPedestalAnalyzer.h"
 
+#include <cmath>
+
 namespace hcal {
 
 void HcalPedestalAnalyzer::analyze(const framework::Event& event) {

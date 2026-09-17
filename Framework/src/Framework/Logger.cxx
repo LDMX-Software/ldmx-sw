@@ -4,14 +4,29 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 // Boost
 #include <boost/core/null_deleter.hpp>  //to avoid deleting std::cout
+#include <boost/log/attributes/value_extraction.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions/message.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/utility/formatting_ostream.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>  //for loading commont attributes
+#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
+
+#include "Framework/Configure/Parameters.h"
 
 namespace framework {
 
 namespace logging {
+
+namespace sinks = boost::log::sinks;
 
 /**
  * Convert an integer to the severity level enum

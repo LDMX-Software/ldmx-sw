@@ -61,7 +61,7 @@ macro(setup_library)
 
   set(options interface)
   set(oneValueArgs module name linkdef)
-  set(multiValueArgs dependencies sources)
+  set(multiValueArgs dependencies private_dependencies sources)
   cmake_parse_arguments(setup_library "${options}" "${oneValueArgs}"
                         "${multiValueArgs}" ${ARGN})
 
@@ -101,6 +101,10 @@ macro(setup_library)
 
   # Setup the targets to link against
   target_link_libraries(${library_name} PUBLIC ${setup_library_dependencies})
+  # only needed to build this library, not by its users
+  if(setup_library_private_dependencies)
+    target_link_libraries(${library_name} PRIVATE ${setup_library_private_dependencies})
+  endif()
   
   enable_sanitizers(${library_name})
   enable_compiler_warnings(${library_name})

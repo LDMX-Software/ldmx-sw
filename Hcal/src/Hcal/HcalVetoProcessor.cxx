@@ -7,6 +7,8 @@
 
 #include "Hcal/HcalVetoProcessor.h"
 
+#include <cmath>
+
 namespace hcal {
 
 HcalVetoProcessor::HcalVetoProcessor(const std::string& name,

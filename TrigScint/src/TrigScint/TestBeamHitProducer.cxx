@@ -7,6 +7,8 @@
 
 #include "TrigScint/TestBeamHitProducer.h"
 
+#include <cmath>
+
 namespace trigscint {
 
 TestBeamHitProducer::TestBeamHitProducer(const std::string& name,

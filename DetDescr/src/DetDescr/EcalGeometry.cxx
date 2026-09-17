@@ -1,5 +1,8 @@
 #include "DetDescr/EcalGeometry.h"
 
+#include <cmath>
+#include <tuple>
+
 namespace ldmx {
 
 static double distance(const std::pair<double, double>& p1,

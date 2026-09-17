@@ -1,6 +1,8 @@
 
 #include "DQM/EcalMipTrackingFeatures.h"
 
+#include <cmath>
+
 #include "Ecal/Event/EcalMipResult.h"
 #include "Ecal/Event/EcalVetoResult.h"
 

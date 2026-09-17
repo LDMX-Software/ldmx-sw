@@ -9,6 +9,7 @@
 //-------------//
 //   ldmx-sw   //
 //-------------//
+#include <cmath>
 #include <numeric>
 
 #include "DetDescr/HcalID.h"

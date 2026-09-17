@@ -9,22 +9,19 @@
  */
 #define BOOST_ALL_DYN_LINK 1
 
-#include <boost/log/core.hpp>                 //core logging service
-#include <boost/log/expressions.hpp>          //for attributes and expressions
-#include <boost/log/sinks/sync_frontend.hpp>  //syncronous sink frontend
-#include <boost/log/sinks/text_ostream_backend.hpp>  //output stream sink backend
-#include <boost/log/sources/global_logger_storage.hpp>  //for global logger default
-#include <boost/log/sources/severity_channel_logger.hpp>  //for the severity logger
-#include <boost/log/sources/severity_feature.hpp>  //for the severity feature in a logger
-#include <boost/log/utility/setup/common_attributes.hpp>
-
-// TODO check which headers are required
-#include <boost/log/sources/record_ostream.hpp>
-#include <boost/log/utility/setup/file.hpp>
-
-#include "Framework/Configure/Parameters.h"
+// Keep this list minimal, every processor includes it (see issue #2107).
+// Sinks, expressions, and setup headers belong in Logger.cxx.
+#include <boost/log/core/record_view.hpp>
+#include <boost/log/sources/record_ostream.hpp>  // BOOST_LOG_SEV
+#include <boost/log/sources/severity_channel_logger.hpp>
+#include <boost/log/utility/formatting_ostream_fwd.hpp>
+#include <string>
 
 namespace framework {
+
+namespace config {
+class Parameters;
+}  // namespace config
 
 namespace logging {
 
@@ -41,10 +38,9 @@ enum level {
 };
 
 /**
- * Short names for boost namespaces
+ * Short name for boost namespace
  */
 namespace log = boost::log;
-namespace sinks = boost::log::sinks;
 
 /**
  * Define the type of logger we will be using in ldmx-sw

@@ -7,6 +7,8 @@
 
 #include "TrigScint/TestBeamClusterAnalyzer.h"
 
+#include <cmath>
+
 namespace trigscint {
 
 TestBeamClusterAnalyzer::TestBeamClusterAnalyzer(const std::string& name,
