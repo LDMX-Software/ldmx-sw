@@ -64,6 +64,7 @@ void EcalRecProducer::produce(framework::Event& event) {
   std::vector<ldmx::EcalHit> ecal_rec_hits;
   auto ecal_digis = event.getObject<ldmx::HgcrocDigiCollection>(
       digi_coll_name_, digi_pass_name_);
+  const int i_soi = ecal_digis.getSampleOfInterestIndex();
   // loop through digis
   for (auto digi : ecal_digis) {
     // ID from first digi sample
@@ -73,32 +74,39 @@ void EcalRecProducer::produce(framework::Event& event) {
     // ID to real space position
     auto [x_, y_, z_] = geometry.getPosition(id);
 
-    // TOA is the time of arrival with respect to the 25ns clock window
-    //  TODO what to do if hit NOT in first clock cycle?
-    double time_rel_clock25 = digi.soi().toa() * (clock_cycle_ / 1024);  // ns
-    double hit_time = time_rel_clock25;
+    // the TOT measurement is in the sample where the pulse fell back below
+    // threshold, which is the SOI only for in-time hits (iss #1944)
+    int i_tot = digi.totSampleIndex();
 
     // get the estimated charge deposited from digi samples
     double charge(0.);
+    // TOA with respect to the 25ns clock window that measured it
+    double hit_time(0.);
 
-    ldmx_log(trace) << "Recon { "
-                    // << "ID: " << id.raw() << ", "
-                    << "TOA: " << hit_time << " ns } ";
-    if (digi.isTOT()) {
+    if (i_tot >= 0) {
       // TOT - number of clock ticks that pulse was over threshold
       //  this is related to the amplitude of the pulse approximately through a
       //  linear drain rate the amplitude of the pulse is related to the energy
       //  deposited
+      auto tot_sample = digi.at(i_tot);
 
       // convert the time over threshold into a total energy deposited in the
       // silicon
       //  (time over threshold [ns] - pedestal) * gain
-      charge = (digi.tot() - the_conditions.totPedestal(id)) *
+      charge = (tot_sample.tot() - the_conditions.totPedestal(id)) *
                the_conditions.totGain(id);
 
-      ldmx_log(trace) << "TOT Mode -> " << digi.tot() << "TDC -> " << charge
-                      << " fC";
+      // TOA is measured from the start of its own sample
+      hit_time = (i_tot - i_soi) * clock_cycle_ +
+                 tot_sample.toa() * (clock_cycle_ / 1024);
+
+      ldmx_log(trace) << "Recon { TOA: " << hit_time << " ns } ";
+      ldmx_log(trace) << "TOT Mode (sample " << i_tot << ") -> "
+                      << tot_sample.tot() << "TDC -> " << charge << " fC";
     } else {
+      hit_time = digi.soi().toa() * (clock_cycle_ / 1024);  // ns
+      ldmx_log(trace) << "Recon { TOA: " << hit_time << " ns } ";
+
       // ADC mode of readout
       // ADC - voltage measurement at a specific time of the pulse
       // Pulse Shape:
@@ -121,18 +129,19 @@ void EcalRecProducer::produce(framework::Event& event) {
       ldmx_log(trace) << "ADC Mode -> " << charge << " fC";
     }
 
-    /** Negative Electron (charge) count
+    /** Non-positive Electron (charge) count
      * This reconstruction error occurs when the ADC value
-     * is below the ADC pedestal for that channel. In the
+     * is at or below the ADC pedestal for that channel. In the
      * normal running mode, this will never happen because
      * our front-end (the digi emulator or the digitizer itself)
      * will suppress any signals that are below the readout
      * threshold. Nevertheless, in some running modes, we
      * don't have this zero suppression, so we need to
      * check that the reconstruction charge (count of electrons)
-     * is non-negative.
+     * is positive. A channel sitting exactly at its pedestal
+     * carries no energy, so it is dropped as well.
      */
-    if (charge < 0) continue;
+    if (charge <= 0) continue;
 
     double num_mips_equivalent = charge / charge_per_mip_;
     double energy_deposited_in_si = num_mips_equivalent * mip_si_energy_;
