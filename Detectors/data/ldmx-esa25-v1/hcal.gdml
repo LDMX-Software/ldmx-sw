@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+]>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
+  
+
+    <define>
+
+    &constants; 
+
+    <!-- loop variables - must be defined here -->
+    <variable name="n" value="1"/>
+    <variable name="n2" value="1"/>
+
+    <!--Rather than having really messy position calculations in the physvol placement, I'm opting
+	to do some of the calculations here, with brief explanations.
+	
+	The first z position will be the upstream plastic panel, part of the plastic housing.
+	This should be more or less fixed, at the edge of the envelope but with the half-thickness
+	of the panel added back on so that it's not hanging out of the envelope.
+    -->
+    <constant name="upstreamhousingz" value="-(hcal_envelope_z-housingz)/2."/>
+    <!--Then there will be an airgap (a.k.a. housingspacing) before the first quad bar-->    
+    <constant name="quadstartz" value="upstreamhousingz+housingz/2.+housingspacing+quadz/2."/>
+    <!--The quad bars will be placed (with #spaces = quadbars - 1)-->
+    <constant name="quadendz" value="quadstartz+(quadlayers*quadz) + ((quadlayers-1)*quadspacing)"/>
+    <!--Then after another air gap will be the second plastic housing panel-->
+    <constant name="downstreamhousingz" value="quadendz+housingz/2.+housingspacing-quadz/2."/>
+    
+  </define>
+
+
+  
+  <solids>  
+    <!-- - - - - - - - - HCal solids - - - - - - - -  -->
+
+    <box lunit="mm" name="quadbarbox" x="quadx" y="quady" z="quadz"/>
+    <box lunit="mm" name="plastichousing_xybox" x="housingx" y="housingy" z="housingz"/>
+    <box lunit="mm" name="hcal_envelope" x="hcal_envelope_x" y="hcal_envelope_y" z="hcal_envelope_z"/>
+  </solids>
+
+
+  
+  <structure>      
+    <!-- - - - - - - - - - HCal volumes - - - - - - - - -->
+
+  <!--The name is chosen so that it will still be considered a sensitive detector in ldmx-sw-->
+     <volume name="scint_box">
+      <materialref ref="Scintillator" />
+      <solidref ref="quadbarbox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
+    </volume>
+
+    <volume name="plastichousing_xy">
+      <materialref ref="AcrylicPMMA" />
+      <solidref ref="plastichousing_xybox" />
+      <auxiliary auxtype="VisAttributes" auxvalue="AcrylicPMMAMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
+    </volume>
+
+    
+    
+    <volume name="hadronic_calorimeter">
+      <materialref ref="Air" />
+      <solidref ref="hcal_envelope" />
+      <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
+
+      <physvol copynumber="quadlayers+1">
+	<volumeref ref="plastichousing_xy"/>
+	  <position name ="plastic_pos_us" unit="mm"
+		    x="0"
+		    y="0"
+		    z="upstreamhousingz"/>
+	  <rotationref ref="identity" />
+	</physvol>
+	
+      <loop for="n" from="1" to="quadlayers" step="1">
+	<physvol copynumber="n">
+          <volumeref ref="scint_box" />
+          <position name="barpos" unit="mm" 
+          	    x="0"
+                    y="0"
+                    z="quadstartz + (n-1)*(quadz+quadspacing)" />
+          <rotationref ref="identity" />
+        </physvol>
+      </loop>
+
+      <physvol copynumber="quadlayers+2">
+	<volumeref ref="plastichousing_xy"/>
+	  <position name ="plastic_pos_ds" unit="mm"
+		    x="0"
+		    y="0"
+		    z="downstreamhousingz"/>
+	  <rotationref ref="identity" />
+	</physvol>
+
+      
+      <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
+      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="hadronic_calorimeter"/>
+  </setup>
+</gdml>

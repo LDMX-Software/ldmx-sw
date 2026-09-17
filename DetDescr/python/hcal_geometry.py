@@ -495,6 +495,7 @@ class HcalReadoutGeometry:
             "ldmx-reduced",
             "ldmx-reduced-v2",
             "ldmx-reduced-v3",
+            "ldmx-esa25-v1",
             "ldmx-lyso-r4-v15",
             "ldmx-lyso-r4-v15.*",
             "ldmx-det-v15",

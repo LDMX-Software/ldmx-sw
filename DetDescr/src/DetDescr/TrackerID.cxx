@@ -11,6 +11,8 @@ std::ostream& operator<<(std::ostream& s, const ldmx::TrackerID& id) {
     s << "Recoil(";
   else if (id.subdet() == ldmx::SD_TRACKER_TAGGER)
     s << "Tagger(";
+  else if (id.subdet() == ldmx::SD_TRACKER_TESTSTAND)
+    s << "Teststand(";
   else
     s << "UnknownTk(";
   s << id.layer() << ',' << id.module() << ')';
@@ -29,6 +31,7 @@ void TrackerID::createInterpreters() {
 
   DetectorIDInterpreter::registerInterpreter(SD_TRACKER_TAGGER, fields);
   DetectorIDInterpreter::registerInterpreter(SD_TRACKER_RECOIL, fields);
+  DetectorIDInterpreter::registerInterpreter(SD_TRACKER_TESTSTAND, fields);
 }
 
 }  // namespace ldmx

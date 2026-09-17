@@ -325,7 +325,7 @@ class EcalGeometry:
 
     def reduced_v3():
         eg = EcalGeometry(
-            detectors_valid=["ldmx-reduced-v3"],
+            detectors_valid=["ldmx-reduced-v3", "ldmx-esa25-v1"],
             gap=1.5,
             layer_z_positions=[86.00, 92.23, 136.8, 143.03],
             ecal_front_z=240.0,
