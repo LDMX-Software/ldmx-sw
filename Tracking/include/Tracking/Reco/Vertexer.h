@@ -20,7 +20,7 @@
 // Propagator
 
 #include "Acts/Propagator/Propagator.hpp"
-#include "Tracking/EigenStepper.h"
+#include "Tracking/EigenStepper.h"  // IWYU pragma: keep
 // #include "Acts/Propagator/Navigator.hpp"
 // #include "Acts/Propagator/StandardAborters.hpp"
 

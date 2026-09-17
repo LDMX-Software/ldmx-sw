@@ -13,7 +13,7 @@
 #include "Ecal/Event/EcalHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tracking/EigenStepper.h"  // help silence and internal warning
+#include "Tracking/EigenStepper.h"  // IWYU pragma: keep
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Sim/IndexSourceLink.h"

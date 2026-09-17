@@ -404,6 +404,38 @@ tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files | grep -v 
 # tidy C++ files that are different relative to trunk
 tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only --diff-filter=d origin/trunk | grep -v HLS_Arbitrary_Precision_Types" "clang-tidy" args)
 
+# skip files not in the build, the tool needs their compile commands
+_include_cleaner_skip := 'Tracking/EigenStepper\.h$|HLS_Arbitrary_Precision_Types|^Trigger/Algo_HLS/|^EventDisplay/|^Framework/test/standalone/|LinkDef\.h$'
+
+# only removals, insertions tend to name internal Boost/ROOT headers
+default_include_cleaner_args := '--print=changes'
+
+# check all C++ files for unused includes (pass --edit to remove them), needs 'just configure'
+include-cleaner-all *args=default_include_cleaner_args: (_include-cleaner-impl "git ls-files" args)
+
+# check C++ files that are different relative to trunk for unused includes (pass --edit to remove them)
+include-cleaner-diff *args=default_include_cleaner_args: (_include-cleaner-impl "git diff --name-only --diff-filter=d origin/trunk" args)
+
+[private]
+_include-cleaner-impl file_list_cmd *args:
+    #!/usr/bin/env sh
+    set -eu
+    if [ ! -f build/compile_commands.json ]; then
+      echo "build/compile_commands.json not found, run 'just configure' first"
+      exit 1
+    fi
+    # inside the workspace so denv can see it
+    cpp_list="$(mktemp -p build)"
+    trap 'rm -f "${cpp_list}"' EXIT
+    {{ file_list_cmd }} | grep -E '\.(h|cxx)$' | grep -v -E '{{ _include_cleaner_skip }}' > "${cpp_list}" || true
+    if [ ! -s "${cpp_list}" ]; then
+      echo "no C++ files (extensions .h and .cxx) to check"
+      exit 0
+    fi
+    # one file per call since --print only takes one, -w hides compiler warnings
+    denv parallel --will-cite --tag --arg-file "${cpp_list}" \
+      clang-include-cleaner -p build --disable-insert --extra-arg=-w {{ args }} {}
+
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
 # so only a check is implemented here
