@@ -1,0 +1,58 @@
+name: Include Cleaner
+
+on:
+  pull_request:
+    branches: [trunk]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - '**.h'
+      - '**.cxx'
+      - 'justfile'
+      - '.github/workflows/include-cleaner.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  include-cleaner:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: extractions/setup-just@v4
+    - uses: actions/checkout@v7
+      with:
+        submodules: 'recursive'
+        # need origin/trunk to find the changed files
+        fetch-depth: 0
+
+    # the tool only needs compile_commands.json, not a build
+    - name: Configure ldmx-sw
+      run: just install-denv init configure
+      shell: bash
+
+    # report only, files touched by a PR may already have unused includes
+    - name: Check changed C++ files for unused includes
+      run: |
+        rc=0
+        just include-cleaner-diff > include-cleaner.log 2>&1 || rc=$?
+        cat include-cleaner.log
+        # lines look like: <file>\t- <header> @Line:<n>
+        awk -F'\t' '$2 ~ /^- / {
+          n = $2; sub(/.* @Line:/, "", n)
+          h = $2; sub(/^- /, "", h); sub(/ @Line:.*/, "", h)
+          printf "::warning file=%s,line=%s::unused include %s\n", $1, n, h
+        }' include-cleaner.log
+        n_unused=$(grep -c "$(printf '\t')- " include-cleaner.log || true)
+        {
+          echo "### Include Cleaner"
+          echo "${n_unused} unused include(s) in the changed files."
+          echo "Remove them locally with \`just include-cleaner-diff --edit\`, then build and review."
+          echo "Mark includes that are needed anyway with \`// IWYU pragma: keep\`."
+          if [ "${rc}" -ne 0 ]; then
+            echo "Some files could not be parsed, see the job log."
+          fi
+        } >> "${GITHUB_STEP_SUMMARY}"
+        if [ "${rc}" -ne 0 ]; then
+          echo "::warning::clang-include-cleaner could not parse some files, see the log"
+        fi
+      shell: bash

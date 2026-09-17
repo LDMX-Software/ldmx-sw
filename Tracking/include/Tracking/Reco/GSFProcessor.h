@@ -44,7 +44,7 @@
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Utilities/Logger.hpp"
-#include "Tracking/EigenStepper.h"
+#include "Tracking/EigenStepper.h"  // IWYU pragma: keep
 
 // Kalman Filter
 

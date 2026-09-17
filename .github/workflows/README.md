@@ -116,6 +116,13 @@ The `apply-clang-tools.yml` workflow runs on all pushes to `trunk` and any pushe
 It checks that the C++ format is respected using clang-format and clang-tidy and, if being run on a PR, 
 pushes any format fixes.
 
+### Unused Includes
+The `include-cleaner.yml` workflow runs on pull requests that change C++ files.
+It runs `just include-cleaner-diff` (clang-include-cleaner) on the changed files and reports unused includes
+as warnings. It does not fail the PR and does not push fixes, since removing an include can break compilation.
+Run `just include-cleaner-diff --edit` locally to remove them, and mark includes that are needed anyway
+(e.g. only used inside a macro) with `// IWYU pragma: keep`.
+
 ### Python Formatting
 The `apply-python-tools.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.
 It formats and lints Python code using Ruff and, if being run on a PR, pushes any fixes.
