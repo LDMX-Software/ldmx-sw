@@ -410,10 +410,10 @@ _include_cleaner_skip := 'Tracking/EigenStepper\.h$|HLS_Arbitrary_Precision_Type
 # only removals, insertions tend to name internal Boost/ROOT headers
 default_include_cleaner_args := '--print=changes'
 
-# check all C++ files for unused includes (pass --edit to remove them), needs 'just configure'
+# check all C++ files for unused includes, needs 'just configure'
 include-cleaner-all *args=default_include_cleaner_args: (_include-cleaner-impl "git ls-files" args)
 
-# check C++ files that are different relative to trunk for unused includes (pass --edit to remove them)
+# check C++ files that are different relative to trunk for unused includes (--edit removes them, review before committing)
 include-cleaner-diff *args=default_include_cleaner_args: (_include-cleaner-impl "git diff --name-only --diff-filter=d origin/trunk" args)
 
 [private]
@@ -432,8 +432,11 @@ _include-cleaner-impl file_list_cmd *args:
       echo "no C++ files (extensions .h and .cxx) to check"
       exit 0
     fi
+    # edits change headers other jobs are parsing, so edit one file at a time
+    jobs="100%"
+    case "{{ args }}" in *--edit*) jobs=1 ;; esac
     # one file per call since --print only takes one, -w hides compiler warnings
-    denv parallel --will-cite --tag --arg-file "${cpp_list}" \
+    denv parallel --will-cite --tag -j "${jobs}" --arg-file "${cpp_list}" \
       clang-include-cleaner -p build --disable-insert --extra-arg=-w {{ args }} {}
 
 # shellcheck doesn't have a "apply-formatting" option

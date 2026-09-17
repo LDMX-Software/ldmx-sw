@@ -14,7 +14,7 @@
 /*~~~~~~~~~~~~*/
 /*   python   */
 /*~~~~~~~~~~~~*/
-#include "Python.h"
+#include "Python.h"  // IWYU pragma: keep
 
 #if PY_MAJOR_VERSION != 3
 #error ("Framework requires compiling with Python3")
