@@ -12,7 +12,7 @@
 // Keep this list minimal, every processor includes it (see issue #2107).
 // Sinks, expressions, and setup headers belong in Logger.cxx.
 #include <boost/log/core/record_view.hpp>
-#include <boost/log/sources/record_ostream.hpp>  // BOOST_LOG_SEV
+#include <boost/log/sources/record_ostream.hpp>  // IWYU pragma: keep, BOOST_LOG_SEV
 #include <boost/log/sources/severity_channel_logger.hpp>
 #include <boost/log/utility/formatting_ostream_fwd.hpp>
 #include <string>
