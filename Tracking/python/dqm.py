@@ -992,3 +992,49 @@ class StraightTracksDQM(Processor):
                 -3,
                 3,
             )
+
+
+@processor("tracking::dqm::RawSiStripDQM", "Tracking")
+class RawSiStripDQM(Processor):
+    """DQM analyzer for silicon strip data read from the DAQ.
+
+    Attributes
+    ----------
+    raw_hits_collection : str
+        Decoded hits (RawSiStripHit).
+    subtracted_hits_collection : str
+        Pedestal subtracted hits (RawSiStripHit).
+    waveforms_collection : str
+        Assembled waveforms (SiStripWaveform).
+    input_pass_name : str
+        Pass name of all input collections.
+    n_hybrids : int
+        Number of hybrids to book per-hybrid histograms for.
+    """
+
+    raw_hits_collection: str = "RawSiStripHits"
+    subtracted_hits_collection: str = "TrackerHits"
+    waveforms_collection: str = "TrackerWaveforms"
+    input_pass_name: str = ""
+    n_hybrids: int = 4
+
+    def __post_init__(self):
+        # fixed by the readout (channels x APV triggers); window around the
+        # expected count so a dropped hybrid is resolved
+        self.histogram("n_raw_hits", "Raw hits per event", 200, 24800, 26800)
+        self.histogram("raw_read_error", "Read error flag", 10, -0.5, 9.5)
+        # ESA run 111 peaks at 32, tail reaches 90
+        self.histogram("n_waveforms", "Waveforms per event", 100, 0, 100)
+        self.histogram("waveform_n_triggers", "APV triggers", 12, -0.5, 11.5)
+        self.histogram("waveform_peak_trigger", "Peak trigger", 12, -0.5, 11.5)
+        self.histogram("fit_converged", "Fit converged", 2, -0.5, 1.5)
+        self.histogram("fit_t0", "Fit t0 [ns]", 160, -50, 750)
+        self.histogram("fit_chi2_ndf", "Fit #chi^{2}/ndf", 100, 0, 20)
+        for h in range(self.n_hybrids):
+            self.histogram(f"raw_adc_h{h}", "Raw ADC", 164, 0, 16400)
+            self.histogram(
+                f"subtracted_adc_h{h}", "Pedestal subtracted ADC", 200, -1000, 3000
+            )
+            self.histogram(f"waveform_pchannel_h{h}", "Strip", 640, 0, 640)
+            self.histogram(f"waveform_peak_h{h}", "Peak ADC", 200, 0, 4000)
+            self.histogram(f"fit_amplitude_h{h}", "Fit amplitude [ADC]", 200, 0, 4000)

@@ -133,6 +133,11 @@ jobs:
       with:
         repository: LDMX-Software/ci-data
         path: ci-data
+        # skip the ~1 GB ESA VST raw data unless running that sample
+        sparse-checkout-cone-mode: false
+        sparse-checkout: |
+          /*
+          ${{ matrix.sample != 'esa_vst' && '!/esa_vst/*.dat.xz' || '' }}
 
     - name: Run Validation
       id: validation
