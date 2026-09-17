@@ -83,6 +83,11 @@ class TrigScintQIEDigis {
   std::vector<int> getCE() const { return ces_; }
 
   /**
+   * Get the beam energy fraction
+   */
+  float getBeamEfrac() const { return beam_efrac_; }
+
+  /**
    * Store the event time since spill counter
    */
   void setTimeSinceSpill(const uint32_t timeSpill) {
@@ -144,6 +149,12 @@ class TrigScintQIEDigis {
    */
   void setCE(const std::vector<int> ce) { ces_ = ce; }
 
+  /**
+   * Store the beam energy fraction
+   * @param beamEfrac the beam energy fraction
+   */
+  void setBeamEfrac(const float beamEfrac) { beam_efrac_ = beamEfrac; }
+
  protected:
   /// channel ID
   int chan_id_;
@@ -163,13 +174,16 @@ class TrigScintQIEDigis {
   /// Time since spill (a counter, to be divided by 125e6 or so)
   uint32_t time_since_spill_counter_;
 
+  /// Beam energy fraction; sim truth, -1 if not from simulation
+  float beam_efrac_{-1.};
+
  private:
   /// capacitor IDs
   std::vector<int> cids_;
   std::vector<int> bc0s_;
   std::vector<int> ces_;
 
-  ClassDef(TrigScintQIEDigis, 4);
+  ClassDef(TrigScintQIEDigis, 5);
 };
 }  // namespace trigscint
 #endif

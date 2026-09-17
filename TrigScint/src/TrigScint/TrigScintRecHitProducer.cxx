@@ -57,7 +57,8 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
 
     hit.setModuleID(0);
     hit.setBarID(digi.getChanID());
-    hit.setBeamEfrac(-1.);
+    // sim truth from the digi; -1 for data
+    hit.setBeamEfrac(digi.getBeamEfrac());
 
     const int soi = sample_of_interest_;
     if (soi < 0 || soi >= int(adc.size()) || soi >= int(tdc.size())) {
