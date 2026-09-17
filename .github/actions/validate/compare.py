@@ -2,6 +2,7 @@
 overlaying histograms with the same key
 """
 
+import json
 import os
 import subprocess
 import sys
@@ -149,6 +150,9 @@ def compare(gold_f, gold_label, test_f, test_label):
     will be put into the 'fail' directory. If they pass,
     their plot will be put into the 'pass' directory.
 
+    The KS probability and maximum KS distance of every pair are
+    written to 'plots/results.json' for make_report.py to rank.
+
     Parameters
     ----------
     gold_f : str
@@ -169,27 +173,49 @@ def compare(gold_f, gold_label, test_f, test_label):
     os.makedirs("plots/pass", exist_ok=True)
     os.makedirs("plots/fail", exist_ok=True)
 
-    for key in gold.list_histograms():
+    results = []
+    gold_keys = gold.list_histograms()
+    for key in gold_keys:
         try:
             gold_h = gold.get(key)
             test_h = test.get(key)
         except AttributeError as e:
             print_error(e)
+            results.append({"key": key, "status": "missing"})
             continue
 
         empty_gold = gold_h.GetEntries() == 0
         empty_test = test_h.GetEntries() == 0
 
         sub_dir = "pass"
+        # KS probability and max distance
+        ks_prob, ks_dist = 1.0, 0.0
         if empty_gold and empty_test:
             # both empty, call this a pass
             sub_dir = "pass"
         elif not empty_gold and not empty_test:
             # both non-empty, check KS test
-            sub_dir = "fail" if gold_h.KolmogorovTest(test_h, "UO") < 0.99 else "pass"
+            ks_prob = gold_h.KolmogorovTest(test_h, "UO")
+            ks_dist = gold_h.KolmogorovTest(test_h, "UOM")
+            sub_dir = "fail" if ks_prob < 0.99 else "pass"
         else:
             # one empty and other non-empty
             sub_dir = "fail"
+            ks_prob, ks_dist = 0.0, 1.0
+
+        name = key.replace("/", "_").replace(":", "_")
+        results.append(
+            {
+                "key": key,
+                "name": name,
+                "class": gold_h.ClassName(),
+                "status": sub_dir,
+                "ks_prob": ks_prob,
+                "ks_dist": ks_dist,
+                "gold_entries": gold_h.GetEntries(),
+                "test_entries": test_h.GetEntries(),
+            }
+        )
 
         if gold_h.ClassName() == "TH2F":
             # Make the yield-axis log scale
@@ -212,7 +238,16 @@ def compare(gold_f, gold_label, test_f, test_label):
         legend = c.BuildLegend()
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
-        c.SaveAs(f"plots/{sub_dir}/{key.replace('/', '_').replace(':', '_')}.pdf")
+        c.SaveAs(f"plots/{sub_dir}/{name}.pdf")
+        # png for the html report
+        c.SaveAs(f"plots/{sub_dir}/{name}.png")
+
+    # histograms only in the test file
+    for key in sorted(set(test.list_histograms()) - set(gold_keys)):
+        results.append({"key": key, "status": "new"})
+
+    with open("plots/results.json", "w") as f:
+        json.dump(results, f)
 
 
 if __name__ == "__main__":

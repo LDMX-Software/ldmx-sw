@@ -17,17 +17,16 @@ GSFProcessor::GSFProcessor(const std::string& name, framework::Process& process)
 
 void GSFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   beam_origin_surface_ = tracking::sim::utils::unboundSurface(-700);
-  // 1mm inside tagger ACTS volume outer boundary (~-618mm), 1.5mm upstream of
-  // L1 at x=-615.5mm
-  tagger_start_surface_ = tracking::sim::utils::unboundSurface(-617.);
+  // 1mm inside tagger ACTS volume outer boundary, upstream of L1
+  tagger_start_surface_ = tracking::sim::utils::unboundSurface(tagger_start_x_);
   target_surface_ = tracking::sim::utils::unboundSurface(0.);
   ecal_surface_ = tracking::sim::utils::unboundSurface(240.5);
 
   // Setup a interpolated bfield map
   if (field_map_.empty())
-    loadBField();
+    loadBField(bfield_distortion_);
   else
-    loadBField(field_map_);
+    loadBField(field_map_, bfield_distortion_);
   const auto map =
       std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
@@ -141,10 +140,12 @@ void GSFProcessor::configure(framework::config::Parameters& parameters) {
   propagator_step_size_ = parameters.get<double>("propagator_step_size", 200.);
   field_map_ = parameters.get<std::string>("field_map");
   bfield_ = parameters.get<double>("bfield", -1.5);
+  bfield_distortion_ = bFieldDistortion(parameters);
   use_perigee_ = parameters.get<bool>("usePerigee", false);
 
   debug_ = parameters.get<bool>("debug", false);
   tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
+  tagger_start_x_ = parameters.get<double>("tagger_start_x", -617.);
 
   // final_reduction_method_ =
   // parameters.get<double>("finalReductionMethod",);

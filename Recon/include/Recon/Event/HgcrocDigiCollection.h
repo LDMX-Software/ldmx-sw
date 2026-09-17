@@ -285,6 +285,21 @@ class HgcrocDigiCollection {
       return soi().tot();
     }
 
+    /**
+     * Get the index of the sample holding the completed TOT measurement
+     *
+     * The chip reports TOT in the sample where the pulse fell back below
+     * threshold, which is the SOI only for in-time hits.
+     *
+     * @return index of the TOT complete sample, -1 if there is no TOT
+     * measurement in this DIGI
+     */
+    int totSampleIndex() const {
+      for (unsigned int i_sample{0}; i_sample < size(); i_sample++)
+        if (at(i_sample).isTOTComplete()) return i_sample;
+      return -1;
+    }
+
     /// get the sample at a specific index in the digi
     HgcrocDigiCollection::Sample at(unsigned int i_sample) const {
       return Sample(*(first_ + i_sample), collection_.getVersion());

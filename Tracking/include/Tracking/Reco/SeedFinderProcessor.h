@@ -146,6 +146,8 @@ class SeedFinderProcessor : public TrackingGeometryUser {
 
   /// List of stragies for seed finding.
   std::vector<std::string> strategies_{};
+  /// Layer lists parsed from strategies_, one per strategy.
+  std::vector<std::vector<int>> strategy_layers_{};
   double bfield_{1.5};
 
   std::vector<float> xhit_;

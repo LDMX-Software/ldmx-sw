@@ -104,11 +104,12 @@ bool HgcrocEmulator::digitize(
       double vpeak = pulse(hit.second);
 
       if (vpeak > tot_threshold) {
-        start_tot = true;
-        // use the latest time in the window
-        if (tover_tot < hit.second) {
+        // use the latest time in the window, hit times can be negative
+        // so the first hit always sets it
+        if (!start_tot || tover_tot < hit.second) {
           tover_tot = hit.second;
         }
+        start_tot = true;
       }
 
       if (vpeak > toa_threshold) {
@@ -169,13 +170,12 @@ bool HgcrocEmulator::digitize(
         if (toa == 0) toa = 1;
         if (toa > 1023) toa = 1023;
       }
-      ldmx_log(trace) << "    Adding TOT hit with toa = " << toa
-                      << ", tdc_counts = " << tdc_counts
-                      << " adcT at prev iADC = "
-                      << digiToAdd.at(i_adc - 1).adcT();
       // ADC at t-1
       auto adc_at_tminus1 =
           (i_adc > 0) ? digiToAdd.at(i_adc - 1).adcT() : pedestal;
+      ldmx_log(trace) << "    Adding TOT hit with toa = " << toa
+                      << ", tdc_counts = " << tdc_counts
+                      << " adcT at prev iADC = " << adc_at_tminus1;
       auto i_tot_sample = digiToAdd.size();
       // mark as a TOT measurement with 2nd boolean as true
       digiToAdd.emplace_back(false, true, adc_at_tminus1, tdc_counts, toa);

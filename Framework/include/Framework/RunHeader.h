@@ -53,9 +53,27 @@ namespace ldmx {
  *
  * ## v5
  * Include a member to track the ldmx-sw version
+ *
+ * ## v7
+ * Add the completed_ member so a consumer can tell a complete file from one
+ * whose writer died partway through.
+ *
+ * ### Interop with v6 and earlier
+ * Those versions have no completed_ on disk, so reading one leaves the member
+ * at its default of false. A reader cannot tell such a run apart from one that
+ * was cut short, so it has to look at the class version of the run tree
+ * (VERSION_WITH_COMPLETED) before trusting the flag.
  */
 class RunHeader {
  public:
+  /**
+   * The first class version that writes completed_.
+   *
+   * Run headers read out of a file written with an earlier version say nothing
+   * about whether their run finished.
+   */
+  static constexpr int VERSION_WITH_COMPLETED{7};
+
   /**
    * Constructor.
    *
@@ -147,6 +165,26 @@ class RunHeader {
    * @param[in] numTries the number of tries in this run
    */
   void setNumTries(const int numTries) { num_tries_ = numTries; }
+
+  /**
+   * Check whether the file holding this run was closed cleanly.
+   *
+   * False means the file is missing events, either because the job was
+   * killed or because it stopped early on a preemption signal.
+   *
+   * @return true if the run finished and the file closed cleanly
+   */
+  bool isCompleted() const { return completed_; }
+
+  /**
+   * Mark whether this run was completed.
+   *
+   * @note Called within framework::EventFile::writeRunTree and so it should
+   * not be used elsewhere.
+   *
+   * @param[in] completed whether the run finished cleanly
+   */
+  void setCompleted(const bool completed) { completed_ = completed; }
 
   /**
    * Get an int parameter value.
@@ -283,6 +321,9 @@ class RunHeader {
    */
   int num_tries_{0};
 
+  /// True only once the run finished and the file was closed cleanly
+  bool completed_{false};
+
   /**
    * git SHA-1 hash associated with the software tag used to generate
    * this file.
@@ -303,7 +344,7 @@ class RunHeader {
   /** Map of string parameters. */
   std::map<std::string, std::string> string_parameters_;
 
-  ClassDef(RunHeader, 6);
+  ClassDef(RunHeader, 7);
 
 };  // RunHeader
 

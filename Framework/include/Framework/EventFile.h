@@ -230,9 +230,15 @@ class EventFile {
   /**
    * Write the map of run headers to the file as a TTree of RunHeader.
    *
+   * Safe to call more than once; any run tree already in the file is
+   * overwritten. Process calls it once the producers have filled the headers
+   * and again on close, so a killed job still leaves a usable file.
+   *
+   * @param[in] completed true when closing cleanly. Only the final call
+   * should pass true.
    * @throw Exception if call this function on a non-output file.
    */
-  void writeRunTree();
+  void writeRunTree(bool completed = false);
 
   /**
    * Update the RunHeader for a given run, if it exists in the input file.
@@ -253,6 +259,20 @@ class EventFile {
 
   /// @return the name of the ROOT file being managed.
   const std::string& getFileName() { return file_name_; }
+
+  /**
+   * The runs in this file whose writer did not close cleanly.
+   *
+   * Events are missing from the end of any such run, so processing it silently
+   * would produce a biased sample.
+   *
+   * A file written before ldmx::RunHeader::VERSION_WITH_COMPLETED carries no
+   * completion flag. We cannot say anything about those runs, so they are left
+   * out rather than reported as incomplete.
+   *
+   * @return run numbers of the incomplete runs, empty if the file is whole
+   */
+  std::vector<int> getIncompleteRuns() const;
 
  private:
   /**
@@ -322,6 +342,12 @@ class EventFile {
 
   /// Map of run numbers to RunHeader objects (owned via shared_ptr)
   std::map<int, std::shared_ptr<ldmx::RunHeader>> run_map_;
+
+  /// The run tree, owned by file_ once written
+  TTree* run_tree_{nullptr};
+
+  /// True when the run headers we read were written with a completion flag
+  bool run_headers_have_completeness_{false};
 
   enableLogging("EventFile")
 };

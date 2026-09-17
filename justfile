@@ -76,11 +76,22 @@ check-validation archive:
     fi
     # unpack the logs so we can compare them
     tar xzf ${_archive} gold.log output.log
-    # use sed replace (by blank) to run the diff without the initial HH:MM:SS timestamp
-    if ! diff  -I '^#' <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' gold.log) <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' output.log) > log.diff; then
-      # do not error out (don't set rc here) if diff is non-zero, the timestamps printed out
-      # by some processors prevent a full text diff so we do the character
-      # count check below to look for big changes
+    # mask what changes on every run so only real differences are reported:
+    # HH:MM:SS and epoch prefixes, the PYTHIA date, the commit, per event timing
+    _mask_run_stamps() {
+      sed -E \
+        -e 's/^[0-9]{2}:[0-9]{2}:[0-9]{2}/ /' \
+        -e 's/^[0-9]{10} /EPOCH /' \
+        -e 's/Now is .* at [0-9:]+/Now is DATE/' \
+        -e 's/revision = [0-9a-f]+/revision = SHA/' \
+        -e '/[Tt]ime\/[Ee]vent/ s/[0-9]+(\.[0-9]+)?(e[-+]?[0-9]+)?/N/g' \
+        "$1"
+    }
+    _mask_run_stamps gold.log > gold.masked.log
+    _mask_run_stamps output.log > output.masked.log
+    if ! diff -I '^#' gold.masked.log output.masked.log > log.diff; then
+      # do not error out (don't set rc here) if diff is non-zero,
+      # the character count check below looks for big changes
       _n_diff_lines=$(grep -c '^[<>]' log.diff || echo 0)
       warn "Text Differences Between Logs (${_n_diff_lines} lines differ)"
       start_group diff gold.log output.log
@@ -89,8 +100,8 @@ check-validation archive:
     fi
     # check character count of logs, allowing up to 0.5% difference to avoid
     # false positives from minor run-to-run output variations
-    ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
-    nnew=$(wc --chars output.log | cut -f 1 -d ' ')
+    ngold=$(wc --chars gold.masked.log | cut -f 1 -d ' ')
+    nnew=$(wc --chars output.masked.log | cut -f 1 -d ' ')
     if (( ngold != nnew )); then
       if (( ngold > 0 )); then
         char_diff_pct=$(( (nnew - ngold) * 100 / ngold ))
@@ -102,6 +113,28 @@ check-validation archive:
           warn "Log character count differs by ${char_abs_pct}% (gold=${ngold}, new=${nnew}); within tolerance"
         fi
       fi
+    fi
+    # count log messages per severity, catches e.g. a fatal appearing or going away
+    _count_levels() {
+      grep -oE '^\[ [^]]* \] -?[0-9]+ +(trace|debug|info|warn|error|fatal):' "$1" |
+        awk '{sub(":", "", $NF); n[$NF]++} END {for (l in n) print l, n[l]}'
+    }
+    declare -A _gold_n _new_n
+    while read -r l n; do _gold_n[$l]=$n; done < <(_count_levels gold.log)
+    while read -r l n; do _new_n[$l]=$n; done < <(_count_levels output.log)
+    _counts=""
+    _changed=""
+    for l in fatal error warn info debug trace; do
+      g=${_gold_n[$l]:-0}
+      n=${_new_n[$l]:-0}
+      _counts+=" ${l}=${g}/${n}"
+      if (( g != n )); then
+        _changed+=" ${l} ${g} -> ${n};"
+      fi
+    done
+    echo "Log message counts (gold/new):${_counts}"
+    if [[ -n "${_changed}" ]]; then
+      warn "Log message counts changed:${_changed%;}"
     fi
     # compare total wall-clock run time if gold.time is available in the archive
     # gold.time has one line per sample: "<sample> <seconds>"

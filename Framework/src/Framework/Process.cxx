@@ -42,6 +42,8 @@ Process::Process(const framework::config::Parameters& configuration)
   compression_setting_ = configuration.get<int>("compression_setting", 9);
   skip_corrupted_input_files_ =
       configuration.get<bool>("skip_corrupted_input_files", false);
+  allow_incomplete_input_files_ =
+      configuration.get<bool>("allow_incomplete_input_files", false);
 
   input_files_ = configuration.get<std::vector<std::string>>("input_files", {});
   output_files_ =
@@ -212,7 +214,7 @@ void Process::run() {
     run_header_ = run_header.get();  // give handle to run header to process
     out_file.writeRunHeader(run_header);  // add run header to file
 
-    newRun(*run_header);
+    newRun(*run_header, &out_file);
 
     int total_tries = 0;  // total number of tries for entire run
     int num_tries = 0;    // number of tries for the current event number
@@ -266,7 +268,7 @@ void Process::run() {
 
     run_header->setRunEnd(std::time(nullptr));
     run_header->setNumTries(total_tries);
-    out_file.writeRunTree();
+    out_file.writeRunTree(not preemption_received_);
 
     // Give a warning that this filter has very low efficiency
     if (n_events_processed < total_tries / 10000) {  // integer division is okay
@@ -308,6 +310,30 @@ void Process::run() {
               "We should never get here. "
               "EventFile is corrupted but we aren't skipping corrupted inputs. "
               "EventFile should be throwing its own exceptions in this case.");
+        }
+      }
+
+      auto incomplete_runs{in_file.getIncompleteRuns()};
+      if (not incomplete_runs.empty()) {
+        std::string run_list;
+        for (int run : incomplete_runs) {
+          if (not run_list.empty()) run_list += ", ";
+          run_list += std::to_string(run);
+        }
+        if (allow_incomplete_input_files_) {
+          ldmx_log(warn) << "Input file '" << infilename << "' holds run(s) "
+                         << run_list
+                         << " that were never finished, so events are missing. "
+                            "Processing it anyway because "
+                            "'allow_incomplete_input_files' is set.";
+        } else {
+          EXCEPTION_RAISE(
+              "IncompleteInput",
+              "Input file '" + infilename + "' holds run(s) " + run_list +
+                  " that were never finished, so events are missing from the "
+                  "end of them. Set 'allow_incomplete_input_files' on the "
+                  "Process to read it anyway, but know that the sample it "
+                  "gives you is biased.");
         }
       }
 
@@ -373,10 +399,14 @@ void Process::run() {
             run_header_ = rh;
             ldmx_log(info) << "Got new run header from '"
                            << master_file->getFileName() << "'";
-            newRun(*run_header_);
+            newRun(*run_header_, out_file);
           } else {
-            ldmx_log(warn) << "Run header for run " << was_run
-                           << " was not found!";
+            // no header means no newRun, so conditions stay uninitialised
+            EXCEPTION_RAISE(
+                "MissingRunHeader",
+                "Run header for run " + std::to_string(was_run) +
+                    " was not found in '" + master_file->getFileName() +
+                    "'. Conditions cannot be initialised without it.");
           }
         }
 
@@ -412,7 +442,7 @@ void Process::run() {
       the_event.onEndOfFile();
 
       if (out_file and !single_output) {
-        out_file->writeRunTree();
+        out_file->writeRunTree(not preemption_received_);
         delete out_file;
         out_file = nullptr;
       }
@@ -425,7 +455,7 @@ void Process::run() {
     if (out_file) {
       // close outFile
       //  outFile would survive to here in single output mode
-      out_file->writeRunTree();
+      out_file->writeRunTree(not preemption_received_);
       delete out_file;
       out_file = nullptr;
     }
@@ -483,7 +513,7 @@ TDirectory* Process::openHistoFile() {
   return owner;
 }
 
-void Process::newRun(ldmx::RunHeader& header) {
+void Process::newRun(ldmx::RunHeader& header, EventFile* out) {
   // Producers are allowed to put parameters into
   // the run header through 'beforeNewRun' method
 
@@ -503,6 +533,8 @@ void Process::newRun(ldmx::RunHeader& header) {
   if (performance_) performance_->stop(performance::Callback::beforeNewRun, 0);
   // now run header has been modified by Producers,
   // it is valid to read from for everyone else in 'onNewRun'
+  // header is final, so write it now in case we are killed
+  if (out) out->writeRunTree();
   if (performance_) performance_->start(performance::Callback::onNewRun, 0);
   conditions_.onNewRun(header);
   i_proc = 0;

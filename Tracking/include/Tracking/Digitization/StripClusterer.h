@@ -99,6 +99,15 @@ class StripClusterer {
                           double cluster_weighted_t,
                           double cluster_total_amp) const;
 
+  /// Per-strip noise RMS to use for @p h: the hit's own measured noise if set
+  /// (> 0), otherwise the uniform noise passed to the constructor.  This is how
+  /// real-data hits (with per-channel pedestal noise) and MC hits (uniform)
+  /// share one clustering path.
+  double hitNoise(const ldmx::FittedSiStripHit& h) const {
+    const double n = h.getNoise();
+    return n > 0.0 ? n : noise_sigma_adc_;
+  }
+
   double seed_threshold_;
   double neighbor_threshold_;
   double cluster_threshold_;

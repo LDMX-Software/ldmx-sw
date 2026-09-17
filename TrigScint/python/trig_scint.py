@@ -226,6 +226,12 @@ class TrigScintRecHitProducer(Processor):
     verbose: bool = False
     sample_of_interest: int = 2
 
+    use_calib_file: bool = False
+    calib_file: str = ""
+    # If > 0: integrate a window starting at sample_of_interest
+    # If <= 0: integrate all samples (default)
+    integration_window: int = 0
+
     @staticmethod
     def pad1(**kwargs):
         """Get the rechit producer for first pad"""

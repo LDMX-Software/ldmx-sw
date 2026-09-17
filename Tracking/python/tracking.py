@@ -58,6 +58,9 @@ class DigitizationProcessor(Processor):
         Minimum number of charge deposition segments (Mode 1).
     out_raw_collection : str
         Output RawSiStripHit collection name; empty disables (Mode 1).
+    dump_geo_csv : str
+        If non-empty, write every ACTS surface (id, centre, U/V/W axes) to this
+        CSV at onProcessStart and continue; empty disables.
     """
 
     merge_hits: bool = True
@@ -81,6 +84,7 @@ class DigitizationProcessor(Processor):
     deposition_granularity: float = 0.10
     n_segments_min: int = 5
     out_raw_collection: str = ""
+    dump_geo_csv: str = ""
 
 
 @processor("tracking::reco::SeedFinderProcessor", "Tracking")
@@ -127,6 +131,8 @@ class SeedFinderProcessor(Processor):
         Uncertainty in the sensitive direction for the seed hits.
     v_error : float
         Uncertainty in the insensitive direction for the seed hits.
+    strategies : list of str
+        Seeding strategies, each a comma separated list of at least 5 layers.
     """
 
     perigee_location: list[float] = []
@@ -137,7 +143,7 @@ class SeedFinderProcessor(Processor):
     z0max: float = 60.0
     phicut: float = 0.1
     thetacut: float = 0.2
-    strategies: list[str] = []
+    strategies: list[str] = ["0,1,2,3,4"]
     bfield: float = 1.5
     input_hits_collection: str = "TaggerSimHits"
     out_seed_collection: str = "SeedTracks"
@@ -201,6 +207,18 @@ class CKFProcessor(Processor):
         The pass name of the sim particles event.
     input_pass_name : str
         The pass name of the input collections.
+    bfield_translation : list[float]
+        Displacement {dx, dy, dz} of the reconstruction field [mm], LDMX global
+        frame (x bend plane, y vertical, z beam). Moves the magnet, not the
+        detector: the simulation is untouched. Default is no displacement.
+    bfield_rotation : list[float]
+        Rotation {ax, ay, az} of the reconstruction field about the LDMX x, y
+        and z axes through ``bfield_pivot`` [rad]. Default is no rotation.
+    bfield_pivot : list[float]
+        Centre of rotation [mm], LDMX global. Defaults to the field-map origin
+        at z = -400 mm, i.e. the centre of the dipole.
+    bfield_scale : float
+        Overall scaling of the reconstruction field strength. Default 1.
     """
 
     dumpobj: bool = False
@@ -209,6 +227,10 @@ class CKFProcessor(Processor):
     bfield: float = -1.5
     const_b_field: bool = False
     field_map: str = ""
+    bfield_translation: list[float] = [0.0, 0.0, 0.0]
+    bfield_rotation: list[float] = [0.0, 0.0, 0.0]
+    bfield_pivot: list[float] = [0.0, 0.0, -400.0]
+    bfield_scale: float = 1.0
     propagator_step_size: float = 1000.0
     propagator_max_steps: int = 10000
     hit_collection: str = "RecoilSimHits"
@@ -252,8 +274,14 @@ class GSFProcessor(Processor):
     bfield : float
         BZ component of the constant field used as the tagger fallback when
         the field map propagation fails. The recoil falls back to 0T.
+    bfield_translation, bfield_rotation, bfield_pivot, bfield_scale
+        Mis-placement of the reconstruction field, see CKFProcessor. Set these
+        to the same values as the CKF that produced the input tracks, otherwise
+        the refit uses a different field than the track finding did.
     tagger_tracking : bool
         Whether tracking in the tagger.
+    tagger_start_x : float
+        ACTS x [mm] of the tagger GSF start surface, upstream of tagger L1.
     out_trk_collection : str
         Name of the output Track collection.
     track_collection : str
@@ -279,7 +307,12 @@ class GSFProcessor(Processor):
     propagator_max_steps: int = 1000
     field_map: str = ""
     bfield: float = -1.5
+    bfield_translation: list[float] = [0.0, 0.0, 0.0]
+    bfield_rotation: list[float] = [0.0, 0.0, 0.0]
+    bfield_pivot: list[float] = [0.0, 0.0, -400.0]
+    bfield_scale: float = 1.0
     tagger_tracking: bool = True
+    tagger_start_x: float = -617.0
     out_trk_collection: str = "GSFTracks"
     track_collection: str = "TaggerTracks"
     meas_collection: str = "DigiTaggerSimHits"
@@ -597,6 +630,10 @@ class StripClusterProcessor(Processor):
         <= 0 disables (default -1).
     max_chi2_ndf : float
         Max chi2/ndf for a fitted hit to be used; <= 0 disables (default -1).
+    daq_map_file : str
+        Optional DAQ map JSON.  When set, the local-U centre offset for each
+        layer uses that sensor's real strip count instead of the fixed
+        N_READOUT_STRIPS constant.  Empty (default, MC) keeps the constant.
     """
 
     in_collection: str = "FittedSiStripHits"
@@ -609,3 +646,4 @@ class StripClusterProcessor(Processor):
     time_window_ns: float = -1.0
     neighbor_delta_t_ns: float = -1.0
     max_chi2_ndf: float = -1.0
+    daq_map_file: str = ""
