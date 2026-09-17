@@ -110,6 +110,14 @@ just compile #configure and build ldmx-sw
 just test # then test it
 ```
 
+> [!TIP]
+> On computers with `apptainer` (or `singularity`) and [CVMFS](https://cvmfs.readthedocs.io),
+> `just init`, `just use`, and `just pull` run images that are available in
+> `/cvmfs/unpacked.cern.ch` directly from there instead of downloading a copy
+> (currently only `ldmx/dev:latest`).
+> Set `LDMX_NO_CVMFS=1` to always download the image instead.
+> An existing denv can be moved to the CVMFS image with `just use ldmx/dev:latest`.
+
 ## Contributors
 
 <a href="https://github.com/LDMX-Software/ldmx-sw/graphs/contributors">
