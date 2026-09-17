@@ -52,6 +52,9 @@ class Histogram:
         bin edges along y-axis
     weighted: bool
         whether to keep track of sum of squared weights
+    scale_with_electrons: bool
+        whether the x-axis range grows with the largest beam electron count
+        in the events, keeping the bin width (1D uniform binning only)
     """
 
     name: str
@@ -66,6 +69,7 @@ class Histogram:
         init=False, metadata={"entry_type": str, "dimension": 1}
     )
     weighted: bool = False
+    scale_with_electrons: bool = False
 
     def __post_init__(self):
         if len(self.xbins) == 0:
@@ -84,3 +88,11 @@ class Histogram:
             self.ybins = []
         else:
             self.ycategories = []
+
+        if self.scale_with_electrons and (
+            self.xcategories or self.ybins or self.ycategories
+        ):
+            raise ValueError(
+                f"Histogram {self.name}: only numeric 1D histograms"
+                " can scale with electrons."
+            )

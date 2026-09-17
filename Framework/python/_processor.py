@@ -22,6 +22,7 @@ class Processor:
         ymin=None,
         ymax=None,
         weighted=False,
+        scale_with_electrons=False,
     ):
         """declare a histogram for a processor to fill
 
@@ -55,6 +56,10 @@ class Processor:
             Maximum edge of bins on y-axis
         weighted: bool
             whether to keep track of sum of squared weights
+        scale_with_electrons: bool
+            whether the x-axis range grows with the largest beam electron
+            count in the events (1D uniform binning only), useful for
+            energy sums and hit counts in multi-electron (pileup) samples
 
         See Also
         --------
@@ -68,7 +73,13 @@ class Processor:
         if ybins is None:
             # 1D histogram
             self.histograms.append(
-                _histogram.Histogram(name, xlabel, the_x_bins, weighted=weighted)
+                _histogram.Histogram(
+                    name,
+                    xlabel,
+                    the_x_bins,
+                    weighted=weighted,
+                    scale_with_electrons=scale_with_electrons,
+                )
             )
         else:
             # 2D histogram
@@ -78,7 +89,13 @@ class Processor:
 
             self.histograms.append(
                 _histogram.Histogram(
-                    name, xlabel, the_x_bins, ylabel, the_y_bins, weighted=weighted
+                    name,
+                    xlabel,
+                    the_x_bins,
+                    ylabel,
+                    the_y_bins,
+                    weighted=weighted,
+                    scale_with_electrons=scale_with_electrons,
                 )
             )
 

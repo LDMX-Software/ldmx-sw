@@ -470,6 +470,7 @@ void Process::run() {
     if (performance_)
       performance_->start(performance::Callback::onProcessEnd, i_proc);
     proc->onProcessEnd();
+    proc->finalizeHistograms();
     if (performance_)
       performance_->stop(performance::Callback::onProcessEnd, i_proc);
   }

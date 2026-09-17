@@ -178,4 +178,76 @@ TEST_CASE("HistogramPool Functions", "[Framework][functionality]") {
     REQUIRE(h2_3 != nullptr);
     CHECK(h2_3->GetBinContent(1, 2) == 1);
   }
+
+  SECTION("scale with electron count") {
+    TFile histogram_file{test_file, "recreate"};
+    HistogramPool test_pool{[&histogram_file]() {
+      static TDirectory* d{histogram_file.mkdir("s")};
+      return d;
+    }};
+    std::vector<double> edges{0.0, 2.5, 5.0, 7.5, 10.0};
+    test_pool.create("one_e", "", edges);
+    test_pool.create("fixed", "", 4, 0, 10);
+    test_pool.create("vari", "", {0.0, 1.0, 10.0});
+    test_pool.create("h2", "", 4, 0, 10, "", 4, 0, 10);
+    test_pool.scaleWithElectrons("one_e");
+    CHECK_THROWS(test_pool.scaleWithElectrons("vari"));
+    CHECK_THROWS(test_pool.scaleWithElectrons("h2"));
+    test_pool.fill("fixed", 1.);
+    CHECK_THROWS(test_pool.scaleWithElectrons("fixed"));
+
+    // widened while filling
+    CHECK(test_pool.get("one_e")->GetXaxis()->GetXmax() ==
+          Catch::Approx(10. * HistogramPool::MAX_ELECTRON_SCALE));
+
+    // one electron events only, over range goes to overflow
+    for (double v : {1., 9., 15., 25., 1000.}) test_pool.fill("one_e", v);
+    test_pool.setElectronCount(0);
+    test_pool.setElectronCount(1);
+    test_pool.trimToElectronCount();
+    auto one_e = test_pool.get("one_e");
+    CHECK(one_e->GetNbinsX() == 4);
+    CHECK(one_e->GetXaxis()->GetXmax() == Catch::Approx(10.));
+    CHECK(one_e->GetBinContent(1) == 1);
+    CHECK(one_e->GetBinContent(4) == 1);
+    CHECK(one_e->GetBinContent(5) == 3);
+    CHECK(one_e->GetEntries() == 5);
+    CHECK(one_e->GetMean() == Catch::Approx(5.));
+
+    // a two electron event doubles the range
+    HistogramPool pool_2e{[&histogram_file]() {
+      static TDirectory* d{histogram_file.mkdir("s2")};
+      return d;
+    }};
+    pool_2e.create("h", "", 4, 0, 10, true);
+    pool_2e.scaleWithElectrons("h");
+    pool_2e.setElectronCount(1);
+    pool_2e.fillw("h", 1., 2.);
+    pool_2e.fillw("h", 18., 2.);
+    pool_2e.fillw("h", 25., 2.);
+    pool_2e.setElectronCount(2);
+    pool_2e.setElectronCount(1);
+    pool_2e.trimToElectronCount();
+    auto two_e = pool_2e.get("h");
+    CHECK(two_e->GetNbinsX() == 8);
+    CHECK(two_e->GetXaxis()->GetXmax() == Catch::Approx(20.));
+    CHECK(two_e->GetBinWidth(1) == Catch::Approx(2.5));
+    CHECK(two_e->GetBinContent(1) == 2);
+    CHECK(two_e->GetBinContent(8) == 2);
+    CHECK(two_e->GetBinContent(9) == 2);
+    CHECK(two_e->GetBinError(9) == Catch::Approx(2.));
+    CHECK(two_e->GetEntries() == 3);
+
+    // counts past the cap are clamped
+    HistogramPool pool_many{[&histogram_file]() {
+      static TDirectory* d{histogram_file.mkdir("s3")};
+      return d;
+    }};
+    pool_many.create("h", "", 4, 0, 10);
+    pool_many.scaleWithElectrons("h");
+    pool_many.setElectronCount(100);
+    pool_many.trimToElectronCount();
+    CHECK(pool_many.get("h")->GetNbinsX() ==
+          4 * HistogramPool::MAX_ELECTRON_SCALE);
+  }
 }
