@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,7 @@ namespace tracking::dqm {
 
 /**
  * DQM for silicon strip data read from the DAQ: raw hits, pedestal
- * subtracted hits and the waveforms assembled from them.
+ * subtracted hits, the waveforms assembled from them and their pulse fits.
  */
 class RawSiStripDQM : public framework::Analyzer {
  public:
@@ -31,6 +32,7 @@ class RawSiStripDQM : public framework::Analyzer {
   std::string raw_hits_collection_;
   std::string subtracted_hits_collection_;
   std::string waveforms_collection_;
+  std::string fitted_hits_collection_;
   std::string input_pass_name_;
   int n_hybrids_{0};
 
@@ -39,6 +41,7 @@ class RawSiStripDQM : public framework::Analyzer {
   std::vector<std::string> subtracted_adc_names_;
   std::vector<std::string> pchannel_names_;
   std::vector<std::string> peak_names_;
-  std::vector<std::string> fit_amplitude_names_;
+  /// fit amplitude histogram name by layer id
+  std::map<int, std::string> fit_amplitude_names_;
 };
 }  // namespace tracking::dqm

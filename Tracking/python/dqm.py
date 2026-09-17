@@ -1006,17 +1006,25 @@ class RawSiStripDQM(Processor):
         Pedestal subtracted hits (RawSiStripHit).
     waveforms_collection : str
         Assembled waveforms (SiStripWaveform).
+    fitted_hits_collection : str
+        Pulse fits of the waveforms (FittedSiStripHit), from
+        SiStripWaveformFitProcessor.
     input_pass_name : str
         Pass name of all input collections.
     n_hybrids : int
         Number of hybrids to book per-hybrid histograms for.
+    layer_ids : list[int]
+        Layer ids (DAQ map) to book per-layer fit histograms for.
     """
 
     raw_hits_collection: str = "RawSiStripHits"
     subtracted_hits_collection: str = "TrackerHits"
     waveforms_collection: str = "TrackerWaveforms"
+    fitted_hits_collection: str = "FittedSiStripHits"
     input_pass_name: str = ""
     n_hybrids: int = 4
+    # ESA 2025 slice test DAQ map
+    layer_ids: list[int] = [3100, 3101, 3200, 3201]
 
     def __post_init__(self):
         # fixed by the readout (channels x APV triggers); window around the
@@ -1027,7 +1035,7 @@ class RawSiStripDQM(Processor):
         self.histogram("n_waveforms", "Waveforms per event", 100, 0, 100)
         self.histogram("waveform_n_triggers", "APV triggers", 12, -0.5, 11.5)
         self.histogram("waveform_peak_trigger", "Peak trigger", 12, -0.5, 11.5)
-        self.histogram("fit_converged", "Fit converged", 2, -0.5, 1.5)
+        self.histogram("n_fitted_hits", "Fitted hits per event", 100, 0, 100)
         self.histogram("fit_t0", "Fit t0 [ns]", 160, -50, 750)
         self.histogram("fit_chi2_ndf", "Fit #chi^{2}/ndf", 100, 0, 20)
         for h in range(self.n_hybrids):
@@ -1037,4 +1045,7 @@ class RawSiStripDQM(Processor):
             )
             self.histogram(f"waveform_pchannel_h{h}", "Strip", 640, 0, 640)
             self.histogram(f"waveform_peak_h{h}", "Peak ADC", 200, 0, 4000)
-            self.histogram(f"fit_amplitude_h{h}", "Fit amplitude [ADC]", 200, 0, 4000)
+        for layer in self.layer_ids:
+            self.histogram(
+                f"fit_amplitude_l{layer}", "Fit amplitude [ADC]", 200, 0, 4000
+            )

@@ -25,7 +25,7 @@ from LDMX.TrigScint.trig_scint import (
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
 
 
-# Tracker: raw frames -> strip hits -> pedestal subtracted -> waveforms
+# Tracker: raw frames -> strip hits -> pedestal subtracted -> waveforms -> fits
 trk_unpack = rawio.SingleSubsystemUnpacker(
     instance_name="trk_unpack",
     dat_file=dat_file,
@@ -36,6 +36,9 @@ trk_decoder = rawdecoder.RawTrackerDecoder()
 rawdecoder.TrackerPedestalProvider(pedestal_file="pedestals.json")
 trk_peds = rawdecoder.PedestalSubtractor()
 trk_waveforms = rawdecoder.SiStripWaveformBuilder()
+trk_fits = rawdecoder.SiStripWaveformFitProcessor(
+    daq_map_file=rawdecoder.daq_map_path()
+)
 trk_dqm = tracking_dqm.RawSiStripDQM()
 
 # TS: raw frames -> ZCCM decoding -> QIE samples -> hits -> clusters
@@ -78,6 +81,7 @@ p.sequence = [
     trk_decoder,
     trk_peds,
     trk_waveforms,
+    trk_fits,
     trk_dqm,
     ts_unpack,
     ts_decoder,
