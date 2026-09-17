@@ -271,6 +271,9 @@ class GSFProcessor(Processor):
         Maximum number of steps for the propagator.
     field_map : str
         Path to the location of the magnetic field map.
+    bfield : float
+        BZ component of the constant field used as the tagger fallback when
+        the field map propagation fails. The recoil falls back to 0T.
     bfield_translation, bfield_rotation, bfield_pivot, bfield_scale
         Mis-placement of the reconstruction field, see CKFProcessor. Set these
         to the same values as the CKF that produced the input tracks, otherwise
@@ -303,6 +306,7 @@ class GSFProcessor(Processor):
     propagator_step_size: float = 200.0
     propagator_max_steps: int = 1000
     field_map: str = ""
+    bfield: float = -1.5
     bfield_translation: list[float] = [0.0, 0.0, 0.0]
     bfield_rotation: list[float] = [0.0, 0.0, 0.0]
     bfield_pivot: list[float] = [0.0, 0.0, -400.0]
