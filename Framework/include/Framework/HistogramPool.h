@@ -105,11 +105,25 @@ namespace framework {
  * `true`.
  */
 class HistogramPool {
+ public:
+  /// Largest electron count a scaled histogram can grow to
+  static constexpr int MAX_ELECTRON_SCALE{4};
+
  private:
   /// The weight to fill histograms with
   double the_weight_{1.};
   /// the pool of histogram pointers
   std::unordered_map<std::string, TH1*> histograms_;
+  /// Original x axis of a histogram scaled with the electron count
+  struct ScaledAxis {
+    int nbins_;
+    double xmin_;
+    double xmax_;
+  };
+  /// Histograms scaled with the electron count, by name
+  std::unordered_map<std::string, ScaledAxis> scaled_;
+  /// Largest electron count seen so far
+  int max_electrons_{1};
   /**
    * the callback to get the directory these histograms should go in
    *
@@ -156,6 +170,36 @@ class HistogramPool {
    * get a histogram from this pool by name
    */
   TH1* get(const std::string& name);
+
+  /**
+   * Let the range of a 1D histogram grow with the beam electron count
+   *
+   * Samples with more than one beam electron (e.g. pileup) have energy sums
+   * and hit counts that scale with the number of electrons. The histogram is
+   * widened to MAX_ELECTRON_SCALE times its range keeping the bin width,
+   * and trimToElectronCount cuts it back to the largest electron count
+   * seen in the events, moving anything beyond into the overflow bin.
+   * Single electron samples thus keep their original binning.
+   *
+   * @note must be called before the histogram is filled
+   * @param[in] name name of an existing 1D histogram with uniform bins
+   * @throws framework::Exception if the histogram cannot be scaled
+   */
+  void scaleWithElectrons(const std::string& name);
+
+  /**
+   * Record the beam electron count of the current event
+   *
+   * Counts are clamped to [1, MAX_ELECTRON_SCALE].
+   */
+  void setElectronCount(int n);
+
+  /**
+   * Trim the scaled histograms to the largest electron count seen
+   *
+   * Called once at the end of processing, before the histograms are written.
+   */
+  void trimToElectronCount();
 
   /**
    * Create a histogram from the input configuration parameters

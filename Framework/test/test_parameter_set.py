@@ -173,6 +173,18 @@ class TestParameter(unittest.TestCase):
             },
         )
 
+    def test_histogram_scale_with_electrons(self):
+        c = MyClass()
+        c.histogram("plain", "x", 4, 0, 10)
+        c.histogram("scaled", "x", 4, 0, 10, scale_with_electrons=True)
+        self.assertFalse(c.histograms[0].scale_with_electrons)
+        self.assertTrue(c.histograms[1].scale_with_electrons)
+        # only numeric 1D histograms can scale
+        with self.assertRaises(ValueError):
+            c.histogram("cats", "x", ["a", "b"], scale_with_electrons=True)
+        with self.assertRaises(ValueError):
+            c.histogram("h2", "x", 4, 0, 10, "y", 4, 0, 10, scale_with_electrons=True)
+
 
 if __name__ == "__main__":
     unittest.main()

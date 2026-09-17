@@ -4,6 +4,8 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 //----------//
@@ -26,6 +28,63 @@ TH1* HistogramPool::get(const std::string& name) {
   }
 
   return histograms_[name];
+}
+
+void HistogramPool::scaleWithElectrons(const std::string& name) {
+  auto hist = get(name);
+  auto axis = hist->GetXaxis();
+  if (hist->GetDimension() != 1 or axis->GetLabels() != nullptr) {
+    EXCEPTION_RAISE("BadHist", "Histogram " + name +
+                                   " is not a numeric 1D histogram and cannot"
+                                   " scale with the electron count.");
+  }
+  if (hist->GetEntries() > 0) {
+    EXCEPTION_RAISE("BadHist", "Histogram " + name +
+                                   " is already filled and cannot scale with"
+                                   " the electron count.");
+  }
+  ScaledAxis orig{axis->GetNbins(), axis->GetXmin(), axis->GetXmax()};
+  double width = (orig.xmax_ - orig.xmin_) / orig.nbins_;
+  for (int i{1}; i <= orig.nbins_; i++) {
+    if (std::abs(axis->GetBinWidth(i) - width) > 1e-6 * width) {
+      EXCEPTION_RAISE("BadHist", "Histogram " + name +
+                                     " has variable bins and cannot scale"
+                                     " with the electron count.");
+    }
+  }
+  hist->SetBins(orig.nbins_ * MAX_ELECTRON_SCALE, orig.xmin_,
+                orig.xmin_ + (orig.xmax_ - orig.xmin_) * MAX_ELECTRON_SCALE);
+  scaled_[name] = orig;
+}
+
+void HistogramPool::setElectronCount(int n) {
+  max_electrons_ = std::clamp(std::max(n, max_electrons_), 1,
+                              static_cast<int>(MAX_ELECTRON_SCALE));
+}
+
+void HistogramPool::trimToElectronCount() {
+  for (const auto& [name, orig] : scaled_) {
+    auto hist = histograms_.at(name);
+    int nbins = orig.nbins_ * max_electrons_;
+    bool weighted = hist->GetSumw2N() > 0;
+    // fold everything past the new range into overflow
+    std::vector<double> content(nbins + 2, 0.), sumw2(nbins + 2, 0.);
+    for (int i{0}; i <= hist->GetNbinsX() + 1; i++) {
+      int j = std::min(i, nbins + 1);
+      content[j] += hist->GetBinContent(i);
+      if (weighted) sumw2[j] += std::pow(hist->GetBinError(i), 2);
+    }
+    double entries = hist->GetEntries();
+    hist->SetBins(nbins, orig.xmin_,
+                  orig.xmin_ + (orig.xmax_ - orig.xmin_) * max_electrons_);
+    for (int j{0}; j <= nbins + 1; j++) {
+      hist->SetBinContent(j, content[j]);
+      if (weighted) hist->SetBinError(j, std::sqrt(sumw2[j]));
+    }
+    hist->ResetStats();
+    hist->SetEntries(entries);
+  }
+  scaled_.clear();
 }
 
 void HistogramPool::insert(const std::string& name,
@@ -99,6 +158,7 @@ void HistogramPool::create(const config::Parameters& p) {
       create(name, x_label, numeric_xbins, y_label, numeric_ybins, weighted);
     }
   }
+  if (p.get<bool>("scale_with_electrons", false)) scaleWithElectrons(name);
 }
 
 void HistogramPool::create(const std::string& name, const std::string& x_label,

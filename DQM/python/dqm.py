@@ -380,7 +380,14 @@ class EcalDigiVerify(Processor):
             -0.5,
             19.5,
         )
-        self.histogram("num_rec_hits", "Number of RecHits", 100, -0.5, 299.5)
+        self.histogram(
+            "num_rec_hits",
+            "Number of RecHits",
+            100,
+            -0.5,
+            299.5,
+            scale_with_electrons=True,
+        )
         self.histogram("num_noise_hits", "Number of noisy RecHits", 100, -0.5, 99.5)
         self.histogram("is_noise_hit", "Is noise hit?", 2, -0.5, 1.5)
         self.histogram(
@@ -389,6 +396,7 @@ class EcalDigiVerify(Processor):
             800,
             0.0,
             11000.0,
+            scale_with_electrons=True,
         )
         self.histogram(
             "num_mod_with_0hits", "Num of modules with 0 hit", 100, 140.5, 240.5
@@ -447,10 +455,18 @@ class EcalShowerFeatures(Processor):
 
     def __post_init__(self):
         self.histogram("deepest_layer_hit", "Deepest Layer Hit", 40, 0, 40)
-        self.histogram("num_readout_hits", "Num Readout Hits", 100, 0, 300)
-        self.histogram("summed_det", "Total Rec Energy [MeV]", 600, 0.0, 12000.0)
-        self.histogram("summed_iso", "Total Isolated Energy [MeV]", 600, 0.0, 12000.0)
-        self.histogram("summed_back", "Total Back Energy [MeV]", 500, 0.0, 10000.0)
+        # sums that grow with the number of beam electrons
+        scaled = {"scale_with_electrons": True}
+        self.histogram("num_readout_hits", "Num Readout Hits", 100, 0, 300, **scaled)
+        self.histogram(
+            "summed_det", "Total Rec Energy [MeV]", 600, 0.0, 12000.0, **scaled
+        )
+        self.histogram(
+            "summed_iso", "Total Isolated Energy [MeV]", 600, 0.0, 12000.0, **scaled
+        )
+        self.histogram(
+            "summed_back", "Total Back Energy [MeV]", 500, 0.0, 10000.0, **scaled
+        )
         self.histogram(
             "max_cell_dep", "Maximum Single-Cell Energy Dep [MeV]", 200, 0.0, 2000.0
         )
@@ -465,6 +481,7 @@ class EcalShowerFeatures(Processor):
             200,
             0.0,
             10000.0,
+            **scaled,
         )
         self.histogram(
             "ph_containment_energy",
@@ -472,6 +489,7 @@ class EcalShowerFeatures(Processor):
             200,
             0.0,
             10000.0,
+            **scaled,
         )
         self.histogram(
             "out_containment_energy",
@@ -479,6 +497,7 @@ class EcalShowerFeatures(Processor):
             200,
             0.0,
             10000.0,
+            **scaled,
         )
 
 
@@ -2238,7 +2257,12 @@ class EcalClusterAnalyzer(Processor):
             105.0,
         )
         self.histogram(
-            "unclustered_hits", "Number of hits not in a cluster", 10, 0.0, 200.0
+            "unclustered_hits",
+            "Number of hits not in a cluster",
+            10,
+            0.0,
+            200.0,
+            scale_with_electrons=True,
         )
         self.histogram(
             "unclustered_hits_percentage",
@@ -2247,7 +2271,14 @@ class EcalClusterAnalyzer(Processor):
             0.0,
             105.0,
         )
-        self.histogram("total_rechits_in_event", "RecHits per event", 20, 0.0, 500.0)
+        self.histogram(
+            "total_rechits_in_event",
+            "RecHits per event",
+            20,
+            0.0,
+            500.0,
+            scale_with_electrons=True,
+        )
 
         self.histogram(
             "total_energy_vs_hits",

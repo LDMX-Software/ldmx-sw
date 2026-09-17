@@ -209,6 +209,12 @@ class EventProcessor {
   void createHistograms(
       const std::vector<framework::config::Parameters>& histos);
 
+  /**
+   * Internal function which trims histograms scaled with the electron count
+   * once processing is done
+   */
+  void finalizeHistograms() { histograms_.trimToElectronCount(); }
+
  protected:
   /**
    * Abort the event immediately.
@@ -275,7 +281,10 @@ class Producer : public EventProcessor {
   /**
    * Processing an event for a Producer is calling produce
    */
-  virtual void process(Event& event) final { produce(event); }
+  virtual void process(Event& event) final {
+    histograms_.setElectronCount(event.getElectronCount());
+    produce(event);
+  }
 
   /**
    * Process the event and put new data products into it.
@@ -313,7 +322,10 @@ class Analyzer : public EventProcessor {
   /**
    * Processing an event for an Analyzer is calling analyze
    */
-  virtual void process(Event& event) final { analyze(event); }
+  virtual void process(Event& event) final {
+    histograms_.setElectronCount(event.getElectronCount());
+    analyze(event);
+  }
 
   /**
    * Don't allow Analyzers to add parameters to the run header
