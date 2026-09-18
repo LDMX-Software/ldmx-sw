@@ -337,7 +337,7 @@ class EcalVetoResult {
 
   std::vector<float> ecal_layer_edep_readout_;
 
-  ClassDef(EcalVetoResult, 12);
+  ClassDef(EcalVetoResult, 13);
 };
 }  // namespace ldmx
 
