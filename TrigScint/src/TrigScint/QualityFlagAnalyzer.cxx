@@ -7,6 +7,8 @@
 
 #include "TrigScint/QualityFlagAnalyzer.h"
 
+#include <cmath>
+
 namespace trigscint {
 
 QualityFlagAnalyzer::QualityFlagAnalyzer(const std::string& name,

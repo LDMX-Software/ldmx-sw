@@ -1,5 +1,7 @@
 #include "Hcal/HcalReconConditions.h"
 
+#include <cmath>
+
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
 

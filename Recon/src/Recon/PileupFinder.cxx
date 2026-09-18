@@ -1,5 +1,6 @@
 #include "Recon/PileupFinder.h"
 
+#include <cmath>
 #include <vector>
 
 namespace recon {
