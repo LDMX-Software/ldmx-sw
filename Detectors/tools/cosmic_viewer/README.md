@@ -28,6 +28,9 @@ git clone --branch epeets https://github.com/LDMX-Software/ldmx-sw.git
 cd ldmx-sw
 ```
 
+Check `python3 --version` first. If it is older than 3.10 (as on some Macs),
+use a newer interpreter, such as `python3.13`, for the first command below.
+
 From the root of the checkout:
 
 ```sh
@@ -142,5 +145,6 @@ tracker dimensions and the four-layer ESA ECal are inherited from the test-slice
 model; the newer CAD does not make their internal descriptions a surveyed match.
 
 The original CAD export omitted 965 shape placements. Some unclassified parts
-remain in the support overlay. Viewing was tested on macOS; the Linux installation
+remain in the support overlay. The build and checks also passed in a fresh Python
+virtual environment on macOS; the Linux installation
 recipe has not been exercised on a clean machine.
