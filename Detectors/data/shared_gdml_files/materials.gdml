@@ -108,6 +108,12 @@ use "glue" instead of listing the chemical formula.
   <D unit="g/cm3" value="2.699"/>
   <fraction n="1" ref="Al"/>
 </material>
+<material name="Aluminum3003" state="solid">
+   <T unit="K" value="293.15"/>
+   <D unit="g/cm3" value="2.6989"/>
+   <fraction n="0.99" ref="Al"/>
+   <fraction n="0.01" ref="Mn"/>
+</material>
 <material name="Silicon" state="solid">
   <T unit="K" value="293.15"/>
   <MEE unit="eV" value="173"/>
