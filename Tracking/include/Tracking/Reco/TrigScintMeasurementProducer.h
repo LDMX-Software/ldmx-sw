@@ -10,21 +10,27 @@
 namespace tracking::reco {
 
 /**
- * Turns decoded trigger-scintillator bar digis into geometry-aware
+ * Turns reconstructed trigger-scintillator bar clusters into geometry-aware
  * ldmx::Measurement objects.
  *
- * The TS bars measure the y coordinate. This producer reads one or more decoded
- * ZCCM pad collections (trigscint::TrigScintQIEDigis, bar-addressed by chanID),
- * applies a simple ADC-amplitude threshold to define a hit, and converts each
- * hit's (module, chanID) into a global (x, y, z) position using a parameterized
- * bar geometry -- so the output measurements live in the same ldmx::Measurement
- * frame the tracker uses and can be correlated with tracker measurements.
+ * The TS bars measure the y coordinate. This producer reads one or more
+ * ldmx::TrigScintCluster collections (the output of the calibrated
+ * EventReadout -> TestBeamHit -> TestBeamCluster chain), each addressed to a
+ * geometry module, and converts each cluster's PE-weighted *fractional* bar
+ * centroid (TrigScintCluster::getCentroid) into a global (x, y, z) position by
+ * interpolating the bar geometry between the two adjacent bars -- so the output
+ * measurements live in the same ldmx::Measurement frame the tracker uses and can
+ * be correlated with tracker measurements.
+ *
+ * Consuming clusters (rather than the raw decoded ZCCM digis) means the input is
+ * pedestal-subtracted, gain-calibrated (PE) and cluster-position-refined, giving
+ * a sub-bar centroid instead of a single fired channel.
  *
  * This is the first, parameterized increment (geometry via python params, tuned
  * against the tracker beam). The follow-up promotes the bar geometry to a proper
  * DetDescr ConditionsObject provider (Ecal/Hcal-style), read from the detector.
  *
- * Input  : one collection of trigscint::TrigScintQIEDigis per module
+ * Input  : one collection of ldmx::TrigScintCluster per module
  * Output : collection of ldmx::Measurement
  */
 class TrigScintMeasurementProducer : public framework::Producer {
@@ -37,7 +43,7 @@ class TrigScintMeasurementProducer : public framework::Producer {
   void produce(framework::Event& event) override;
 
  private:
-  /// input digi collections, one per module (index = module number)
+  /// input cluster collections, one per module (index = module number)
   std::vector<std::string> input_collections_;
   /// pass name of the input collections ("" = any)
   std::string input_pass_;
@@ -53,8 +59,9 @@ class TrigScintMeasurementProducer : public framework::Producer {
   /// parsed DAQ map: (decoded collection name, geometry module index)
   std::vector<std::pair<std::string, int>> daq_modules_;
 
-  /// hit definition: ADC amplitude (max-min over samples) must exceed this
-  double amp_threshold_{40.};
+  /// optional cluster selection: cluster PE must exceed this (0 = keep all;
+  /// the clustering seed/threshold cuts already define the clusters)
+  double min_pe_{0.};
   /// assumed y measurement resolution [mm] (local covariance)
   double sigma_y_{0.9};
 };
