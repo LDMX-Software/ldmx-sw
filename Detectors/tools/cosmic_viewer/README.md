@@ -31,8 +31,8 @@ cd ldmx-sw
 From the root of the checkout:
 
 ```sh
-python3 -m venv .venv-cosmic
-. .venv-cosmic/bin/activate
+python3 -m venv Detectors/tools/cosmic_viewer/.venv
+. Detectors/tools/cosmic_viewer/.venv/bin/activate
 python -m pip install -r Detectors/tools/cosmic_viewer/requirements.txt
 python Detectors/tools/cosmic_viewer/build.py --render
 python Detectors/tools/cosmic_viewer/check.py

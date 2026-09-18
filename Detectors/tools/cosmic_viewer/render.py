@@ -62,7 +62,11 @@ def main():
     scene = json.loads(scene_file.read_text())
     for item in scene["objects"]:
         item["active_material"] = is_active(item)
-    scene["title"] = "CAD-registered ESA detectors with 104 separate HCal bars"
+    bar_count = sum(
+        item["subsystem"] == "hcal" and item["active_material"]
+        for item in scene["objects"]
+    )
+    scene["title"] = f"CAD-registered ESA detectors with {bar_count} separate HCal bars"
     scene["caveat"] = (
         "Straight geometric ray, not Geant4 transport. HCal counts and "
         "alignment are provisional."
