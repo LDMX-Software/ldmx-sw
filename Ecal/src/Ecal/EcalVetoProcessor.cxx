@@ -28,24 +28,11 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdt_features_.push_back(result.getStdLayerHit());
   bdt_features_.push_back(result.getDeepestLayerHit());
   bdt_features_.push_back(result.getEcalBackEnergy());
-  // MIP tracking
-  if (bdt_feature_config_ == "segmip") {
-    bdt_features_.push_back(-1.);  // NStraight
-    bdt_features_.push_back(-1.);  // FirstNearPHLayer
-    bdt_features_.push_back(-1.);  // NNearPHHits
-    bdt_features_.push_back(-1.);  // PhotonTerritoryHits
-  }
-
-  // bdt_features_.push_back(result.getNStraightTracks());
-  // bdt_features_.push_back(result.getFirstNearPhLayer());
-  // bdt_features_.push_back(result.getNNearPhHits());
-  // bdt_features_.push_back(result.getPhotonTerritoryHits());
-  
+  // Electron Photon variables
   bdt_features_.push_back(result.getEPSep());
   bdt_features_.push_back(result.getEPDot());
-  if (bdt_feature_config_ == "wab_recrem") {
-    bdt_features_.push_back(result.getNHitsInPhotonTerritory());
-  }
+  // MIP Tracking
+  bdt_features_.push_back(result.getNHitsInPhotonTerritory());
   // Longitudinal segment variables
   bdt_features_.push_back(result.getEnergySeg()[0]);
   bdt_features_.push_back(result.getXMeanSeg()[0]);
