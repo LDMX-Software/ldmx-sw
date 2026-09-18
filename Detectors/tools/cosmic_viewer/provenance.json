@@ -1,0 +1,39 @@
+{
+  "source": {
+    "step_sha256": "ab19afbcafe0d97acc5c7e390ea72bf3d59b37f0edf746f8e20ec150960fa2c2",
+    "step_file": "CosmicTestStand.stp",
+    "upstream_branch": "iss2119-add-hcal-teststand-geometry",
+    "upstream_commit": "29ee03a8f8fa9eb2ae9c1d29af5e4961ba6c5a0a",
+    "bar_dimensions_source": "Detectors/data/ldmx-esa-cosmic26-v1/constants.gdml",
+    "bar_counts_basis": "12 bars in ~602 mm bodies, 8 in ~401 mm bodies; inferred at the upstream 50 mm pitch, confirm against hardware",
+    "cad_preview": "simplified geometry only, 422 support/unclassified placements; original export excluded 965 shapes"
+  },
+  "geometry_source_sha256": {
+    "Detectors/data/ldmx-reduced-v3/constants.gdml": "5b622890803703150056110997b74bd7fa7272ee8ccc410f91a1e13c2f094ce8",
+    "Detectors/data/ldmx-reduced-v3/detector.gdml": "0c3bb5a64f3db00b4222b23dc5e79ece6acd3afb9e683dd73a0886dce6adc280",
+    "Detectors/data/ldmx-reduced-v3/ecal.gdml": "b51354c26828573e992b38612aba7085566e5006920ae19dae1c907fad45dce9",
+    "Detectors/data/ldmx-reduced-v3/ecal_motherboard5_assembly.gdml": "24fd69af230dfc57a8ac654c164bd1c5b54918e3cd45beece16c1d1d342a5e0f",
+    "Detectors/data/ldmx-reduced-v3/ecal_motherboard6_assembly.gdml": "a4311b7cc9b6bcfbc069f40980cc9bca4b36058184adb8c6bd0b6be117dc0ba6",
+    "Detectors/data/ldmx-reduced-v3/ecal_support_box_solids.gdml": "7361a24d0084c5d4f94d37b0b2f375cf13c84cfcd1793603574579cf495bf938",
+    "Detectors/data/ldmx-reduced-v3/ecal_support_box_structure.gdml": "5c711788929c631e864619b1e46b85cf78ec5788b9b2e82e2d885fca75a65ad9",
+    "Detectors/data/ldmx-reduced-v3/hcal.gdml": "9043bc68d1c952ce9b01a3d9250268b94f589c4bacaf2ff2be9e5c2e4035215c",
+    "Detectors/data/ldmx-reduced-v3/recoil.gdml": "3345693d4528177c066a72d44f6ba5b772a5d50bf7a5a2bf681bf3197d76aad5",
+    "Detectors/data/ldmx-reduced-v3/scoring_planes.gdml": "9b6304f30043f05fddcf81ad9876be03eaf50086260f5faf731600e6a46b4589",
+    "Detectors/data/ldmx-reduced-v3/tagger.gdml": "b681486fae6cde61ae33fe287fd7da7676babc9161fb2873af77c7ffe5814433",
+    "Detectors/data/ldmx-reduced-v3/target.gdml": "3eb1c69397e926474930d6ed4658693c9a765c38bbffa00154c19f1e82be9b4c",
+    "Detectors/data/ldmx-reduced-v3/trig_scint.gdml": "024114346fbcd11a7bcfecb2c41fc49967a26d5c5321f125a0316523e7e3cd2c",
+    "Detectors/data/ldmx-esa-cosmic26-v1/constants.gdml": "07abff558ed5dd12b919445cedfc5ac9d84a114c081f4a853c875f73b8958d1b",
+    "Detectors/data/shared_gdml_files/materials.gdml": "98bbd5f73e66942d8de675e4057cc5224b3d389e371ec2e829b7e8164d6e5022"
+  },
+  "generated_gdml_sha256": {
+    "detector.gdml": "d433dcb6f7d0679530757ff6a71930cee738753984ed5b059a5f1fed2459a5b7",
+    "ecal.gdml": "41094e4012fc0117b0da67403a6ccf463b0225f05b2d7aa8b1131637d1ced2cb",
+    "hcal_above_ecal.gdml": "9f90652f891d510c83bdff9ae07470f14d8346b9a105ef34b03b556047e84324",
+    "hcal_below_ecal.gdml": "a6e42dd2843d026827b0e0c58de6b0a2651a04346931dbe51c624a85c16fcc3d",
+    "hcal_only.gdml": "8fbe39b5e6ef9365f9eb0d5247b7a1ed1dd429dc33906af0ead6424334a34f2c",
+    "hcal_top.gdml": "891c3ca734293026cf276318bdc1d95abb0b45d5b3a3096e08125420e4997be8",
+    "recoil.gdml": "0978d9e6f08c83358b1e014791671dea931dfa5fdfb3a35b3f590bfd9af77876",
+    "target.gdml": "0cc77be92693e51e12d314433a13f18379284b42e97b5bd7b1439bb196eaa107",
+    "trig_scint.gdml": "fc58519c1a6e36fbd43faa82db132f8c6d23e5a2a459787de79ccd2f2dc50228"
+  }
+}
