@@ -864,9 +864,9 @@ void EcalVetoProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(mip_tracking_setup - start)
           .count();
   result.setVariables(
-      n_readout_hits_, deepest_layer_hit_, n_hits_in_photon_territory_, summed_det_,
-      summed_tight_iso_, max_cell_dep_, shower_rms_, x_std_, y_std_,
-      avg_layer_hit_, std_layer_hit_, ecal_back_energy_, ep_ang_,
+      n_readout_hits_, deepest_layer_hit_, n_hits_in_photon_territory_,
+      summed_det_, summed_tight_iso_, max_cell_dep_, shower_rms_, x_std_,
+      y_std_, avg_layer_hit_, std_layer_hit_, ecal_back_energy_, ep_ang_,
       ep_ang_at_target_, ep_sep_, ep_dot_, ep_dot_at_target_,
       electron_containment_energy, photon_containment_energy,
       outside_containment_energy, outside_containment_n_hits,
