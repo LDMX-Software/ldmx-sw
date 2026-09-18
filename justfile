@@ -48,6 +48,11 @@ this_denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
 
 export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", this_denv_workspace / ".apptainer")
 
+# unpacked copies of Docker Hub images distributed via CVMFS
+
+cvmfs_unpacked := "/cvmfs/unpacked.cern.ch/registry.hub.docker.com"
+resolve_image := quote(just_executable()) + " --justfile " + quote(justfile()) + " resolve-image"
+
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
@@ -316,12 +321,12 @@ init:
       if denv check --workspace --quiet; then
         echo "\033[32mWorkspace already initialized.\033[0m"
       else
-        denv init --clean-env --name ldmx ldmx/dev:latest
+        denv init --clean-env --name ldmx "$({{ resolve_image }} ldmx/dev:latest)"
       fi
     else
       # denv v1.1.0 and later has updated denv init to allow us
       # to avoid overwriting quietly
-      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest
+      denv init --clean-env --no-over --no-mkdir --name ldmx "$({{ resolve_image }} ldmx/dev:latest)"
     fi
     denv config print
 
@@ -527,13 +532,61 @@ g4-vis-x gdml_file macro_file="":
     # SSH; needs indirect GLX enabled on your LOCAL X server -- XQuartz/Xorg +iglx).
     APPTAINERENV_LIBGL_ALWAYS_INDIRECT=1 denv g4-vis "{{ gdml_file }}" "{{ macro_file }}"
 
+# print the CVMFS unpacked path of IMAGE if apptainer can use it, IMAGE otherwise
+[private]
+resolve-image IMAGE:
+    #!/usr/bin/env sh
+    # set LDMX_NO_CVMFS to always use the registry image
+    image="{{ IMAGE }}"
+    runner="${DENV_RUNNER:-}"
+    if [ -z "${runner}" ]; then
+      # same order as denv
+      for r in apptainer singularity podman docker; do
+        if command -v "${r}" > /dev/null 2>&1; then
+          runner="${r}"
+          break
+        fi
+      done
+    fi
+    unpacked=""
+    case "${runner}" in
+      apptainer|singularity) ;;
+      *) unpacked="skip" ;;
+    esac
+    # only plain Docker Hub names, not paths, URLs, digests, or other registries
+    case "${image}" in
+      */*/*|*@*|*://*|/*|.*|*.*/*|*:*/*) unpacked="skip" ;;
+      */*) ;;
+      *) unpacked="skip" ;;
+    esac
+    [ -n "${LDMX_NO_CVMFS:-}" ] && unpacked="skip"
+    if [ -z "${unpacked}" ]; then
+      case "${image}" in
+        *:*) unpacked="{{ cvmfs_unpacked }}/${image}" ;;
+        *) unpacked="{{ cvmfs_unpacked }}/${image}:latest" ;;
+      esac
+      if [ -d "${unpacked}/.singularity.d" ]; then
+        printf '\033[32mUsing %s from CVMFS.\033[0m\n' "${image}" >&2
+        image="${unpacked}"
+      fi
+    fi
+    printf '%s\n' "${image}"
+
 # change which image is used for the denv
 use IMAGE:
-    denv config image {{ IMAGE }}
+    denv config image "$({{ resolve_image }} {{ IMAGE }})"
 
 # make sure the image is pulled down
 pull IMAGE:
-    denv config image {{ IMAGE }} && denv config image pull
+    #!/usr/bin/env sh
+    set -eu
+    image="$({{ resolve_image }} {{ IMAGE }})"
+    denv config image "${image}"
+    # CVMFS keeps its images current
+    case "${image}" in
+      {{ cvmfs_unpacked }}/*) ;;
+      *) denv config image pull ;;
+    esac
 
 # mount a directory into the denv
 mount DIR:
