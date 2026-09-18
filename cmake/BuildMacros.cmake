@@ -187,8 +187,14 @@ macro(setup_data)
   if(EXISTS ${PROJECT_SOURCE_DIR}/data)
     file(GLOB data_files CONFIGURE_DEPENDS ${PROJECT_SOURCE_DIR}/data/*)
     foreach(data_file ${data_files})
-      install(FILES ${data_file}
-              DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_data_module})
+      if(IS_DIRECTORY ${data_file})
+        # install subdirectories (e.g. data/esa25) recursively
+        install(DIRECTORY ${data_file}
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_data_module})
+      else()
+        install(FILES ${data_file}
+                DESTINATION ${CMAKE_INSTALL_PREFIX}/data/${setup_data_module})
+      endif()
     endforeach()
   endif()
 

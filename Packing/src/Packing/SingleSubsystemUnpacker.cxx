@@ -3,25 +3,19 @@
 
 #include "Packing/LDMXRoRHeader.h"
 #include "Packing/RogueFrameHeader.h"
+#include <iostream>
 
 namespace packing {
 
 void SingleSubsystemUnpacker::configure(framework::config::Parameters& ps) {
-  auto dat_file{ps.get<std::string>("dat_file")};
-  reader_.open(dat_file);
-  if (!reader_) {
-    EXCEPTION_RAISE("FileNotFound",
-                    "SingleSubsystemUnpacker could not open '" + dat_file +
-                        "'. Check the path and that it is mounted inside the "
-                        "container (denv_mounts in .denv/config).");
-  }
+  reader_.open(ps.get<std::string>("dat_file"));
   auto subsystem_name{ps.get<std::string>("subsystem_name")};
   if (subsystem_name.empty()) {
     subsystem_ = ps.get<int>("subsystem");
     contributor_ = ps.get<int>("contributor");
   } else {
     auto [subsys, contrib] = packing::LDMXRoRHeader::subsystem(subsystem_name);
-    if (subsys == -1) {
+    if (subsystem_ == -1) {
       EXCEPTION_RAISE("BadName",
                       "Subsystem name '" + subsystem_name +
                           "' not 'ts', 'tdaq', 'tracker', 'ecal', 'hcal'.");
@@ -38,8 +32,17 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
   static packing::RogueFrameHeader frame_header;
   static packing::LDMXRoRHeader ror_header;
 
-  while (reader_ and not reader_.eof()) {
+  static long n_total = 0;
+  static long n_yaml = 0;
+  static long n_invalid = 0;
+  static long n_wrong_subsystem = 0;
+  static long n_wrong_contributor = 0;
+  static long n_accepted = 0;
+  static bool summary_printed = false;
+
+  while (reader_ and not reader_.eof()) { 
     reader_ >> frame_header;
+    n_total++;
 
     // store location of end-of-frame for skipping this frame
     // if we fail any of the filter checks
@@ -47,35 +50,63 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
         reader_.tell() + static_cast<std::streamoff>(frame_header.size());
 
     if (frame_header.probablyYaml()) {
-      // configuration/YAML frame written by StreamWriter, skip
+      n_yaml++;
+      if (n_yaml <= 10) {
+        std::cout << "[yaml] frame " << n_total
+                  << " size=" << frame_header.size()
+                  << " channel=" << frame_header.channel()
+                  << std::endl;
+      }
       reader_.seek(frame_end);
       continue;
     }
 
-    // data channel, read RoR header
     reader_ >> ror_header;
-    if (!ror_header.valid() or ror_header.subsystem() != subsystem_) {
-      // not a valid LDMX data frame or wrong subsystem ID number
+
+    if (!ror_header.valid()) {
+      n_invalid++;
+      if (n_invalid <= 10) {
+        std::cout << "[invalid] frame " << n_total
+                  << " size=" << frame_header.size()
+                  << " channel=" << frame_header.channel()
+                  << std::endl;
+      }
+      reader_.seek(frame_end);
+      continue;
+    }
+
+    if (ror_header.subsystem() != subsystem_) {
+      n_wrong_subsystem++;
+      if (n_wrong_subsystem <= 10) {
+        std::cout << "[wrong subsystem] frame " << n_total
+                  << " got subsystem=" << ror_header.subsystem()
+                  << " expected=" << subsystem_
+                  << " contributor=" << ror_header.contributor()
+                  << std::endl;
+      }
       reader_.seek(frame_end);
       continue;
     }
 
     if (contributor_ >= 0 and contributor_ != ror_header.contributor()) {
-      // wrong contributor ID number
+      n_wrong_contributor++;
+      if (n_wrong_contributor <= 10) {
+        std::cout << "[wrong contributor] frame " << n_total
+                  << " got contributor=" << ror_header.contributor()
+                  << " expected=" << contributor_
+                  << " subsystem=" << ror_header.subsystem()
+                  << std::endl;
+      }
       reader_.seek(frame_end);
       continue;
     }
 
-    // correct subsystem and contributor channel
     frame_count_++;
     if (frame_offset_ >= frame_count_) {
-      // skip the first frame_offset_ frames that correspond to the selected
-      // subsystem
       reader_.seek(frame_end);
       continue;
     }
 
-    // load data into memory, add to event, and leave
     std::vector<uint8_t> buff;
     if (not reader_.read(buff,
                          frame_header.size() - packing::LDMXRoRHeader::SIZE)) {
@@ -83,20 +114,27 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
           "MalForm", "Raw file provided was unable to read entire data frame.");
     }
 
-    // buff has subsystem data without RoR header
+    n_accepted++;
+
     event.add(output_name_, buff);
-    // Store the full 64-bit RoR timestamp as two 32-bit halves since
-    // EventHeader::setIntParameter only accepts int.
-    uint64_t ts = ror_header.timestamp();
-    event.getEventHeader().setIntParameter("RoR Timestamp LSB",
-                                           static_cast<int>(ts & 0xFFFFFFFFU));
-    event.getEventHeader().setIntParameter("RoR Timestamp MSB",
-                                           static_cast<int>(ts >> 32));
-    // successfully unpacked an event, return from produce
+    event.getEventHeader().setIntParameter("RoR Timestamp",
+                                           ror_header.timestamp());
     return;
   }
 
-  /// abort event if we've reached the end of the file (left while loop)
+  if (!summary_printed) {
+    summary_printed = true;
+    std::cout << "\n=== SingleSubsystemUnpacker summary ===\n"
+              << "total frames seen      : " << n_total << "\n"
+              << "yaml frames skipped    : " << n_yaml << "\n"
+              << "invalid RoR skipped    : " << n_invalid << "\n"
+              << "wrong subsystem skipped: " << n_wrong_subsystem << "\n"
+              << "wrong contrib skipped  : " << n_wrong_contributor << "\n"
+              << "accepted frames        : " << n_accepted << "\n"
+              << "=======================================\n"
+              << std::endl;
+  }
+
   abortEvent();
 }
 
