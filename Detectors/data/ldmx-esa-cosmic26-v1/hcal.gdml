@@ -44,27 +44,29 @@
     <volume name="alongx_scint_box_volume">
       <materialref ref="Scintillator"/>
       <solidref ref="alongx_scint_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
     </volume>
     <volume name="alongz_scint_box_volume">
       <materialref ref="Scintillator"/>
       <solidref ref="alongz_scint_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
     </volume>
     <!-- Scintillator covers -->
     <volume name="alongx_scint_cover_box_volume">
       <materialref ref="Aluminum3003"/>
       <solidref ref="alongx_scint_cover_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
     </volume>
     <volume name="alongz_scint_cover_box_volume">
       <materialref ref="Aluminum3003"/>
       <solidref ref="alongz_scint_cover_box"/>
-      <auxiliary auxtype="VisAttributes" auxvalue="HcalVis"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="HcalRegionVis"/>
     </volume>
 
     <volume name="hadronic_calorimeter">
-      <materialref ref="G4_AIR"/>
+      <materialref ref="Air"/>
       <solidref    ref="hcal_box"/>
       
       <!-- Bottom -->

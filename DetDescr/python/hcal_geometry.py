@@ -529,7 +529,7 @@ class HcalReadoutGeometry:
     #the side HCal since they share the same scintillator orientation.
     #More changes are required in the software to sucessfully digitize and 
     #reconstruct the data obtained when using this geometry.
-    def make_teststand():
+    def make_cosmic26_v1():
         
         scint_thickness = 20.0
         scint_bar_width = 50.0
@@ -581,7 +581,7 @@ class HcalReadoutGeometry:
         ecal_dx = 0.0
         ecal_dy = 0.0
         detectors_valid = [
-            "ldmx-teststand",
+            "ldmx-esa-cosmic26-v1",
         ]
 
         back_horizontal_parity = 0
@@ -624,6 +624,6 @@ class HcalGeometry:
     v2_prototype: HcalReadoutGeometry = field(
         default_factory=HcalReadoutGeometry.make_v2_prototype
     )
-    cosmic_prototype: HcalReadoutGeometry = field(
-        default_factory=HcalReadoutGeometry.make_teststand
+    cosmic26_v1: HcalReadoutGeometry = field(
+        default_factory=HcalReadoutGeometry.make_cosmic26_v1
     )

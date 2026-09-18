@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE gdml [
 <!ENTITY constants SYSTEM "constants.gdml">
-<!ENTITY materials SYSTEM "materials.gdml">
+<!ENTITY materials SYSTEM "shared_gdml_files/materials.gdml">
+<!ENTITY visattributes SYSTEM "shared_gdml_files/visattributes.gdml">
 ]>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
 
   <define> 
     &constants; 
@@ -24,7 +25,7 @@
     
   <structure>
     <volume name="World">
-      <materialref ref="G4_AIR"/>
+      <materialref ref="Air"/>
       <solidref ref="world_box"/>
       <physvol copynumber="1"> 
         <file name="hcal.gdml"/> 
@@ -37,7 +38,7 @@
   <userinfo>
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-teststand"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa-cosmic26-v1"/>
       <auxiliary auxtype="Author" auxvalue="Wilde Hedin"/>
       <auxiliary auxtype="Description" auxvalue="The HCal teststand geometry that will be used to measure cosmic muons at SLAC."/>
     </auxiliary>
@@ -47,17 +48,9 @@
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
     </auxiliary>
 
-    <!-- define vis attributes -->
-    <auxiliary auxtype="VisAttributes" auxvalue="HcalVis">
-      <auxiliary auxtype="R" auxvalue="0"/>
-      <auxiliary auxtype="G" auxvalue="0"/>
-      <auxiliary auxtype="B" auxvalue="0"/>
-      <auxiliary auxtype="A" auxvalue="1.0"/>
-      <auxiliary auxtype="Style" auxvalue="wireframe"/>
-      <auxiliary auxtype="DaughtersInvisible" auxvalue="false"/>
-      <auxiliary auxtype="Visible" auxvalue="true"/>
-      <auxiliary auxtype="LineWidth" auxvalue="1.5"/>
-    </auxiliary>
+    <auxiliary auxtype="ColorMode" auxvalue="Material"/>
+    &visattributes;
+    
   </userinfo>
 
   <setup name="Default" version="1.0">
