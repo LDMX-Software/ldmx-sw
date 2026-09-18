@@ -5,9 +5,11 @@
 
 #include <nlohmann/json.hpp>
 
+#include <cmath>
+
 #include "DetDescr/TrigScintGeometry.h"
 #include "TSystem.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
+#include "TrigScint/Event/TrigScintCluster.h"
 #include "Tracking/Event/Measurement.h"
 
 namespace tracking::reco {
@@ -25,7 +27,7 @@ void TrigScintMeasurementProducer::configure(
   input_pass_ = parameters.getParameter<std::string>("input_pass", "");
   out_collection_ = parameters.getParameter<std::string>("out_collection",
                                                          "TrigScintMeasurements");
-  amp_threshold_ = parameters.getParameter<double>("amp_threshold", amp_threshold_);
+  min_pe_ = parameters.getParameter<double>("min_pe", min_pe_);
   sigma_y_ = parameters.getParameter<double>("sigma_y", sigma_y_);
 
   // Optional TS DAQ map: fixes the decode-collection -> geometry-module
@@ -70,37 +72,50 @@ void TrigScintMeasurementProducer::produce(framework::Event& event) {
   }
 
   for (const auto& [collection, geo_module] : to_process) {
-    const auto& digis = event.getCollection<trigscint::TrigScintQIEDigis>(
-        collection, input_pass_);
+    // TestBeamClusterProducer only writes the collection for events with >=1
+    // cluster, so it is legitimately absent in empty events -- skip those.
+    if (!event.exists(collection, input_pass_, false)) continue;
+    const auto& clusters =
+        event.getCollection<ldmx::TrigScintCluster>(collection, input_pass_);
 
-    for (const auto& digi : digis) {
-      const int chan = digi.getChanID();
-      if (chan < 0 || chan >= n_bars) continue;
+    for (const auto& cluster : clusters) {
+      if (cluster.getNHits() <= 0) continue;
+      if (cluster.getPE() < min_pe_) continue;
 
-      const std::vector<int>& adc = digi.getADC();
-      if (adc.empty()) continue;
+      // PE-weighted fractional bar centroid (0-based); < 0 means uninitialized.
+      const double centroid = cluster.getCentroid();
+      if (centroid < 0.) continue;
 
-      const auto max_it = std::max_element(adc.begin(), adc.end());
-      const int amp = *max_it - *std::min_element(adc.begin(), adc.end());
-      if (amp <= amp_threshold_) continue;  // not a hit
+      // Interpolate the global position between the two bracketing bars. The
+      // bars alternate between two staggered layers (bar%2), so the geometry is
+      // piecewise in bar parity -- evaluating both integer endpoints and
+      // interpolating gives the correct y AND the correct in-between z, and
+      // reduces to the exact bar position for an integer centroid.
+      int b0 = static_cast<int>(std::floor(centroid));
+      if (b0 < 0) b0 = 0;
+      if (b0 > n_bars - 1) b0 = n_bars - 1;
+      int b1 = std::min(b0 + 1, n_bars - 1);
+      double f = centroid - b0;
+      if (f < 0.) f = 0.;
+      if (f > 1.) f = 1.;
 
-      // timing observable: which time sample the pulse peaks in [samples]
-      const int peak_sample = static_cast<int>(std::distance(adc.begin(), max_it));
-
-      // global bar-center position from the TrigScintGeometry conditions object
-      const auto pos = geom.getBarPosition(geo_module, chan);
+      const auto p0 = geom.getBarPosition(geo_module, b0);
+      const auto p1 = geom.getBarPosition(geo_module, b1);
+      const double x = (1. - f) * p0.X() + f * p1.X();
+      const double y = (1. - f) * p0.Y() + f * p1.Y();
+      const double z = (1. - f) * p0.Z() + f * p1.Z();
 
       ldmx::Measurement meas;
-      meas.setGlobalPosition(static_cast<float>(pos.X()),
-                             static_cast<float>(pos.Y()),
-                             static_cast<float>(pos.Z()));
-      meas.setLocalPosition(static_cast<float>(pos.Y()), 0.f);
+      meas.setGlobalPosition(static_cast<float>(x), static_cast<float>(y),
+                             static_cast<float>(z));
+      meas.setLocalPosition(static_cast<float>(y), 0.f);
       meas.setLocalCovariance(static_cast<float>(sigma_y_ * sigma_y_), 0.f);
-      // encode geometry module + bar so downstream can trace the measurement
-      meas.setLayerID(geo_module * 100 + chan);
-      meas.setTime(static_cast<float>(peak_sample));  // peak time sample
-      meas.setClusterAmplitude(static_cast<float>(amp));
-      meas.setNStrips(1);
+      // encode geometry module + nearest bar so downstream can trace it
+      meas.setLayerID(geo_module * 100 +
+                      static_cast<int>(std::lround(centroid)));
+      meas.setTime(cluster.getTime());
+      meas.setClusterAmplitude(static_cast<float>(cluster.getPE()));
+      meas.setNStrips(cluster.getNHits());
       measurements.push_back(meas);
     }
   }
