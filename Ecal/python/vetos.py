@@ -8,8 +8,8 @@ class EcalVetoProcessor(Processor):
     num_ecal_layers: int = 32
     verbose: bool = False
     feature_list_name: str = "input"
-    bdt_file: str = make_bdt_path("segmip")
-    bdt_feature_config: str = "segmip"
+    bdt_file: str = make_bdt_path("humberto")
+    bdt_feature_config: str = "humberto"
     roc_file: str = make_roc_path("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
     disc_cut: float = 0.99741
