@@ -1,5 +1,5 @@
 #if DETECTORID_BINDINGS_ENABLED
-#include <boost/python.hpp>
+#include <boost/python.hpp>  // IWYU pragma: keep (needed by BOOST_PYTHON_MODULE)
 
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalAbstractID.h"
