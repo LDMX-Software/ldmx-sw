@@ -1,5 +1,5 @@
 #if DETECTORID_BINDINGS_ENABLED
-#include <boost/python.hpp>
+#include <boost/python.hpp>  // IWYU pragma: keep (needed by BOOST_PYTHON_MODULE)
 
 #include "DetDescr/DetectorID.h"
 #include "DetDescr/EcalAbstractID.h"
@@ -63,6 +63,7 @@ BOOST_PYTHON_MODULE(libDetDescr) {
       .value("SD_ECAL", SubdetectorIDType::SD_ECAL)
       .value("SD_HCAL", SubdetectorIDType::SD_HCAL)
       .value("SD_SIM_SPECIAL", SubdetectorIDType::SD_SIM_SPECIAL)
+      .value("SD_TRACKER_TESTSTAND", SubdetectorIDType::SD_TRACKER_TESTSTAND)
       .value("EID_TRACKER", SubdetectorIDType::EID_TRACKER)
       .value("EID_TRIGGER_SCINT", SubdetectorIDType::EID_TRIGGER_SCINT)
       .value("EID_HCAL", SubdetectorIDType::EID_HCAL)

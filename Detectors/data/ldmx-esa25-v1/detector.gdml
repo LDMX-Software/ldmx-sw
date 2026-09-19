@@ -98,10 +98,10 @@
   <userinfo>
     <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-reduced-v3"/>
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa25-v1"/>
       <auxiliary auxtype="Author" auxvalue="Tamas Vami, Sanjit Masanam, Layan Alsarayra"/>
-      <auxiliary auxtype="Description" 
-                 auxvalue="The reduced geometry for the 2025 vertical slice test"/>
+      <auxiliary auxtype="Description"
+                 auxvalue="The ESA 2025 vertical slice test stand (hardware-correct recoil z-order/stereo sign; derived from ldmx-reduced-v3)"/>
     </auxiliary>
 
     <!-- define regions -->
