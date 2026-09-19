@@ -34,7 +34,7 @@ Usage
         [--dat /path/to/physics.dat] \
         [--pedestal-file pedestals.json] \
         [--daq-map /path/to/daqmap.json] \
-        [--detector ldmx-reduced-v3] \
+        [--detector ldmx-esa25-v1] \
         [--max-events N] \
         [--stop-at waveforms|fit|measurements] \
         [--output measurements.root]
@@ -64,8 +64,8 @@ parser.add_argument(
 )
 parser.add_argument(
     "--detector",
-    default="ldmx-reduced-v3",
-    help="Detector name for the tracking geometry (default: ldmx-reduced-v3)",
+    default="ldmx-esa25-v1",
+    help="Detector name for the tracking geometry (default: ldmx-esa25-v1)",
 )
 parser.add_argument("--max-events", type=int, default=300)
 parser.add_argument("--frame-offset", type=int, default=0)
