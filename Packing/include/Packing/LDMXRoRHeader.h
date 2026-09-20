@@ -73,10 +73,11 @@ class LDMXRoRHeader {
    *
    * @param[in] subsystem_id the subsystem ID from the RoR header
    * @param[in] contributor_id the contributor ID from the RoR header
-   * @return subsystem name string (lowercase: 'tdaq', 'ts', 'tracker', 'ecal', 'hcal')
-   * or a generic name if the combination is not recognized
+   * @return subsystem name string (lowercase: 'tdaq', 'ts', 'tracker', 'ecal',
+   * 'hcal') or a generic name if the combination is not recognized
    */
-  static std::string getSubsystemName(uint8_t subsystem_id, uint8_t contributor_id);
+  static std::string getSubsystemName(uint8_t subsystem_id,
+                                      uint8_t contributor_id);
 
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);
@@ -109,7 +110,6 @@ class LDMXRoRHeader {
    * time.
    */
   uint64_t timestamp_;
-
 };
 
 }  // namespace packing

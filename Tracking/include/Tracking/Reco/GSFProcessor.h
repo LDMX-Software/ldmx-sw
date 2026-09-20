@@ -285,7 +285,7 @@ class GSFProcessor final : public TrackingGeometryUser {
 
   /// Bz of the tagger fallback field, in Tesla
   double bfield_{-1.5};
-  
+
   /// Mis-placement of the reconstruction field; must match the CKF's
   BFieldDistortion bfield_distortion_{};
 
