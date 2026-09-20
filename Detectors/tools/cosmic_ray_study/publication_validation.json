@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-20",
+  "base_branch": "epeets",
+  "base_commit": "6991ced4b2245ba9e1f1aedf10835558d78cad4d",
+  "related_issue": "https://github.com/LDMX-Software/ldmx-sw/issues/2119",
+  "published_source_files_verified": 192,
+  "published_pdf_sha256": "970f94de4534cff76a7b6f2110ad8be2325225bc97294373066a0758fbd9a341",
+  "published_pdf_matches_reviewed_desktop_report": true,
+  "frozen_rate_results_changed": false,
+  "csv_rows": {
+    "specified_subsets.csv": 896,
+    "inclusive_combinations.csv": 280,
+    "exclusive_tracker_counts.csv": 280,
+    "hcal_any_layer_triggers.csv": 21
+  },
+  "aligned_gdml_schema_files": 9,
+  "aligned_gdml_ROOT_check": {
+    "root_import": true,
+    "matched_objects": 356,
+    "max_vertex_difference_mm": 1.000444171950221e-10
+  },
+  "isolated_cpp_library_compilation": true,
+  "isolated_integrator_smoke": {
+    "only_anchor": 0,
+    "power": 10,
+    "replicates": 2,
+    "passed": true
+  },
+  "isolated_validate_numerics": true,
+  "isolated_report_source_rebuild": {
+    "pages": 14,
+    "text_identical_to_published_pdf": true
+  },
+  "new_helpers_ruff_check": true,
+  "new_helpers_ruff_format": true,
+  "documentation_local_links": true,
+  "new_native_geant4_transport": false,
+  "full_production_integration_rerun": false,
+  "method": "The 192-file published archive was copied without changes. A separate clean copy compiled the C++ library, ran the numerical checks and a small anchor integration, and regenerated all report assets and PDF. Generated aligned GDML was schema-checked and independently re-exported by ROOT for a vertex-level comparison with the frozen rate scene."
+}

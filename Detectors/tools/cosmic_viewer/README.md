@@ -5,6 +5,12 @@ This puts the tracker, trigger counters, LYSO target, ECal and HCal in the layou
 straight example muon through the detectors. The display runs in a browser and
 works offline once it has been built.
 
+For aligned-ECAL muon rates, HCAL trigger choices, golden events and detector
+combinations, see the [cosmic-ray study](../cosmic_ray_study/README.md). It includes
+the report, frozen geometry, rate tables and Section 6's reproduction commands.
+Its aligned geometry can be exported separately; the viewer below retains the
+original CAD placement.
+
 ![The stand and its segmented detectors](examples/stand.jpg)
 
 The gray supports come from the STEP model. The detector internals come from

@@ -1,0 +1,9 @@
+{
+  "python": "3.13.5",
+  "packages": {
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "matplotlib": "3.11.2"
+  },
+  "geometry_git_commit": "eae30ac8f64f694fa99bbc8ed30c1a77fef05135"
+}

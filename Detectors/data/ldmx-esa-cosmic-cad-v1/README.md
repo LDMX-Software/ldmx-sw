@@ -12,3 +12,8 @@ must not be used as a position lookup for this layout.
 
 The detailed CAD supports are included only in the browser overlay, not in this
 Geant4 geometry. Detector alignment and whole-detector overlaps remain under review.
+
+The [cosmic-ray rate study](../../tools/cosmic_ray_study/README.md) packages this
+geometry's frozen snapshot, the aligned-ECAL variation, reproducible HCAL and
+equipment-coincidence rates, and an exporter for the aligned GDML. These are
+straight-ray rate estimates before detector response.
