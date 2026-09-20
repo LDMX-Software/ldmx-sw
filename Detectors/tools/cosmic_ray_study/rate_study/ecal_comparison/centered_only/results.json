@@ -1,0 +1,73 @@
+{
+  "definition": "intersect a nonzero path length in at least one active volume in every one of 26 layers",
+  "flux": {
+    "I0_m2_s_sr": 70,
+    "angular_power": 2,
+    "momentum_threshold_GeV_c": 1,
+    "model": "PDG 2022 sea-level reference; azimuth symmetric; no shield or survival correction"
+  },
+  "N_per_scramble": 262144,
+  "scrambles": 8,
+  "seed_start": 918260,
+  "rate_Hz": 0.0004305423976666849,
+  "numerical_SE_Hz": 8.33932137506062e-08,
+  "rate_per_hour": 1.5499526316000656,
+  "numerical_SE_per_hour": 0.00030021556950218234,
+  "rate_per_day": 37.19886315840158,
+  "mean_wait_minutes": 38.71086043323794,
+  "geometrical_factor_m2_sr": 6.150605680952641e-06,
+  "angular_quantiles_deg": {
+    "50": 2.988494875789702,
+    "90": 5.068610750379337,
+    "95": 5.531359149552213,
+    "99": 6.091666585782706
+  },
+  "max_sampled_zenith_deg": 6.755323263842509,
+  "midplane_rate_per_hour": 1.2782099694339528,
+  "cutflow_labels": [
+    "6 trigger + 2 LYSO layers",
+    "plus 4 tracker sensors",
+    "plus 4 ECal silicon layers",
+    "plus all 10 HCal layers"
+  ],
+  "cutflow_Hz": [
+    0.0004369449873979565,
+    0.0004369449873979565,
+    0.0004305423976666849,
+    0.0004305423976666849
+  ],
+  "cutflow_numerical_SE_Hz": [
+    6.549748505551923e-08,
+    6.549748505551923e-08,
+    8.33932137506062e-08,
+    8.33932137506062e-08
+  ],
+  "independent_MC_Hz": 0.0004310014042525083,
+  "independent_MC_SE_Hz": 8.550883716178153e-07,
+  "source_scene_sha256": "1fd4445d5c6415efff280e87c141fe2a3ecd7c956d6f5ec40ccbc407dfd95258",
+  "anchor_z_mm": [
+    3449.3880545,
+    3065.9880544999996
+  ],
+  "anchor_distance_mm": 383.40000000000055,
+  "anchor_bounds_mm": [
+    [
+      5012.441479541853,
+      -174.64308463801152
+    ],
+    [
+      5042.5985066981475,
+      -136.8573755659885
+    ],
+    [
+      5012.496438976556,
+      -182.88624653280345
+    ],
+    [
+      5042.543547263444,
+      -128.61421367119655
+    ]
+  ],
+  "shielding_status": "See comparison.json for the roof comparison and material treatment.",
+  "geant4_transport_or_detector_efficiency_included": false
+}

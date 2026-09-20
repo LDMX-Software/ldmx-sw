@@ -1,0 +1,277 @@
+{
+  "native_to_cad": {
+    "rotation_matrix": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        -1.0
+      ]
+    ],
+    "gdml_rotation_deg": [
+      180,
+      0,
+      0
+    ],
+    "translation_mm": [
+      5027.519993117254,
+      -155.750230102,
+      3066.3880545
+    ],
+    "basis": "Z offset matches four source-labeled trigger housing stations and two tracker station centers; X/Y set to mean of four CAD sensor candidate centers; azimuth chosen to align axes",
+    "status": "inferred registration, not survey validated"
+  },
+  "modules": {
+    "target": {
+      "file": "target.gdml",
+      "enabled": true,
+      "position_native_mm": [
+        0,
+        0,
+        0
+      ],
+      "cad_shift_mm": [
+        0,
+        0,
+        0
+      ],
+      "copy_number": 2
+    },
+    "trig_scint": {
+      "file": "trig_scint.gdml",
+      "enabled": true,
+      "position_native_mm": [
+        0,
+        0,
+        -344.0255
+      ],
+      "cad_shift_mm": [
+        0,
+        0,
+        0
+      ],
+      "copy_number": 3
+    },
+    "recoil": {
+      "file": "recoil.gdml",
+      "enabled": true,
+      "position_native_mm": [
+        0,
+        0,
+        -140.5
+      ],
+      "cad_shift_mm": [
+        0,
+        0,
+        0
+      ],
+      "copy_number": 5
+    },
+    "ecal": {
+      "file": "ecal.gdml",
+      "enabled": true,
+      "position_native_mm": [
+        0,
+        19.05,
+        540
+      ],
+      "cad_shift_mm": [
+        -48.96755443765505,
+        46.07628913571436,
+        -174.35561486970118
+      ],
+      "copy_number": 6,
+      "registration_note": "Native four silicon-layer centroid aligned to centroid of three source-labeled CAD ECal support plates. CAD has six PCB placements, not four identified silicon meshes. This is a layout approximation, not a module-by-module measured match."
+    }
+  },
+  "hcal_layers": [
+    {
+      "station": "top",
+      "source_physical_index": 3803,
+      "source_mesh": "s02070_003",
+      "center_mm": [
+        5003.477621033297,
+        -108.42284168756328,
+        3758.7109924317165
+      ],
+      "cad_body_extent_mm": [
+        601.8390670781155,
+        2075.5031250080033,
+        20.396874999998545
+      ],
+      "long_axis": "y",
+      "bars": 12
+    },
+    {
+      "station": "top",
+      "source_physical_index": 1165,
+      "source_mesh": "s02070_003",
+      "center_mm": [
+        5000.005957031,
+        -109.77472743960323,
+        3735.3394104007166
+      ],
+      "cad_body_extent_mm": [
+        2075.503125008003,
+        601.8390670781162,
+        20.396874999998545
+      ],
+      "long_axis": "x",
+      "bars": 12
+    },
+    {
+      "station": "above_ecal",
+      "source_physical_index": 1272,
+      "source_mesh": "s02078_000",
+      "center_mm": [
+        5006.554610693003,
+        -116.52158972368858,
+        2796.3458496170088
+      ],
+      "cad_body_extent_mm": [
+        2075.3046875080036,
+        401.41719512939335,
+        20.194824217992846
+      ],
+      "long_axis": "x",
+      "bars": 8
+    },
+    {
+      "station": "above_ecal",
+      "source_physical_index": 1268,
+      "source_mesh": "s02078_000",
+      "center_mm": [
+        5003.570231870304,
+        -84.57158590899121,
+        2770.945849617009
+      ],
+      "cad_body_extent_mm": [
+        401.4171951293929,
+        2075.304687508003,
+        20.194824217992846
+      ],
+      "long_axis": "y",
+      "bars": 8
+    },
+    {
+      "station": "above_ecal",
+      "source_physical_index": 1270,
+      "source_mesh": "s02078_000",
+      "center_mm": [
+        5006.554610693003,
+        -116.52158972368882,
+        2745.5458496159927
+      ],
+      "cad_body_extent_mm": [
+        2075.3046875080036,
+        401.41719512939335,
+        20.194824217992846
+      ],
+      "long_axis": "x",
+      "bars": 8
+    },
+    {
+      "station": "above_ecal",
+      "source_physical_index": 1266,
+      "source_mesh": "s02078_000",
+      "center_mm": [
+        5003.570231870304,
+        -84.57158590899098,
+        2720.145849615991
+      ],
+      "cad_body_extent_mm": [
+        401.4171951293929,
+        2075.3046875080026,
+        20.194824217992846
+      ],
+      "long_axis": "y",
+      "bars": 8
+    },
+    {
+      "station": "below_ecal",
+      "source_physical_index": 1282,
+      "source_mesh": "s02070_003",
+      "center_mm": [
+        5004.766522309879,
+        -109.77472448606287,
+        2291.504268645229
+      ],
+      "cad_body_extent_mm": [
+        2075.5031254088217,
+        601.8390691160691,
+        20.396874999998545
+      ],
+      "long_axis": "x",
+      "bars": 12
+    },
+    {
+      "station": "below_ecal",
+      "source_physical_index": 1279,
+      "source_mesh": "s02070_003",
+      "center_mm": [
+        5004.665737172618,
+        -109.67394075869242,
+        2267.979854583229
+      ],
+      "cad_body_extent_mm": [
+        601.8390691160685,
+        2075.5031254088217,
+        20.396875000001273
+      ],
+      "long_axis": "y",
+      "bars": 12
+    },
+    {
+      "station": "below_ecal",
+      "source_physical_index": 1285,
+      "source_mesh": "s02070_003",
+      "center_mm": [
+        5004.766522309879,
+        -109.77472448606287,
+        2244.455440521106
+      ],
+      "cad_body_extent_mm": [
+        2075.5031254088217,
+        601.8390691160691,
+        20.396874999998545
+      ],
+      "long_axis": "x",
+      "bars": 12
+    },
+    {
+      "station": "below_ecal",
+      "source_physical_index": 1276,
+      "source_mesh": "s02070_003",
+      "center_mm": [
+        5004.665738689684,
+        -109.67394106669212,
+        2220.9310264591068
+      ],
+      "cad_body_extent_mm": [
+        601.8390691160685,
+        2075.503125408822,
+        20.39687499999991
+      ],
+      "long_axis": "y",
+      "bars": 12
+    }
+  ],
+  "source": {
+    "step_sha256": "ab19afbcafe0d97acc5c7e390ea72bf3d59b37f0edf746f8e20ec150960fa2c2",
+    "step_file": "CosmicTestStand.stp",
+    "upstream_branch": "iss2119-add-hcal-teststand-geometry",
+    "upstream_commit": "29ee03a8f8fa9eb2ae9c1d29af5e4961ba6c5a0a",
+    "bar_dimensions_source": "Detectors/data/ldmx-esa-cosmic26-v1/constants.gdml",
+    "bar_counts_basis": "12 bars in ~602 mm bodies, 8 in ~401 mm bodies; inferred at the upstream 50 mm pitch, confirm against hardware",
+    "cad_preview": "simplified geometry only, 422 support/unclassified placements; original export excluded 965 shapes"
+  }
+}

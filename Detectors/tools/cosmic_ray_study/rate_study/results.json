@@ -1,0 +1,73 @@
+{
+  "definition": "intersect a nonzero path length in at least one active volume in every one of 26 layers",
+  "flux": {
+    "I0_m2_s_sr": 70,
+    "angular_power": 2,
+    "momentum_threshold_GeV_c": 1,
+    "model": "PDG 2022 sea-level reference; azimuth symmetric; no shield or survival correction"
+  },
+  "N_per_scramble": 262144,
+  "scrambles": 8,
+  "seed_start": 918260,
+  "rate_Hz": 0.0002801499599781739,
+  "numerical_SE_Hz": 1.1033319473492344e-07,
+  "rate_per_hour": 1.008539855921426,
+  "numerical_SE_per_hour": 0.0003971995010457244,
+  "rate_per_day": 24.20495654211422,
+  "mean_wait_minutes": 59.491947341220914,
+  "geometrical_factor_m2_sr": 4.002142285402484e-06,
+  "angular_quantiles_deg": {
+    "50": 2.540069211603244,
+    "90": 4.816744950776103,
+    "95": 5.429441763146613,
+    "99": 6.2846341623288335
+  },
+  "max_sampled_zenith_deg": 7.792453851999783,
+  "midplane_rate_per_hour": 0.8529149238861352,
+  "cutflow_labels": [
+    "6 trigger + 2 LYSO layers",
+    "plus 4 tracker sensors",
+    "plus 4 ECal silicon layers",
+    "plus all 10 HCal layers"
+  ],
+  "cutflow_Hz": [
+    0.0004369449873979565,
+    0.0004369449873979565,
+    0.0002801499599781739,
+    0.0002801499599781739
+  ],
+  "cutflow_numerical_SE_Hz": [
+    6.549748505551923e-08,
+    6.549748505551923e-08,
+    1.1033319473492344e-07,
+    1.1033319473492344e-07
+  ],
+  "independent_MC_Hz": 0.00028031395606677834,
+  "independent_MC_SE_Hz": 7.98915762826333e-07,
+  "source_scene_sha256": "782b4a133dfadbd489bec17e0409615cf4d9986654fcacf041baa49b80e9f45d",
+  "anchor_z_mm": [
+    3449.3880545,
+    3065.9880544999996
+  ],
+  "anchor_distance_mm": 383.40000000000055,
+  "anchor_bounds_mm": [
+    [
+      5012.441479541853,
+      -174.64308463801152
+    ],
+    [
+      5042.5985066981475,
+      -136.8573755659885
+    ],
+    [
+      5012.496438976556,
+      -182.88624653280345
+    ],
+    [
+      5042.543547263444,
+      -128.61421367119655
+    ]
+  ],
+  "shielding_status": "This geometric reference is unshielded; see shielding_results.json for the 3 ft comparison",
+  "geant4_transport_or_detector_efficiency_included": false
+}

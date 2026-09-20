@@ -1,0 +1,4 @@
+# Preserve the published archive's code hashes; lint new publication helpers.
+extend = "../../../pyproject.toml"
+extend-exclude = ["rate_study"]
+force-exclude = true

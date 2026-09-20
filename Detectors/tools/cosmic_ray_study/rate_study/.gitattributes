@@ -1,0 +1,2 @@
+# Preserve the published archive byte for byte, including PDG text and CSV CRLF.
+* -text -whitespace

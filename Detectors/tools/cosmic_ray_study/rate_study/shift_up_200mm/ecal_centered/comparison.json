@@ -1,0 +1,68 @@
+{
+  "translation_mm": [
+    0,
+    0,
+    200
+  ],
+  "translated_subsystems": [
+    "trigger",
+    "tracker",
+    "target (LYSO)"
+  ],
+  "fixed_subsystems": [
+    "hcal"
+  ],
+  "ecal_translation_mm": [
+    46.55962243000067,
+    -46.07628913609999,
+    0.0
+  ],
+  "ecal_centering": "Align the midpoint of the combined active-silicon X/Y envelope with the LYSO envelope centre; preserve internal offsets and height.",
+  "source_scene_sha256": "782b4a133dfadbd489bec17e0409615cf4d9986654fcacf041baa49b80e9f45d",
+  "scope": "rate-only active-volume comparison; no revised production GDML",
+  "cases": [
+    {
+      "label": "No roof",
+      "concrete_cm": 0,
+      "nominal_rate_per_hour": 1.4073775816357188,
+      "shifted_rate_per_hour": 1.9488784290274959,
+      "shifted_rate_per_day": 46.7730822966599,
+      "shifted_mean_wait_min": 30.786938326337996,
+      "shifted_to_nominal_ratio": 1.3847587559000478,
+      "fractional_change": 0.3847587559000478,
+      "mean_required_surface_kinetic_GeV": 0.10377965361156564
+    },
+    {
+      "label": "3 ft concrete",
+      "concrete_cm": 91.44,
+      "nominal_rate_per_hour": 1.1986581217503585,
+      "shifted_rate_per_hour": 1.659849327543602,
+      "shifted_rate_per_day": 39.83638386104644,
+      "shifted_mean_wait_min": 36.14785932937271,
+      "shifted_to_nominal_ratio": 1.3847562515321568,
+      "fractional_change": 0.38475625153215676,
+      "mean_required_surface_kinetic_GeV": 0.46979097974242323
+    }
+  ],
+  "required_layers": 26,
+  "translated_trigger_layers": 6,
+  "translated_tracker_layers": 4,
+  "translated_lyso_layers": 2,
+  "detector_vertical_mass_column_g_cm2": 32.701800543839305,
+  "detector_mass_proxy": "Held at the nominal ROOT-derived mean; not remeasured after translation.",
+  "stopping_model": "Same polystyrene CSDA proxy, concrete CSDA and 10 MeV exit floor as baseline.",
+  "omissions": [
+    "scattering",
+    "straggling",
+    "decay",
+    "detector inefficiency",
+    "mechanical clearance and revised-material transport validation"
+  ],
+  "root_cross_check": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "translated_active_volumes": 113
+  }
+}

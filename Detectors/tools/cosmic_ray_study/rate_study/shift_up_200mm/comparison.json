@@ -1,0 +1,69 @@
+{
+  "translation_mm": [
+    0,
+    0,
+    200
+  ],
+  "translated_subsystems": [
+    "trigger",
+    "tracker",
+    "target (LYSO)"
+  ],
+  "fixed_subsystems": [
+    "ecal",
+    "hcal"
+  ],
+  "ecal_translation_mm": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "ecal_centering": "Original position",
+  "source_scene_sha256": "782b4a133dfadbd489bec17e0409615cf4d9986654fcacf041baa49b80e9f45d",
+  "scope": "rate-only active-volume comparison; no revised production GDML",
+  "cases": [
+    {
+      "label": "No roof",
+      "concrete_cm": 0,
+      "nominal_rate_per_hour": 1.4073775816357188,
+      "shifted_rate_per_hour": 1.2641734061201,
+      "shifted_rate_per_day": 30.3401617468824,
+      "shifted_mean_wait_min": 47.4618432167049,
+      "shifted_to_nominal_ratio": 0.8982475084268571,
+      "fractional_change": -0.10175249157314292,
+      "mean_required_surface_kinetic_GeV": 0.10378057137597081
+    },
+    {
+      "label": "3 ft concrete",
+      "concrete_cm": 91.44,
+      "nominal_rate_per_hour": 1.1986581217503585,
+      "shifted_rate_per_hour": 1.0766902332622499,
+      "shifted_rate_per_day": 25.840565598294,
+      "shifted_mean_wait_min": 55.72633441487322,
+      "shifted_to_nominal_ratio": 0.8982463087056024,
+      "fractional_change": -0.1017536912943976,
+      "mean_required_surface_kinetic_GeV": 0.4697965413591626
+    }
+  ],
+  "required_layers": 26,
+  "translated_trigger_layers": 6,
+  "translated_tracker_layers": 4,
+  "translated_lyso_layers": 2,
+  "detector_vertical_mass_column_g_cm2": 32.701800543839305,
+  "detector_mass_proxy": "Held at the nominal ROOT-derived mean; not remeasured after translation.",
+  "stopping_model": "Same polystyrene CSDA proxy, concrete CSDA and 10 MeV exit floor as baseline.",
+  "omissions": [
+    "scattering",
+    "straggling",
+    "decay",
+    "detector inefficiency",
+    "mechanical clearance and revised-material transport validation"
+  ],
+  "root_cross_check": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "translated_active_volumes": 109
+  }
+}

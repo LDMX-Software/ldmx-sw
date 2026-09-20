@@ -1,0 +1,12 @@
+{
+  "scene_sha256": "1fd4445d5c6415efff280e87c141fe2a3ecd7c956d6f5ec40ccbc407dfd95258",
+  "placed_objects": 356,
+  "active_volumes": 217,
+  "left": "All installed objects from the aligned rate-model snapshot; central inset is a separate enlarged view.",
+  "right_source": "../geometry_acceptance.pdf",
+  "right_sha256": "ce0ef98658aef3af981f03e5005f7099c5ac8c01c23b65c25677f1840507c262",
+  "right_layout": "Original offset ECAL; original32 accepted straight rays. Original vector projections clipped and stacked by LaTeX.",
+  "display_note": "Passive material is translucent; coincident active faces drawn after their same-material silicon parents.",
+  "CAD_support_material_included": false,
+  "new_transport_or_rate_calculation": false
+}
