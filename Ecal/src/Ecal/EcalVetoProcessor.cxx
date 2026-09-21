@@ -28,11 +28,11 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdt_features_.push_back(result.getStdLayerHit());
   bdt_features_.push_back(result.getDeepestLayerHit());
   bdt_features_.push_back(result.getEcalBackEnergy());
+  // MIP Tracking
+  bdt_features_.push_back(result.getNHitsInPhotonTerritory());
   // Electron Photon variables
   bdt_features_.push_back(result.getEPSep());
   bdt_features_.push_back(result.getEPDot());
-  // MIP Tracking
-  bdt_features_.push_back(result.getNHitsInPhotonTerritory());
   // Longitudinal segment variables
   bdt_features_.push_back(result.getEnergySeg()[0]);
   bdt_features_.push_back(result.getXMeanSeg()[0]);

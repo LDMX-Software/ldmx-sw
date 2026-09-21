@@ -12,7 +12,7 @@ class EcalVetoProcessor(Processor):
     bdt_feature_config: str = "humberto"
     roc_file: str = make_roc_path("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
-    disc_cut: float = 0.99741
+    disc_cut: float = 0.954651
     ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     target_sp_coll_name: str = "TargetScoringPlaneHits"
     sp_pass_name: str = ""
