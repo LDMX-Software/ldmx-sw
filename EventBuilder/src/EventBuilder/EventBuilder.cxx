@@ -56,33 +56,33 @@ void writePerformanceMetric(unsigned int event_id, double build_time_ms,
 
 void EventBuilder::configure(framework::config::Parameters& ps) {
   if (ps.exists("verbose_parse")) {
-    m_verbose_parse = ps.get<bool>("verbose_parse");
+    m_verbose_parse_ = ps.get<bool>("verbose_parse");
   }
   if (ps.exists("dat_file")) {
-    m_input_file = ps.get<std::string>("dat_file");
+    m_input_file_ = ps.get<std::string>("dat_file");
   } else {
     const char* env_input = std::getenv("EVENTBUILDER_INPUT");
-    if (env_input) m_input_file = env_input;
+    if (env_input) m_input_file_ = env_input;
   }
   if (ps.exists("output_name"))
-    m_output_name = ps.get<std::string>("output_name");
+    m_output_name_ = ps.get<std::string>("output_name");
   if (ps.exists("coherence_window_ns")) {
-    m_coherence_window_ns = ps.get<double>("coherence_window_ns");
+    m_coherence_window_ns_ = ps.get<double>("coherence_window_ns");
   }
   if (ps.exists("min_subsystems")) {
-    m_min_subsystems = ps.get<int>("min_subsystems");
+    m_min_subsystems_ = ps.get<int>("min_subsystems");
   }
 
-  ldmx_log(info) << "configure(): dat_file='" << m_input_file
-                 << "' output_name='" << m_output_name
+  ldmx_log(info) << "configure(): dat_file='" << m_input_file_
+                 << "' output_name='" << m_output_name_
                  << "' verbose_parse=" << (m_verbose_parse ? "true" : "false")
-                 << " coherence_window_ns=" << m_coherence_window_ns
-                 << " min_subsystems=" << m_min_subsystems;
+                 << " coherence_window_ns=" << m_coherence_window_ns_
+                 << " min_subsystems=" << m_min_subsystems_;
 
-  if (!m_input_file.empty()) {
-    ldmx_log(info) << "configure(): opening file '" << m_input_file << "'";
-    m_reader.open(m_input_file);
-    if (!m_reader) {
+  if (!m_input_file_.empty()) {
+    ldmx_log(info) << "configure(): opening file '" << m_input_file_ << "'";
+    m_reader_.open(m_input_file_);
+    if (!m_reader_) {
       ldmx_log(error) << "failed to open input file: '" << m_input_file << "'";
     } else {
       ldmx_log(info) << "configure(): file opened successfully";
@@ -518,7 +518,7 @@ void EventBuilder::produce(framework::Event& event) {
   abortEvent();
 }
 
-PhysicsEventData EventBuilder::assemble_payload(
+PhysicsEventData EventBuilder::assemblePayload(
     const std::vector<DataFragment>& fragments) {
   PhysicsEventData event_data;
   if (fragments.empty()) return event_data;
@@ -539,8 +539,8 @@ PhysicsEventData EventBuilder::assemble_payload(
   return event_data;
 }
 
-void EventBuilder::write_event_binary(const PhysicsEventData& ev,
-                                      const std::string& path) {
+void EventBuilder::writeEventBinary(const PhysicsEventData& ev,
+                                    const std::string& path) {
   static std::mutex g_out_mutex;
   std::lock_guard<std::mutex> lg(g_out_mutex);
   std::ofstream ofs(path, std::ios::binary | std::ios::app);
