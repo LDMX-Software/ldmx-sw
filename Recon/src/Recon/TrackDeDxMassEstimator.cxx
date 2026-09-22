@@ -6,6 +6,7 @@
 // STL
 #include <algorithm>  // for std::transform
 #include <cctype>     // for ::tolower
+#include <cmath>
 #include <iostream>
 
 namespace recon {

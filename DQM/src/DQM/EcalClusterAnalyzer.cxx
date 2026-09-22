@@ -1,5 +1,7 @@
 #include "DQM/EcalClusterAnalyzer.h"
 
+#include <cmath>
+
 namespace dqm {
 
 void EcalClusterAnalyzer::configure(framework::config::Parameters& ps) {

@@ -8,6 +8,7 @@
 #include "TrigScint/QIEAnalyzer.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace trigscint {
 

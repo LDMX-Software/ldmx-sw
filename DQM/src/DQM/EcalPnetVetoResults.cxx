@@ -1,6 +1,8 @@
 
 #include "DQM/EcalPnetVetoResults.h"
 
+#include <cmath>
+
 #include "Ecal/Event/EcalVetoResult.h"
 
 namespace dqm {
