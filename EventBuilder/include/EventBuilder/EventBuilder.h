@@ -18,9 +18,10 @@ class EventBuilder : public framework::Producer {
         m_verbose_parse_(false),
         m_event_id_(0) {}
 
-  enableLogging("EventBuilder")
+  // trailing ';' keeps clang-format from indenting what follows
+  enableLogging("EventBuilder");
 
-      virtual ~EventBuilder() = default;
+  virtual ~EventBuilder() = default;
 
   void configure(framework::config::Parameters& ps) override;
 

@@ -20,10 +20,10 @@ class FragmentBuffer {
 
     // Set reference time on first fragment
     if (m_fragments_.empty()) {
-      m_event_reference_time_ = fragment.header.timestamp;
+      m_event_reference_time_ = fragment.header_.timestamp_;
     }
 
-    m_fragments_[fragment.header.timestamp].push_back(std::move(fragment));
+    m_fragments_[fragment.header_.timestamp_].push_back(std::move(fragment));
   }
 
   bool hasExpiredFragments(Timestamp reference_time,
@@ -63,7 +63,7 @@ class FragmentBuffer {
     for (auto it = it_begin; it != it_end; ++it) {
       timestamps_in_window.push_back(it->first);
       for (const auto& frag : it->second) {
-        subsystems_found.insert(frag.header.subsystem_id);
+        subsystems_found.insert(frag.header_.subsystem_id_);
       }
     }
 
