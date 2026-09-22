@@ -59,8 +59,7 @@ class TrigScintRecHitProducer : public framework::Producer {
 
  private:
   /// Read per-channel gains and pedestals from a calibration file
-  void readCalib(const std::string& filename,
-                 std::vector<double>* gains,
+  void readCalib(const std::string& filename, std::vector<double>* gains,
                  std::vector<double>* pedestals);
 
   /// Name of the input collection containing the sim hits
