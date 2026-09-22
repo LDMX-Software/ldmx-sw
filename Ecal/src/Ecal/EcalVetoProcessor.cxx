@@ -45,6 +45,10 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   }
   bdt_features_.push_back(result.getEPSep());
   bdt_features_.push_back(result.getEPDot());
+  if (bdt_feature_config_ == "helena") {
+    // like wab_recrem, but n_tracking_hits after ep_sep/ep_dot
+    bdt_features_.push_back(result.getNTrackingHits());
+  }
   // Longitudinal segment variables
   bdt_features_.push_back(result.getEnergySeg()[0]);
   bdt_features_.push_back(result.getXMeanSeg()[0]);
@@ -84,6 +88,12 @@ void EcalVetoProcessor::buildBDTFeatureVector(
 void EcalVetoProcessor::configure(framework::config::Parameters& parameters) {
   feature_list_name_ = parameters.get<std::string>("feature_list_name");
   bdt_feature_config_ = parameters.get<std::string>("bdt_feature_config");
+  if (bdt_feature_config_ != "segmip" && bdt_feature_config_ != "wab_recrem" &&
+      bdt_feature_config_ != "helena") {
+    EXCEPTION_RAISE("EcalVetoProcessor",
+                    "Unknown bdt_feature_config '" + bdt_feature_config_ +
+                        "'; expected 'segmip', 'wab_recrem' or 'helena'.");
+  }
 
   sim_particles_passname_ =
       parameters.get<std::string>("sim_particles_passname");
