@@ -15,7 +15,8 @@ ts_data = os.path.realpath("../../../TrigScint/data")
 
 from LDMX.Packing import rawio
 from LDMX.Tracking import dqm as tracking_dqm
-from LDMX.Tracking import rawdecoder
+from LDMX.Tracking import rawdecoder, tracking
+from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
 from LDMX.TrigScint.trig_scint import (
     EventReadoutProducer,
     QIEAnalyzer,
@@ -23,6 +24,9 @@ from LDMX.TrigScint.trig_scint import (
     TestBeamHitProducer,
 )
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
+
+# Tracking geometry for the local -> global transform in StripClusterProcessor.
+TrackGeo.get_instance().set_detector("ldmx-esa25-v1")
 
 
 # Tracker: raw frames -> strip hits -> pedestal subtracted -> waveforms -> fits
@@ -40,6 +44,9 @@ trk_fits = rawdecoder.SiStripWaveformFitProcessor(
     daq_map_file=rawdecoder.daq_map_path()
 )
 trk_dqm = tracking_dqm.RawSiStripDQM()
+# geometry-aware clustering: FittedSiStripHits -> global-position StripMeasurements
+trk_clusters = tracking.StripClusterProcessor()
+trk_clusters.daq_map_file = rawdecoder.daq_map_path()
 
 # TS: raw frames -> ZCCM decoding -> QIE samples -> hits -> clusters
 n_ts_channels = 24
@@ -83,6 +90,7 @@ p.sequence = [
     trk_waveforms,
     trk_fits,
     trk_dqm,
+    trk_clusters,
     ts_unpack,
     ts_decoder,
     ts_readout,

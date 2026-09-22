@@ -11,7 +11,14 @@ int getSensorID(const ldmx::SimTrackerHit& hit) {
   bool debug = false;
 
   ldmx::TrackerID tid(hit.getID());
-  int vol = (tid.subdet() == ldmx::SD_TRACKER_RECOIL) ? 3 : 2;
+  auto subdet = tid.subdet();
+  // Test-stand tracker surfaces are built into the same Acts tracking volume as
+  // the recoil (they occupy the recoil region), so they share vol == 3; only
+  // the layer/sensor mapping differs (see the vol == 3 block below).
+  int vol = (subdet == ldmx::SD_TRACKER_RECOIL ||
+             subdet == ldmx::SD_TRACKER_TESTSTAND)
+                ? 3
+                : 2;
 
   unsigned int sensor_id = 0;
   unsigned int layer_id = 0;
@@ -29,8 +36,21 @@ int getSensorID(const ldmx::SimTrackerHit& hit) {
 
   // recoil numbering scheme for surfaces mapping
   if (vol == 3) {
+    if (subdet == ldmx::SD_TRACKER_TESTSTAND) {
+      // Test-stand tracker (ESA25, cosmic). Its GDML is hardware-correct: the
+      // STEREO sensor sits upstream (even layerID: copy 20,40) and the AXIAL
+      // sensor downstream (odd layerID: copy 10,30). Acts numbers a station's
+      // two sensors by z, so sensor 0 = upstream (stereo). Hence odd layerID ->
+      // sensor 1, even layerID -> sensor 0, i.e. sensor = layerID % 2 -- the
+      // opposite parity to the recoil branch below, which assumes the v14
+      // z-order (axial upstream). Isolating it here leaves v14/recoil
+      // untouched.
+      sensor_id = hit.getLayerID() % 2;
+      layer_id = (hit.getLayerID() + 1) / 2;
+    }
+
     // For axial-stereo modules use the same numbering scheme as the tagger
-    if (hit.getLayerID() < 9) {
+    else if (hit.getLayerID() < 9) {
       sensor_id = (hit.getLayerID() + 1) % 2;
       layer_id = (hit.getLayerID() + 1) / 2;
     }
