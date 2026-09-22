@@ -18,8 +18,6 @@ typedef enum SubdetectorIDTypeEnum {
   SD_ECAL = 5,
   SD_HCAL = 6,
   SD_SIM_SPECIAL = 7,
-  // Standalone silicon-tracker test stands (ESA25 slice test, cosmic stand):
-  // neither the tagger nor the recoil, so they carry their own id.
   SD_TRACKER_TESTSTAND = 8,
   EID_TRACKER = 16,
   EID_TRIGGER_SCINT = 17,
