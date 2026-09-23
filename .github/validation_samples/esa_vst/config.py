@@ -25,6 +25,7 @@ from LDMX.TrigScint.trig_scint import (
 )
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
 
+
 # Tracking geometry for the local -> global transform in StripClusterProcessor.
 TrackGeo.get_instance().set_detector("ldmx-esa25-v1")
 
