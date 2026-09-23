@@ -5,11 +5,9 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/G4User/UserAction.h"
-#include "SimCore/G4User/UserTrackInformation.h"
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include <G4RunManager.hh>
 #include <G4Step.hh>
 
 #include "Framework/Configure/Parameters.h"

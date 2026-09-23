@@ -1,11 +1,6 @@
 #ifndef BIASING_TARGETBREMFILTER_H
 #define BIASING_TARGETBREMFILTER_H
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
-
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
