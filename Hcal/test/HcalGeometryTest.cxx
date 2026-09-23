@@ -3,8 +3,6 @@
 
 using Catch::Approx;
 
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"  //creating unique cell IDs
 #include "Framework/Configure/Python.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"

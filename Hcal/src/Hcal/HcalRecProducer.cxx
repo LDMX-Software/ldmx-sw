@@ -7,6 +7,9 @@
 
 #include "Hcal/HcalRecProducer.h"
 
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
 #include "Hcal/Event/HcalHit.h"
 #include "Hcal/HcalReconConditions.h"
 #include "Recon/Event/HgcrocDigiCollection.h"

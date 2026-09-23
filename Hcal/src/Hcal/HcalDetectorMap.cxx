@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include "Conditions/GeneralCSVLoader.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
 

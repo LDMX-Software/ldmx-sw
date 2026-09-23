@@ -1,16 +1,8 @@
 #ifndef HCALDOUBLEENDRECPRODUCER_H
 #define HCALDOUBLEENDRECPRODUCER_H
 
-#include "Conditions/SimpleTableCondition.h"
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalDigiID.h"
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Logger.h"
-#include "Hcal/Event/HcalHit.h"
-#include "Hcal/HcalReconConditions.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace hcal {
 

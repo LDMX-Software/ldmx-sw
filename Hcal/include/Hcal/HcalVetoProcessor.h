@@ -16,9 +16,7 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/HcalID.h"
 #include "Event/HcalHit.h"
-#include "Event/HcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Tracking/Event/Track.h"

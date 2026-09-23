@@ -9,6 +9,9 @@
 
 #include <cmath>
 
+#include "DetDescr/HcalID.h"
+#include "Hcal/Event/HcalVetoResult.h"
+
 namespace hcal {
 
 HcalVetoProcessor::HcalVetoProcessor(const std::string& name,

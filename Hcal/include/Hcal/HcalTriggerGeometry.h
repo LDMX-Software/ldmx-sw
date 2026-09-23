@@ -3,12 +3,10 @@
 
 // LDMX
 #include "DetDescr/HcalDigiID.h"
-#include "DetDescr/HcalID.h"
 #include "DetDescr/HcalTriggerID.h"
 #include "Framework/ConditionsObject.h"
 
 // STL
-#include <map>
 #include <vector>
 
 namespace ldmx {

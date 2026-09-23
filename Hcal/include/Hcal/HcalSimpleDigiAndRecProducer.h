@@ -2,12 +2,8 @@
 #define HCALSIMPLEDIGIANDRECPRODUCER_H
 #include <random>
 
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/RandomNumberSeedService.h"
 #include "Tools/NoiseGenerator.h"
 
 namespace hcal {

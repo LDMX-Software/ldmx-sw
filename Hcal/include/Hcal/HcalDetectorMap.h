@@ -8,9 +8,6 @@
 #ifndef HCAL_HCALDETECTORMAP_H_
 #define HCAL_HCALDETECTORMAP_H_
 
-#include <vector>
-
-#include "Conditions/GeneralCSVLoader.h"
 #include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalElectronicsID.h"
 #include "Framework/ConditionsObject.h"

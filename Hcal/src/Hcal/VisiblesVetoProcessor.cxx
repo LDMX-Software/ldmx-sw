@@ -2,17 +2,14 @@
 
 // LDMX
 #include "DetDescr/HcalID.h"
-#include "DetDescr/SimSpecialID.h"
 #include "Hcal/Event/HcalHit.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "Tracking/Event/Track.h"
 
 // C++
 #include <algorithm>
 #include <cmath>
-#include <fstream>
-#include <iostream>
-#include <numeric>
 
 namespace hcal {
 void VisiblesVetoProcessor::buildBDTFeatureVector(
