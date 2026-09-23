@@ -37,8 +37,8 @@ class TrigScintReadoutGeometry:
     layer_z_sep: float
     n_bars: int
 
-    def make_reduced_v3():
-        """reduced-v3 / ESA stand: pad1=-381, pad2=-305.8, pad3=-76.2 mm.
+    def make_esa_v1():
+        """esa25-v1 / ESA stand: pad1=-381, pad2=-305.8, pad3=-76.2 mm.
 
         NOTE: module_z ordering assumes decode Pad1/Pad2/Pad3 == geometry
         pad1/pad2/pad3; reorder if the DAQ cabling differs. LYSO (Pad4) not
@@ -46,7 +46,6 @@ class TrigScintReadoutGeometry:
         """
         return TrigScintReadoutGeometry(
             detectors_valid=[
-                "ldmx-reduced-v3",
                 "ldmx-esa25-v1",
                 "ldmx-esa.*",
             ],
@@ -63,6 +62,6 @@ class TrigScintReadoutGeometry:
 class TrigScintGeometry:
     """Container for the various TS geometries."""
 
-    reduced_v3: TrigScintReadoutGeometry = field(
-        default_factory=TrigScintReadoutGeometry.make_reduced_v3
+    esa_v1: TrigScintReadoutGeometry = field(
+        default_factory=TrigScintReadoutGeometry.make_esa_v1
     )

@@ -26,7 +26,7 @@ digi_pass = sys.argv[4] if len(sys.argv) > 4 else "unpack"
 # (real-data files carry no detector name in their RunHeader).
 from LDMX.TrigScint.trigscint_geometry import TrigScintGeometryProvider
 
-TrigScintGeometryProvider.get_instance().set_detector("ldmx-reduced-v3")
+TrigScintGeometryProvider.get_instance().set_detector("ldmx-esa25-v1")
 
 # Standard reco chain reads the decoded pads from the input file's pass.
 reco_chain, cluster_collections = ts_cluster_chain(

@@ -59,7 +59,7 @@ from LDMX.Tracking.ts_measurements import (
 reco_chain, cluster_collections = ts_cluster_chain(pads=(1, 2, 3))
 
 # Stage 3: clusters -> geometry-aware ldmx::Measurement.
-TrigScintGeometryProvider.get_instance().set_detector("ldmx-reduced-v3")
+TrigScintGeometryProvider.get_instance().set_detector("ldmx-esa25-v1")
 tsm = TrigScintMeasurementProducer()
 tsm.input_pass = ""  # any pass (produced in this same process)
 tsm.input_collections = cluster_collections
