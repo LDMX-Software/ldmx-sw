@@ -1,7 +1,14 @@
 
 #include "Ecal/CLUE.h"
 
+#include <algorithm>
 #include <cmath>
+#include <iomanip>
+#include <map>
+#include <set>
+#include <stack>
+
+#include "DetDescr/EcalID.h"
 
 namespace ecal {
 

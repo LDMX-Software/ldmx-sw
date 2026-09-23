@@ -9,16 +9,10 @@
 #define EVENTPROC_ECALPNETVETOPROCESSOR_H_
 
 // LDMX
-#include <algorithm>
-#include <numeric>
-
 #include "DetDescr/EcalGeometry.h"
-#include "Ecal/EcalHelper.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/ONNXRuntime.h"
 
 namespace ecal {

@@ -8,15 +8,7 @@
 #define EVENTPROC_ECALWABROCESSOR_H_
 
 // LDMX
-#include "DetDescr/EcalGeometry.h"
-#include "DetDescr/EcalID.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalWABResult.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tracking/Event/StraightTrack.h"
 
 /*~~~~~~~~~~~*/
 /*   Tools   */
@@ -25,12 +17,6 @@
 
 // C++
 #include <stdlib.h>
-
-#include <iomanip>
-#include <map>
-#include <memory>
-#include <numbers>  // For std::numbers::pi
-#include <numeric>
 
 namespace ecal {
 

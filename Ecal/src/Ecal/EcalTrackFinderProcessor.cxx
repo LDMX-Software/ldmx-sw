@@ -6,6 +6,7 @@
 #include "Ecal/EcalTrackFinderProcessor.h"
 
 // LDMX
+#include "DetDescr/EcalID.h"
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Sim/TrackingUtils.h"
 #include "Tracking/geo/CalibrationContext.h"
@@ -13,27 +14,27 @@
 #include "Tracking/geo/MagneticFieldContext.h"
 
 // ACTS
+#include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/TransformationHelpers.hpp"
 #include "Acts/Geometry/CuboidVolumeBuilder.hpp"
-#include "Acts/Geometry/GeometryContext.hpp"
 #include "Acts/Geometry/TrackingGeometry.hpp"
 #include "Acts/Geometry/TrackingGeometryBuilder.hpp"
 #include "Acts/Geometry/TrackingVolume.hpp"
-#include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Propagator/ActorList.hpp"
-#include "Acts/Propagator/MaterialInteractor.hpp"
-#include "Acts/Propagator/StandardAborters.hpp"
+#include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
-#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/Surfaces/PlaneSurface.hpp"
+#include "Acts/Surfaces/RectangleBounds.hpp"
 #include "Acts/TrackFinding/MeasurementSelector.hpp"
+#include "Acts/TrackFinding/TrackStateCreator.hpp"
+#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
 #include "Acts/Utilities/Logger.hpp"
 #include "Acts/Utilities/TrackHelpers.hpp"
 
 // C++
-#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <fstream>

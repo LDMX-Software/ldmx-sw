@@ -7,6 +7,7 @@
 #include "Ecal/EcalRecProducer.h"
 
 #include "DetDescr/EcalGeometry.h"
+#include "DetDescr/EcalID.h"
 #include "Ecal/EcalReconConditions.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Recon/Event/HgcrocDigiCollection.h"

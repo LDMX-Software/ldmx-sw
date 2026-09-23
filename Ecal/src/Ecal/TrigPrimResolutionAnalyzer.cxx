@@ -3,7 +3,6 @@
 #include "Ecal/EcalTriggerGeometry.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 
 namespace ldmx {
