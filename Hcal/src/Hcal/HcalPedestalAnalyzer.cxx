@@ -5,6 +5,8 @@
 
 #include <cmath>
 
+#include "Recon/Event/HgcrocDigiCollection.h"
+
 namespace hcal {
 
 void HcalPedestalAnalyzer::analyze(const framework::Event& event) {

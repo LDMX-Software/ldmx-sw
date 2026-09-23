@@ -7,23 +7,9 @@
 #ifndef HCAL_HCALCLUSTERPRODUCER_H_
 #define HCAL_HCALCLUSTERPRODUCER_H_
 
-// ROOT
-#include "TRandom3.h"
-#include "TString.h"
-
 // LDMX
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/NoiseGenerator.h"
-
-// Hcal
-#include "DetDescr/HcalGeometry.h"
-#include "Hcal/Event/HcalCluster.h"
-#include "Hcal/Event/HcalHit.h"
-#include "Hcal/MyClusterWeight.h"
-#include "Recon/TemplatedClusterFinder.h"
 
 namespace hcal {
 

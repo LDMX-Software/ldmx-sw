@@ -1,8 +1,5 @@
 #include "Hcal/HcalTriggerGeometry.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "DetDescr/HcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"

@@ -1,14 +1,13 @@
 #include "Hcal/HcalClusterProducer.h"
 
-#include <exception>
-#include <iostream>
 #include <list>
 
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
+#include "Hcal/Event/HcalCluster.h"
+#include "Hcal/Event/HcalHit.h"
 #include "Hcal/MyClusterWeight.h"
 #include "Recon/TemplatedClusterFinder.h"
-#include "TFile.h"
-#include "TString.h"
-#include "TTree.h"
 
 namespace hcal {
 

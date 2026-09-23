@@ -3,7 +3,6 @@
 
 #include "DetDescr/HcalDigiID.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
 namespace hcal {
 
 class HcalPedestalAnalyzer : public framework::Analyzer {

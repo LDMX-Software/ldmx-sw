@@ -12,7 +12,10 @@
 #include <cmath>
 #include <numeric>
 
-#include "DetDescr/HcalID.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Hcal/Event/HcalCluster.h"
+#include "Hcal/Event/HcalHit.h"
+#include "Hcal/Event/HcalVetoResult.h"
 using namespace std;
 namespace hcal {
 
