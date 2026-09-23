@@ -9,7 +9,6 @@
 
 // LDMX
 #include "DetDescr/EcalGeometry.h"
-#include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
@@ -20,24 +19,16 @@
 
 // ACTS
 #include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Definitions/TrackParametrization.hpp"
 #include "Acts/EventData/TrackContainer.hpp"
 #include "Acts/EventData/VectorMultiTrajectory.hpp"
 #include "Acts/EventData/VectorTrackContainer.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
 #include "Acts/Geometry/TrackingGeometry.hpp"
-#include "Acts/MagneticField/ConstantBField.hpp"
-#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 #include "Acts/Propagator/EigenStepper.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-#include "Acts/Surfaces/PlaneSurface.hpp"
-#include "Acts/Surfaces/RectangleBounds.hpp"
 #include "Acts/Surfaces/Surface.hpp"
 #include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
-#include "Acts/TrackFinding/MeasurementSelector.hpp"
-#include "Acts/TrackFinding/TrackStateCreator.hpp"
-#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
 
 // C++
 #include <map>

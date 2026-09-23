@@ -9,16 +9,9 @@
 
 #include <math.h>
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
 #include <limits>
-#include <map>
 #include <memory>
-#include <set>
-#include <stack>
 
-#include "DetDescr/EcalID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/IntermediateCluster.h"
 #include "Framework/Logger.h"

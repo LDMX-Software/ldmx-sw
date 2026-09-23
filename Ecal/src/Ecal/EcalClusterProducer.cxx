@@ -6,7 +6,13 @@
 
 #include "Ecal/EcalClusterProducer.h"
 
-#include <iostream>
+#include "Ecal/CLUE.h"
+#include "Ecal/Event/ClusterAlgoResult.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Ecal/IntermediateCluster.h"
+#include "Ecal/MyClusterWeight.h"
+#include "Recon/TemplatedClusterFinder.h"
 
 namespace ecal {
 

@@ -7,6 +7,18 @@
 
 #include "Ecal/EcalWABRecProcessor.h"
 
+#include <iomanip>
+#include <numbers>  // For std::numbers::pi
+#include <numeric>
+
+#include "DetDescr/EcalGeometry.h"
+#include "DetDescr/EcalID.h"
+#include "DetDescr/SimSpecialID.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalWABResult.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tracking/Event/StraightTrack.h"
+
 namespace ecal {
 
 // 68% Electron Radii of Containment for various theta ranges

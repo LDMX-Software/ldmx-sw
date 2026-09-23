@@ -12,12 +12,11 @@
 //   C++ StdLib   //
 //----------------//
 #include <iostream>
-#include <map>
 
 //----------//
 //   ROOT   //
 //----------//
-#include <TObject.h>  //For ClassDef
+#include <Rtypes.h>  // For ClassDef
 
 namespace ldmx {
 

@@ -1,5 +1,17 @@
 #include "Ecal/EcalVetoProcessor.h"
 
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+
+#include "DetDescr/SimSpecialID.h"
+#include "Ecal/EcalHelper.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
+
 namespace ecal {
 
 void EcalVetoProcessor::onNewRun(const ldmx::RunHeader& rh) {

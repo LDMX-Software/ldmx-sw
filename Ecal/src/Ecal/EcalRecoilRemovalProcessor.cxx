@@ -1,5 +1,13 @@
 #include "Ecal/EcalRecoilRemovalProcessor.h"
 
+#include <chrono>
+#include <fstream>
+#include <iomanip>
+
+#include "DetDescr/EcalID.h"
+#include "Ecal/EcalHelper.h"
+#include "Ecal/Event/EcalHit.h"
+
 namespace ecal {
 
 void EcalRecoilRemovalProcessor::onNewRun(const ldmx::RunHeader& rh) {

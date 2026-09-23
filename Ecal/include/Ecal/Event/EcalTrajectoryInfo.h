@@ -12,15 +12,13 @@
 //   C++ StdLib   //
 //----------------//
 #include <iostream>
-#include <map>
 #include <utility>
 
 //----------//
 //   ROOT   //
 //----------//
-#include <Math/Vector3D.h>
-
-#include "TObject.h"
+#include <Math/Vector3D.h>  // IWYU pragma: keep
+#include <Rtypes.h>         // For ClassDef
 
 namespace ldmx {
 
