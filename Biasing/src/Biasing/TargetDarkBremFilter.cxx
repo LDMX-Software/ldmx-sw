@@ -9,6 +9,9 @@
 
 #include "Biasing/TargetDarkBremFilter.h"
 
+#include "G4DarkBreM/G4APrime.h"  //checking if particles match A'
+#include "G4Electron.hh"          //to check if track is electron
+
 namespace biasing {
 
 TargetDarkBremFilter::TargetDarkBremFilter(

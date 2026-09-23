@@ -7,7 +7,6 @@
 #include <sstream>
 
 #include "Conditions/GeneralCSVLoader.h"
-#include "Conditions/SimpleCSVTableProvider.h"
 #include "Conditions/SimpleTableCondition.h"
 #include "Conditions/SimpleTableStreamers.h"
 #include "Conditions/URLStreamer.h"
@@ -16,7 +15,6 @@
 #include "Framework/Configure/Python.h"
 #include "Framework/EventHeader.h"
 #include "Framework/Process.h"
-#include "Framework/RunHeader.h"
 
 namespace conditions {
 namespace test {

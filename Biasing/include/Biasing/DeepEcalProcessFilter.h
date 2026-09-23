@@ -10,11 +10,6 @@
 #ifndef BIASING_DEEPECALFILTER_H
 #define BIASING_DEEPECALFILTER_H
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
-
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
@@ -24,7 +19,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 
 namespace biasing {
 

@@ -1,5 +1,9 @@
 #include "Biasing/PrimaryToEcalFilter.h"
 
+#include "G4EventManager.hh"
+#include "G4RunManager.hh"
+#include "SimCore/G4User/PtrRetrieval.h"
+
 namespace biasing {
 
 PrimaryToEcalFilter::PrimaryToEcalFilter(
