@@ -17,12 +17,20 @@ from LDMX.Packing import rawio
 from LDMX.Tracking import dqm as tracking_dqm
 from LDMX.Tracking import rawdecoder, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
-from LDMX.Tracking.ts_measurements import ts_cluster_chain
+from LDMX.Tracking.ts_measurements import (
+    TrigScintMeasurementProducer,
+    ts_cluster_chain,
+)
+from LDMX.TrigScint.trigscint_geometry import TrigScintGeometryProvider
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
 
 
 # Tracking geometry for the local -> global transform in StripClusterProcessor.
 TrackGeo.get_instance().set_detector("ldmx-esa25-v1")
+
+# TS geometry conditions provider (bar positions for TrigScintMeasurementProducer),
+# pinned to ESA25 since real-data RunHeaders carry no detector name.
+TrigScintGeometryProvider.get_instance().set_detector("ldmx-esa25-v1")
 
 
 # Tracker: raw frames -> strip hits -> pedestal subtracted -> waveforms -> fits
@@ -68,6 +76,12 @@ ts_calib_files = {p: f"{ts_data}/esa25/calibration_pad{p}.txt" for p in (1, 2, 3
 ts_reco, ts_cluster_collections = ts_cluster_chain(
     pads=(1, 2, 3), calib_files=ts_calib_files
 )
+# Geometry-aware TS measurements (global y at the cluster centroid). Exercises the
+# TrigScintGeometry class + TrigScintGeometryProvider + TrigScintMeasurementProducer
+# added in this PR (reads bar positions from the conditions provider above).
+ts_measurements = TrigScintMeasurementProducer()
+ts_measurements.input_pass = ""  # clusters are produced in this same process
+ts_measurements.input_collections = ts_cluster_collections
 
 p.sequence = [
     trk_unpack,
@@ -80,6 +94,7 @@ p.sequence = [
     ts_unpack,
     ts_decoder,
     *ts_reco,
+    ts_measurements,
 ]
 
 ##################################################################
