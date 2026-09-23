@@ -5,8 +5,10 @@ runs the standard chain TrigScintRecHitProducer -> TrigScintClusterProducer ->
 TrigScintMeasurementProducer, so the measurements come from PE-calibrated
 clusters rather than the raw digis.
 
-    just fire Tracking/exampleConfigs/run_ts_measurements.py -- <digi.root> <out.root> [N] [pass]
+    just fire Tracking/exampleConfigs/run_ts_measurements.py -- \
+        <digi.root> <out.root> [N] [pass]
 """
+
 import sys
 
 sys.argv = [a for a in sys.argv if a != "--"]
@@ -29,9 +31,7 @@ from LDMX.TrigScint.trigscint_geometry import TrigScintGeometryProvider
 TrigScintGeometryProvider.get_instance().set_detector("ldmx-esa25-v1")
 
 # Standard reco chain reads the decoded pads from the input file's pass.
-reco_chain, cluster_collections = ts_cluster_chain(
-    pads=(1, 2, 3), input_pass=digi_pass
-)
+reco_chain, cluster_collections = ts_cluster_chain(pads=(1, 2, 3), input_pass=digi_pass)
 
 tsm = TrigScintMeasurementProducer()
 tsm.input_pass = ""  # clusters are produced in this process

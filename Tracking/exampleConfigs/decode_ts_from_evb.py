@@ -13,8 +13,10 @@ pedestal-subtracted, PE-calibrated clusters -- not the raw ZCCM digis. (The CI
 sample esa_vst/config.py uses the TestBeamHit/TestBeamCluster producers instead;
 those are leftovers from an old CERN test beam and are not used here.)
 
-    denv fire Tracking/exampleConfigs/decode_ts_from_evb.py -- <evb.root> <out.root> [max_events]
+    denv fire Tracking/exampleConfigs/decode_ts_from_evb.py -- \
+        <evb.root> <out.root> [max_events]
 """
+
 import os
 import sys
 
@@ -34,14 +36,16 @@ if maxev > 0:
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
 
 here = os.path.dirname(os.path.abspath(__file__))
-cmap = os.path.join(here, "..", "..", "TrigScint", "data", "channelMap_4modules_14lanes.txt")
+cmap = os.path.join(
+    here, "..", "..", "TrigScint", "data", "channelMap_4modules_14lanes.txt"
+)
 cmap = os.path.abspath(cmap)
 mmap = cmap.replace("channelMap", "moduleMap")
 
 # Stage 1: decode the event-built `ts_builder` byte branch -> decodedZCCMPad{1..}.
 dec = ZCCMDecoder(channel_map_file=cmap)
 dec.module_map_file = mmap
-dec.input_collection = "ts"        # the event-built `ts_builder` byte branch
+dec.input_collection = "ts"  # the event-built `ts_builder` byte branch
 dec.input_pass_name = "builder"
 dec.output_collection = dec.output_collection + "Pad"  # -> decodedZCCMPad{1..}
 dec.number_channels = 84

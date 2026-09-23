@@ -559,7 +559,9 @@ class HcalReadoutGeometry:
         num_layers_top = num_layers_alongx_top + num_layers_alongz_top
         num_layers_bottom =  num_layers_alongx_bottom + num_layers_alongz_bottom
         num_bars = 8
-        dy = (num_layers_top + num_layers_bottom) * layer_thickness + space_between_sections
+        dy = (
+            num_layers_top + num_layers_bottom
+        ) * layer_thickness + space_between_sections
 
         scint_thickness = scint_thickness
         scint_width = scint_bar_width
