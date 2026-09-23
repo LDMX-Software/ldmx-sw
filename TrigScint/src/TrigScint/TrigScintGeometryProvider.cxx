@@ -57,9 +57,9 @@ TrigScintGeometryProvider::TrigScintGeometryProvider(
     const std::string& name, const std::string& tagname,
     const framework::config::Parameters& parameters,
     framework::Process& process)
-    : framework::ConditionsObjectProvider{
-          ldmx::TrigScintGeometry::CONDITIONS_OBJECT_NAME, tagname, parameters,
-          process},
+    : framework::ConditionsObjectProvider{ldmx::TrigScintGeometry::
+                                              CONDITIONS_OBJECT_NAME,
+                                          tagname, parameters, process},
       params_{parameters} {
   ts_geometry_ = 0;
   // optional explicit detector name (real data); empty => use RunHeader
@@ -119,7 +119,8 @@ TrigScintGeometryProvider::getCondition(const ldmx::EventHeader& context) {
       if (ts_geometry_) break;
     }
     if (!ts_geometry_) {
-      EXCEPTION_RAISE("GeometryException", "Unable to create TrigScintGeometry");
+      EXCEPTION_RAISE("GeometryException",
+                      "Unable to create TrigScintGeometry");
     }
   }
 

@@ -7,13 +7,13 @@
 #ifndef DETDESCR_TRIGSCINTGEOMETRY_H_
 #define DETDESCR_TRIGSCINTGEOMETRY_H_
 
+#include <vector>
+
 #include "DetDescr/TrigScintID.h"
 #include "Framework/ConditionsObject.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"  // IWYU pragma: keep (EXCEPTION_RAISE in TrigScintGeometry.cxx)
 #include "Math/Vector3D.h"  // IWYU pragma: keep (XYZVector returned by value)
-
-#include <vector>
 
 namespace trigscint {
 class TrigScintGeometryProvider;

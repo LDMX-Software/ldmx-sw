@@ -19,16 +19,17 @@ namespace tracking::reco {
  * geometry module, and converts each cluster's PE-weighted *fractional* bar
  * centroid (TrigScintCluster::getCentroid) into a global (x, y, z) position by
  * interpolating the bar geometry between the two adjacent bars -- so the output
- * measurements live in the same ldmx::Measurement frame the tracker uses and can
- * be correlated with tracker measurements.
+ * measurements live in the same ldmx::Measurement frame the tracker uses and
+ * can be correlated with tracker measurements.
  *
- * Consuming clusters (rather than the raw decoded ZCCM digis) means the input is
- * pedestal-subtracted, gain-calibrated (PE) and cluster-position-refined, giving
- * a sub-bar centroid instead of a single fired channel.
+ * Consuming clusters (rather than the raw decoded ZCCM digis) means the input
+ * is pedestal-subtracted, gain-calibrated (PE) and cluster-position-refined,
+ * giving a sub-bar centroid instead of a single fired channel.
  *
  * This is the first, parameterized increment (geometry via python params, tuned
- * against the tracker beam). The follow-up promotes the bar geometry to a proper
- * DetDescr ConditionsObject provider (Ecal/Hcal-style), read from the detector.
+ * against the tracker beam). The follow-up promotes the bar geometry to a
+ * proper DetDescr ConditionsObject provider (Ecal/Hcal-style), read from the
+ * detector.
  *
  * Input  : one collection of ldmx::TrigScintCluster per module
  * Output : collection of ldmx::Measurement

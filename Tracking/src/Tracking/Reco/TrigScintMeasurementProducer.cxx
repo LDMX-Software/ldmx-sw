@@ -1,32 +1,31 @@
 #include "Tracking/Reco/TrigScintMeasurementProducer.h"
 
 #include <algorithm>
-#include <fstream>
-
-#include <nlohmann/json.hpp>
-
 #include <cmath>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 #include "DetDescr/TrigScintGeometry.h"
 #include "TSystem.h"
-#include "TrigScint/Event/TrigScintCluster.h"
 #include "Tracking/Event/Measurement.h"
+#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace tracking::reco {
 
 void TrigScintMeasurementProducer::configure(
     framework::config::Parameters& parameters) {
-  // Load the TrigScint_Event ROOT dictionary so the digi collection reads as the
-  // compiled type. The accessors are inline (linker drops libTrigScint_Event)
-  // and there is no rootmap for autoload, so ROOT would otherwise fall back to
-  // an emulated streamer that crashes when cast to the compiled class.
+  // Load the TrigScint_Event ROOT dictionary so the digi collection reads as
+  // the compiled type. The accessors are inline (linker drops
+  // libTrigScint_Event) and there is no rootmap for autoload, so ROOT would
+  // otherwise fall back to an emulated streamer that crashes when cast to the
+  // compiled class.
   gSystem->Load("libTrigScint_Event");
 
   input_collections_ =
       parameters.getParameter<std::vector<std::string>>("input_collections");
   input_pass_ = parameters.getParameter<std::string>("input_pass", "");
-  out_collection_ = parameters.getParameter<std::string>("out_collection",
-                                                         "TrigScintMeasurements");
+  out_collection_ = parameters.getParameter<std::string>(
+      "out_collection", "TrigScintMeasurements");
   min_pe_ = parameters.getParameter<double>("min_pe", min_pe_);
   sigma_y_ = parameters.getParameter<double>("sigma_y", sigma_y_);
 

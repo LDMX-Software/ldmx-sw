@@ -21,9 +21,10 @@ ROOT::Math::XYZVector TrigScintGeometry::getBarPosition(int module,
                         std::to_string(module_z_.size()) + ").");
   }
   if (bar < 0 || bar >= n_bars_) {
-    EXCEPTION_RAISE("TrigScintGeometry",
-                    "Requested bar " + std::to_string(bar) +
-                        " is out of range [0," + std::to_string(n_bars_) + ").");
+    EXCEPTION_RAISE("TrigScintGeometry", "Requested bar " +
+                                             std::to_string(bar) +
+                                             " is out of range [0," +
+                                             std::to_string(n_bars_) + ").");
   }
 
   // two staggered layers: bar/2 = in-layer index, bar%2 = layer
