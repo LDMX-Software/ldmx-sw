@@ -100,14 +100,13 @@ void TrigScintMeasurementProducer::produce(framework::Event& event) {
 
       const auto p0 = geom.getBarPosition(geo_module, b0);
       const auto p1 = geom.getBarPosition(geo_module, b1);
-      const double x = (1. - f) * p0.X() + f * p1.X();
-      const double y = (1. - f) * p0.Y() + f * p1.Y();
-      const double z = (1. - f) * p0.Z() + f * p1.Z();
+      const float x = (1. - f) * p0.X() + f * p1.X();
+      const float y = (1. - f) * p0.Y() + f * p1.Y();
+      const float z = (1. - f) * p0.Z() + f * p1.Z();
 
       ldmx::Measurement meas;
-      meas.setGlobalPosition(static_cast<float>(x), static_cast<float>(y),
-                             static_cast<float>(z));
-      meas.setLocalPosition(static_cast<float>(y), 0.f);
+      meas.setGlobalPosition(x, y, z);
+      meas.setLocalPosition(y, 0.f);
       meas.setLocalCovariance(static_cast<float>(sigma_y_ * sigma_y_), 0.f);
       // encode geometry module + nearest bar so downstream can trace it
       meas.setLayerID(geo_module * 100 +
