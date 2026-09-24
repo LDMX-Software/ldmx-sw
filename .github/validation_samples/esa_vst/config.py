@@ -68,17 +68,12 @@ ts_decoder = ZCCMDecoder(
 )
 # Standard ESA25 TS reconstruction of the three plastic pads:
 #   decodedZCCMPad{1,2,3} -> TrigScintRecHitProducer -> TrigScintClusterProducer
-# This replaces the deprecated EventReadoutProducer -> TestBeamHitProducer ->
-# TestBeamClusterProducer chain (leftovers from an old CERN test beam). The
-# calibration is the vendored per-pad ESA25 gain/pedestal files together with the
-# per-pad sample-of-interest {1:5, 2:8, 3:8} (see ts_cluster_chain).
 ts_calib_files = {p: f"{ts_data}/esa25/calibration_pad{p}.txt" for p in (1, 2, 3)}
 ts_reco, ts_cluster_collections = ts_cluster_chain(
     pads=(1, 2, 3), calib_files=ts_calib_files
 )
 # Geometry-aware TS measurements (global y at the cluster centroid). Exercises the
 # TrigScintGeometry class + TrigScintGeometryProvider + TrigScintMeasurementProducer
-# added in this PR (reads bar positions from the conditions provider above).
 ts_measurements = TrigScintMeasurementProducer()
 ts_measurements.input_pass = ""  # clusters are produced in this same process
 ts_measurements.input_collections = ts_cluster_collections
