@@ -22,3 +22,5 @@ setup_library(module Trigger
 target_include_directories(Trigger PUBLIC ../HLS_arbitrary_Precision_Types/include)
 
 setup_python(package_name LDMX/Trigger)
+
+setup_data(module Trigger)
