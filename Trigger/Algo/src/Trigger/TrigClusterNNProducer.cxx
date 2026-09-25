@@ -1,11 +1,12 @@
-#include "Trigger/EcalNNTrigger.h"
+#include "Trigger/TrigClusterNNProducer.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <iomanip>
 #include <numeric>
 
-#include "Recon/Event/TriggerResult.h"
+#include "Trigger/Event/TrigClusterNNScore.h"
 
 namespace trigger {
 
@@ -26,18 +27,17 @@ std::vector<double> logSoftmax(const std::vector<float>& logits) {
 
 }  // namespace
 
-EcalNNTrigger::EcalNNTrigger(const std::string& name,
-                             framework::Process& process)
+TrigClusterNNProducer::TrigClusterNNProducer(const std::string& name,
+                                             framework::Process& process)
     : framework::Producer(name, process),
       data_{std::vector<float>(MAX_CLUSTERS * N_FEATURES, 0.f)} {}
 
-void EcalNNTrigger::configure(framework::config::Parameters& ps) {
-  max_pbkg_ = ps.get<double>("max_pbkg");
+void TrigClusterNNProducer::configure(framework::config::Parameters& ps) {
   cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
   ecal_sum_coll_name_ = ps.get<std::string>("ecal_sum_coll_name");
   hcal_sum_coll_name_ = ps.get<std::string>("hcal_sum_coll_name");
   input_pass_ = ps.get<std::string>("input_pass");
-  trigger_coll_name_ = ps.get<std::string>("trigger_coll_name");
+  score_coll_name_ = ps.get<std::string>("score_coll_name");
 
   const auto model_path{ps.get<std::string>("model_path")};
   rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(model_path);
@@ -55,7 +55,10 @@ void EcalNNTrigger::configure(framework::config::Parameters& ps) {
   }
 }
 
-void EcalNNTrigger::produce(framework::Event& event) {
+void TrigClusterNNProducer::produce(framework::Event& event) {
+  const auto start = std::chrono::high_resolution_clock::now();
+  nevents_++;
+
   // throws an exception if an input is missing or found in more than
   // one pass; an empty input is valid and the event is still scored
   const auto& clusters{
@@ -66,35 +69,40 @@ void EcalNNTrigger::produce(framework::Event& event) {
       event.getCollection<TrigEnergySum>(hcal_sum_coll_name_, input_pass_)};
 
   fillInputs(clusters, ecal_sums, hcal_sums, data_[0]);
+  const auto inference_start = std::chrono::high_resolution_clock::now();
   const auto logits{rt_->run({"x"}, data_, {"logits"})[0]};
+  inference_time_ +=
+      std::chrono::duration<double, std::milli>(
+          std::chrono::high_resolution_clock::now() - inference_start)
+          .count();
 
-  // compare P(bkg) directly: 1 - P(bkg) saturates to 1 in float
+  // P(bkg) in double: 1 - P(bkg) saturates to 1 in float
   const double p_bkg = std::exp(logSoftmax(logits)[0]);
-  const bool pass = p_bkg <= max_pbkg_;
 
   ldmx_log(debug) << "n_clusters = " << clusters.size()
-                  << ", P(bkg) = " << p_bkg << ", pass = " << pass;
+                  << ", P(bkg) = " << p_bkg;
 
-  ldmx::TriggerResult result;
-  result.set(trigger_coll_name_, pass, 2 + N_CLASSES);
-  result.setAlgoVar(0, p_bkg);
-  result.setAlgoVar(1, max_pbkg_);
-  for (std::size_t i = 0; i < N_CLASSES; ++i) {
-    result.setAlgoVar(2 + i, logits.at(i));
-  }
-  event.add(trigger_coll_name_, result);
+  TrigClusterNNScore score;
+  score.setLogits(logits);
+  score.setPBkg(p_bkg);
+  event.add(score_coll_name_, score);
 
-  if (pass) {
-    setStorageHint(framework::HINT_SHOULD_KEEP);
-  } else {
-    setStorageHint(framework::HINT_SHOULD_DROP);
-  }
+  processing_time_ += std::chrono::duration<double, std::milli>(
+                          std::chrono::high_resolution_clock::now() - start)
+                          .count();
 }
 
-void EcalNNTrigger::fillInputs(const TrigCaloClusterCollection& clusters,
-                               const TrigEnergySumCollection& ecal_sums,
-                               const TrigEnergySumCollection& hcal_sums,
-                               std::vector<float>& inputs) {
+void TrigClusterNNProducer::onProcessEnd() {
+  if (nevents_ == 0) return;
+  ldmx_log(info) << "AVG Time/Event: total " << std::fixed
+                 << std::setprecision(3) << processing_time_ / nevents_
+                 << " ms, inference " << inference_time_ / nevents_ << " ms";
+}
+
+void TrigClusterNNProducer::fillInputs(
+    const TrigCaloClusterCollection& clusters,
+    const TrigEnergySumCollection& ecal_sums,
+    const TrigEnergySumCollection& hcal_sums, std::vector<float>& inputs) {
   inputs.assign(MAX_CLUSTERS * N_FEATURES, 0.f);
 
   // sort cluster indices by descending energy; stable so that ties keep
@@ -132,4 +140,4 @@ void EcalNNTrigger::fillInputs(const TrigCaloClusterCollection& clusters,
 
 }  // namespace trigger
 
-DECLARE_PRODUCER(trigger::EcalNNTrigger);
+DECLARE_PRODUCER(trigger::TrigClusterNNProducer);
