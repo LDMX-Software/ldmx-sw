@@ -244,6 +244,8 @@ def full_tracking_sequence(
         instance_name=tagged("SeedTagger"),
         input_hits_collection=tagger_meas_collection,
         out_seed_collection=tagged("TaggerRecoSeeds"),
+        # the tagger has no upstream tracks to constrain it
+        tagger_trks_collection="",
         # Perigee upstream of all tagger sensors.
         # World boundary is at ACTS x = -650 mm.
         perigee_location=[tagger_start_x, 0.0, 0.0],
@@ -261,6 +263,7 @@ def full_tracking_sequence(
         perigee_location=[0.0, 0.0, 0.0],
         input_hits_collection=recoil_meas_collection,
         out_seed_collection=tagged("RecoilRecoSeeds"),
+        tagger_trks_collection=tagged("TaggerTracksClean"),
         bfield=1.5,
         pmin=0.04,
         pmax=819.0,
@@ -442,10 +445,11 @@ def full_tracking_sequence(
         *digi_sequence,
         truth_tracking,
         seeder_tagger,
-        seeder_recoil,
         tracking_tagger,
-        tracking_recoil,
+        # ambiguity-solved tagger tracks constrain the recoil seed fit
         greedy_solver_tagger,
+        seeder_recoil,
+        tracking_recoil,
         greedy_solver_recoil,
         gsf_tagger,
         gsf_recoil,

@@ -9,6 +9,14 @@
 
 #include "Hcal/HcalDigiProducer.h"
 
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
+#include "Framework/RandomNumberSeedService.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocPulseTruth.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 namespace hcal {
 
 HcalDigiProducer::HcalDigiProducer(const std::string& name,

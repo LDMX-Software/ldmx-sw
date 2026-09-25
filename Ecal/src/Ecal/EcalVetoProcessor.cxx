@@ -1,5 +1,17 @@
 #include "Ecal/EcalVetoProcessor.h"
 
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+
+#include "DetDescr/SimSpecialID.h"
+#include "Ecal/EcalHelper.h"
+#include "Ecal/Event/EcalTrajectoryInfo.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
+
 namespace ecal {
 
 void EcalVetoProcessor::onNewRun(const ldmx::RunHeader& rh) {
@@ -28,21 +40,9 @@ void EcalVetoProcessor::buildBDTFeatureVector(
   bdt_features_.push_back(result.getStdLayerHit());
   bdt_features_.push_back(result.getDeepestLayerHit());
   bdt_features_.push_back(result.getEcalBackEnergy());
-  // MIP tracking
-  if (bdt_feature_config_ == "segmip") {
-    bdt_features_.push_back(-1.);  // NStraight
-    bdt_features_.push_back(-1.);  // FirstNearPHLayer
-    bdt_features_.push_back(-1.);  // NNearPHHits
-    bdt_features_.push_back(-1.);  // PhotonTerritoryHits
-  }
-
-  // bdt_features_.push_back(result.getNStraightTracks());
-  // bdt_features_.push_back(result.getFirstNearPhLayer());
-  // bdt_features_.push_back(result.getNNearPhHits());
-  // bdt_features_.push_back(result.getPhotonTerritoryHits());
-  if (bdt_feature_config_ == "wab_recrem") {
-    bdt_features_.push_back(result.getNTrackingHits());
-  }
+  // MIP Tracking
+  bdt_features_.push_back(result.getNHitsInPhotonTerritory());
+  // Electron Photon variables
   bdt_features_.push_back(result.getEPSep());
   bdt_features_.push_back(result.getEPDot());
   // Longitudinal segment variables
@@ -157,7 +157,7 @@ void EcalVetoProcessor::clearProcessor() {
   std_layer_hit_ = 0;
   deepest_layer_hit_ = 0;
   ecal_back_energy_ = 0;
-  n_tracking_hits_ = 0;
+  n_hits_in_photon_territory_ = 0;
   ep_ang_ = 0;
   ep_ang_at_target_ = 0;
   ep_sep_ = 0;
@@ -598,7 +598,7 @@ void EcalVetoProcessor::produce(framework::Event& event) {
     }
   }  // end loop over rechits
 
-  n_tracking_hits_ = tracking_hit_list.size();
+  n_hits_in_photon_territory_ = tracking_hit_list.size();
 
   for (const auto& [id, energy] : cell_map_tight_iso_) {
     if (energy > 0) summed_tight_iso_ += energy;
@@ -876,9 +876,9 @@ void EcalVetoProcessor::produce(framework::Event& event) {
       std::chrono::duration<double, std::milli>(mip_tracking_setup - start)
           .count();
   result.setVariables(
-      n_readout_hits_, deepest_layer_hit_, n_tracking_hits_, summed_det_,
-      summed_tight_iso_, max_cell_dep_, shower_rms_, x_std_, y_std_,
-      avg_layer_hit_, std_layer_hit_, ecal_back_energy_, ep_ang_,
+      n_readout_hits_, deepest_layer_hit_, n_hits_in_photon_territory_,
+      summed_det_, summed_tight_iso_, max_cell_dep_, shower_rms_, x_std_,
+      y_std_, avg_layer_hit_, std_layer_hit_, ecal_back_energy_, ep_ang_,
       ep_ang_at_target_, ep_sep_, ep_dot_, ep_dot_at_target_,
       electron_containment_energy, photon_containment_energy,
       outside_containment_energy, outside_containment_n_hits,

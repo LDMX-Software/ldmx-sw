@@ -16,7 +16,6 @@
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
 #include "SimCore/G4User/PtrRetrieval.h"
-#include "SimCore/G4User/UserEventInformation.h"
 #include "SimCore/G4User/UserTrackInformation.h"
 #include "SimCore/G4User/VolumeChecks.h"
 

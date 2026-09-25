@@ -18,6 +18,7 @@ typedef enum SubdetectorIDTypeEnum {
   SD_ECAL = 5,
   SD_HCAL = 6,
   SD_SIM_SPECIAL = 7,
+  SD_TRACKER_TESTSTAND = 8,
   EID_TRACKER = 16,
   EID_TRIGGER_SCINT = 17,
   EID_ECAL = 18,
@@ -95,6 +96,13 @@ class DetectorID {
   }
 #define SUBDETECTORID_TEST2(a, x, y)                                       \
   if (!null() && !(subdet() == x || subdet() == y)) {                      \
+    EXCEPTION_RAISE("DetectorIDMismatch", "Attempted to create " +         \
+                                              std::string(a) +             \
+                                              " from mismatched source " + \
+                                              std::to_string(subdet()));   \
+  }
+#define SUBDETECTORID_TEST3(a, x, y, z)                                    \
+  if (!null() && !(subdet() == x || subdet() == y || subdet() == z)) {     \
     EXCEPTION_RAISE("DetectorIDMismatch", "Attempted to create " +         \
                                               std::string(a) +             \
                                               " from mismatched source " + \

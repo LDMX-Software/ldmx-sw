@@ -1,5 +1,7 @@
 #include "Recon/BeamElectronLocator.h"
 
+#include <cmath>
+
 namespace recon {
 
 BeamElectronLocator::BeamElectronLocator(const std::string& name,

@@ -1,5 +1,12 @@
 #include "Ecal/EcalPnetVetoProcessor.h"
 
+#include <algorithm>
+#include <numeric>
+
+#include "Ecal/EcalHelper.h"
+#include "Ecal/Event/EcalVetoResult.h"
+#include "SimCore/Event/SimTrackerHit.h"
+
 namespace ecal {
 
 const std::vector<std::string> EcalPnetVetoProcessor::INPUT_NAMES{"points",

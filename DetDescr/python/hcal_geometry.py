@@ -494,7 +494,7 @@ class HcalReadoutGeometry:
             "ldmx-vertTS-v14.*",
             "ldmx-reduced",
             "ldmx-reduced-v2",
-            "ldmx-reduced-v3",
+            "ldmx-esa25-v1",
             "ldmx-lyso-r4-v15",
             "ldmx-lyso-r4-v15.*",
             "ldmx-det-v15",
@@ -531,6 +531,97 @@ class HcalReadoutGeometry:
             detectors_valid=detectors_valid,
         )
 
+    # The HCal prototype that will be used to measure cosmic muons.
+    # The HCal prototype has been assumed to be the top and bottom section of
+    # the side HCal since they share the same scintillator orientation.
+    # More changes are required in the software to sucessfully digitize and
+    # reconstruct the data obtained when using this geometry.
+    def make_cosmic26_v1():
+
+        scint_thickness = 20.0
+        scint_bar_width = 50.0
+        scint_bar_length = 2000.0
+        layer_thickness = 21.5
+        space_between_sections = 1000
+
+        # Number of sections is hard-coded, therfore the layers in
+        # the back HCal is defined.
+        # Zero in this case since it doesn't actually exist.
+        num_layers_back = 0
+
+        num_layers_alongx_top = 4
+        num_layers_alongz_top = 4
+
+        num_layers_alongx_bottom = 4
+        num_layers_alongz_bottom = 4
+
+        num_layers_top = num_layers_alongx_top + num_layers_alongz_top
+        num_layers_bottom = num_layers_alongx_bottom + num_layers_alongz_bottom
+        num_bars = 8
+        dy = (
+            num_layers_top + num_layers_bottom
+        ) * layer_thickness + space_between_sections
+
+        scint_thickness = scint_thickness
+        scint_width = scint_bar_width
+        # Number of sections are hard-coded, each list index represents one section:
+        # [back, top, bottom, right, left].
+        scint_length = [
+            [0.0],
+            [scint_bar_length for layer in range(num_layers_top)],
+            [scint_bar_length for layer in range(num_layers_bottom)],
+        ]
+
+        num_strips = [
+            [0],
+            [num_bars for i in range(num_layers_top)],
+            [num_bars for i in range(num_layers_bottom)],
+        ]
+
+        zero_strip = [
+            [0.0],
+            [-scint_bar_width * num_bars / 2] * num_layers_top,
+            [-scint_bar_width * num_bars / 2] * num_layers_bottom,
+        ]
+
+        half_total_width = zero_strip
+        zero_layer = [0.0, dy / 2.0 - layer_thickness * num_layers_top, -dy / 2.0]
+        layer_thickness = [0.0, layer_thickness, layer_thickness]
+        # 3 due to hard-coding.
+        num_sections = 3
+        num_layers = [num_layers_back, num_layers_top, num_layers_bottom]
+
+        ecal_dx = 0.0
+        ecal_dy = 0.0
+        detectors_valid = [
+            "ldmx-esa-cosmic26-v1",
+        ]
+
+        back_horizontal_parity = 0
+        # Side_3d_readout should probably not be 1. A new variable maybe needs to be
+        # defined and used throughout the software.
+        side_3d_readout = 1
+        y_offset = 0.0
+
+        return HcalReadoutGeometry(
+            num_sections=num_sections,
+            num_layers=num_layers,
+            scint_thickness=scint_thickness,
+            scint_width=scint_width,
+            back_horizontal_parity=back_horizontal_parity,
+            side_3d_readout=side_3d_readout,
+            y_offset=y_offset,
+            scint_length=scint_length,
+            zero_layer=zero_layer,
+            zero_strip=zero_strip,
+            layer_thickness=layer_thickness,
+            num_strips=num_strips,
+            half_total_width=half_total_width,
+            ecal_dx=ecal_dx,
+            ecal_dy=ecal_dy,
+            detectors_valid=detectors_valid,
+        )
+
 
 @parameter_set
 class HcalGeometry:
@@ -546,4 +637,7 @@ class HcalGeometry:
     )
     v2_prototype: HcalReadoutGeometry = field(
         default_factory=HcalReadoutGeometry.make_v2_prototype
+    )
+    cosmic26_v1: HcalReadoutGeometry = field(
+        default_factory=HcalReadoutGeometry.make_cosmic26_v1
     )

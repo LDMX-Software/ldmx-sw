@@ -11,11 +11,6 @@
 #ifndef BIASING_NONFIDUCIALFILTER_H
 #define BIASING_NONFIDUCIALFILTER_H
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
-
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
@@ -25,7 +20,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 
 namespace biasing {
 

@@ -88,7 +88,7 @@ class TrackerSD(SensitiveDetector):
     Parameters
     ----------
     subsystem : str
-        Recoil or Tagger
+        Tagger, Recoil, or Teststand
     subdet_id : int
         ID number for the subsystem
     """
@@ -106,6 +106,12 @@ class TrackerSD(SensitiveDetector):
 
     def recoil():
         return TrackerSD("Recoil", 4)
+
+    def teststand():
+        # Standalone tracker test stands (ESA25, cosmic). subdet_id must match
+        # ldmx::SD_TRACKER_TESTSTAND (DetDescr/DetectorID.h). Binds to sensitive
+        # volumes whose names contain "Teststand"; writes TeststandSimHits.
+        return TrackerSD("Teststand", 8)
 
 
 @sensitive_detector("simcore::HcalSD")

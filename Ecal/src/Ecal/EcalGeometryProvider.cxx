@@ -1,5 +1,4 @@
 #include <regex.h>
-#include <sys/types.h>
 
 #include "DetDescr/EcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"

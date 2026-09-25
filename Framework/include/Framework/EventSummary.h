@@ -1,15 +1,17 @@
 /**
  * @file EventSummary.h
- * @brief Class that provides a summary of event assembly with metadata and error flags
+ * @brief Class that provides a summary of event assembly with metadata and
+ * error flags
  */
 
 #ifndef EVENT_EVENTSUMMARY_H_
 #define EVENT_EVENTSUMMARY_H_
 
 // ROOT
-#include "TObject.h"  // For ClassDef
-#include <vector>
 #include <cstdint>
+#include <vector>
+
+#include "TObject.h"  // For ClassDef
 
 namespace ldmx {
 
@@ -28,13 +30,16 @@ class EventSummary : public TObject {
    * Error flag bit definitions
    */
   enum ErrorFlags : uint32_t {
-    ERROR_CRC_MISMATCH = (1 << 0),        ///< CRC/checksum validation failed
-    ERROR_PARSE_FAILURE = (1 << 1),       ///< Frame parsing error
-    ERROR_INCOHERENT_TIMING = (1 << 2),   ///< Fragment timestamps outside coherence window
-    ERROR_MISSING_SUBSYSTEM = (1 << 3),   ///< Expected subsystem data missing
-    ERROR_INCOMPLETE_EVENT = (1 << 4),    ///< Event lacks expected number of fragments
-    ERROR_TRUNCATED_EVENT = (1 << 5),     ///< Event was truncated (EOF reached)
-    ERROR_DUPLICATE_SUBSYSTEM = (1 << 6)  ///< Duplicate subsystem in single event
+    ERROR_CRC_MISMATCH = (1 << 0),   ///< CRC/checksum validation failed
+    ERROR_PARSE_FAILURE = (1 << 1),  ///< Frame parsing error
+    ERROR_INCOHERENT_TIMING =
+        (1 << 2),  ///< Fragment timestamps outside coherence window
+    ERROR_MISSING_SUBSYSTEM = (1 << 3),  ///< Expected subsystem data missing
+    ERROR_INCOMPLETE_EVENT =
+        (1 << 4),  ///< Event lacks expected number of fragments
+    ERROR_TRUNCATED_EVENT = (1 << 5),  ///< Event was truncated (EOF reached)
+    ERROR_DUPLICATE_SUBSYSTEM =
+        (1 << 6)  ///< Duplicate subsystem in single event
   };
 
   /**
@@ -58,8 +63,6 @@ class EventSummary : public TObject {
    * @param[in] o ROOT-style Option (ignored)
    */
   void clear(Option_t* o = "");
-
-
 
   /**
    * Get the event number.

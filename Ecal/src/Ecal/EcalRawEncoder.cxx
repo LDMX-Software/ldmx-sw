@@ -5,7 +5,6 @@
 #include "DetDescr/EcalElectronicsID.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/EcalDetectorMap.h"
-#include "Packing/Utility/BufferReader.h"
 #include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Mask.h"
 #include "Recon/Event/HgcrocDigiCollection.h"

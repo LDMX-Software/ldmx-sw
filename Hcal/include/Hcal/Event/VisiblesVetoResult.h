@@ -11,7 +11,7 @@
 #include <iostream>
 
 //   ROOT   //
-#include <TObject.h>
+#include <Rtypes.h>  // For ClassDef
 
 namespace ldmx {
 

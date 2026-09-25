@@ -14,12 +14,11 @@
 //----------------//
 #include <array>
 #include <iostream>
-#include <map>
 
 //----------//
 //   ROOT   //
 //----------//
-#include <TObject.h>  //For ClassDef
+#include <Rtypes.h>  // For ClassDef
 
 namespace ldmx {
 
@@ -35,7 +34,7 @@ class EcalVetoResult {
    * Set the sim particle and 'is findable' flag.
    */
   void setVariables(
-      int n_readout_hits, int deepest_layer_hit, int n_tracking_hits,
+      int n_readout_hits, int deepest_layer_hit, int n_hits_in_photon_territory,
       float summed_det, float summed_tight_iso, float max_cell_dep,
       float shower_rms, float x_std, float y_std, float avg_layer_hit,
       float std_layer_hit, float ecal_back_energy, float ep_ang,
@@ -111,7 +110,7 @@ class EcalVetoResult {
 
   float getEcalBackEnergy() const { return ecal_back_energy_; }
 
-  int getNTrackingHits() const { return n_tracking_hits_; }
+  int getNHitsInPhotonTerritory() const { return n_hits_in_photon_territory_; }
 
   float getEPAng() const { return ep_ang_; }
 
@@ -319,7 +318,7 @@ class EcalVetoResult {
 
   /// Number of hits outside of the electron roc in the Ecal
   /// or if the electron trajectory is missing, all the hits in the Ecal
-  int n_tracking_hits_{0};
+  int n_hits_in_photon_territory_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at the ECAL
   float ep_ang_{0};
@@ -337,7 +336,7 @@ class EcalVetoResult {
 
   std::vector<float> ecal_layer_edep_readout_;
 
-  ClassDef(EcalVetoResult, 12);
+  ClassDef(EcalVetoResult, 13);
 };
 }  // namespace ldmx
 

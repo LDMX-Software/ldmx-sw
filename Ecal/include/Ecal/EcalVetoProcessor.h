@@ -11,30 +11,17 @@
 // LDMX
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/EcalHelper.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tools/AnalysisUtils.h"
 #include "Tools/ONNXRuntime.h"
 
 // C++
 #include <stdlib.h>
 
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iomanip>
 #include <map>
 #include <memory>
-
-// ROOT (for angle calculations)
-#include "Math/Vector3D.h"
 
 namespace ecal {
 
@@ -128,7 +115,7 @@ class EcalVetoProcessor : public framework::Producer {
 
   /// Number of hits outside of the electron roc in the Ecal
   /// or if the electron trajectory is missing, all the hits in the Ecal
-  int n_tracking_hits_{0};
+  int n_hits_in_photon_territory_{0};
   /// Angular separation between the projected photon and electron trajectories
   /// as projected at ECAL
   float ep_ang_{0};

@@ -9,16 +9,9 @@
 #ifndef ECAL_ECALRECPRODUCER_H_
 #define ECAL_ECALRECPRODUCER_H_
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <memory>  //for smart pointers
-
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/EcalID.h"
 #include "Framework/EventProcessor.h"
 
 namespace ecal {

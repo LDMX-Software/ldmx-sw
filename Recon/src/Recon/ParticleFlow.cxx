@@ -1,5 +1,6 @@
 #include "Recon/ParticleFlow.h"
 
+#include <cmath>
 #include <vector>
 
 namespace recon {

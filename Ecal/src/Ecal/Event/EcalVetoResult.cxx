@@ -20,7 +20,7 @@ void EcalVetoResult::clear() {
   std_layer_hit_ = 0;
   deepest_layer_hit_ = 0;
   ecal_back_energy_ = 0;
-  n_tracking_hits_ = 0;
+  n_hits_in_photon_territory_ = 0;
   ep_ang_ = 0;
   ep_ang_at_target_ = 0;
   ep_sep_ = 0;
@@ -70,7 +70,7 @@ void EcalVetoResult::clear() {
 }
 
 void EcalVetoResult::setVariables(
-    int n_readout_hits, int deepest_layer_hit, int n_tracking_hits,
+    int n_readout_hits, int deepest_layer_hit, int n_hits_in_photon_territory,
     float summed_det, float summed_tight_iso, float max_cell_dep,
     float shower_rms, float x_std, float y_std, float avg_layer_hit,
     float std_layer_hit, float ecal_back_energy, float ep_ang,
@@ -117,7 +117,7 @@ void EcalVetoResult::setVariables(
   std_layer_hit_ = std_layer_hit;
   deepest_layer_hit_ = deepest_layer_hit;
   ecal_back_energy_ = ecal_back_energy;
-  n_tracking_hits_ = n_tracking_hits;
+  n_hits_in_photon_territory_ = n_hits_in_photon_territory;
   ep_ang_ = ep_ang;
   ep_ang_at_target_ = ep_ang_at_target;
   ep_sep_ = ep_sep;

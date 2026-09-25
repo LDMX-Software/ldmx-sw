@@ -9,13 +9,14 @@
 
 namespace trigscint {
 
-TrigScintRecHitProducer::TrigScintRecHitProducer(const std::string &name,
-                                                 framework::Process &process)
+TrigScintRecHitProducer::TrigScintRecHitProducer(const std::string& name,
+                                                 framework::Process& process)
     : Producer(name, process) {}
 
 TrigScintRecHitProducer::~TrigScintRecHitProducer() {}
 
-void TrigScintRecHitProducer::configure(framework::config::Parameters &parameters) {
+void TrigScintRecHitProducer::configure(
+    framework::config::Parameters& parameters) {
   pedestal_ = parameters.get<double>("pedestal");
   gain_ = parameters.get<double>("gain");
   mev_per_mip_ = parameters.get<double>("mev_per_mip");
@@ -28,20 +29,21 @@ void TrigScintRecHitProducer::configure(framework::config::Parameters &parameter
   use_calib_file_ = parameters.get<bool>("use_calib_file", false);
   calib_file_ = parameters.get<std::string>("calib_file", std::string{""});
 
-  // If > 0: integrate [sample_of_interest, sample_of_interest + integration_window)
-  // If <= 0: integrate all samples (default)
+  // If > 0: integrate [sample_of_interest, sample_of_interest +
+  // integration_window) If <= 0: integrate all samples (default)
   integration_window_ = parameters.get<int>("integration_window", 0);
 
   if (use_calib_file_) {
     if (calib_file_.empty()) {
       throw std::runtime_error(
-          "TrigScintRecHitProducer: use_calib_file=true but calib_file is empty.");
+          "TrigScintRecHitProducer: use_calib_file=true but calib_file is "
+          "empty.");
     }
     readCalib(calib_file_, &gains_, &pedestals_);
   }
 }
 
-void TrigScintRecHitProducer::produce(framework::Event &event) {
+void TrigScintRecHitProducer::produce(framework::Event& event) {
   SimQIE qie;
 
   const auto digis{event.getCollection<trigscint::TrigScintQIEDigis>(
@@ -50,7 +52,7 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   std::vector<ldmx::TrigScintHit> trig_scint_hits;
   trig_scint_hits.reserve(digis.size());
 
-  for (const auto &digi : digis) {
+  for (const auto& digi : digis) {
     ldmx::TrigScintHit hit;
     auto adc{digi.getADC()};
     auto tdc{digi.getTDC()};
@@ -106,13 +108,14 @@ void TrigScintRecHitProducer::produce(framework::Event &event) {
   event.add(output_collection_, trig_scint_hits);
 }
 
-void TrigScintRecHitProducer::readCalib(const std::string &filename,
-                                       std::vector<double> *gains,
-                                       std::vector<double> *pedestals) {
+void TrigScintRecHitProducer::readCalib(const std::string& filename,
+                                        std::vector<double>* gains,
+                                        std::vector<double>* pedestals) {
   std::ifstream infile(filename);
   if (!infile) {
     throw std::runtime_error(
-        "TrigScintRecHitProducer: Could not open calibration file: " + filename);
+        "TrigScintRecHitProducer: Could not open calibration file: " +
+        filename);
   }
 
   double ch = 0.;
@@ -131,6 +134,6 @@ void TrigScintRecHitProducer::readCalib(const std::string &filename,
   }
 }
 
-}  
+}  // namespace trigscint
 
 DECLARE_PRODUCER(trigscint::TrigScintRecHitProducer);

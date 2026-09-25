@@ -19,7 +19,7 @@ my_gun.pdg_id = 11
 my_gun.enable_poisson = False  # True
 
 my_sim = sim.Simulator(instance_name="my_sim")  # Build simulator object
-det = "ldmx-reduced-v3"
+det = "ldmx-esa25-v1"
 
 my_sim.set_detector(det, include_scoring_planes_minimal=True)
 my_sim.description = "Reduced ECal Electron Gun Test Simulation"

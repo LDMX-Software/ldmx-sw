@@ -1,5 +1,8 @@
 #include "Hcal/HcalSimpleDigiAndRecProducer.h"
 
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
+#include "Framework/RandomNumberSeedService.h"
 #include "Hcal/Event/HcalHit.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 
