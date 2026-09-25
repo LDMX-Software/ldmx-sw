@@ -122,3 +122,16 @@ class PropagationMapWriter(Processor):
     target_scoring_plane_passname: str = ""
     target_sp_hits_events_passname: str = ""
     ecal_sp_hits_events_passname: str = ""
+
+
+@processor("trigger::EcalNNTrigger", "Trigger")
+class EcalNNTrigger(Processor):
+    """Configuration for EcalNNTrigger"""
+
+    model_path: str = "@CMAKE_INSTALL_PREFIX@/data/Trigger/ecal_nn_trigger.onnx"
+    max_pbkg: float = 1.0 - 0.9997327327728271  # Tuned for ~1kHz 1e bkg rate
+    cluster_coll_name: str = "ecalTrigClusters"
+    ecal_sum_coll_name: str = "ecalTrigSums"
+    hcal_sum_coll_name: str = "hcalTrigQuadsBackLayerSums"
+    input_pass: str = ""
+    trigger_coll_name: str = "EcalNNTrigger"
