@@ -1,13 +1,14 @@
 /**
- * @file EcalNNTrigger.h
- * @brief ECal trigger decision from an MLP over trigger clusters and
+ * @file TrigClusterNNProducer.h
+ * @brief ECal NN classifier score from an MLP over trigger clusters and
  * calorimeter sums
  * @author Charles Bell
  */
 
-#ifndef TRIGGER_ECALNNTRIGGER_H
-#define TRIGGER_ECALNNTRIGGER_H
+#ifndef TRIGGER_TRIGCLUSTERNNPRODUCER_H
+#define TRIGGER_TRIGCLUSTERNNPRODUCER_H
 
+#include <chrono>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -23,8 +24,8 @@
 namespace trigger {
 
 /**
- * @class EcalNNTrigger
- * @brief Scores each event with the ECal trigger MLP and records the decision
+ * @class TrigClusterNNProducer
+ * @brief Scores each event with the ECal trigger MLP and stores the output
  *
  * The model input is the top-3 (energy-sorted) ECal trigger clusters times 9
  * features: x, y, z, e, depth, n_tp of the cluster, then the event-level
@@ -41,15 +42,14 @@ namespace trigger {
  * TrigHcalEnergySum and TrigEcalClusterProducer. A missing input collection
  * throws an exception but an empty one is still scored.
  *
- * Output: an ldmx::TriggerResult with algo vars
- *   0: P(bkg), 1: max_pbkg threshold, 2-10: the 9 raw logits.
- * Trigger when P(bkg) <= max_pbkg.
+ * Output: a TrigClusterNNScore with the raw logits and P(bkg).
  */
-class EcalNNTrigger : public framework::Producer {
+class TrigClusterNNProducer : public framework::Producer {
  public:
-  EcalNNTrigger(const std::string& name, framework::Process& process);
+  TrigClusterNNProducer(const std::string& name, framework::Process& process);
   void configure(framework::config::Parameters& ps) override;
   void produce(framework::Event& event) override;
+  void onProcessEnd() override;
 
   /**
    * Fill flattened (MAX_CLUSTERS, N_FEATURES) model input,
@@ -70,21 +70,23 @@ class EcalNNTrigger : public framework::Producer {
   static constexpr std::size_t N_CLASSES = 9;
 
  private:
-  /// trigger if P(bkg) is at or below this value
-  double max_pbkg_{0.};
-
   std::string cluster_coll_name_;
   std::string ecal_sum_coll_name_;
   std::string hcal_sum_coll_name_;
   /// pass name shared by all three input collections
   std::string input_pass_;
-  std::string trigger_coll_name_;
+  std::string score_coll_name_;
 
   /// model input buffer, reused every event
   ldmx::ort::FloatArrays data_;
   std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
+
+  /// profiling: events seen and accumulated wall time (ms)
+  int nevents_{0};
+  double processing_time_{0.};
+  double inference_time_{0.};
 };
 
 }  // namespace trigger
 
-#endif  // TRIGGER_ECALNNTRIGGER_H
+#endif  // TRIGGER_TRIGCLUSTERNNPRODUCER_H
