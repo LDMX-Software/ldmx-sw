@@ -1,0 +1,22 @@
+{
+  "report_pages": 5,
+  "previous_four_pages_text_unchanged": true,
+  "latex_overfull_boxes": false,
+  "default_geometry_evaluation_unchanged_on_4096_test_rays": true,
+  "centered_only_ROOT": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "layers": 26
+  },
+  "without_ecal_ROOT": {
+    "rays": 192,
+    "layer_decisions": 4224,
+    "mismatches": 0,
+    "active_volumes": 213,
+    "layers": 22
+  },
+  "report_sha256": "9bdec1c8e76406f117deaff2689702e0ac84589a54765a63179dd7aa96ef28bc",
+  "rendered_page_5_visually_checked": true
+}

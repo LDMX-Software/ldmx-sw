@@ -1,0 +1,73 @@
+{
+  "definition": "intersect a nonzero path length in at least one active volume in every one of 26 layers",
+  "flux": {
+    "I0_m2_s_sr": 70,
+    "angular_power": 2,
+    "momentum_threshold_GeV_c": 1,
+    "model": "PDG 2022 sea-level reference; azimuth symmetric; no shield or survival correction"
+  },
+  "N_per_scramble": 262144,
+  "scrambles": 8,
+  "seed_start": 918260,
+  "rate_Hz": 0.00025164300553661697,
+  "numerical_SE_Hz": 9.432323925577802e-08,
+  "rate_per_hour": 0.9059148199318211,
+  "numerical_SE_per_hour": 0.0003395636613208009,
+  "rate_per_day": 21.741955678363706,
+  "mean_wait_minutes": 66.23139248844123,
+  "geometrical_factor_m2_sr": 3.594900079094528e-06,
+  "angular_quantiles_deg": {
+    "50": 2.4929402104878724,
+    "90": 4.7866580186959045,
+    "95": 5.393567298510346,
+    "99": 6.214516017817651
+  },
+  "max_sampled_zenith_deg": 7.792453851999783,
+  "midplane_rate_per_hour": 0.7673632687722058,
+  "cutflow_labels": [
+    "6 trigger + 2 LYSO layers",
+    "plus 4 tracker sensors",
+    "plus 4 ECal silicon layers",
+    "plus all 10 HCal layers"
+  ],
+  "cutflow_Hz": [
+    0.0004369449873979565,
+    0.0004369449873979565,
+    0.00025164300553661697,
+    0.00025164300553661697
+  ],
+  "cutflow_numerical_SE_Hz": [
+    6.549748505551923e-08,
+    6.549748505551923e-08,
+    9.432323925577802e-08,
+    9.432323925577802e-08
+  ],
+  "independent_MC_Hz": 0.0002517491704352768,
+  "independent_MC_SE_Hz": 7.751292112276632e-07,
+  "source_scene_sha256": "e05ea22850ed580be07ee2db1f885eb654ceac13b164d1a4776f6b489dca3c3b",
+  "anchor_z_mm": [
+    3649.3880545,
+    3265.9880544999996
+  ],
+  "anchor_distance_mm": 383.40000000000055,
+  "anchor_bounds_mm": [
+    [
+      5012.441479541853,
+      -174.64308463801152
+    ],
+    [
+      5042.5985066981475,
+      -136.8573755659885
+    ],
+    [
+      5012.496438976556,
+      -182.88624653280345
+    ],
+    [
+      5042.543547263444,
+      -128.61421367119655
+    ]
+  ],
+  "shielding_status": "See comparison.json for the two roof cases with the fixed nominal stopping proxy.",
+  "geant4_transport_or_detector_efficiency_included": false
+}

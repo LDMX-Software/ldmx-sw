@@ -1,0 +1,73 @@
+{
+  "definition": "intersect a nonzero path length in at least one active volume in every one of 22 layers",
+  "flux": {
+    "I0_m2_s_sr": 70,
+    "angular_power": 2,
+    "momentum_threshold_GeV_c": 1,
+    "model": "PDG 2022 sea-level reference; azimuth symmetric; no shield or survival correction"
+  },
+  "N_per_scramble": 262144,
+  "scrambles": 8,
+  "seed_start": 918260,
+  "rate_Hz": 0.0004369449873979565,
+  "numerical_SE_Hz": 6.549748505551923e-08,
+  "rate_per_hour": 1.5730019546326435,
+  "numerical_SE_per_hour": 0.00023579094619986923,
+  "rate_per_day": 37.75204691118344,
+  "mean_wait_minutes": 38.1436271094859,
+  "geometrical_factor_m2_sr": 6.2420712485422356e-06,
+  "angular_quantiles_deg": {
+    "50": 3.0195301212347516,
+    "90": 5.17902765566985,
+    "95": 5.693524835745402,
+    "99": 6.407078010189919
+  },
+  "max_sampled_zenith_deg": 7.792453851999783,
+  "midplane_rate_per_hour": 1.2923783628176837,
+  "cutflow_labels": [
+    "6 trigger + 2 LYSO layers",
+    "plus 4 tracker sensors",
+    "ECal omitted",
+    "plus all 10 HCal layers"
+  ],
+  "cutflow_Hz": [
+    0.0004369449873979565,
+    0.0004369449873979565,
+    0.0004369449873979565,
+    0.0004369449873979565
+  ],
+  "cutflow_numerical_SE_Hz": [
+    6.549748505551923e-08,
+    6.549748505551923e-08,
+    6.549748505551923e-08,
+    6.549748505551923e-08
+  ],
+  "independent_MC_Hz": 0.0004372601937749073,
+  "independent_MC_SE_Hz": 8.548473527251161e-07,
+  "source_scene_sha256": "0ab74371eddd53e4e504c29ef901ccb70680d10bb6be0556cc5fc33677afdcc7",
+  "anchor_z_mm": [
+    3449.3880545,
+    3065.9880544999996
+  ],
+  "anchor_distance_mm": 383.40000000000055,
+  "anchor_bounds_mm": [
+    [
+      5012.441479541853,
+      -174.64308463801152
+    ],
+    [
+      5042.5985066981475,
+      -136.8573755659885
+    ],
+    [
+      5012.496438976556,
+      -182.88624653280345
+    ],
+    [
+      5042.543547263444,
+      -128.61421367119655
+    ]
+  ],
+  "shielding_status": "See comparison.json for the roof comparison and material treatment.",
+  "geant4_transport_or_detector_efficiency_included": false
+}

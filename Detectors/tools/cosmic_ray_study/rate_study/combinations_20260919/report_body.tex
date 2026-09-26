@@ -1,0 +1,407 @@
+\begin{abstract}
+We estimate cosmic-muon coincidence rates in the ESA test stand with the
+ECAL centred on the tracker axis and the remaining detectors at their original
+heights. A golden cosmic event crosses all 26 active layers. Its estimated rate
+is \goldNo{} per hour without an overhead slab and \goldRoof{} per hour beneath
+3 ft of concrete. Requiring only the ten HCAL layers gives \hcalNo{} and
+\hcalRoof{} per hour, respectively. We compare HCAL trigger definitions,
+relax the tracker and other detector requirements, and tabulate every combination
+of the three HCAL stations, the TS, LYSO and ECAL requirements, and tracker
+multiplicity. The calculation uses the registered detector geometry, a sea-level
+muon spectrum and continuous-range estimates along each trajectory. These are
+muon-crossing rates before detector response; measured trigger
+rates will also depend on thresholds, efficiency, noise and live time.
+\end{abstract}
+
+\section*{Overview}
+The stand combines a compact trigger-scintillator (TS), silicon-tracker and
+LYSO assembly with an ECAL module and three much larger HCAL stations.
+The HCAL spans metres, while the TS bars are only 30 mm wide in $X$.
+A muon crossing all the central devices must therefore pass through a narrow
+common aperture.
+Figures~\ref{fig:overview} and~\ref{fig:summary} show how this aperture controls the rate. This difference sets the scale of the commissioning samples: an HCAL
+coincidence collects many muons, while a golden event connects every detector
+through a single track.
+
+For choosing a trigger, Table~\ref{tab:hcal} gives the rates for different HCAL
+coincidences. For planning measurements with the central devices,
+Table~\ref{tab:principal} gives the rate retained by each added requirement.
+Both tables compare no overhead slab with the assumed 3 ft concrete slab and quote
+rates before detection losses. The full set of combinations is collected in
+Appendix~\ref{app:all}; the geometry, flux and stopping assumptions are described
+in Sections~\ref{sec:layout} and~\ref{sec:method}.
+
+\input{combinations_20260919/figure_sequence.tex}
+
+\section{Reference layout and event definitions}
+\label{sec:layout}
+The reference configuration moves the entire ECAL by
+$\Delta X=+46.5596$ mm and $\Delta Y=-46.0763$ mm in the CAD coordinate system.
+Its combined active-silicon envelope is then centred on the tracker/TS/LYSO
+axis at $(X,Y)=(5027.51999,-155.75023)$ mm. The four ECAL silicon layers
+retain their internal offsets. No detector moves vertically, and all three
+HCAL stations remain in place. This is the previously studied ``centred only''
+layout; the raised assembly is retained as a historical comparison in
+Appendix~\ref{app:previous}.
+
+\input{combinations_20260919/tables/inventory.tex}
+
+We call an event \emph{golden} when one downward-going muon crosses an active
+volume in every layer in Table~\ref{tab:inventory}. In a segmented layer,
+crossing any one bar is sufficient. A hit requires a positive path length in
+the active volume; it does not require passage through the layer midplane.
+The inactive silicon borders do not count as tracker hits.
+
+Throughout this note, ``everything minus ECAL'' means that ECAL hits are
+unrestricted. The ECAL and its passive material remain installed. Likewise,
+``minus one tracking layer'' means at least three of the four tracker layers,
+with any one layer allowed to lack a hit. It includes four-layer events.
+These inclusive samples overlap and must not be added. The separate
+\texttt{exclusive\_tracker\_counts.csv} table gives exact tracker multiplicities;
+physically removing equipment is a different geometry study.
+
+The three HCAL stations are denoted $H_T$ (top, two layers), $H_M$ (above ECAL,
+four layers) and $H_B$ (below ECAL, four layers). Unless explicitly stated
+otherwise, requiring a station means requiring \emph{all} its active layers.
+The TS requirement $S$ means all six trigger-scintillator layers; $Y$ means both
+LYSO layers; $E$ means all four ECAL silicon layers. A tracker multiplicity
+$T_{\ge k}$ accepts any set of at least $k$ of the four active tracker layers.
+
+
+
+\section{HCAL trigger rates}
+\label{sec:hcal}
+Table~\ref{tab:hcal} compares strict layer coincidences and a looser alternative
+that accepts at least one layer in each selected HCAL station. An entry such
+as $H_T H_B$ is an AND between the two stations, with the middle station
+unrestricted. The ``any station'' and ``at least two stations'' rows are unions:
+each muon is counted once even if it satisfies several station choices.
+No TS, tracker, LYSO or ECAL hit is required in this table.
+
+\input{combinations_20260919/tables/hcal_triggers.tex}
+
+We use the strict ten-layer coincidence as the reference sample for
+the equipment comparisons below. Beneath the modelled concrete slab, the golden sample
+is \goldFraction{}\% of this coincidence sample, or about one golden event per
+\goldDenominator{} strict HCAL coincidences. The corresponding mean golden-event
+interval is \goldWait{} minutes, before detection losses. A broader HCAL
+trigger therefore provides a much larger sample for detector commissioning,
+although most of those muons miss the small central devices.
+
+These calculations describe muons passing the stated logical conditions.
+They are not a prediction of discriminator singles or accidental coincidences.
+The coincidence time window and measured channel rates are needed to estimate
+accidentals. The event logic also needs to be implemented consistently in
+hardware or offline selection: an OR over bars within a layer is different
+from an OR over layers within a station.
+
+\section{Rates for detector combinations}
+\label{sec:combinations}
+Table~\ref{tab:principal} collects the requested golden-event relaxations and
+several useful commissioning selections. Every row requires the strict
+$H_T H_M H_B$ coincidence. Rates are given per hour; the quoted errors are
+numerical integration errors only.
+
+\input{combinations_20260919/tables/principal.tex}
+
+Within the numerical precision of this study, allowing a tracker layer to be
+missed does not increase the rate once both the TS and LYSO coincidences are required. Those
+small detectors already confine accepted trajectories to the tracker footprint.
+This does not imply perfect tracker efficiency. A relaxed layer requirement
+can still recover events lost to inactive channels or detection inefficiency,
+neither of which is included in this calculation. Ignoring ECAL hits gives a
+small additional acceptance because the aligned ECAL already covers nearly
+all of this narrow trajectory sample.
+
+Tracker requirements matter more when the TS or LYSO requirements are
+removed. Tracker and ECAL acceptance then select a much smaller subset of
+the HCAL trigger sample, and the individual tracker choices can have different
+rates. Table~\ref{tab:tracker} makes the single-layer omissions explicit.
+
+\input{combinations_20260919/tables/tracker_omissions.tex}
+
+
+
+Appendix~\ref{app:all} contains the complete 280-row comparison, displayed as
+two matrices: seven nonempty HCAL station choices, eight choices of $S,Y,E$,
+and five tracker thresholds. The accompanying machine-readable tables contain
+all 896 specified tracker-subset selections as well as the inclusive and
+exclusive multiplicities. This enumerates the stated subsystem and tracker
+choices; arbitrary masks of the 26 individual layers are outside its scope. Individual
+HCAL-layer singles are tabulated separately in Appendix~\ref{app:singles}.
+
+\section{Flux, geometry integration and stopping model}
+\label{sec:method}
+\subsection{Incident spectrum}
+We retain the sea-level spectrum and normalization used in the original note.
+The geometric reference uses $I(\theta)=70\cos^2\theta$ in
+$\mathrm{m^{-2}\,s^{-1}\,sr^{-1}}$, the approximate vertical intensity above
+$p=1$ GeV/$c$ quoted by the PDG~\cite{pdg}. This reference tests acceptance
+without attenuation; it is not the energy-integrated rate used in the main tables.
+
+The main rates integrate the modified Gaisser spectrum of Guan et
+al.~\cite{guan}, with total muon energy $E$ in GeV:
+\begin{equation}
+ j(E,\theta)=10^4 C\,0.14
+ \left[E+\frac{3.64}{(\cos\theta^*)^{1.29}}\right]^{-2.7}
+ \left[\frac{1}{1+1.1E\cos\theta^*/115}
+       +\frac{0.054}{1+1.1E\cos\theta^*/850}\right].
+ \label{eq:flux}
+\end{equation}
+Here $j$ is in $\mathrm{m^{-2}\,s^{-1}\,sr^{-1}\,GeV^{-1}}$; the factor $10^4$
+converts the published area unit. The curvature correction is
+\begin{equation}
+ \cos\theta^*=\left[\frac{c^2+p_1^2+p_2c^{p_3}+p_4c^{p_5}}
+ {1+p_1^2+p_2+p_4}\right]^{1/2},\qquad c=\cos\theta,
+\end{equation}
+with $(p_1,p_2,p_3,p_4,p_5)=(0.102573,-0.068287,0.958633,0.0407253,0.817285)$.
+We set $C=\fluxNorm{}$ so that the vertical integral above
+$E=\sqrt{(1\ \mathrm{GeV})^2+m_\mu^2}$ is 70 in the stated intensity units.
+Both muon charges are included; electromagnetic shower particles and hadrons
+are outside the calculation.
+
+\subsection{Geometric acceptance}
+For two required anchor layers separated by $D$, let $\mathbf a$ and
+$\mathbf b$ be the ray positions on their horizontal centre planes. The
+slopes are $\mathbf u=(\mathbf b-\mathbf a)/D$ and
+$c=(1+|\mathbf u|^2)^{-1/2}$. The rate is
+\begin{equation}
+ R=\int d^2a\,d^2b\;\frac{c^4}{D^2}\,
+ F(E_{\min},c)\,\mathbf 1_{\mathcal C},\qquad
+ F(E_{\min},c)=\int_{E_{\min}}^\infty j(E,c)\,dE.
+ \label{eq:anchors}
+\end{equation}
+The four powers of $c$ include the projected area and solid-angle Jacobian.
+The geometric reference therefore has a $70c^6$ weight. Anchor rectangles
+are expanded to include tracks that enter a finite-thickness volume through
+its side. Each selection uses two layers that it actually requires, chosen
+to give efficient sampling. HCAL-only selections use broader anchors because the
+original TS--LYSO sampling region excludes most of their accepted trajectories.
+
+For closely spaced HCAL layers and the any-layer triggers, directions are
+sampled with $q(c)=4c^3$ and uniform azimuth. At each direction we construct
+a rectangle containing the projected acceptance and sample the transverse
+position within it. Exact prism intersections then retain or reject the ray.
+The geometric-reference weight is $70(\pi/2)A$ for rectangle area $A$ in
+square metres. Boxes, rotated tracker rectangles and ECAL hexagons retain
+their finite thickness and segmentation. Adjacent HCAL bars are merged only
+after checking that they tile a rectangle without gaps.
+
+Each of the 39 anchor families uses eight independently scrambled Sobol
+sequences with $2^{17}$ points per scramble, for 40,894,464 trial rays in the
+equipment study. The additional HCAL any-layer and individual-layer calculations
+use the same number of points per trigger definition. The supplied scripts
+record seeds, per-scramble estimates and reusable checkpoints. Numerical errors
+are the standard error across scrambles, not counting-statistics errors for
+a future data sample.
+
+The tracker-threshold tables use exact set identities. If $S_j$ is the sum of
+rates requiring each specified $j$-layer tracker subset (with all other cuts
+fixed), then
+\begin{align}
+ R(N_T\ge k)&=\sum_{j=k}^{4}(-1)^{j-k}\binom{j-1}{k-1}S_j,\quad k\ge1,\\
+ R(N_T=k)&=\sum_{j=k}^{4}(-1)^{j-k}\binom{j}{k}S_j.
+\end{align}
+For $k=0$, the inclusive rate is $S_0$. These formulas count the union without
+double counting. They are applied separately to every scramble to retain
+the covariance of estimates sharing a sample. Very small exclusive rates
+can be unresolved differences of larger numbers; signed estimates and numerical
+errors are retained in the CSV instead of being silently clipped to zero.
+
+\subsection{Material and the concrete slab}
+For each ray, the material column $X_d=\sum_i\rho_i\ell_i$ is integrated from
+above the stand to the lower surface of its last required layer. All installed
+devices contribute when crossed, whether or not their hits are required.
+For an any-layer HCAL station, the earliest crossed layer satisfies that
+station; the last such required station completion sets the stopping plane.
+The tracker silicon parents supply the full sensor material, including inactive
+borders; their same-material active daughters are not counted a second time.
+
+The detector column is represented by the polystyrene CSDA range~\cite{poly}.
+This remains an approximation to the mixed materials even though the chords
+and densities are evaluated ray by ray. Let $\mathcal R_p$ and
+$\mathcal R_c$ denote the polystyrene and concrete range functions. With
+kinetic energy in GeV,
+\begin{align}
+ K_d&=\mathcal R_p^{-1}[\mathcal R_p(0.010)+X_d],\\
+ K_s&=\mathcal R_c^{-1}[\mathcal R_c(K_d)+X_c/c],\qquad
+ E_{\min}=K_s+m_\mu .
+\end{align}
+The column $X_d$ already includes the oblique path length, so no further
+$1/c$ factor is applied to it. Without concrete, $K_s=K_d$. The 10 MeV
+residual energy is the lower range-table reliability convention; it is not
+a detector threshold. The stopping plane is the lower $Z$ face even for a
+track whose active chord ends on a side face.
+
+The slab is 91.44 cm thick with density $2.30\ \mathrm{g\,cm^{-3}}$,
+giving $X_c=210.312\ \mathrm{g\,cm^{-2}}=2.10312$ m water equivalent~\cite{concrete}.
+It is horizontal and covers every accepted direction. Roof height, gaps,
+walls and local building structure have not been surveyed into this model.
+Unlike the earlier fixed-column comparison, a broad HCAL ray is not assigned
+the material budget of a golden event, and it need not emerge from equipment
+below the final required hit.
+
+\section{Checks and limits of the estimate}
+\label{sec:checks}
+\input{combinations_20260919/tables/validation_text.tex}
+
+\input{combinations_20260919/tables/material_sensitivity.tex}
+
+The numerical uncertainty of the integration is much smaller than the
+physical uncertainty in the rate model. The flux normalization is not a local
+measurement: the PDG review notes measurements 10--15\% below the reference
+value~\cite{pdg}. A change of normalization rescales all rates directly.
+Multiple scattering, stochastic energy loss and muon decay in the stand are
+omitted. Scattering can move tracks into or out of the narrow acceptance,
+so no one-sided correction is inferred here. The broad HCAL trigger and
+the golden sample need not have the same correction.
+
+No light-yield, energy-deposition or charge threshold is imposed. In particular,
+a grazing active-volume chord is a hit in this model. In the earlier aligned
+calculation, requiring every layer midplane reduced the geometric reference
+from 1.550 to 1.278 per hour. That difference is a useful illustration of
+threshold sensitivity, not a calibrated inefficiency correction. The
+material-column variations in Table~\ref{tab:material} likewise test one
+model ingredient and do not define a total uncertainty interval.
+
+For a future measured coincidence, a schematic response relation is
+\begin{equation}
+ R_{\rm recorded}=f_{\rm live}\int d\Gamma\,
+ \frac{dR_\mu}{d\Gamma}\,P(\hbox{trigger and selection}\mid\Gamma)
+ +R_{\rm accidental}+R_{\rm other},
+\end{equation}
+where $\Gamma$ includes the trajectory and energy. For independent tracker
+layers with equal efficiency $\epsilon$, a track crossing all four sensors
+has four-hit probability $\epsilon^4$ and at-least-three-hit probability
+$\epsilon^4+4\epsilon^3(1-\epsilon)$. No efficiency value is assumed here.
+Correlations, dead areas and path-dependent response should be measured
+before using this relation quantitatively.
+
+The geometry combines the STEP placement framework, ESA
+\texttt{ldmx-reduced-v3} central-detector internals and HCAL dimensions from the
+test-stand branch. The 12-bar and 8-bar HCAL counts and the registration remain
+inferred hardware inputs. In particular, the tracker uses the native
+$48\times78$ mm active sensors, and the ECAL has four active silicon layers;
+the CAD board and support counts do not directly specify these sensitive
+volumes. Agreement with the assembled hardware must therefore be checked
+when using these rates to plan measurements.
+The full CAD export omitted 965 placements and used
+placeholder material for unassigned CAD parts; the rate calculation uses the
+explicit native-material snapshot, not those placeholder supports. Prior
+GDML-schema checks and ROOT closure establish readable solids, not Geant4
+transport, mechanical clearances or sensitive-detector response. No new native
+\texttt{ldmx-sw} transport run is claimed in this update.
+
+\section{Reproducing the study}
+The report directory contains the original geometry provenance, saved earlier
+studies and the new calculation in \texttt{combinations\_20260919/}. From the
+report directory, run
+\begin{verbatim}
+PYTHON=/path/to/python3 bash build_report.sh
+\end{verbatim}
+Python requires NumPy, SciPy and Matplotlib; a C++17 compiler builds the small
+prism-intersection library on first use. Tectonic builds the PDF. ROOT is used
+only by the additional geometry-validation script, not by the rate integrator.
+The default calculation uses eight scrambles of $2^{17}$ rays per anchor family;
+checkpoints allow an interrupted calculation to resume. The source files,
+input snapshots, numerical outputs and PDF are identified by SHA-256 manifests.
+
+\begin{itemize}
+\item \texttt{calculate\_combinations.py}: all 896 specified subsets,
+      280 inclusive combinations and 280 exact tracker-count combinations.
+\item \texttt{calculate\_hcal\_triggers.py}: any-layer station coincidences,
+      station unions and ten individual HCAL-layer singles.
+\item \texttt{ray\_geometry.py} and \texttt{ray\_geometry.cpp}: active hits and
+      installed-material chords, with tracker material counted once.
+\item \texttt{results/*.csv}, \texttt{results/*.json} and
+      \texttt{results/*replicates.npz}: rates, numerical errors, settings and
+      per-scramble values. The labels and bit definitions are documented in
+      \texttt{README.md}.
+\end{itemize}
+The previous PDF, source and build entry point are preserved under
+\texttt{previous\_report/}. Rebuilding this update does not require rerunning
+the historical geometry variations or downloading range tables.
+
+\appendix
+\clearpage
+\section{Complete inclusive equipment combinations}
+\label{app:all}
+Each column below specifies the required HCAL stations. Each row specifies
+the TS, LYSO and ECAL requirements (1 means required; 0 means unrestricted)
+and the minimum tracker count $k$. All layers in a selected HCAL station are
+required. Rates are per hour. The two tables contain the same 280 combinations
+for the two roof assumptions; numerical errors and full precision are in
+\texttt{inclusive\_combinations.csv}. Omitted devices remain installed.
+\input{combinations_20260919/tables/all_concrete.tex}
+\clearpage
+\input{combinations_20260919/tables/all_no_roof.tex}
+
+\clearpage
+\section{Individual HCAL-layer singles}
+\label{app:singles}
+These rows require only the indicated active HCAL layer, with no requirements
+on other devices. They are physical muon-crossing estimates, not electronic
+singles. Layers are numbered from highest to lowest within each station.
+\input{combinations_20260919/tables/hcal_singles.tex}
+
+\section{Earlier placement and shielding studies}
+\label{app:previous}
+The preceding report studied the offset ECAL, a 200 mm upward translation
+of the TS/tracker/LYSO assembly, ECAL centring, and physical ECAL removal.
+Table~\ref{tab:historical} preserves those results under their original
+fixed-column assumptions. They are useful for identifying the effect of
+placement; the new tables use the aligned layout and trajectory-dependent
+columns described in Section~\ref{sec:method}.
+\input{combinations_20260919/tables/historical.tex}
+
+Raising the central assembly alone left its 383.4 mm TS--LYSO separation
+unchanged but increased the distance to the offset ECAL, reducing the rate
+by 10.2\%. Centring ECAL in that raised layout recovered acceptance, while
+centring it at the original heights gave a further 11.0\% increase. Thus the
+vertical move was not needed to obtain the centring benefit.
+
+In the original offset layout, the geometric factor was
+$G_2=4.0021\times10^{-6}\ \mathrm{m^2\,sr}$ and the geometric reference rate was
+$1.0085\pm0.0004$ per hour. Under that angular model, 90\% and 99\% of accepted
+rays lay within $4.82^\circ$ and $6.28^\circ$ of vertical. Requiring all layer
+midplanes instead of nonzero volume chords gave 0.853 per hour. The mean
+surface kinetic-energy requirements in the continuous-loss model were
+0.104 GeV without a roof and 0.470 GeV with concrete. The corresponding
+mean event intervals were 42.6 and 50.1 minutes.
+
+The original 96-ray material sample had mean vertical column
+$32.70\ \mathrm{g\,cm^{-2}}$, including about $20.6\ \mathrm{g\,cm^{-2}}$ of HCAL
+scintillator. Doubling that column reduced the concrete prediction from
+1.20 to 1.17 per hour; increasing the final kinetic-energy floor to 100 MeV
+also gave 1.17 per hour. The roof reduced the nominal rate by about 15\%.
+The old \texttt{concrete\_scan.csv} and \texttt{rate\_comparison.pdf} retain the
+full thickness scan and angular distributions.
+
+Physical ECAL removal required 22 layers and reduced the calculated remaining
+column to $24.32\ \mathrm{g\,cm^{-2}}$. At the original fixed column, simply
+dropping the ECAL hit requirement gave 2.195 and 1.869 per hour for no roof
+and concrete, respectively. Removing its material increased those rates
+to 2.214 and 1.883 per hour. These historical numbers should not be substituted
+for the current installed, aligned-ECAL selections.
+
+Each earlier variation used eight Sobol scrambles of $2^{18}$ point pairs.
+The stored independent pseudorandom checks agreed with the corresponding
+Sobol estimates. ROOT agreed with all 4,992 layer decisions in each 192-ray
+26-layer test, and with all 4,224 decisions for ECAL removal. The original
+STEP hash and the source and generated GDML hashes remain in
+\texttt{geometry/provenance.json}; the registered geometry snapshot records
+revision \texttt{eae30ac8f64f694fa99bbc8ed30c1a77fef05135}.
+
+\begin{thebibliography}{4}
+\bibitem{pdg} Particle Data Group, \emph{Cosmic Rays}, 2022 review,
+Sec.~30.3.1, \url{https://pdg.lbl.gov/2022/reviews/rpp2022-rev-cosmic-rays.pdf}.
+\bibitem{guan} M. Guan, M.-C. Chu, J. Cao, K.-B. Luk and C. Yang,
+\emph{A parametrization of the cosmic-ray muon flux at sea-level},
+arXiv:1509.06176 (2015), \url{https://arxiv.org/abs/1509.06176}.
+\bibitem{concrete} Particle Data Group, \emph{Shielding concrete:
+properties and muon CSDA range},
+\url{https://pdg.lbl.gov/2022/AtomicNuclearProperties/HTML/shielding_concrete.html}.
+\bibitem{poly} Particle Data Group, \emph{Muon stopping power and range in
+polystyrene},
+\url{https://pdg.lbl.gov/2019/AtomicNuclearProperties/MUE/muE_polystyrene.txt}.
+\end{thebibliography}
