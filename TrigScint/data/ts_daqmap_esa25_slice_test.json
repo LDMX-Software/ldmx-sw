@@ -1,0 +1,56 @@
+{
+  "_comment": [
+    "Trigger-scintillator DAQ map for the ESA slice test (Detectors/data/ldmx-reduced-v3).",
+    "Maps each decoded ZCCM pad collection (produced by runZCCMDecode.py) to a",
+    "TrigScintGeometry module index. The ZCCM decoder has already applied the",
+    "elec->bar (channelMap_4modules_14lanes.txt) and lane->module",
+    "(moduleMap_4modules_14lanes.txt) maps, so digis arrive bar-addressed by",
+    "chanID; this map only fixes the remaining decode-module -> geometry-module",
+    "(cabling) correspondence, analogous to the tracker map's (feb,hybrid) ->",
+    "layer_id.",
+    "decode_pad N == moduleMap module (N-1); lanes are the moduleMap lane group.",
+    "geo_module is the index into TrigScintGeometry.module_z (reduced-v3:",
+    "pad1=-381.0, pad2=-305.8, pad3=-76.2 mm). ASSUMPTION: decode Pad1/2/3 ==",
+    "geometry pad1/2/3 -- edit geo_module here (not the geometry) if the cabling",
+    "differs. The LYSO pad (Pad4, 12 bars) is not yet in TrigScintGeometry, so",
+    "geo_module=-1 marks it as not-yet-mapped (skipped by the producer)."
+  ],
+  "modules": [
+    {
+      "collection": "decodedZCCMPad1",
+      "decode_pad": 1,
+      "lanes": [0, 1, 2, 3],
+      "geo_module": 0,
+      "pad": "pad1",
+      "n_bars": 24,
+      "technology": "plastic"
+    },
+    {
+      "collection": "decodedZCCMPad2",
+      "decode_pad": 2,
+      "lanes": [4, 5, 6, 7],
+      "geo_module": 1,
+      "pad": "pad2",
+      "n_bars": 24,
+      "technology": "plastic"
+    },
+    {
+      "collection": "decodedZCCMPad3",
+      "decode_pad": 3,
+      "lanes": [8, 9, 10, 11],
+      "geo_module": 2,
+      "pad": "pad3",
+      "n_bars": 24,
+      "technology": "plastic"
+    },
+    {
+      "collection": "decodedZCCMPad4",
+      "decode_pad": 4,
+      "lanes": [12, 13],
+      "geo_module": -1,
+      "pad": "lyso",
+      "n_bars": 12,
+      "technology": "lyso"
+    }
+  ]
+}

@@ -17,17 +17,20 @@ from LDMX.Packing import rawio
 from LDMX.Tracking import dqm as tracking_dqm
 from LDMX.Tracking import rawdecoder, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
-from LDMX.TrigScint.trig_scint import (
-    EventReadoutProducer,
-    QIEAnalyzer,
-    TestBeamClusterProducer,
-    TestBeamHitProducer,
+from LDMX.Tracking.ts_measurements import (
+    TrigScintMeasurementProducer,
+    ts_cluster_chain,
 )
+from LDMX.TrigScint.trigscint_geometry import TrigScintGeometryProvider
 from LDMX.TrigScint.zccm_format import ZCCMDecoder
 
 
 # Tracking geometry for the local -> global transform in StripClusterProcessor.
 TrackGeo.get_instance().set_detector("ldmx-esa25-v1")
+
+# TS geometry conditions provider (bar positions for TrigScintMeasurementProducer),
+# pinned to ESA25 since real-data RunHeaders carry no detector name.
+TrigScintGeometryProvider.get_instance().set_detector("ldmx-esa25-v1")
 
 
 # Tracker: raw frames -> strip hits -> pedestal subtracted -> waveforms -> fits
@@ -49,8 +52,7 @@ trk_dqm = tracking_dqm.RawSiStripDQM()
 trk_clusters = tracking.StripClusterProcessor()
 trk_clusters.daq_map_file = rawdecoder.daq_map_path()
 
-# TS: raw frames -> ZCCM decoding -> QIE samples -> hits -> clusters
-n_ts_channels = 24
+# TS: raw frames -> ZCCM decoding -> standard rechit + cluster reconstruction.
 ts_unpack = rawio.SingleSubsystemUnpacker(
     instance_name="ts_unpack",
     dat_file=dat_file,
@@ -64,25 +66,17 @@ ts_decoder = ZCCMDecoder(
     output_collection="decodedZCCMPad",
     number_time_samples=30,
 )
-ts_readout = EventReadoutProducer("ts_readout")
-ts_readout.input_collection = "decodedZCCMPad1"
-ts_readout.time_shift = 0
-ts_hits = TestBeamHitProducer("ts_hits")
-ts_hits.pedestals = [-2.0] * n_ts_channels
-ts_hits.gain = [2e6] * n_ts_channels
-ts_hits.start_sample = 10
-ts_hits.pulse_width_lyso = 5
-ts_hits.n_instrumented_channels = n_ts_channels
-ts_clusters = TestBeamClusterProducer("ts_clusters")
-ts_clusters.pad_time = 0.0
-ts_clusters.clustering_threshold = 15.0
-
-ts_qie_ana = QIEAnalyzer("ts_qie_ana")
-ts_qie_ana.start_sample = 0
-ts_qie_ana.pedestals = [2.0] * n_ts_channels
-ts_qie_ana.gain = [2e6] * n_ts_channels
-# per-event displays would add 4800 histograms to compare
-ts_qie_ana.n_event_displays = 0
+# Standard ESA25 TS reconstruction of the three plastic pads:
+#   decodedZCCMPad{1,2,3} -> TrigScintRecHitProducer -> TrigScintClusterProducer
+ts_calib_files = {p: f"{ts_data}/esa25/calibration_pad{p}.txt" for p in (1, 2, 3)}
+ts_reco, ts_cluster_collections = ts_cluster_chain(
+    pads=(1, 2, 3), calib_files=ts_calib_files
+)
+# Geometry-aware TS measurements (global y at the cluster centroid). Exercises the
+# TrigScintGeometry class + TrigScintGeometryProvider + TrigScintMeasurementProducer
+ts_measurements = TrigScintMeasurementProducer()
+ts_measurements.input_pass = ""  # clusters are produced in this same process
+ts_measurements.input_collections = ts_cluster_collections
 
 p.sequence = [
     trk_unpack,
@@ -94,10 +88,8 @@ p.sequence = [
     trk_clusters,
     ts_unpack,
     ts_decoder,
-    ts_readout,
-    ts_hits,
-    ts_clusters,
-    ts_qie_ana,
+    *ts_reco,
+    ts_measurements,
 ]
 
 ##################################################################
@@ -112,5 +104,3 @@ p.output_files = ["events.root"]
 p.skim_default_is_drop()
 
 p.logger.term_level = int(os.environ.get("LDMX_LOG_LEVEL", 1))
-# prints every fired TDC at info level
-p.logger.custom(ts_qie_ana, level=2)
