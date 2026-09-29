@@ -7,7 +7,9 @@
 #include <algorithm>  // for std::transform
 #include <cctype>     // for ::tolower
 #include <cmath>
-#include <iostream>
+
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tracking/Event/Track.h"
 
 namespace recon {
 

@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "TrigScint/Event/TrigScintCluster.h"
+
 namespace tools {
 
 ClusterTripletMaker::ClusterTripletMaker(const std::string& name,

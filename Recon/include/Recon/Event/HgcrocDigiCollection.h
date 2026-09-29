@@ -10,7 +10,7 @@
 #define RECON_EVENT_HGCROCDIGICOLLECTION_H_
 
 // ROOT
-#include "TObject.h"  //for ClassDef
+#include <Rtypes.h>  // For ClassDef
 
 // STL
 #include <stdint.h>  //32bit words

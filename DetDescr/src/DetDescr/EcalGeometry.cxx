@@ -1,7 +1,13 @@
 #include "DetDescr/EcalGeometry.h"
 
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 #include <tuple>
+
+#include "Framework/Exception/Exception.h"
+#include "TGraph.h"
+#include "TList.h"
 
 namespace ldmx {
 

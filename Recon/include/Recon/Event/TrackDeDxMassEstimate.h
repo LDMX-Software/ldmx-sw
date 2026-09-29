@@ -11,7 +11,7 @@
 #include <iostream>
 
 // ROOT
-#include "TObject.h"  //For ClassDef
+#include <Rtypes.h>  // For ClassDef
 
 // LDMX
 // #include "Event/Track.h"

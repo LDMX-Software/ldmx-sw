@@ -10,10 +10,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <cmath>
 #include <map>
-#include <unordered_map>
-#include <vector>
 
 // Forward declaration for classes inside ldmx namespace
 // class FindableTrackResult;

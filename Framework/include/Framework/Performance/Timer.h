@@ -1,11 +1,12 @@
 #ifndef FRAMEWORK_PERFORMANCE_TIMER
 #define FRAMEWORK_PERFORMANCE_TIMER
 
+#include <Rtypes.h>  // For ClassDef
+
 #include <chrono>
 #include <string>
 
 #include "TDirectory.h"
-#include "TObject.h"
 
 namespace framework::performance {
 

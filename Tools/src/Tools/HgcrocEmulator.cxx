@@ -1,6 +1,8 @@
 
 #include "Tools/HgcrocEmulator.h"
 
+#include "Recon/Event/CompositePulse.h"
+
 namespace ldmx {
 
 HgcrocEmulator::HgcrocEmulator(const framework::config::Parameters& ps) {

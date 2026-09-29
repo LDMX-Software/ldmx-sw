@@ -7,7 +7,7 @@
 
 #include <dlfcn.h>
 
-#include <iostream>
+#include <csignal>
 #include <memory>
 #include <set>
 

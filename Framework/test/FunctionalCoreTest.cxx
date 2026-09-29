@@ -1,7 +1,6 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <cstdio>  //for remove
 
 #include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
@@ -11,7 +10,6 @@
 #include "Hcal/Event/HcalVetoResult.h"
 #include "Recon/Event/CalorimeterHit.h"
 #include "TFile.h"        //to open and check root files
-#include "TH1F.h"         //for test histogram
 #include "TTreeReader.h"  //to check output event files
 
 using Catch::Approx;

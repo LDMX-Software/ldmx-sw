@@ -3,6 +3,8 @@
 #include <sstream>
 
 #include "Framework/ConditionsObjectProvider.h"
+#include "Framework/EventHeader.h"
+#include "Framework/Exception/Exception.h"
 #include "Framework/Process.h"
 
 namespace framework {

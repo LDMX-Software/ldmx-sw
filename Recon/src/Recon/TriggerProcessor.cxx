@@ -2,6 +2,8 @@
 #include "Recon/TriggerProcessor.h"
 
 #include "DetDescr/EcalID.h"
+#include "Ecal/Event/EcalHit.h"
+#include "Recon/Event/TriggerResult.h"
 
 namespace recon {
 

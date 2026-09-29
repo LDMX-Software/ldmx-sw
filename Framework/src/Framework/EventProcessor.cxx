@@ -2,7 +2,6 @@
 
 // LDMX
 #include "Framework/Process.h"
-#include "Framework/RunHeader.h"
 #include "TDirectory.h"
 
 namespace framework {

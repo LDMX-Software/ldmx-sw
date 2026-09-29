@@ -2,7 +2,6 @@
 #define DETDESCR_DETECTORIDINTERPRETER_H
 
 // STL
-#include <iostream>
 #include <vector>
 
 // LDMX

@@ -10,14 +10,11 @@
 // LDMX
 #include "Framework/Conditions.h"
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 #include "Framework/Performance/Tracker.h"
 #include "Framework/RunHeader.h"
 #include "Framework/StorageControl.h"
 
 // STL
-#include <csignal>
-#include <map>
 #include <memory>
 #include <vector>
 
