@@ -1,5 +1,7 @@
 #include "Recon/ElectronCounter.h"
 
+#include "TrigScint/Event/TrigScintTrack.h"
+
 namespace recon {
 
 ElectronCounter::ElectronCounter(const std::string& name,

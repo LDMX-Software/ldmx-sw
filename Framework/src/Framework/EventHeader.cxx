@@ -1,6 +1,8 @@
 
 #include "Framework/EventHeader.h"
 
+#include <iostream>
+
 #include "Framework/Exception/Exception.h"
 
 ClassImp(ldmx::EventHeader);

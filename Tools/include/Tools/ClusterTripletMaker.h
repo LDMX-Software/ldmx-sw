@@ -15,7 +15,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace tools {
 

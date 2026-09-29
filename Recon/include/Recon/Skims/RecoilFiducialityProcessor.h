@@ -8,14 +8,8 @@
 #define RECON_RECOILFIDUCIALITYPROCESSOR_H_
 
 // LDMX
-#include "Ecal/Event/EcalHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/FiducialFlag.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tools/AnalysisUtils.h"
 
 namespace recon {
 

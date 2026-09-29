@@ -3,6 +3,10 @@
 #include <cmath>
 #include <vector>
 
+#include "Ecal/Event/EcalHit.h"
+#include "Recon/Event/CaloCluster.h"
+#include "Recon/Event/PFCandidate.h"
+
 namespace recon {
 
 void PileupFinder::configure(framework::config::Parameters& ps) {

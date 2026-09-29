@@ -3,8 +3,9 @@
 #include <assert.h>
 
 #include <algorithm>
-#include <iomanip>
 #include <iostream>
+
+#include "Framework/Exception/Exception.h"
 
 namespace ldmx {
 

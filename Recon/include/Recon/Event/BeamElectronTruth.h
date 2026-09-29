@@ -10,9 +10,10 @@
 #define RECON_EVENT_BEAMELECTRONTRUTH_H_
 
 // ROOT
-#include "TObject.h"  //ClassDef
 
 // STL
+#include <Rtypes.h>  // For ClassDef
+
 #include <iostream>
 
 namespace ldmx {

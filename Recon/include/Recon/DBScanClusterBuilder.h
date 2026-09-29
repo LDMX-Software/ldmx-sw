@@ -7,11 +7,12 @@
 #ifndef DBSCANCLUSTERBUILDER_H
 #define DBSCANCLUSTERBUILDER_H
 
-#include "Framework/EventProcessor.h"
+#include <cmath>
+
+#include "Framework/Logger.h"
 #include "Recon/Event/CaloCluster.h"
 #include "Recon/Event/CalorimeterHit.h"
-#include "TFitResult.h"
-#include "TGraph.h"
+
 namespace recon {
 
 /**

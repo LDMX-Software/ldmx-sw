@@ -1,12 +1,11 @@
 #ifndef RECON_EVENT_HGCROCPULSETRUTH_H_
 #define RECON_EVENT_HGCROCPULSETRUTH_H_
 
-#include <iostream>
-#include <optional>
+#include <Rtypes.h>  // For ClassDef
+
 #include <vector>
 
 #include "Recon/Event/CompositePulse.h"
-#include "TObject.h"  //for ClassDef
 
 namespace ldmx {
 

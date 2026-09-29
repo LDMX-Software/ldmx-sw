@@ -10,8 +10,6 @@
 #define RECON_TRIGGER_TRIGGERPROCESSOR_H_
 
 // LDMX
-#include "Ecal/Event/EcalHit.h"
-#include "Event/TriggerResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 

@@ -7,6 +7,10 @@
 
 #include "Recon/Skims/RecoilMissesEcalSkimmer.h"
 
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimParticle.h"
+#include "Tools/AnalysisUtils.h"
+
 namespace recon {
 
 RecoilMissesEcalSkimmer::RecoilMissesEcalSkimmer(const std::string& name,

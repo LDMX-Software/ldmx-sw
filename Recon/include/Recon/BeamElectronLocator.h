@@ -7,8 +7,6 @@
 #include "Framework/EventProcessor.h"
 
 //---< Recon >---//
-#include "Recon/Event/BeamElectronTruth.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace recon {
 

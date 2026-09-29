@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#include "Recon/Event/BeamElectronTruth.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 namespace recon {
 
 BeamElectronLocator::BeamElectronLocator(const std::string& name,

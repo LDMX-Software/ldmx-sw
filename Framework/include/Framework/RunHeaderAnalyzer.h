@@ -1,7 +1,6 @@
 #ifndef RUNHEADERANALYZER_H
 #define RUNHEADERANALYZER_H
 
-#include "Framework/EventHeader.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
 #include "Framework/RunHeader.h"

@@ -6,6 +6,12 @@
 
 #include "Recon/Skims/RecoilFiducialityProcessor.h"
 
+#include "Recon/Event/FiducialFlag.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimParticle.h"
+#include "SimCore/Event/SimTrackerHit.h"
+#include "Tools/AnalysisUtils.h"
+
 namespace recon {
 
 void RecoilFiducialityProcessor::configure(

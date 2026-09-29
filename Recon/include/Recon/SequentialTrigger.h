@@ -11,7 +11,6 @@
 #define RECON_TRIGGER_SEQUENTIALTRIGGER_H_
 
 // LDMX
-#include "Event/TriggerResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 

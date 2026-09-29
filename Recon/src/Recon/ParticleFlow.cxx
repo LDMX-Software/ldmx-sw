@@ -3,6 +3,8 @@
 #include <cmath>
 #include <vector>
 
+#include "Ecal/Event/EcalCluster.h"
+
 namespace recon {
 
 void ParticleFlow::configure(framework::config::Parameters& ps) {

@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "Recon/Event/CalorimeterHit.h"
-
 namespace recon {
 
 /**

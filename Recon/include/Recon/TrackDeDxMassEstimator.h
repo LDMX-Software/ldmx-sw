@@ -11,9 +11,6 @@
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/TrackDeDxMassEstimate.h"
-#include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/Track.h"
 
 namespace recon {
 

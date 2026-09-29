@@ -1,5 +1,6 @@
 #include "Recon/PFEcalClusterProducer.h"
 
+#include "Ecal/Event/EcalHit.h"
 #include "Recon/DBScanClusterBuilder.h"
 #include "Recon/Event/CaloCluster.h"
 #include "Recon/Event/CalorimeterHit.h"

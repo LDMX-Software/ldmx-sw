@@ -15,13 +15,13 @@
 //----------//
 //   ldmx   //
 //----------//
-#include "Framework/Exception/Exception.h"
 #include "SimCore/Event/SimParticle.h"
 
 //----------//
 //   ROOT   //
 //----------//
-#include "Math/Vector3D.h"
+#include <unordered_map>
+#include <vector>
 
 namespace analysis {
 

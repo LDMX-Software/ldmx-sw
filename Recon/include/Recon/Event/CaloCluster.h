@@ -7,12 +7,11 @@
 #define EVENT_CALOCLUSTER_H_
 
 // ROOT
-#include "TObject.h"  //For ClassDef
-#include "TString.h"
 
 // STL
+#include <Rtypes.h>  // For ClassDef
+
 #include <iostream>
-#include <set>
 
 // ldmx-sw
 #include "Recon/Event/CalorimeterHit.h"

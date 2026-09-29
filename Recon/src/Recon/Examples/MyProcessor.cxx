@@ -1,6 +1,8 @@
 
 #include "Recon/Examples/MyProcessor.h"
 
+#include "Ecal/Event/EcalHit.h"
+
 namespace recon {
 
 MyProcessor::MyProcessor(const std::string& name, framework::Process& process)

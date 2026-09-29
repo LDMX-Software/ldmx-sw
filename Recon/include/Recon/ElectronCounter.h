@@ -7,8 +7,6 @@
 #include "Framework/EventProcessor.h"
 
 //---< TrigScint >---//
-#include "TrigScint/Event/TrigScintCluster.h"
-#include "TrigScint/Event/TrigScintTrack.h"
 
 namespace recon {
 
