@@ -40,20 +40,18 @@ class Timer {
   /**
    * The time_point when the timer is started.
    *
-   * The comment beginning with `//!` is what marks this member
-   * as "transient" for ROOT  I/O.
+   * The trailing `//!` comment marks this member as "transient"
+   * for ROOT I/O and must stay on the same line as the member.
    */
-  //! not serialized, just for measurement purposes
-  std::chrono::time_point<clock> begin_;
+  std::chrono::time_point<clock> begin_;  //! transient
 
   /**
    * The time_point when the timer is stopped.
    *
-   * The comment beginning with `//!` is what marks this member
-   * as "transient" for ROOT  I/O.
+   * The trailing `//!` comment marks this member as "transient"
+   * for ROOT I/O and must stay on the same line as the member.
    */
-  //! not serialized, just for measurement purposes
-  std::chrono::time_point<clock> end_;
+  std::chrono::time_point<clock> end_;  //! transient
 
   /**
    * Time stamp for when timer was started in nanoseconds since UNIX epoch
@@ -96,7 +94,7 @@ class Timer {
    * Since I don't like seeing `&` or `c_str()` in my code.
    */
   void write(TDirectory* location, const std::string& name) const;
-  ClassDef(Timer, 1);
+  ClassDef(Timer, 2);
 };
 
 }  // namespace framework::performance
