@@ -5,13 +5,10 @@
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/EventData/MultiTrajectory.hpp"
 #include "Acts/EventData/SourceLink.hpp"
-#include "Acts/EventData/VectorMultiTrajectory.hpp"
 #include "Acts/Utilities/CalibrationContext.hpp"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/IndexSourceLink.h"
-#include "Tracking/Sim/LdmxSpacePoint.h"
 
 /** The measurement calibrator can be a function or a class/struct able to
  retrieve the sim hits container.

@@ -1,11 +1,14 @@
 #include "Tracking/Reco/GreedyAmbiguitySolver.h"
 
+#include <Acts/Geometry/TrackingGeometry.hpp>
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
 
 #include "Acts/EventData/SourceLink.hpp"
-#include "Acts/Utilities/TrackHelpers.hpp"
+#include "Acts/Geometry/GeometryIdentifier.hpp"
+#include "Tracking/Sim/IndexSourceLink.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking {
 namespace reco {

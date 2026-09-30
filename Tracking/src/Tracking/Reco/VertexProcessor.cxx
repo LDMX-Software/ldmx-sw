@@ -2,7 +2,11 @@
 
 #include <chrono>
 
-#include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "TFile.h"
+#include "TLorentzVector.h"
+#include "Tracking/Event/Track.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 using namespace framework;
 

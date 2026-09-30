@@ -1,7 +1,18 @@
 
 #include "Tracking/geo/TrackingGeometry.h"
 
+#include <Acts/Surfaces/SurfaceArray.hpp>
+#include <Acts/Visualization/ObjVisualization3D.hpp>
+#include <Acts/Visualization/ViewConfig.hpp>
+#include <G4GDMLParser.hh>
+#include <G4LogicalVolume.hh>
+#include <G4Types.hh>
+#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/path.hpp>
+
 #include "Framework/Exception/Exception.h"
+#include "G4UIsession.hh"
+#include "G4strstreambuf.hh"
 
 namespace tracking::geo {
 

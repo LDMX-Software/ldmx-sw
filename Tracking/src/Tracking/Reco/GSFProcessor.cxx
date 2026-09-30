@@ -6,8 +6,21 @@
 #include <optional>
 #include <string>
 
+#include "Acts/Definitions/TrackParametrization.hpp"
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/EventData/SourceLink.hpp"
+#include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/TrackFitting/BetheHeitlerApprox.hpp"
+#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
+#include "Acts/TrackFitting/GsfMixtureReduction.hpp"
+#include "Acts/Utilities/Logger.hpp"
+#include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
+#include "Tracking/Sim/IndexSourceLink.h"
+#include "Tracking/Sim/MeasurementCalibrator.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking {
 namespace reco {

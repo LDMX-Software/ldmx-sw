@@ -10,8 +10,6 @@
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/Utilities/AxisDefinitions.hpp"
 #include "Acts/Utilities/Grid.hpp"
-#include "Acts/Utilities/Interpolation.hpp"
-#include "Acts/Utilities/Result.hpp"
 #include "Framework/Exception/Exception.h"
 
 static const double DIPOLE_OFFSET = 400.;  // 400 mm

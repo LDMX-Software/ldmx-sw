@@ -8,30 +8,17 @@
 
 #include "Acts/Geometry/CuboidVolumeBuilder.hpp"
 #include "Acts/Geometry/GeometryContext.hpp"
-#include "Acts/Geometry/TrackingGeometryBuilder.hpp"
 #include "Acts/Geometry/TrackingVolume.hpp"
-#include "Acts/Surfaces/RectangleBounds.hpp"
 
 // Material
-#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
-#include "Acts/Material/Material.hpp"
-#include "Acts/Material/MaterialSlab.hpp"
 
 /// Visualization
 #include <Acts/Visualization/GeometryView3D.hpp>
-#include <Acts/Visualization/ObjVisualization3D.hpp>
-#include <Acts/Visualization/ViewConfig.hpp>
 
 // G4
-#include <G4GDMLParser.hh>
-#include <G4LogicalVolume.hh>
-#include <G4Material.hh>
-#include <G4Polyhedra.hh>
-#include <G4Types.hh>
 #include <G4VPhysicalVolume.hh>
 
 // Tracking
-#include <boost/filesystem.hpp>
 #include <string>
 
 #include "Tracking/geo/TrackingGeometry.h"

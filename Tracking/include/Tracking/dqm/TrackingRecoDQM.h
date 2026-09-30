@@ -1,16 +1,11 @@
 #pragma once
 
-#include <algorithm>
-#include <iostream>
-
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/TruthTrack.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking::dqm {
 

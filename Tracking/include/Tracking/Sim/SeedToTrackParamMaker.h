@@ -3,10 +3,10 @@
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
 // #include "Acts/Utilities/VectorHelpers.hpp"
+#include <iostream>
 #include <optional>
 
 #include "Acts/Definitions/Units.hpp"
-#include "Acts/Utilities/Helpers.hpp"
 
 namespace tracking {
 namespace sim {

@@ -7,27 +7,16 @@
 
 //---< Tracking >---//
 #include "Tracking/Event/Track.h"
-#include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Tracking/Sim/SeedToTrackParamMaker.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 //---< SimCore >---//
-#include "SimCore/Event/SimTrackerHit.h"
 
 //---< STD C++ >---//
 
-#include <iostream>
-
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
-#include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Utilities/CalibrationContext.hpp"
-#include "Acts/Utilities/Intersection.hpp"
 
 //--- LDMX ---//
-#include "TFile.h"
-#include "TTree.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 #include "Tracking/Reco/TruthMatchingTool.h"

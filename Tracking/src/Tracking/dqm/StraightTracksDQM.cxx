@@ -1,9 +1,7 @@
 #include "Tracking/dqm/StraightTracksDQM.h"
 
 #include <algorithm>
-#include <iostream>
-
-#include "Tracking/Sim/TrackingUtils.h"
+#include <cmath>
 
 namespace tracking::dqm {
 

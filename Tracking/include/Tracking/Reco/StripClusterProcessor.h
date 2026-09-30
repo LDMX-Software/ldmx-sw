@@ -6,9 +6,7 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
-#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/StripClusterer.h"
-#include "Tracking/Reco/TrackerDaqMap.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 namespace tracking::reco {

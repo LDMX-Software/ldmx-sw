@@ -4,8 +4,6 @@
 
 #include "Acts/Definitions/Algebra.hpp"
 #include "Framework/ConditionsObject.h"
-#include "Tracking/geo/DetectorElement.h"
-#include "Tracking/geo/GeoUtils.h"
 
 namespace tracking::geo {
 

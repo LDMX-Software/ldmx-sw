@@ -9,8 +9,6 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tracking/Event/Track.h"
-#include "Tracking/Event/TrackerVetoResult.h"
 
 namespace tracking {
 

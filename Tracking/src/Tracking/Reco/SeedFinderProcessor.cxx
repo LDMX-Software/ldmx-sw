@@ -1,11 +1,12 @@
 #include "Tracking/Reco/SeedFinderProcessor.h"
 
 #include <algorithm>
+#include <iostream>
 #include <set>
 #include <sstream>
 
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
+#include "Acts/Utilities/Intersection.hpp"
 #include "Eigen/Dense"
 #include "Tracking/Sim/TrackingUtils.h"
 

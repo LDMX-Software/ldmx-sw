@@ -2,15 +2,14 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
+#include "Acts/Geometry/GeometryContext.hpp"
+#include "Acts/MagneticField/MagneticFieldContext.hpp"
 #include "Acts/MagneticField/MagneticFieldProvider.hpp"
+#include "Acts/Utilities/CalibrationContext.hpp"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Tracking/Sim/BFieldXYZUtils.h"
-#include "Tracking/geo/CalibrationContext.h"
-#include "Tracking/geo/GeometryContext.h"
-#include "Tracking/geo/MagneticFieldContext.h"
 #include "Tracking/geo/TrackersTrackingGeometry.h"
 
 namespace tracking::reco {

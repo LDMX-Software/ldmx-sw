@@ -2,10 +2,8 @@
 
 #include <map>
 #include <random>
-#include <utility>
 
 #include "Acts/Definitions/Algebra.hpp"
-#include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Digitization/SiStripConstants.h"
 
 namespace tracking::digitization {

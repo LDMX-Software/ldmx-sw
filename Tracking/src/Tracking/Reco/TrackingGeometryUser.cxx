@@ -1,6 +1,11 @@
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
+#include <vector>
+
 #include "Acts/MagneticField/ConstantBField.hpp"
+#include "Tracking/geo/CalibrationContext.h"
+#include "Tracking/geo/GeometryContext.h"
+#include "Tracking/geo/MagneticFieldContext.h"
 
 namespace tracking::reco {
 

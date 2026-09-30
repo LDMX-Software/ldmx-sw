@@ -1,5 +1,6 @@
 #include "Tracking/Reco/StripFitProcessor.h"
 
+#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Event/FittedSiStripHit.h"
 #include "Tracking/Event/SimSiStripHit.h"
 

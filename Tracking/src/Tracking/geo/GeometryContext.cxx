@@ -3,6 +3,8 @@
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
+#include "Tracking/geo/DetectorElement.h"
+#include "Tracking/geo/GeoUtils.h"
 
 namespace tracking::geo {
 

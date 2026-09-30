@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TObject.h>
+#include <Rtypes.h>
 
 #include <vector>
 

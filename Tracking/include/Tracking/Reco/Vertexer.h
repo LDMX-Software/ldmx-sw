@@ -8,14 +8,10 @@
 // --- Tracking --- //
 #include "Tracking/Event/Track.h"
 #include "Tracking/Sim/BFieldXYZUtils.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 // --- ACTS --- //
 
 // Utils and definitions
-
-#include "Acts/Definitions/Common.hpp"
-#include "Acts/Definitions/Units.hpp"
 
 // Propagator
 
@@ -26,18 +22,12 @@
 
 // Vertexing
 
-#include "Acts/Vertexing/FullBilloirVertexFitter.hpp"
-#include "Acts/Vertexing/HelicalTrackLinearizer.hpp"
-#include "Acts/Vertexing/Vertex.hpp"
-
 // Magfield
 
 #include "Acts/MagneticField/ConstantBField.hpp"
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
 // Geometry
-#include "Acts/Surfaces/PerigeeSurface.hpp"
 
 // Propagator with void navigator
 #include "Acts/Propagator/VoidNavigator.hpp"
