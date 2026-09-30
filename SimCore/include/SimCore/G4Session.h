@@ -8,7 +8,6 @@
 #ifndef SIMCORE_G4SESSION_H
 #define SIMCORE_G4SESSION_H
 
-#include <algorithm>
 #include <string>
 
 #include "Framework/Logger.h"

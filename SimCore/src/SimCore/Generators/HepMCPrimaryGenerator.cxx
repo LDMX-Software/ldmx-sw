@@ -1,5 +1,8 @@
 #include "SimCore/Generators/HepMCPrimaryGenerator.h"
 
+#include "G4RunManager.hh"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
+
 namespace simcore {
 namespace generators {
 

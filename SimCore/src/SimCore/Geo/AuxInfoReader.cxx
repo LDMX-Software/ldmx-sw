@@ -13,11 +13,9 @@
 #include "G4FieldManager.hh"
 #include "G4GDMLEvaluator.hh"
 #include "G4LogicalVolumeStore.hh"
-#include "G4ProductionCuts.hh"
 #include "G4ProductionCutsTable.hh"
 #include "G4Region.hh"
 #include "G4RegionStore.hh"
-#include "G4SDManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4UniformMagField.hh"
 

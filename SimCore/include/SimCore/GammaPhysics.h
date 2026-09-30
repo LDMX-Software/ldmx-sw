@@ -13,11 +13,9 @@
 //------------//
 //   Geant4   //
 //------------//
+#include "Framework/Configure/Parameters.h"
 #include "G4GammaConversionToMuons.hh"
-#include "G4ProcessManager.hh"
 #include "G4VPhysicsConstructor.hh"
-#include "G4VProcess.hh"
-#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 
 namespace simcore {
 

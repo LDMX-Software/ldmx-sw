@@ -1,5 +1,15 @@
 #include "SimCore/KaonPhysics.h"
 
+#include <G4DecayTable.hh>
+#include <G4KaonMinus.hh>
+#include <G4KaonPlus.hh>
+#include <G4KaonZeroLong.hh>
+#include <G4KaonZeroShort.hh>
+#include <iomanip>
+#include <iostream>
+
+#include "Framework/Exception/Exception.h"
+
 namespace simcore {
 KaonPhysics::KaonPhysics(const G4String& name,
                          const framework::config::Parameters& parameters)

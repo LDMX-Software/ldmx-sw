@@ -8,7 +8,7 @@
 
 // Include the hack header first to expose private Geant4 members
 #include "Framework/Logger.h"
-#include "SimCore/Bertini/G4BertiniHack.h"
+#include "SimCore/Bertini/G4BertiniHack.h"  // IWYU pragma: keep
 #include "SimCore/Event/CascadeHistory.h"
 
 class G4HadProjectile;

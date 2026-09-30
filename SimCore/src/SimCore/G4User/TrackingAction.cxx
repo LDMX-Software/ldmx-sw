@@ -8,10 +8,8 @@
 
 // Geant4
 #include "G4PrimaryParticle.hh"
-#include "G4VUserPrimaryParticleInformation.hh"
 
 // STL
-#include <iostream>
 namespace simcore::g4user {
 
 void TrackingAction::PreUserTrackingAction(const G4Track* track) {

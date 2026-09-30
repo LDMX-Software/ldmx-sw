@@ -6,9 +6,9 @@
 #define SIMCORE_EventWeights_H
 
 #include <map>
+#include <ostream>
+#include <string>
 #include <vector>
-
-#include "TObject.h"
 
 namespace ldmx {
 

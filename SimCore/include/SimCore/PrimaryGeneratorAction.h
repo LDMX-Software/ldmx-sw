@@ -10,8 +10,6 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <algorithm>
-#include <memory>
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */

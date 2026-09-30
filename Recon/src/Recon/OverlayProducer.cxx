@@ -7,6 +7,7 @@
 #include "Framework/Exception/Exception.h"
 #include "Framework/RandomNumberSeedService.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 
 namespace recon {

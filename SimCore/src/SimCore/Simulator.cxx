@@ -7,6 +7,21 @@
 
 #include "SimCore/Simulator.h"
 
+#include <map>
+#include <memory>
+
+#include "Framework/RandomNumberSeedService.h"
+#include "Framework/Version.h"
+#include "Randomize.hh"
+#include "SimCore/Bertini/CascadeHistoryStore.h"
+#include "SimCore/BiasOperators/XsecBiasingOperator.h"
+#include "SimCore/DetectorConstruction.h"
+#include "SimCore/Event/HepMC3GenEvent.h"
+#include "SimCore/G4User/UserEventInformation.h"
+#include "SimCore/Generators/PrimaryGenerator.h"
+#include "SimCore/RunManager.h"
+#include "SimCore/SDs/SensitiveDetector.h"
+
 namespace simcore {
 
 Simulator::Simulator(const std::string& name, framework::Process& process)

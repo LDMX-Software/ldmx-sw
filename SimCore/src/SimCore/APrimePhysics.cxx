@@ -7,6 +7,13 @@
 
 #include "SimCore/APrimePhysics.h"
 
+#include "G4DarkBreM/G4APrime.h"
+#include "G4DarkBreM/G4DarkBreMModel.h"
+#include "G4DarkBreM/G4FractionallyCharged.h"
+#include "G4EventManager.hh"
+#include "G4ProcessManager.hh"
+#include "SimCore/G4User/UserEventInformation.h"
+
 namespace simcore {
 
 const std::string APrimePhysics::NAME = "APrime";

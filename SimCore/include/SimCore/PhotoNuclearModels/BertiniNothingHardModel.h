@@ -1,11 +1,7 @@
 #ifndef SIMCORE_BERTINI_NOTHING_HARD_MODEL_H
 #define SIMCORE_BERTINI_NOTHING_HARD_MODEL_H
-#include <G4CrossSectionDataSetRegistry.hh>
-#include <G4Gamma.hh>
 #include <G4HadProjectile.hh>
-#include <G4HadronInelasticProcess.hh>
 #include <G4Nucleus.hh>
-#include <G4PhotoNuclearCrossSection.hh>
 #include <G4ProcessManager.hh>
 
 #include "Framework/Configure/Parameters.h"

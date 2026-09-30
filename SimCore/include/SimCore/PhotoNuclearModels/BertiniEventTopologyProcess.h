@@ -5,12 +5,9 @@
 #include <G4EventManager.hh>
 #include <G4HadFinalState.hh>
 #include <G4HadProjectile.hh>
-#include <G4HadronicInteraction.hh>
 #include <G4Nucleus.hh>
-#include <iostream>
 
 #include "SimCore/G4User/UserEventInformation.h"
-#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 
 namespace simcore {
 

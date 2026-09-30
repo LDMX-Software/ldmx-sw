@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include "Framework/Exception/Exception.h"
+#include "HepMC3/FourVector.h"
+
 namespace simcore {
 namespace hepmc {
 

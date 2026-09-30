@@ -6,6 +6,7 @@
 #include "G4Event.hh"
 #include "G4PrimaryParticle.hh"
 #include "SimCore/Event/SimTrackerHit.h"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 
 namespace simcore {
 namespace generators {

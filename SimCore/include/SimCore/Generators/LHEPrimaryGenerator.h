@@ -11,16 +11,12 @@
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
-#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/LHE/LHEReader.h"
 
 // Geant4
 #include "G4Event.hh"
-#include "G4IonTable.hh"
 #include "G4PhysicalConstants.hh"
-#include "G4RunManager.hh"
 #include "G4SystemOfUnits.hh"
 class G4Event;
 

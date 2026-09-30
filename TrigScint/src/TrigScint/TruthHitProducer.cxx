@@ -1,6 +1,8 @@
 
 #include "TrigScint/TruthHitProducer.h"
 
+#include "SimCore/Event/SimParticle.h"
+
 namespace trigscint {
 
 TruthHitProducer::TruthHitProducer(const std::string& name,

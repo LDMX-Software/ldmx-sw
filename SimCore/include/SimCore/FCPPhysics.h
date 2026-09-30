@@ -12,8 +12,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Logger.h"
 #include "G4DarkBreM/G4FractionallyCharged.h"
-#include "G4Gamma.hh"
-#include "G4ProcessManager.hh"
 #include "G4VPhysicsConstructor.hh"
 #include "SimCore/GammaConversionToFCPs.h"
 

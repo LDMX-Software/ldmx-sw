@@ -8,9 +8,10 @@
 #ifndef SIMCORE_HEPMC3GENEVENT_H
 #define SIMCORE_HEPMC3GENEVENT_H
 
+#include <Rtypes.h>
+
 #include "HepMC3/Data/GenEventData.h"
 #include "HepMC3/GenEvent.h"
-#include "TObject.h"
 
 namespace ldmx {
 

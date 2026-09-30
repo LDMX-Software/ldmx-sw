@@ -1,5 +1,8 @@
 #include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
 
+#include <G4CrossSectionDataSetRegistry.hh>
+#include <G4PhotoNuclearCrossSection.hh>
+
 namespace simcore {
 void PhotoNuclearModel::removeExistingModel(G4ProcessManager* processManager) {
   const auto processes{processManager->GetProcessList()};

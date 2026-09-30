@@ -6,6 +6,8 @@
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
+#include "G4LogicalVolume.hh"
+#include "G4LogicalVolumeStore.hh"
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 #include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4User/VolumeChecks.h"

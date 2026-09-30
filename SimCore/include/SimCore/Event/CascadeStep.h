@@ -7,9 +7,9 @@
 #ifndef SIMCORE_EVENT_CASCADESTEP_H
 #define SIMCORE_EVENT_CASCADESTEP_H
 
-#include <vector>
+#include <Rtypes.h>
 
-#include "TObject.h"
+#include <vector>
 
 namespace ldmx {
 
