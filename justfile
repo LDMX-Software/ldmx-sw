@@ -109,13 +109,15 @@ check-validation archive:
     nnew=$(wc --chars output.masked.log | cut -f 1 -d ' ')
     if (( ngold != nnew )); then
       if (( ngold > 0 )); then
-        char_diff_pct=$(( (nnew - ngold) * 100 / ngold ))
-        char_abs_pct=${char_diff_pct#-}
-        if (( char_abs_pct > 0 )); then
+        # basis points (0.01%) since integer percent truncates to 0 below 1%
+        char_diff_bp=$(( (nnew - ngold) * 10000 / ngold ))
+        char_abs_bp=${char_diff_bp#-}
+        char_abs_pct=$(printf '%d.%02d' $(( char_abs_bp / 100 )) $(( char_abs_bp % 100 )))
+        if (( char_abs_bp > 50 )); then
           error "Log character count differs by ${char_abs_pct}%: gold=${ngold}, new=${nnew}"
           rc=1
         else
-          warn "Log character count differs by ${char_abs_pct}% (gold=${ngold}, new=${nnew}); within tolerance"
+          warn "Log character count differs by ${char_abs_pct}% (gold=${ngold}, new=${nnew}); within 0.5% tolerance"
         fi
       fi
     fi
