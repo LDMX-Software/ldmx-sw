@@ -65,7 +65,8 @@ class EcalPnetVetoProcessor : public framework::Producer {
   const static std::vector<std::string> INPUT_NAMES;
   const static std::vector<unsigned int> INPUT_SIZES;
 
-  float disc_cut_ = -99;
+  /** disc_cut as a logit difference, the probability saturates in float */
+  double disc_cut_logit_{0};
   std::vector<std::vector<float>> data_;
   std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 

@@ -42,11 +42,14 @@ class EcalMipProcessor(Processor):
 class EcalPnetVetoProcessor(Processor):
     """Configuration for ParticleNet Ecal Veto
 
-    ParticleNet trained on v14 geometry ecalPN + signal
+    ParticleNet trained on v15 geometry 8 GeV ecalPN + signal,
+    with the recoil trajectory from tracking (no scoring plane truth).
+    The v14 model is still available as particle_net_ecal_v10.
     """
 
-    model_path: str = make_bdt_path("particle_net_ecal_v10")
-    disc_cut: float = 0.65
+    model_path: str = make_bdt_path("particle_net_ecal_v11")
+    # loosest cut leaving 1 v15 ecal PN after the HCal veto in 1.3e14 EoT
+    disc_cut: float = 0.5664
     collection_name: str = "EcalPnetVeto"
     rec_coll_name: str = "EcalRecHits"
     ecal_rec_hits_passname: str = ""
