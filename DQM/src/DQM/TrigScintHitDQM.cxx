@@ -1,5 +1,7 @@
 #include "DQM/TrigScintHitDQM.h"
 
+#include "TrigScint/Event/TrigScintHit.h"
+
 namespace dqm {
 
 TrigScintHitDQM::TrigScintHitDQM(const std::string& name,

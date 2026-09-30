@@ -1,8 +1,9 @@
 #include "Trigger/DumpFileWriter.h"
 
-#include "DetDescr/EcalGeometry.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
+#include "DetDescr/EcalTriggerID.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
+#include "Trigger/DiscreteInputs.h"
+#include "Trigger/TrigUtilities.h"
 
 namespace trigger {
 

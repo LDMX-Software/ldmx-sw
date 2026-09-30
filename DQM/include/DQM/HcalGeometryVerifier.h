@@ -1,17 +1,10 @@
 #ifndef HCALGEOMETRYVERIFIER_H
 #define HCALGEOMETRYVERIFIER_H
-#include <TCanvas.h>
 
-#include <iomanip>
-#include <sstream>
-
-#include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Hcal/Event/HcalHit.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {
 class HcalGeometryVerifier : public framework::Analyzer {

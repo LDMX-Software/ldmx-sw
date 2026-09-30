@@ -4,7 +4,7 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/RunHeader.h"
-#include "Packing/RawDataFile/EventPacket.h"
+#include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Reader.h"
 #include "Packing/Utility/Writer.h"
 

@@ -3,13 +3,13 @@
 #define TRIGSCINT_EVENT_TRIGSCINTTRACK_H_
 
 // ROOT
-#include "TObject.h"  //For ClassDef
 
 // STL
+#include <Rtypes.h>
+
 #include <iostream>
 
 // ldmx
-#include "Recon/Event/EventConstants.h"
 #include "TrigScint/Event/TrigScintCluster.h"
 
 namespace ldmx {

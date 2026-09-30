@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "TrigScint/Event/EventReadout.h"
+
 namespace trigscint {
 
 QIEAnalyzer::QIEAnalyzer(const std::string& name, framework::Process& process)

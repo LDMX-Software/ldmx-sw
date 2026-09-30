@@ -1,7 +1,6 @@
 #ifndef TRIGGER_EVENT_TRIGMIP_H
 #define TRIGGER_EVENT_TRIGMIP_H
-
-#include "TObject.h"  //For ClassDef
+#include <Rtypes.h>
 
 namespace trigger {
 

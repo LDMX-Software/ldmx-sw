@@ -1,5 +1,10 @@
 #include "DQM/TrigScintDigiVerifier.h"
 
+#include <algorithm>
+
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "TrigScint/Event/TrigScintHit.h"
+
 namespace dqm {
 
 void TrigScintDigiVerifier::configure(framework::config::Parameters& ps) {

@@ -1,9 +1,6 @@
 #ifndef TRIGSCINT_SIMQIE_H
 #define TRIGSCINT_SIMQIE_H
 
-#include <iostream>
-
-#include "TMath.h"
 #include "TRandom3.h"
 #include "TrigScint/QIEInputPulse.h"
 

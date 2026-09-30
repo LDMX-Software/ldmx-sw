@@ -1,6 +1,8 @@
 
 #include "DQM/ElectroNuclearDQM.h"
 
+#include "Math/Vector3D.h"  // IWYU pragma: keep
+
 namespace dqm {
 
 ElectroNuclearDQM::ElectroNuclearDQM(const std::string& name,

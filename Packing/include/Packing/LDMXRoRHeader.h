@@ -4,7 +4,6 @@
 
 #include <cstdint>
 #include <unordered_map>
-#include <vector>
 
 #include "Packing/Utility/Reader.h"
 

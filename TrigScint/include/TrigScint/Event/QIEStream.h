@@ -1,9 +1,8 @@
 #ifndef TRIGSCINT_EVENT_QIESTREAM_H
 #define TRIGSCINT_EVENT_QIESTREAM_H
+#include <Rtypes.h>
 
 //---< ROOT >---//
-#include "TObject.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 template <uint32_t N>
 struct Mask {

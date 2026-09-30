@@ -1,9 +1,7 @@
 #ifndef PACKING_RAWDATAFILE_EVENTPACKET_H_
 #define PACKING_RAWDATAFILE_EVENTPACKET_H_
 
-#include <iostream>
 #include <map>
-#include <string>
 #include <vector>
 
 #include "Packing/RawDataFile/SubsystemPacket.h"

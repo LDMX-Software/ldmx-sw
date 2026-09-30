@@ -2,7 +2,6 @@
 #define DQM_PHOTONUCLEARDQM_H
 
 #include "DQM/NuclearDQM.h"
-#include "SimCore/Event/PhotonuclearInteraction.h"
 #include "Tools/AnalysisUtils.h"
 
 namespace dqm {

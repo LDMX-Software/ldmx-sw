@@ -8,9 +8,6 @@
 #define TRIGSCINT_EVENTREADOUTPRODUCER_H
 
 // LDMX
-#include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/EventReadout.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -21,7 +18,6 @@
 /*~~~~~~~~~~~*/
 /* TrigScint */
 /*~~~~~~~~~~~*/
-#include "TrigScint/SimQIE.h"
 
 namespace trigscint {
 

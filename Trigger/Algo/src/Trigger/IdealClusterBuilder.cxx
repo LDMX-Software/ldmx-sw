@@ -1,5 +1,10 @@
 #include "Trigger/IdealClusterBuilder.h"
 
+#include <cmath>
+
+#include "TFitResult.h"
+#include "TGraph.h"
+
 namespace trigger {
 
 void ClusterGeometry::addTp(int tid, int cell_id, int module_id, float x,

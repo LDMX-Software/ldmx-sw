@@ -1,8 +1,8 @@
 #ifndef TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
 #define TRIGSCINT_EVENT_TRIGSCINTQIEDIGIS_H
+#include <Rtypes.h>
 
 //---< ROOT >---//
-#include "TObject.h"
 
 namespace trigscint {
 

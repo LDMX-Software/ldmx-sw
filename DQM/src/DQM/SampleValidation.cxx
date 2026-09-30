@@ -1,10 +1,6 @@
 #include "DQM/SampleValidation.h"
 
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-
-#include "Framework/NtupleManager.h"
+#include "Math/Vector3D.h"  // IWYU pragma: keep
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 

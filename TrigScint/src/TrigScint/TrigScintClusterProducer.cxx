@@ -1,7 +1,6 @@
 
 #include "TrigScint/TrigScintClusterProducer.h"
 
-#include <iterator>  // std::next
 #include <map>
 
 namespace trigscint {

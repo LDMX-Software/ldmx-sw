@@ -1,6 +1,7 @@
 
 #include "Packing/SingleSubsystemUnpacker.h"
 
+#include "Framework/Exception/Exception.h"
 #include "Packing/LDMXRoRHeader.h"
 #include "Packing/RogueFrameHeader.h"
 

@@ -3,7 +3,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <iterator>  // std::next
 #include <map>
 
 namespace trigscint {

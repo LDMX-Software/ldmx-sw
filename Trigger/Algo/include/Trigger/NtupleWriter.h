@@ -2,7 +2,6 @@
 #define TRIGGER_NTUPLEWRITER_H_
 
 #include "Framework/EventProcessor.h"
-#include "Framework/NtupleManager.h"
 #include "TFile.h"
 // #include "TTree.h"
 using std::vector;

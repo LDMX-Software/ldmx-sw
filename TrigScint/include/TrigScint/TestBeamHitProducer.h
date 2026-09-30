@@ -8,11 +8,6 @@
 #define TRIGSCINT_TESTBEAMHITPRODUCER_H
 
 // LDMX
-#include "DetDescr/TrigScintID.h"
-#include "Recon/Event/EventConstants.h"
-#include "TrigScint/Event/EventReadout.h"
-#include "TrigScint/Event/TestBeamHit.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */

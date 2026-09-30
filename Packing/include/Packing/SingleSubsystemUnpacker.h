@@ -2,7 +2,6 @@
 #define PACKING_SINGLESUBSYSTEMUNPACKER_H
 
 #include "Framework/EventProcessor.h"
-#include "Framework/Exception/Exception.h"
 #include "Packing/Utility/Reader.h"
 
 namespace packing {

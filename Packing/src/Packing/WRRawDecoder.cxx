@@ -1,10 +1,6 @@
 
-#include <bitset>
-#include <iomanip>
-#include <optional>
 
 #include "Framework/EventProcessor.h"
-#include "Packing/Utility/Mask.h"
 #include "Packing/Utility/Reader.h"
 
 // un comment for WRRawDecoder-specific debug printouts to std::cout

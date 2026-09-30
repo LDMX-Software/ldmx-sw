@@ -1,7 +1,6 @@
 
 #include "DQM/HCalRawDigi.h"
 
-#include "DetDescr/HcalDigiID.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 
 namespace dqm {

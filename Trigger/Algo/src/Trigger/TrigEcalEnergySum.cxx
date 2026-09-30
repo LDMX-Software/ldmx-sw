@@ -2,9 +2,9 @@
 
 #include "../../../Algo_HLS/Ecal/src/TotalEnergy.cpp"
 #include "../../../Algo_HLS/Ecal/src/data.h"
-#include "DetDescr/EcalGeometry.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
+#include "DetDescr/EcalTriggerID.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
+#include "Trigger/TrigUtilities.h"
 
 namespace trigger {
 
