@@ -1,6 +1,8 @@
 #include "Ecal/EcalPnetVetoProcessor.h"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <numeric>
 
 #include "Ecal/EcalHelper.h"
@@ -24,7 +26,9 @@ EcalPnetVetoProcessor::EcalPnetVetoProcessor(const std::string& name,
 
 void EcalPnetVetoProcessor::configure(
     framework::config::Parameters& parameters) {
-  disc_cut_ = parameters.get<double>("disc_cut");
+  auto disc_cut = parameters.get<double>("disc_cut");
+  disc_cut_logit_ = disc_cut <= 0 ? -std::numeric_limits<double>::infinity()
+                                  : std::log(disc_cut / (1. - disc_cut));
   rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(
       parameters.get<std::string>("model_path"));
 
@@ -127,21 +131,30 @@ void EcalPnetVetoProcessor::produce(framework::Event& event) {
       ldmx_log(fatal) << "  No electron hit at scoring plane or no tracking";
     }
 
-    // make inputs
-    makeInputs(ecal_geometry, ecal_rec_hits, etraj, enorm);
-    // run the DNN
-    auto logits = rt_->run(INPUT_NAMES, data_)[0];
-    // make a log softmax of the logits then transform back
-    // to a probability with an exponential
-    auto prob = std::exp((logSoftmax(logits)[1]));
-    result.setDiscValue(prob);
+    if (etraj[0] == -999.) {
+      // no trajectory, the model was trained on tracked events only
+      result.setDiscValue(-99);
+      result.setVetoResult(false);
+    } else {
+      // make inputs
+      makeInputs(ecal_geometry, ecal_rec_hits, etraj, enorm);
+      // run the DNN
+      auto logits = rt_->run(INPUT_NAMES, data_)[0];
+      // make a log softmax of the logits then transform back
+      // to a probability with an exponential
+      auto prob = std::exp((logSoftmax(logits)[1]));
+      result.setDiscValue(prob);
+      // cut on the logit difference, prob is 1 in float above ~17
+      double logit_diff = logits[1] - logits[0];
+      ldmx_log(debug) << "ParticleNet logit difference = " << logit_diff;
+      result.setVetoResult(logit_diff > disc_cut_logit_);
+    }
   } else {
     result.setDiscValue(-99);
+    result.setVetoResult(false);
   }
 
   ldmx_log(debug) << "ParticleNet disc value = " << result.getDisc();
-
-  result.setVetoResult(result.getDisc() > disc_cut_);
 
   // If the event passes the veto, keep it. Otherwise, drop the event.
   if (result.passesVeto()) {
