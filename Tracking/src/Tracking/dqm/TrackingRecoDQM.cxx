@@ -1,5 +1,10 @@
 #include "Tracking/dqm/TrackingRecoDQM.h"
 
+#include <algorithm>
+#include <iostream>
+
+#include "Tracking/Sim/TrackingUtils.h"
+
 namespace tracking::dqm {
 
 void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {

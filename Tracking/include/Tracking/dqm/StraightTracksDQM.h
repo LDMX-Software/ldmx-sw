@@ -3,7 +3,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/StraightTrack.h"
 

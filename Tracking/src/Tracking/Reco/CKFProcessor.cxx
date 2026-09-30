@@ -5,15 +5,25 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
-#include "Tracking/Sim/GeometryContainers.h"
 #include "Tracking/geo/DetectorElement.h"
 
 //--- C++ StdLib ---//
-#include <algorithm>  //std::vector reverse
 #include <iostream>
-#include <typeinfo>
 // eN files
-#include <fstream>
+#include <Acts/Geometry/TrackingGeometry.hpp>
+
+#include "Acts/Definitions/TrackParametrization.hpp"
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
+#include "Acts/EventData/MultiTrajectory.hpp"
+#include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Propagator/MultiEigenStepperLoop.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/TrackFinding/MeasurementSelector.hpp"
+#include "Acts/TrackFinding/TrackStateCreator.hpp"
+#include "Acts/Utilities/Logger.hpp"
+#include "Tracking/Sim/MeasurementCalibrator.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking {
 namespace reco {

@@ -9,7 +9,6 @@
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/RandomNumberSeedService.h"
 
 namespace tracking::reco {
 

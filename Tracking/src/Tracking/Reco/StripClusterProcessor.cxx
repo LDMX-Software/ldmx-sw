@@ -4,9 +4,10 @@
 #include <map>
 #include <unordered_set>
 
-#include "Acts/Definitions/Units.hpp"
+#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Event/FittedSiStripHit.h"
 #include "Tracking/Event/Measurement.h"
+#include "Tracking/Reco/TrackerDaqMap.h"
 
 using namespace framework;
 

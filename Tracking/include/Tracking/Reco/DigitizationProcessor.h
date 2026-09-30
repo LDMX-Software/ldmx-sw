@@ -1,24 +1,16 @@
 #pragma once
 
-#include "Framework/RandomNumberSeedService.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 //--- ACTS ---//
-#include "Acts/Definitions/Units.hpp"
-#include "Acts/Surfaces/RectangleBounds.hpp"
-#include "Acts/Surfaces/Surface.hpp"
 
 //--- LDMX ---//
 #include "Tracking/Digitization/PulseShape.h"
-#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/SiStripDigitizer.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/SimSiStripHit.h"
-#include "Tracking/Sim/TrackingUtils.h"
-#include "Tracking/geo/DetectorElement.h"
 
 //--- C++ ---//
-#include <chrono>
 #include <memory>
 #include <random>
 #include <unordered_map>

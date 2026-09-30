@@ -1,9 +1,19 @@
 #include "Tracking/geo/TrackersTrackingGeometry.h"
 
 #include <G4Box.hh>
+#include <G4LogicalVolume.hh>
+#include <G4Types.hh>
 #include <G4VisExtent.hh>
 #include <algorithm>
 
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/Geometry/TrackingGeometryBuilder.hpp"
+#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
+#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
+#include "Acts/Material/Material.hpp"
+#include "Acts/Material/MaterialSlab.hpp"
+#include "Acts/Surfaces/PlaneSurface.hpp"
+#include "Acts/Surfaces/RectangleBounds.hpp"
 #include "Framework/Exception/Exception.h"
 
 namespace tracking::geo {
@@ -474,7 +484,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
     ldmx_log(trace) << layer.first << " : surfaces==>" << layer.second.size();
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;
-    lcfg.surfaces = layer.second;
+    lcfg.surfaces = std::vector(layer.second);
 
     // Get the surface thickness
     double clearance = 1.0;  // mm

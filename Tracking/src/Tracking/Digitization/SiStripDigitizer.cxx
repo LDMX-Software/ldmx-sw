@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <set>
+#include <utility>
 
 #include "Tracking/Digitization/SiStripConstants.h"
 

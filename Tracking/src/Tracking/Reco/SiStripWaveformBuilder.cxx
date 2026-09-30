@@ -4,6 +4,7 @@
 #include <map>
 
 #include "Tracking/Event/RawSiStripHit.h"
+#include "Tracking/Event/SiStripWaveform.h"
 #include "Tracking/Reco/SiStripChannelMap.h"
 #include "Tracking/Reco/TrackerPedestals.h"
 

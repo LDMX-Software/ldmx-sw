@@ -1,5 +1,6 @@
 #pragma once
-#include "Acts/EventData/VectorTrackContainer.hpp"
+#include <memory>
+
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"

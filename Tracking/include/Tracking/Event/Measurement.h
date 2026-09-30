@@ -1,13 +1,14 @@
 #pragma once
 
 //~~ StdLib ~~//
+#include <Rtypes.h>
+
 #include <array>
 #include <limits>
 
 #include "SimCore/Event/SimTrackerHit.h"
 
 //~~ ROOT ~~//
-#include "TObject.h"  // Needed for ClassDef, ClassImp
 
 namespace ldmx {
 class Measurement {

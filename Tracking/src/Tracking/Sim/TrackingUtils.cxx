@@ -1,6 +1,9 @@
 #include "Tracking/Sim/TrackingUtils.h"
 
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/Surfaces/Surface.hpp"
 #include "DetDescr/TrackerID.h"
+#include "Tracking/Sim/IndexSourceLink.h"
 
 namespace tracking {
 namespace sim {

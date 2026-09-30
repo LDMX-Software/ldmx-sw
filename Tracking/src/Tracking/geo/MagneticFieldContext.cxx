@@ -2,7 +2,6 @@
 
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 
 namespace tracking::geo {
 

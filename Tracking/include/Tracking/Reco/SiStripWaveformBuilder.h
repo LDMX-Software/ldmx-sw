@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Framework/EventProcessor.h"
-#include "Tracking/Event/SiStripWaveform.h"
 
 namespace tracking::reco {
 

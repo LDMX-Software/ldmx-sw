@@ -1,11 +1,11 @@
 #ifndef TRACKING_EVENT_SISTRIPWAVEFORM_H_
 #define TRACKING_EVENT_SISTRIPWAVEFORM_H_
 
+#include <Rtypes.h>
+
 #include <algorithm>
 #include <iostream>
 #include <vector>
-
-#include "TObject.h"
 
 namespace ldmx {
 

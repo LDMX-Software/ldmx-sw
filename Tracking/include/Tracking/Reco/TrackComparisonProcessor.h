@@ -1,9 +1,7 @@
 #ifndef TRACKING_RECO_TRACKCOMPARISONPROCESSOR_H_
 #define TRACKING_RECO_TRACKCOMPARISONPROCESSOR_H_
 
-#include <map>
 #include <string>
-#include <vector>
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
