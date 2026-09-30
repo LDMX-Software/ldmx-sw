@@ -30,7 +30,7 @@ jobs:
       run: just install-denv init configure
       shell: bash
 
-    # report only, files touched by a PR may already have unused includes
+    # trunk is clean, so any unused include in a changed file fails the job
     - name: Check changed C++ files for unused includes
       run: |
         rc=0
@@ -40,7 +40,7 @@ jobs:
         awk -F'\t' '$2 ~ /^- / {
           n = $2; sub(/.* @Line:/, "", n)
           h = $2; sub(/^- /, "", h); sub(/ @Line:.*/, "", h)
-          printf "::warning file=%s,line=%s::unused include %s\n", $1, n, h
+          printf "::error file=%s,line=%s::unused include %s\n", $1, n, h
         }' include-cleaner.log
         n_unused=$(grep -c "$(printf '\t')- " include-cleaner.log || true)
         {
@@ -54,5 +54,8 @@ jobs:
         } >> "${GITHUB_STEP_SUMMARY}"
         if [ "${rc}" -ne 0 ]; then
           echo "::warning::clang-include-cleaner could not parse some files, see the log"
+        fi
+        if [ "${n_unused}" -gt 0 ]; then
+          exit 1
         fi
       shell: bash
