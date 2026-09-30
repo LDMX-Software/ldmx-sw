@@ -484,7 +484,7 @@ TrackersTrackingGeometry::buildVolumeConfig(
     ldmx_log(trace) << layer.first << " : surfaces==>" << layer.second.size();
 
     Acts::CuboidVolumeBuilder::LayerConfig lcfg;
-    lcfg.surfaces = layer.second;
+    lcfg.surfaces = std::vector(layer.second);
 
     // Get the surface thickness
     double clearance = 1.0;  // mm
