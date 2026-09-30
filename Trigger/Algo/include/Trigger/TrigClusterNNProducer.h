@@ -8,9 +8,14 @@
 #ifndef TRIGGER_TRIGCLUSTERNNPRODUCER_H
 #define TRIGGER_TRIGCLUSTERNNPRODUCER_H
 
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <cstddef>
+#include <cstdint>
+#include <iomanip>
 #include <memory>
+#include <numeric>
 #include <string>
 #include <vector>
 
@@ -19,6 +24,7 @@
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
 #include "Trigger/Event/TrigCaloCluster.h"
+#include "Trigger/Event/TrigClusterNNScore.h"
 #include "Trigger/Event/TrigEnergySum.h"
 
 namespace trigger {
@@ -31,22 +37,17 @@ namespace trigger {
  * features: x, y, z, e, depth, n_tp of the cluster, then the event-level
  * n_clusters (before truncation), the sum of the ECal trigger sums (MeV) and
  * the sum of the HCal back-layer trigger sums (ADC), repeated in every slot.
- * The scaler is part of the ONNX graph, so the inputs are raw values.
  *
- * Timing: this reproduces the in-time bunch-crossing decision only. All inputs
- * are built from the sample of interest of the ECal/HCal digis, as in the
- * training samples. Trigger latency and out-of-time pileup are not modelled.
- *
- * Required upstream sequence with default parameters to match training:
+ * Required upstream sequence with default parameters:
  * EcalTrigPrimDigiProducer, HcalTrigPrimDigiProducer, EcalTPSelector,
- * TrigHcalEnergySum and TrigEcalClusterProducer. A missing input collection
- * throws an exception but an empty one is still scored.
+ * TrigHcalEnergySum and TrigEcalClusterProducer.
  *
  * Output: a TrigClusterNNScore with the raw logits and P(bkg).
  */
 class TrigClusterNNProducer : public framework::Producer {
  public:
   TrigClusterNNProducer(const std::string& name, framework::Process& process);
+  virtual ~TrigClusterNNProducer() = default;
   void configure(framework::config::Parameters& ps) override;
   void produce(framework::Event& event) override;
   void onProcessEnd() override;
@@ -69,6 +70,21 @@ class TrigClusterNNProducer : public framework::Producer {
   static constexpr std::size_t N_FEATURES = 9;
   static constexpr std::size_t N_CLASSES = 9;
 
+  /// feature index within one cluster slot of the model input
+  static constexpr std::size_t FEAT_X = 0;
+  static constexpr std::size_t FEAT_Y = 1;
+  static constexpr std::size_t FEAT_Z = 2;
+  static constexpr std::size_t FEAT_E = 3;
+  static constexpr std::size_t FEAT_DEPTH = 4;
+  static constexpr std::size_t FEAT_N_TP = 5;
+  static constexpr std::size_t FEAT_N_CLUSTERS = 6;
+  static constexpr std::size_t FEAT_ECAL_SUM_E = 7;
+  static constexpr std::size_t FEAT_HCAL_SUM_ADC = 8;
+  static_assert(FEAT_HCAL_SUM_ADC + 1 == N_FEATURES);
+
+  /// class index of the single-electron background in the model output
+  static constexpr std::size_t BKG_CLASS = 0;
+
  private:
   std::string cluster_coll_name_;
   std::string ecal_sum_coll_name_;
@@ -81,7 +97,6 @@ class TrigClusterNNProducer : public framework::Producer {
   ldmx::ort::FloatArrays data_;
   std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 
-  /// profiling: events seen and accumulated wall time (ms)
   int nevents_{0};
   double processing_time_{0.};
   double inference_time_{0.};
