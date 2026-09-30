@@ -48,8 +48,8 @@ class EcalPnetVetoProcessor(Processor):
     """
 
     model_path: str = make_bdt_path("particle_net_ecal_v11")
-    # 1 v15 ecal PN left after the HCal veto in 1.3e14 EoT (0.566 to 0.705)
-    disc_cut: float = 0.65
+    # loosest cut leaving 1 v15 ecal PN after the HCal veto in 1.3e14 EoT
+    disc_cut: float = 0.5664
     collection_name: str = "EcalPnetVeto"
     rec_coll_name: str = "EcalRecHits"
     ecal_rec_hits_passname: str = ""
