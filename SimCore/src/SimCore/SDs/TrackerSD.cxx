@@ -3,6 +3,7 @@
 #include <iostream>
 
 // Geant4
+#include "DetDescr/TrackerID.h"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 

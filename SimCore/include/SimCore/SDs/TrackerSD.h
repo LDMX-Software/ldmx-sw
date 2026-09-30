@@ -1,7 +1,7 @@
 #ifndef SIMCORE_TRACKERSD_H
 #define SIMCORE_TRACKERSD_H
 
-#include "DetDescr/TrackerID.h"
+#include "DetDescr/DetectorID.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 

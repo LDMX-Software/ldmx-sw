@@ -10,9 +10,7 @@
 
 // LDMX
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
-#include "SimCore/G4User/UserPrimaryParticleInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 
 class G4Event;

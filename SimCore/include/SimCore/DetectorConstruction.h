@@ -2,8 +2,6 @@
 #define SIMCORE_DETECTORCONSTRUCTION_H
 
 //---< Geant4 >---//
-#include "G4LogicalVolume.hh"
-#include "G4LogicalVolumeStore.hh"
 #include "G4VUserDetectorConstruction.hh"
 
 //---< Framework >---//

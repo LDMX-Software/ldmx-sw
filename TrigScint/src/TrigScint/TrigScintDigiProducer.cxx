@@ -1,5 +1,7 @@
 #include "TrigScint/TrigScintDigiProducer.h"
 
+#include "SimCore/Event/SimParticle.h"
+
 namespace trigscint {
 
 TrigScintDigiProducer::TrigScintDigiProducer(const std::string& name,

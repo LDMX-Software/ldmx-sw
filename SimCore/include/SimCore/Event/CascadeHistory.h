@@ -6,10 +6,11 @@
 #ifndef SIMCORE_EVENT_CASCADEHISTORY_H
 #define SIMCORE_EVENT_CASCADEHISTORY_H
 
+#include <Rtypes.h>
+
 #include <vector>
 
 #include "SimCore/Event/CascadeStep.h"
-#include "TObject.h"
 
 namespace ldmx {
 

@@ -1,24 +1,15 @@
 #ifndef SIMCORE_SIMULATOR_BASE_H_
 #define SIMCORE_SIMULATOR_BASE_H_
 
-#include <G4CascadeParameters.hh>
-#include <G4GeometryManager.hh>
 #include <G4UImanager.hh>
-#include <G4UIsession.hh>
 
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventFile.h"
 #include "Framework/EventHeader.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Logger.h"
 #include "SimCore/ConditionsInterface.h"
-#include "SimCore/DetectorConstruction.h"
 #include "SimCore/G4Session.h"
-#include "SimCore/G4User/TrackingAction.h"
-#include "SimCore/G4User/UserEventInformation.h"
-#include "SimCore/Geo/Parser.h"
 #include "SimCore/RunManager.h"
-#include "SimCore/SDs/SensitiveDetector.h"
 
 namespace simcore {
 class SimulatorBase : public framework::Producer {

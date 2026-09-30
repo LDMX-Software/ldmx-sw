@@ -9,25 +9,17 @@
 #include "SimCore/G4User/UserPrimaryParticleInformation.h"
 
 // GENIE
-#include "Framework/Conventions/Controls.h"
-#include "Framework/Conventions/GBuild.h"
 #include "Framework/Conventions/Units.h"
-#include "Framework/Conventions/XmlParserStatus.h"
 #include "Framework/EventGen/EventRecord.h"
 #include "Framework/EventGen/GEVGDriver.h"
 #include "Framework/EventGen/GFluxI.h"
 #include "Framework/EventGen/GMCJDriver.h"
 #include "Framework/EventGen/GMCJMonitor.h"
-#include "Framework/EventGen/InteractionList.h"
 #include "Framework/GHEP/GHepParticle.h"
 #include "Framework/Interaction/Interaction.h"
 #include "Framework/Messenger/Messenger.h"
-#include "Framework/Ntuple/NtpMCFormat.h"
 #include "Framework/Ntuple/NtpWriter.h"
-#include "Framework/Numerical/RandomGen.h"
 #include "Framework/Numerical/Spline.h"
-#include "Framework/ParticleData/PDGCodes.h"
-#include "Framework/ParticleData/PDGUtils.h"
 #include "Framework/Utils/AppInit.h"
 #include "Framework/Utils/CmdLnArgParser.h"
 #include "Framework/Utils/PrintUtils.h"
@@ -37,7 +29,6 @@
 #include "Framework/Utils/XSecSplineList.h"
 #include "GENIE/Framework/Interaction/InitialState.h"
 #include "GENIE/Framework/Utils/RunOpt.h"
-#include "HepMC3/GenEvent.h"
 
 // Geant4
 #include "G4Event.hh"
@@ -45,15 +36,13 @@
 #include "Randomize.hh"
 
 // ROOT
-#include <Math/Vector3D.h>
 #include <TLorentzVector.h>
 #include <TParticle.h>
 
-#include "Math/Interpolator.h"
-
 // standard
 #include <algorithm>
-#include <sstream>
+
+#include "SimCore/G4User/UserEventInformation.h"
 
 namespace simcore {
 namespace generators {

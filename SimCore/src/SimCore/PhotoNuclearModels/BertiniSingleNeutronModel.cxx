@@ -1,5 +1,8 @@
 
 #include "SimCore/PhotoNuclearModels/BertiniSingleNeutronModel.h"
+
+#include <G4Gamma.hh>
+#include <G4HadronInelasticProcess.hh>
 namespace simcore {
 
 bool BertiniSingleNeutronProcess::acceptEvent() const {

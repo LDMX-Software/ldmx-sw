@@ -1,5 +1,7 @@
 #include "SimCore/LHE/LHEReader.h"
 
+#include "Framework/Exception/Exception.h"
+
 namespace simcore {
 namespace lhe {
 

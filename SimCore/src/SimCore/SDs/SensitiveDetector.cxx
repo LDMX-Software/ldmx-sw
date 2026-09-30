@@ -1,6 +1,5 @@
 #include "SimCore/SDs/SensitiveDetector.h"
 
-#include "Framework/Exception/Exception.h"
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
 #include "G4SDManager.hh"

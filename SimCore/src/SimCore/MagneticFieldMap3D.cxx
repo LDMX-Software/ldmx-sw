@@ -10,7 +10,6 @@
 
 // Geant4
 #include "G4SystemOfUnits.hh"
-#include "globals.hh"
 
 using namespace std;
 

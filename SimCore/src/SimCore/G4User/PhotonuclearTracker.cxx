@@ -8,7 +8,6 @@
 #include "G4StepPoint.hh"
 #include "G4Track.hh"
 #include "G4VProcess.hh"
-#include "SimCore/G4User/TrackingAction.h"
 #include "SimCore/G4User/UserEventInformation.h"
 
 namespace simcore {

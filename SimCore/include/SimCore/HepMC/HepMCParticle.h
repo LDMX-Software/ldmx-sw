@@ -8,10 +8,8 @@
 #define SIMCORE_HEPMCPARTICLE_H_
 
 // LDMX
-#include "Framework/Exception/Exception.h"
 
 // HepMC3
-#include "HepMC3/FourVector.h"
 #include "HepMC3/GenParticle.h"
 
 // STL
@@ -19,7 +17,6 @@
 #include <memory>
 
 // Geant4
-#include "globals.hh"
 
 namespace simcore {
 namespace hepmc {

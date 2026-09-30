@@ -1,5 +1,8 @@
 
 #include "SimCore/PhotoNuclearModels/BertiniAtLeastNProductsModel.h"
+
+#include <G4Gamma.hh>
+#include <G4HadronInelasticProcess.hh>
 namespace simcore {
 
 bool BertiniAtLeastNProductsProcess::acceptEvent() const {

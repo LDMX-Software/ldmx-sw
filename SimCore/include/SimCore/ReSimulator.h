@@ -1,7 +1,6 @@
 
 #ifndef SIMCORE_RESIMULATOR_H_
 #define SIMCORE_RESIMULATOR_H_
-#include "Framework/EventFile.h"
 #include "Framework/Process.h"
 #include "SimCore/SimulatorBase.h"
 

@@ -7,6 +7,8 @@
 
 #include "SimCore/Generators/MultiParticleGunPrimaryGenerator.h"
 
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
+
 namespace simcore {
 namespace generators {
 

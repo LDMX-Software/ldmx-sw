@@ -3,6 +3,10 @@
 #include <fstream>
 #include <string>
 
+#include "Framework/Exception/Exception.h"
+#include "HepMC3/ReaderAscii.h"
+#include "HepMC3/ReaderAsciiHepMC2.h"
+
 namespace simcore {
 namespace hepmc {
 

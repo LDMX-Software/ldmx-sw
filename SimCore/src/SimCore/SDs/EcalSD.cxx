@@ -1,5 +1,10 @@
 #include "SimCore/SDs/EcalSD.h"
 
+#include "DetDescr/EcalGeometry.h"
+#include "G4StepPoint.hh"
+#include "G4VSolid.hh"
+#include "SimCore/G4User/TrackMap.h"
+
 namespace simcore {
 
 const std::string EcalSD::COLLECTION_NAME = "EcalSimHits";

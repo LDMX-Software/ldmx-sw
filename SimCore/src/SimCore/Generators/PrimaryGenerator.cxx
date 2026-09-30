@@ -10,7 +10,6 @@
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
-#include "G4Event.hh"
 #include "G4PrimaryVertex.hh"
 #include "Randomize.hh"
 

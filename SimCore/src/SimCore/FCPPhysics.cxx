@@ -1,5 +1,8 @@
 #include "SimCore/FCPPhysics.h"
 
+#include "G4Gamma.hh"
+#include "G4ProcessManager.hh"
+
 namespace simcore {
 
 const std::string FCPPhysics::NAME = "FCPPhysics";

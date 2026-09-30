@@ -10,16 +10,12 @@
 #define SIMCORE_LHEEVENT_H_
 
 // LDMX
-#include "Framework/Exception/Exception.h"
 #include "SimCore/LHE/LHEParticle.h"
 
 // Geant4
-#include "globals.hh"
 
 // STL
-#include <iostream>
 #include <memory>
-#include <sstream>
 #include <vector>
 
 namespace simcore::lhe {

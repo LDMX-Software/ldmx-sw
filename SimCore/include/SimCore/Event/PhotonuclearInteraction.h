@@ -4,11 +4,12 @@
 /*~~~~~~~~~~*/
 /*   ROOT   */
 /*~~~~~~~~~~*/
-#include "TObject.h"
 
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
+#include <Rtypes.h>
+
 #include <map>
 #include <string>
 #include <vector>

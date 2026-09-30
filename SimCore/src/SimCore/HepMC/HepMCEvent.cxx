@@ -1,5 +1,7 @@
 #include "SimCore/HepMC/HepMCEvent.h"
 
+#include "Framework/Exception/Exception.h"
+
 namespace simcore {
 namespace hepmc {
 
