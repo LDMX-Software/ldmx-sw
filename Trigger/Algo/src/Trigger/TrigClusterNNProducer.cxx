@@ -1,13 +1,5 @@
 #include "Trigger/TrigClusterNNProducer.h"
 
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <iomanip>
-#include <numeric>
-
-#include "Trigger/Event/TrigClusterNNScore.h"
-
 namespace trigger {
 
 namespace {
@@ -77,7 +69,7 @@ void TrigClusterNNProducer::produce(framework::Event& event) {
           .count();
 
   // P(bkg) in double: 1 - P(bkg) saturates to 1 in float
-  const double p_bkg = std::exp(logSoftmax(logits)[0]);
+  const double p_bkg = std::exp(logSoftmax(logits)[BKG_CLASS]);
 
   ldmx_log(debug) << "n_clusters = " << clusters.size()
                   << ", P(bkg) = " << p_bkg;
@@ -105,18 +97,17 @@ void TrigClusterNNProducer::fillInputs(
     const TrigEnergySumCollection& hcal_sums, std::vector<float>& inputs) {
   inputs.assign(MAX_CLUSTERS * N_FEATURES, 0.f);
 
-  // sort cluster indices by descending energy; stable so that ties keep
-  // collection order, as in the training
+  // sort cluster indices by descending energy
   std::vector<std::size_t> order(clusters.size());
   std::iota(order.begin(), order.end(), 0);
   std::stable_sort(order.begin(), order.end(),
-                   [&clusters](std::size_t a, std::size_t b) {
-                     return clusters[a].e() > clusters[b].e();
+                   [&clusters](const std::size_t lhs, const std::size_t rhs) {
+                     return clusters[lhs].e() > clusters[rhs].e();
                    });
 
   double ecal_sum_e = 0.;
   for (const auto& sum : ecal_sums) ecal_sum_e += sum.energy();
-  // the HCal sums carry hardware (ADC) energy; energy() is not filled
+  // the HCal sums carry hardware (ADC) energy
   int hcal_sum_adc = 0;
   for (const auto& sum : hcal_sums) hcal_sum_adc += sum.hwEnergy();
 
@@ -124,17 +115,17 @@ void TrigClusterNNProducer::fillInputs(
     float* feats = &inputs[slot * N_FEATURES];
     if (slot < order.size()) {
       const auto& cluster = clusters[order[slot]];
-      feats[0] = cluster.x();
-      feats[1] = cluster.y();
-      feats[2] = cluster.z();
-      feats[3] = cluster.e();
-      feats[4] = cluster.depth();
-      feats[5] = cluster.nTP();
+      feats[FEAT_X] = cluster.x();
+      feats[FEAT_Y] = cluster.y();
+      feats[FEAT_Z] = cluster.z();
+      feats[FEAT_E] = cluster.e();
+      feats[FEAT_DEPTH] = cluster.depth();
+      feats[FEAT_N_TP] = cluster.nTP();
     }
-    // event-level features are filled in every slot, even empty ones
-    feats[6] = clusters.size();
-    feats[7] = ecal_sum_e;
-    feats[8] = hcal_sum_adc;
+    // event-level features are filled in every slot
+    feats[FEAT_N_CLUSTERS] = clusters.size();
+    feats[FEAT_ECAL_SUM_E] = ecal_sum_e;
+    feats[FEAT_HCAL_SUM_ADC] = hcal_sum_adc;
   }
 }
 

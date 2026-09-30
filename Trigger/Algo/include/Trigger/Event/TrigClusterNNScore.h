@@ -25,7 +25,7 @@ class TrigClusterNNScore {
   virtual ~TrigClusterNNScore() = default;
 
   void setLogits(const std::vector<float>& logits) { logits_ = logits; }
-  void setPBkg(double p_bkg) { p_bkg_ = p_bkg; }
+  void setPBkg(const double p_bkg) { p_bkg_ = p_bkg; }
 
   const std::vector<float>& logits() const { return logits_; }
   double pBkg() const { return p_bkg_; }
