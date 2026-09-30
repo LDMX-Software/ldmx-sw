@@ -9,6 +9,9 @@
 
 #include <cmath>
 
+#include "TrigScint/Event/EventReadout.h"
+#include "TrigScint/Event/TestBeamHit.h"
+
 namespace trigscint {
 
 QualityFlagAnalyzer::QualityFlagAnalyzer(const std::string& name,

@@ -1,5 +1,10 @@
 #include "Trigger/EcalTPSelector.h"
 
+#include "Ecal/EcalTriggerGeometry.h"
+#include "Trigger/Event/TrigCaloHit.h"
+#include "Trigger/Event/TrigEnergySum.h"
+#include "Trigger/TrigUtilities.h"
+
 namespace trigger {
 
 void EcalTPSelector::configure(framework::config::Parameters& ps) {

@@ -5,8 +5,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "EventBuilder/Fragment.h"
-
 namespace eventbuilder {
 
 struct GenericDataBlock {

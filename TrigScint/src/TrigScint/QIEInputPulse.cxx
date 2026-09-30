@@ -6,7 +6,6 @@
 #include "TrigScint/QIEInputPulse.h"
 
 #include <cmath>
-#include <iostream>
 
 namespace trigscint {
 

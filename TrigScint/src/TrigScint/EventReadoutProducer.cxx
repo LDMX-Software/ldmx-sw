@@ -1,8 +1,10 @@
 #include "TrigScint/EventReadoutProducer.h"
 
-#include <iostream>
+#include <cmath>
 
-#include "Framework/Exception/Exception.h"
+#include "TrigScint/Event/EventReadout.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
+#include "TrigScint/SimQIE.h"
 
 namespace trigscint {
 

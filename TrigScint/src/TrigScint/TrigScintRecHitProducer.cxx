@@ -4,8 +4,9 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "Framework/Exception/Exception.h"
-#include "Framework/RandomNumberSeedService.h"
+#include "TrigScint/Event/TrigScintHit.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
+#include "TrigScint/SimQIE.h"
 
 namespace trigscint {
 

@@ -3,11 +3,8 @@
 
 // LDMX Framework
 
-#include "DetDescr/EcalID.h"
-#include "Ecal/Event/EcalHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {
 

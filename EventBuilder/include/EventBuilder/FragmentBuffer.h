@@ -1,7 +1,6 @@
 #ifndef EVENTBUILDER_FRAGMENTBUFFER_H
 #define EVENTBUILDER_FRAGMENTBUFFER_H
 
-#include <chrono>
 #include <map>
 #include <mutex>
 #include <set>

@@ -8,12 +8,9 @@
 #define TRIGECALCLUSTERPRODUCER_H
 
 // LDMX Framework
-#include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TrigUtilities.h"
-#include "ap_fixed.h"
 #include "ap_int.h"
 
 namespace trigger {

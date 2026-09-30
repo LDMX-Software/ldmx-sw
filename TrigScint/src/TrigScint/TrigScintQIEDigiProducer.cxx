@@ -1,12 +1,13 @@
 #include "TrigScint/TrigScintQIEDigiProducer.h"
 
-#include <iostream>
 #include <map>
 
-#include "Framework/Exception/Exception.h"
+#include "DetDescr/TrigScintID.h"
 #include "Framework/Logger.h"
 #include "Framework/RandomNumberSeedService.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 namespace trigscint {
 

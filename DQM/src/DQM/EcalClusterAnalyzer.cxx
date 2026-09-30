@@ -1,6 +1,13 @@
 #include "DQM/EcalClusterAnalyzer.h"
 
+#include <algorithm>
 #include <cmath>
+
+#include "DetDescr/SimSpecialID.h"
+#include "Ecal/Event/EcalCluster.h"
+#include "Ecal/Event/EcalHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
+#include "SimCore/Event/SimTrackerHit.h"
 
 namespace dqm {
 

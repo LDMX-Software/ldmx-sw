@@ -6,7 +6,6 @@
 
 #include "TrigScint/Event/EventReadout.h"
 
-#include <exception>
 #include <iostream>
 ClassImp(trigscint::EventReadout);
 

@@ -1,5 +1,10 @@
 #include "Trigger/TrigMipReco.h"
 
+#include <chrono>
+
+#include "Trigger/Event/TrigCaloHit.h"
+#include "Trigger/Event/TrigMip.h"
+
 namespace trigger {
 
 void TrigMipReco::onNewRun(const ldmx::RunHeader& rh) {

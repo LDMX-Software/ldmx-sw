@@ -8,18 +8,9 @@
 #ifndef DQM_ECALCLUSTERANALYZER_H
 #define DQM_ECALCLUSTERANALYZER_H
 
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-
 // LDMX Framework
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/Event/EcalCluster.h"
-#include "Ecal/Event/EcalHit.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/Event/SimTrackerHit.h"
 
 namespace dqm {
 

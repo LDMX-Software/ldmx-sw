@@ -1,5 +1,6 @@
 #include "Trigger/NtupleWriter.h"
 
+#include "Framework/NtupleManager.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Trigger/Event/TrigEnergySum.h"
 #include "Trigger/Event/TrigMip.h"

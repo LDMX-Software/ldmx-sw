@@ -12,7 +12,6 @@
 #include "Framework/EventProcessor.h"  //Needed to declare processor
 #include "TH1.h"
 #include "TH2.h"
-#include "TrigScint/Event/TrigScintCluster.h"
 
 namespace trigscint {
 

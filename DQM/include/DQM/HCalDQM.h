@@ -3,28 +3,21 @@
 //----------//
 //   STL    //
 //----------//
-#include <algorithm>
 
 //----------//
 //   ROOT   //
 //----------//
-#include "Math/Vector3D.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
-#include <map>
 
-#include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
-#include "Framework/EventFile.h"
 #include "Framework/EventProcessor.h"
 #include "Hcal/Event/HcalHit.h"
-#include "Hcal/Event/HcalVetoResult.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
-#include "Tools/AnalysisUtils.h"
 namespace dqm {
 
 class HCalDQM : public framework::Analyzer {

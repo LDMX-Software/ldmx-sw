@@ -5,7 +5,6 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/CascadeHistory.h"
-#include "SimCore/Event/CascadeStep.h"
 
 namespace dqm {
 

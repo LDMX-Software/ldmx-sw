@@ -2,8 +2,8 @@
 
 #include "SimCore/Event/SimTrackerHit.h"
 // #include "SimCore/Event/SimParticle.h"
-#include "DetDescr/EcalGeometry.h"
 #include "TCanvas.h"
+#include "TFile.h"
 #include "TString.h"
 #include "Trigger/Event/TrigCaloCluster.h"
 #include "Trigger/Event/TrigParticle.h"

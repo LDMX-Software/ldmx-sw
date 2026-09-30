@@ -2,6 +2,10 @@
 
 #include <bitset>
 #include <iomanip>
+#include <iostream>
+
+#include "TrigScint/Event/QIEStream.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 namespace trigscint {
 

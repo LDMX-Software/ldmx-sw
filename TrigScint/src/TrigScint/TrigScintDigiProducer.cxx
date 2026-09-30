@@ -1,6 +1,9 @@
 #include "TrigScint/TrigScintDigiProducer.h"
 
+#include "Framework/RandomNumberSeedService.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
+#include "TrigScint/Event/TrigScintHit.h"
 
 namespace trigscint {
 

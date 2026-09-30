@@ -10,7 +10,6 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <time.h>
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -18,9 +17,6 @@
 #include "TRandom3.h"
 
 // LDMX
-#include "DetDescr/TrigScintID.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -29,7 +25,6 @@
 #include "Framework/EventProcessor.h"
 
 // QIE output class
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/SimQIE.h"
 
 namespace trigscint {

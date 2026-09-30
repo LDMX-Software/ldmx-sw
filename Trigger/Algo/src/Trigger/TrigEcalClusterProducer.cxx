@@ -1,11 +1,10 @@
 #include "Trigger/TrigEcalClusterProducer.h"
 
-#include "DetDescr/EcalGeometry.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
+#include "Ecal/EcalTriggerGeometry.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
 #include "Trigger/Event/TrigCaloCluster.h"
-#include "Trigger/Event/TrigCaloHit.h"
 #include "Trigger/IdealClusterBuilder.h"
+#include "Trigger/TrigUtilities.h"
 
 namespace trigger {
 

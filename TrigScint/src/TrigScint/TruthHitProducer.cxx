@@ -1,6 +1,7 @@
 
 #include "TrigScint/TruthHitProducer.h"
 
+#include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
 
 namespace trigscint {

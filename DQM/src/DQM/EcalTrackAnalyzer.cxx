@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-#include "Ecal/Event/EcalHit.h"
+#include "Tracking/Event/Track.h"
 
 namespace dqm {
 

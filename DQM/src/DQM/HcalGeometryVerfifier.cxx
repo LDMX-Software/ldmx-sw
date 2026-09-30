@@ -1,4 +1,10 @@
+#include <cmath>
+#include <sstream>
+
 #include "DQM/HcalGeometryVerifier.h"
+#include "DetDescr/HcalGeometry.h"
+#include "Hcal/Event/HcalHit.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 namespace dqm {
 
 void HcalGeometryVerifier::configure(

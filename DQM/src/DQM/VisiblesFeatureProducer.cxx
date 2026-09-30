@@ -2,10 +2,8 @@
 
 // LDMX
 #include "DetDescr/HcalID.h"
-#include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Hcal/Event/HcalHit.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Track.h"
@@ -15,7 +13,6 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <numeric>
 
 namespace dqm {
 
