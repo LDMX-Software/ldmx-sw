@@ -3,6 +3,39 @@
 from LDMX.Framework import Processor, processor
 
 
+def electron_scaled(n_electrons, nbins, xmin, xmax):
+    """Widen a histogram range so it holds n_electrons worth of entries
+
+    Quantities that sum over the whole event (energy sums, hit counts) grow
+    with the number of beam electrons, so their single-electron ranges put
+    multi-electron (pileup) samples in the overflow bin. The bin width is
+    kept, so the number of bins grows along with the range.
+
+    Parameters
+    ----------
+    n_electrons : int
+        number of beam electrons the range should cover
+    nbins : int
+        number of bins for a single electron
+    xmin : float
+        minimum edge of the bins
+    xmax : float
+        maximum edge of the bins for a single electron
+
+    Returns
+    -------
+    tuple
+        nbins, xmin, and xmax widened for n_electrons, to be unpacked into
+        the arguments of Processor.histogram
+
+    Examples
+    --------
+        self.histogram("summed_det", "", *electron_scaled(2, 600, 0.0, 12000.0))
+    """
+
+    return nbins * n_electrons, xmin, xmin + (xmax - xmin) * n_electrons
+
+
 @processor("dqm::HcalGeometryVerifier", "DQM")
 class HCalGeometryVerifier(Processor):
     """Configured HCalGeometryVerifier python object
@@ -316,10 +349,19 @@ class EcalDigiVerify(Processor):
     5. Number of hits in modules
     6. Noise related plots
 
+    Attributes
+    ----------
+    n_expected_electrons : int
+        number of beam electrons in the sample, widening the ranges of the
+        histograms that sum over the event
+
     Examples
     --------
         from LDMX.DQM import dqm
         p.sequence.append( dqm.EcalDigiVerify('EcalDigiVerify') )
+
+        # two electron (pileup) sample
+        p.sequence.append( dqm.EcalDigiVerify(n_expected_electrons = 2) )
     """
 
     ecal_sim_hit_coll: str = "EcalSimHits"
@@ -329,6 +371,7 @@ class EcalDigiVerify(Processor):
     ecal_presel_coll: str = "EcalPreselectionDecision"
     ecal_presel_pass: str = ""
     num_layers: int = 32
+    n_expected_electrons: int = 1
 
     def __post_init__(self):
         self.histogram(
@@ -380,15 +423,17 @@ class EcalDigiVerify(Processor):
             -0.5,
             19.5,
         )
-        self.histogram("num_rec_hits", "Number of RecHits", 100, -0.5, 299.5)
+        self.histogram(
+            "num_rec_hits",
+            "Number of RecHits",
+            *electron_scaled(self.n_expected_electrons, 100, -0.5, 299.5),
+        )
         self.histogram("num_noise_hits", "Number of noisy RecHits", 100, -0.5, 99.5)
         self.histogram("is_noise_hit", "Is noise hit?", 2, -0.5, 1.5)
         self.histogram(
             "total_rec_energy",
             "Total Reconstructed Energy in ECal [MeV]",
-            800,
-            0.0,
-            11000.0,
+            *electron_scaled(self.n_expected_electrons, 800, 0.0, 11000.0),
         )
         self.histogram(
             "num_mod_with_0hits", "Num of modules with 0 hit", 100, 140.5, 240.5
@@ -440,17 +485,41 @@ class EcalDigiVerify(Processor):
 
 @processor("dqm::EcalShowerFeatures", "DQM")
 class EcalShowerFeatures(Processor):
-    """Configured EcalShowerFeatures python object"""
+    """Configured EcalShowerFeatures python object
+
+    Attributes
+    ----------
+    n_expected_electrons : int
+        number of beam electrons in the sample, widening the ranges of the
+        histograms that sum over the event
+    """
 
     ecal_veto_name: str = "EcalVeto"
     ecal_veto_pass: str = ""
+    n_expected_electrons: int = 1
 
     def __post_init__(self):
         self.histogram("deepest_layer_hit", "Deepest Layer Hit", 40, 0, 40)
-        self.histogram("num_readout_hits", "Num Readout Hits", 100, 0, 300)
-        self.histogram("summed_det", "Total Rec Energy [MeV]", 600, 0.0, 12000.0)
-        self.histogram("summed_iso", "Total Isolated Energy [MeV]", 600, 0.0, 12000.0)
-        self.histogram("summed_back", "Total Back Energy [MeV]", 500, 0.0, 10000.0)
+        # sums that grow with the number of beam electrons
+        ne = self.n_expected_electrons
+        self.histogram(
+            "num_readout_hits", "Num Readout Hits", *electron_scaled(ne, 100, 0, 300)
+        )
+        self.histogram(
+            "summed_det",
+            "Total Rec Energy [MeV]",
+            *electron_scaled(ne, 600, 0.0, 12000.0),
+        )
+        self.histogram(
+            "summed_iso",
+            "Total Isolated Energy [MeV]",
+            *electron_scaled(ne, 600, 0.0, 12000.0),
+        )
+        self.histogram(
+            "summed_back",
+            "Total Back Energy [MeV]",
+            *electron_scaled(ne, 500, 0.0, 10000.0),
+        )
         self.histogram(
             "max_cell_dep", "Maximum Single-Cell Energy Dep [MeV]", 200, 0.0, 2000.0
         )
@@ -462,23 +531,17 @@ class EcalShowerFeatures(Processor):
         self.histogram(
             "e_containment_energy",
             "Electron Containment Energy [MeV]",
-            200,
-            0.0,
-            10000.0,
+            *electron_scaled(ne, 200, 0.0, 10000.0),
         )
         self.histogram(
             "ph_containment_energy",
             "Photon Containment Energy [MeV]",
-            200,
-            0.0,
-            10000.0,
+            *electron_scaled(ne, 200, 0.0, 10000.0),
         )
         self.histogram(
             "out_containment_energy",
             "Outside Containment Energy [MeV]",
-            200,
-            0.0,
-            10000.0,
+            *electron_scaled(ne, 200, 0.0, 10000.0),
         )
 
 
@@ -2171,10 +2234,20 @@ sample_validation_dqm = [SampleValidation()]
 
 @processor("dqm::EcalClusterAnalyzer", "DQM")
 class EcalClusterAnalyzer(Processor):
-    """Analyze clustering"""
+    """Analyze clustering
+
+    Attributes
+    ----------
+    nbr_of_electrons : int
+        number of electrons the clustering is compared against
+    n_expected_electrons : int
+        number of beam electrons in the sample, widening the ranges of the
+        histograms that count hits over the whole event
+    """
 
     use_simulated_electron_number: bool = False
     nbr_of_electrons: int = 2
+    n_expected_electrons: int = 1
     ecal_sim_hit_coll: str = "EcalSimHits"
     ecal_sim_hit_pass: str = ""
     rec_hit_coll_name: str = "EcalRecHits"
@@ -2238,7 +2311,9 @@ class EcalClusterAnalyzer(Processor):
             105.0,
         )
         self.histogram(
-            "unclustered_hits", "Number of hits not in a cluster", 10, 0.0, 200.0
+            "unclustered_hits",
+            "Number of hits not in a cluster",
+            *electron_scaled(self.n_expected_electrons, 10, 0.0, 200.0),
         )
         self.histogram(
             "unclustered_hits_percentage",
@@ -2247,7 +2322,11 @@ class EcalClusterAnalyzer(Processor):
             0.0,
             105.0,
         )
-        self.histogram("total_rechits_in_event", "RecHits per event", 20, 0.0, 500.0)
+        self.histogram(
+            "total_rechits_in_event",
+            "RecHits per event",
+            *electron_scaled(self.n_expected_electrons, 20, 0.0, 500.0),
+        )
 
         self.histogram(
             "total_energy_vs_hits",

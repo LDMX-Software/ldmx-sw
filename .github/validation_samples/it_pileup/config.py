@@ -17,6 +17,9 @@ det = "ldmx-det-v15-8gev"
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 p.max_events = int(os.environ["LDMX_NUM_EVENTS"]) // 2
 
+# one simulated electron overlayed with one pileup electron
+n_electrons = 2
+
 
 # Load the full tracking sequance
 from LDMX.Recon.overlay import OverlayProducer
@@ -123,7 +126,7 @@ from LDMX.Recon.simple_trigger import TriggerProcessor
 
 
 count = ElectronCounter(
-    simulated_electron_number=2,
+    simulated_electron_number=n_electrons,
     instance_name="ElectronCounter",
     input_pass_name=this_pass_name,
 )
@@ -256,12 +259,12 @@ for ts_dqm in trig_scint_dqm:
     ts_dqm.pass_name = this_pass_name
 
 # EcalDigiVerify
-ecal_digi_verify = dqm.EcalDigiVerify()
+ecal_digi_verify = dqm.EcalDigiVerify(n_expected_electrons=n_electrons)
 ecal_digi_verify.ecal_sim_hit_coll += overlay_str
 ecal_digi_verify.ecal_rec_hit_pass = this_pass_name
 
 # EcalShowerFeatures
-ecal_shower_features = dqm.EcalShowerFeatures()
+ecal_shower_features = dqm.EcalShowerFeatures(n_expected_electrons=n_electrons)
 ecal_shower_features.ecal_veto_pass = this_pass_name
 
 # EcalMipTrackingFeatures
@@ -341,7 +344,7 @@ p.sequence.extend(dqm_with_overlay)
 p.sequence.extend(
     [
         cluster,
-        dqm.EcalClusterAnalyzer(),
+        dqm.EcalClusterAnalyzer(n_expected_electrons=n_electrons),
         track_pf,
         truth_pf,
         ecal_pf,
