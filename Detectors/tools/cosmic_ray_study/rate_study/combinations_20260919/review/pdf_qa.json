@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-20",
+  "pdf_sha256": "970f94de4534cff76a7b6f2110ad8be2325225bc97294373066a0758fbd9a341",
+  "pages": 14,
+  "checks": {
+    "authors": true,
+    "headline_rates": true,
+    "no_unresolved_references": true,
+    "no_blank_pages": true,
+    "page_count": true,
+    "overview_on_page_2": true,
+    "combined_figure_on_page_3": true,
+    "red_rate_pair_text": true,
+    "latex_layout_warnings_absent": true,
+    "all_frozen_rate_files_unchanged": true,
+    "historical_ray_figure_unchanged": true,
+    "ecal_unrestricted_explained_in_caption": true
+  },
+  "visual_review": {
+    "pages_inspected": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "method": "All 14 pages rendered with Poppler at 1200px and inspected in contact sheets; final revised page 3 inspected separately at 1400px after cardinal-red rate labels and the ECAL-unrestricted caption explanation were added.",
+    "clipping_overlap_blank_pages": false,
+    "author_block_verified": true,
+    "table_text_legible": true,
+    "rate_label_color": "#8C1515",
+    "rate_label_weight": "bold"
+  },
+  "prose_review": "Independent writing agent revised reader-facing context and reviewed captions with the physics agent; final signoff 2026-09-20.",
+  "geometry_review": "Independent framework/physics agent checked complete prism rendering against the frozen aligned scene and verified that historical rays retain the earlier offset ECAL.",
+  "rate_file_checks": {
+    "combinations_20260919/results/hcal_trigger_replicates.npz": true,
+    "combinations_20260919/results/exclusive_tracker_counts.csv": true,
+    "combinations_20260919/results/results.json": true,
+    "combinations_20260919/results/specified_subsets.csv": true,
+    "combinations_20260919/results/hcal_any_layer_triggers.json": true,
+    "combinations_20260919/results/hcal_any_layer_triggers.csv": true,
+    "combinations_20260919/results/inclusive_combinations.csv": true,
+    "combinations_20260919/results/replicate_rates.npz": true
+  },
+  "build": "Report-only make_assets.py and Tectonic completed; numerical integration not rerun for presentation changes.",
+  "passed": true
+}

@@ -1,0 +1,24 @@
+The new prism code reproduces every active-hit decision for the 192 saved
+centred-layout ROOT rays and a further 192 broad-angle ROOT rays (9,984 layer
+decisions in total). It also agrees with the independent Python intersection
+code for 16,384 broad rays. Material columns agree with ROOT to less than
+$2.4\times10^{-9}\ \mathrm{g\,cm^{-2}}$, including partial columns to the
+layer exit planes. All 896 specified-subset rates obey requirement monotonicity,
+as do the 280 inclusive multiplicity rows.
+
+Independent pseudorandom estimates agree with the golden and strict ten-layer
+HCAL rates within 0.20 and 1.57 combined numerical standard errors,
+respectively. Separate angular checks of the three-station any-layer trigger
+and the union of all HCAL layers agree within 1.37 and 0.16 standard errors.
+The tracker plateau also has a geometric check: the full TS--LYSO anchor
+envelope lies at least 6.62 mm inside every tracker active polygon.
+
+The golden geometric reference is $1.55021\pm0.00045$ per hour, consistent
+with the earlier $1.54995\pm0.00030$ result. An independent angular proposal
+$q(c)=2c$, which samples more oblique rays, agrees with all three strict
+single-station rates within 1.95 combined numerical standard errors; the
+largest difference is 0.0092\%. The flux interpolation check has maximum
+relative residual 0.0209\% over 250 test points; the energy-quadrature check
+against adaptive integration reaches $1.3\times10^{-7}$. These residuals are
+separate from the reported Sobol standard errors. Validation scripts and
+machine-readable checks are included in the reproduction package.

@@ -1,0 +1,167 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=0.78in]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx,xcolor,microtype,enumitem}
+\usepackage[colorlinks=true,urlcolor=blue!55!black,linkcolor=blue!55!black,citecolor=blue!55!black]{hyperref}
+\usepackage{xurl}
+\definecolor{navy}{HTML}{203C56}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=*}
+\begin{document}
+{\Large\bfseries\color{navy} Cosmic muons through the ESA test stand}\par
+{\large A rate estimate with and without 3 ft of concrete}\par
+18 September 2026 \hfill CAD-registered geometry: \texttt{eae30ac8f}
+\vspace{4pt}\hrule\vspace{7pt}
+
+\textbf{Result.} The current geometry gives approximately \textbf{1.41 muons/hour without an overhead slab} and \textbf{1.20 muons/hour with 3 ft of concrete}. Both numbers require a single muon to intersect all 26 active layers. They are conditional predictions from a sea-level spectrum and a straight-line continuous-slowing-down model, before detector efficiency; they are not measured rates or a full Geant4 transport result.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Overhead shielding & Muons/hour & Muons/day & Mean interval & $K_{\min}$ at surface\\
+\midrule
+None & 1.41 & 33.8 & 42.6 min & 0.104 GeV\\
+3 ft concrete & 1.20 & 28.8 & 50.1 min & 0.470 GeV\\
+\bottomrule
+\end{tabular}
+\end{center}
+Here $K_{\min}$ is the acceptance-weighted mean kinetic energy needed to emerge from the modelled detector with at least 10 MeV remaining. That small residual is a range-table reliability floor, not an electronics threshold. The concrete reduces this model's rate by approximately \textbf{15\%}.
+
+\section*{What counts as going through everything?}
+A trajectory must have nonzero path length in an active volume in \emph{every layer} listed below. Within a segmented layer, hitting any one bar is sufficient. A track need not hit all bars in that layer.
+\begin{center}
+\begin{tabular}{lrrl}
+\toprule
+Subsystem & Required layers & Active volumes & Geometry used\\
+\midrule
+Top HCal & 2 & 24 & Two crossed layers, 12 bars each\\
+Trigger counters & 6 & 72 & Three stations, two staggered layers each\\
+Silicon tracker & 4 & 4 & Active daughters; inactive borders excluded\\
+LYSO target & 2 & 33 & Two staggered bar arrays\\
+HCal above ECal & 4 & 32 & Four crossed layers, 8 bars each\\
+ECal silicon & 4 & 4 & Four hexagonal active silicon layers\\
+HCal below ECal & 4 & 48 & Four crossed layers, 12 bars each\\
+\midrule
+Total & 26 & 217 & Bars and sensors are distinct volumes\\
+\bottomrule
+\end{tabular}
+\end{center}
+The STEP model supplies the placement framework; ESA \texttt{ldmx-reduced-v3} supplies the ECal, trigger, tracker and target internals. HCal dimensions follow the test-stand branch. The inferred HCal bar counts and detector registration still need hardware confirmation. The support renderings are not additional material in the GDML used here.
+
+\section*{The geometric bottleneck}
+The trigger bars are only 30 mm wide in $X$, while the HCal spans metres. After requiring the six trigger and two LYSO layers, the tracker and HCal do not remove further tracks in this integration; the displaced ECal footprint reduces the remaining rate by about 36\%. The accepted rays are close to vertical: 90\% are within 4.82$^\circ$ and 99\% within 6.28$^\circ$ under the reference angular model.
+
+For the simple reference intensity $I(\theta)=70\cos^2\theta\ \mathrm{m}^{-2}\mathrm{s}^{-1}\mathrm{sr}^{-1}$, associated with sea-level muons above $1\ \mathrm{GeV}/c$\cite{pdg},
+\[
+G_2=\int dA\,d\Omega\,\cos^3\theta\,\mathbf{1}_{\mathrm{all}}=4.0021\times10^{-6}\ \mathrm{m}^2\mathrm{sr},\qquad
+R_{p>1}^{\mathrm{geom}}=1.0085\pm0.0004\ \mathrm{hour}^{-1}.
+\]
+The quoted error is numerical integration error only. The headline rates are larger because the energy-dependent calculation also includes lower-energy muons that have enough range to cross the selected materials.
+
+\newpage
+\section*{Geometry and shielding illustrations}
+\begin{center}\includegraphics[width=\linewidth]{geometry_acceptance.pdf}\end{center}
+\textbf{Figure 1.} Two projections of 32 accepted sample trajectories. Coloured segments mark the actual layer centres and transverse extents; their line thickness is enlarged for legibility. HCal bars extend beyond the displayed transverse window. The ECal offset and narrow trigger/LYSO corridor restrict the accepted directions. These are straight geometric rays, not simulated scattering histories.
+
+\vspace{7pt}
+\begin{center}\includegraphics[width=\linewidth]{rate_comparison.pdf}\end{center}
+\textbf{Figure 2.} The continuous-loss estimate versus concrete thickness, and the angular distribution of muons that satisfy all 26 layer requirements. The 3 ft comparison assumes a uniform horizontal slab that covers the stand and all accepted directions, with concrete density $2.30\ \mathrm{g\,cm^{-3}}$\cite{concrete}. Roof height and openings are not modelled. No efficiency correction or calibrated uncertainty band is implied.
+
+\newpage
+\section*{Calculation and checks}
+\textbf{Geometry integration.} Two points are sampled on horizontal planes through the upper trigger and lower LYSO layer, separated by $D=383.4$ mm. Sampling rectangles are slightly expanded to include tracks that clip a finite-thickness anchor volume. If $\boldsymbol{u}=({\bf b}-{\bf a})/D$, then
+\[
+R=\int d^2a\,d^2b\;\frac{I(\theta)\cos^4\theta}{D^2}\,
+\mathbf{1}_{\mathrm{all}},\qquad \cos\theta=(1+|\boldsymbol{u}|^2)^{-1/2}.
+\]
+This includes both the projected-area factor and the solid-angle Jacobian. For $I=I_0\cos^2\theta$, each ray carries a $\cos^6\theta$ weight. Box and hexagonal-prism intersections retain the physical bar gaps, stagger, tracker rotations and finite layer thickness. Eight independently scrambled Sobol sequences of $2^{18}$ point pairs give 2,097,152 trials. An independent pseudorandom estimate agrees within its numerical error. ROOT's original GDML solids agree with all 4,992 individual layer decisions in a separate 192-ray test.
+
+\textbf{Spectrum.} The energy-dependent model uses Guan et al.'s modified Gaisser spectrum\cite{guan}, with total energy $E$ in GeV and $j$ in $\mathrm{cm^{-2}s^{-1}sr^{-1}GeV^{-1}}$:
+\[
+j(E,\theta)=C\,0.14\left[E+\frac{3.64}{(\cos\theta^*)^{1.29}}\right]^{-2.7}
+\left[\frac{1}{1+1.1E\cos\theta^*/115}+\frac{0.054}{1+1.1E\cos\theta^*/850}\right].
+\]
+The factor $C=1.1595$ sets the vertical integral above $p=1\ \mathrm{GeV}/c$ to $70\ \mathrm{m^{-2}s^{-1}sr^{-1}}$. The published curvature correction for $\theta^*$ is implemented in the supplied script. The flux above each ray's required surface energy replaces the reference $70\cos^2\theta$ weight. The resulting lower-energy contribution is model dependent.
+
+\textbf{Stopping model.} The supplied 3 ft thickness is $91.44$ cm, or $210.312\ \mathrm{g\,cm^{-2}}=2.10312$ m water equivalent at the assumed density. ROOT chords and the GDML densities give a mean vertical detector column of $32.70\ \mathrm{g\,cm^{-2}}$ over 96 accepted rays, of which roughly $20.6\ \mathrm{g\,cm^{-2}}$ is HCal scintillator. For this estimate, the whole detector column is represented by a polystyrene CSDA range\cite{poly}; the roof uses the concrete CSDA table\cite{concrete}. This is an approximation to the mixed detector materials, not material-by-material transport. With tabulated range functions $\mathcal R_p$ and $\mathcal R_c$,
+\[
+K_d=\mathcal R_p^{-1}\!\left[\mathcal R_p(10\ \mathrm{MeV})+X_d\sec\theta\right],\quad
+K_s=\mathcal R_c^{-1}\!\left[\mathcal R_c(K_d)+X_c\sec\theta\right].
+\]
+The flux integral starts at $E=K_s+m_\mu$. With no roof, $K_s=K_d$. Doubling the detector column changes the 3 ft prediction from 1.20 to 1.17/hour; requiring 100 MeV at the final exit gives 1.17/hour.
+
+\textbf{Interpretation.} The recorded coincidence rate will also depend on the light-yield thresholds, dead channels, trigger logic and live time. Multiple scattering, decay and stochastic energy losses are omitted. Grazing tracks can count here: requiring a hit at every layer's midplane instead reduces the reference rate from 1.0085 to 0.853/hour, showing that the signal threshold matters. The flux normalization itself is not exact; the PDG review notes measurements 10--15\% below the reference value\cite{pdg}. No combined systematic uncertainty or local flux calibration is claimed. The estimate is for cosmic muons of both charges, not all cosmic-ray species or shower coincidences.
+
+\textbf{Reproduction.} The folder contains the geometry snapshot, scripts, numerical tables, range data, figures and this \LaTeX{} source. Run \texttt{build\_report.sh} with Python (NumPy, SciPy, Matplotlib), ROOT and Tectonic available. The \texttt{SHA256SUMS} file records artifact identities. The original STEP SHA-256 and all source GDML hashes are preserved in \texttt{geometry/provenance.json}.
+
+\begin{thebibliography}{4}\small\setlength{\itemsep}{0pt}
+\bibitem{pdg} Particle Data Group, \emph{Cosmic Rays}, 2022 review, Sec. 30.3.1.
+\url{https://pdg.lbl.gov/2022/reviews/rpp2022-rev-cosmic-rays.pdf}.
+\bibitem{guan} M. Guan et al., \emph{A parametrization of the cosmic-ray muon flux at sea-level}, arXiv:1509.06176 (2015), Eqs. (2)--(3). \url{https://arxiv.org/abs/1509.06176}.
+\bibitem{concrete} PDG, \emph{Shielding concrete: properties and muon CSDA range}.
+\url{https://pdg.lbl.gov/2022/AtomicNuclearProperties/HTML/shielding_concrete.html}.
+\bibitem{poly} PDG, \emph{Muon stopping power and range in polystyrene}.
+\url{https://pdg.lbl.gov/2019/AtomicNuclearProperties/MUE/muE_polystyrene.txt}.
+\end{thebibliography}
+\clearpage
+\section*{Raising the TS/tracker/LYSO assembly by 0.20 m}
+All three trigger-scintillator (TS) stations, all four tracker sensors and both
+LYSO layers move together by $+200$ mm in CAD $Z$. Their transverse positions,
+rotations, internal spacings and segmentation stay the same. ECal and all three
+HCal groups remain fixed. A muon must still cross every one of the 26 active layers.
+
+\textbf{Raising this assembly alone reduces the estimated rate by 10.2\%.}
+The top-TS to lower-LYSO separation stays at $383.4$ mm, preserving the internal
+collimation, but the distance to the fixed, offset ECal grows by 200 mm. Fewer
+accepted directions also cross every ECal layer. The geometric
+$p>1\ \mathrm{GeV}/c$ reference changes from 1.0085 to
+$0.9059\pm0.0003$ muons/hour; the error is numerical only.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Overhead shielding & Original/hour & Raised/hour & Change\\
+\midrule
+None & 1.407 & 1.264 & $-10.2\%$\\
+3 ft concrete & 1.199 & 1.077 & $-10.2\%$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Centering the ECal as well}
+Keep the TS/tracker/LYSO assembly raised and translate the entire ECal in $X,Y$
+so that the centre of its combined active-silicon envelope lies on the LYSO/TS
+axis. This means $\Delta X=+46.56$ mm and $\Delta Y=-46.08$ mm; ECal height,
+rotations and internal layer offsets stay unchanged. All HCal positions stay fixed.
+\textbf{Centering increases the rate by 54.2\% relative to raising alone},
+and by 38.5\% relative to the original layout.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Overhead shielding & Raised + centred/hour & Per day & Gain over raised\\
+\midrule
+None & 1.949 & 46.8 & $+54.2\%$\\
+3 ft concrete & 1.660 & 39.8 & $+54.2\%$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\includegraphics[width=\linewidth]{shift_up_200mm/geometry_shift_comparison.pdf}
+\end{center}
+\textbf{Figure 3.} The three layouts with 24 accepted straight rays each, in
+$X$--$Z$. TS, tracker and LYSO move upward together in B and C; ECal is also
+centred in C. Its $Y$ shift is not visible in this projection. Line thicknesses
+are enlarged, and HCal extends outside the transverse window.
+
+\textbf{Checks and limits.} Each variation uses eight Sobol scrambles of $2^{18}$
+trials. ROOT agrees with all 4,992 layer decisions in each 192-ray test, including
+109 translated active solids for B and 113 for C. Both independent pseudorandom
+checks agree within 0.16 numerical standard errors. The spectrum and roof
+model are unchanged. To isolate placement effects, the detector stopping proxy
+stays at the original $32.70\ \mathrm{g\,cm^{-2}}$ vertical column; it is not
+remeasured. Scattering, detector inefficiency and mechanical clearances remain
+unmodelled. These are rate studies, not validated mechanical or transport geometries.
+
+
+\end{document}

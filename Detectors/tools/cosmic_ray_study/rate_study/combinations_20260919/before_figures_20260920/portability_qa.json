@@ -1,0 +1,15 @@
+{
+  "fresh_extraction_manifest_verification": true,
+  "isolated_cpp_library_compilation": true,
+  "isolated_integration_smoke": {
+    "anchor": 0,
+    "power": 10,
+    "replicates": 2,
+    "passed": true
+  },
+  "isolated_source_pdf_rebuild": true,
+  "pdf_pages": 12,
+  "rebuilt_pdf_text_identical": true,
+  "original_report_pdf_sha256": "01327ec78a4cc4b80c6e0f3f71d31088dcb0899aff4a9e56a0aeda950ac8dbc2",
+  "passed": true
+}

@@ -1,0 +1,42 @@
+{
+  "definition": "All layers in exactly the named required station; all other devices unrestricted and installed.",
+  "purpose": "Independent angular-proposal convergence check, especially the near-horizontal tail.",
+  "rows": [
+    {
+      "hcal_mask": 1,
+      "replicates": 4,
+      "power": 17,
+      "proposal": "q(c)=2c, uniform azimuth",
+      "geometric_per_hour": 147302.98273361224,
+      "geometric_se_per_hour": 0.013323691924914352,
+      "no_roof_per_hour": 205807.88120259828,
+      "no_roof_se_per_hour": 0.15324169475339544,
+      "concrete_per_hour": 175435.55775989572,
+      "concrete_se_per_hour": 0.10342097019995423
+    },
+    {
+      "hcal_mask": 2,
+      "replicates": 4,
+      "power": 17,
+      "proposal": "q(c)=2c, uniform azimuth",
+      "geometric_per_hour": 58577.4378142536,
+      "geometric_se_per_hour": 0.00015766465863524152,
+      "no_roof_per_hour": 81345.62496356803,
+      "no_roof_se_per_hour": 0.05520546742831602,
+      "concrete_per_hour": 69507.66662439113,
+      "concrete_se_per_hour": 0.031138039398826128
+    },
+    {
+      "hcal_mask": 4,
+      "replicates": 4,
+      "power": 17,
+      "proposal": "q(c)=2c, uniform azimuth",
+      "geometric_per_hour": 136170.655414943,
+      "geometric_se_per_hour": 0.00017145687681684402,
+      "no_roof_per_hour": 187786.41043586528,
+      "no_roof_se_per_hour": 0.655718979766314,
+      "concrete_per_hour": 160747.37312768455,
+      "concrete_se_per_hour": 0.454512986715474
+    }
+  ]
+}

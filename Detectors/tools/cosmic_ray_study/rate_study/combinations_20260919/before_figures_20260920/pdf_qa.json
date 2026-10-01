@@ -1,0 +1,42 @@
+{
+  "pdf_sha256": "01327ec78a4cc4b80c6e0f3f71d31088dcb0899aff4a9e56a0aeda950ac8dbc2",
+  "pages": 12,
+  "checks": {
+    "authors": true,
+    "headline_rates": true,
+    "no_unresolved_references": true,
+    "no_blank_pages": true,
+    "earlier_layouts_retained": true,
+    "tables": {
+      "specified_subsets.csv": true,
+      "inclusive_combinations.csv": true,
+      "exclusive_tracker_counts.csv": true,
+      "hcal_any_layer_triggers.csv": true
+    },
+    "latex_layout_warnings_absent": true
+  },
+  "visual_review": {
+    "pages_inspected": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "method": "All final pages rendered with Poppler at 1400px and visually inspected in contact sheets; complete rate matrix also inspected at full resolution.",
+    "clipping_overlap_blank_pages": false,
+    "author_block_verified": true,
+    "table_text_legible": true
+  },
+  "prose_review": "Independent agent read and edited report_body.tex; completed 2026-09-19.",
+  "geometry_review": "Independent framework/geometry agent implemented and cross-checked the ray model and audited integration.",
+  "full_build": "PYTHON=/usr/bin/python3 bash build_report.sh completed successfully; subsequent changes were table typography only.",
+  "passed": true
+}

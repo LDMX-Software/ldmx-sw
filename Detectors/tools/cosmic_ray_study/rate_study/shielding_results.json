@@ -1,0 +1,63 @@
+{
+  "cases": [
+    {
+      "label": "No roof",
+      "concrete_cm": 0,
+      "concrete_column_g_cm2": 0.0,
+      "rate_Hz": 0.000390938217121033,
+      "rate_per_hour": 1.4073775816357188,
+      "rate_per_day": 33.777061959257246,
+      "mean_wait_min": 42.63248241475131,
+      "mean_required_surface_kinetic_GeV": 0.10378306037841399
+    },
+    {
+      "label": "3 ft concrete",
+      "concrete_cm": 91.44,
+      "concrete_column_g_cm2": 210.31199999999998,
+      "rate_Hz": 0.00033296058937509954,
+      "rate_per_hour": 1.1986581217503585,
+      "rate_per_day": 28.7677949220086,
+      "mean_wait_min": 50.05597418585385,
+      "mean_required_surface_kinetic_GeV": 0.469811477499482
+    }
+  ],
+  "concrete_density_g_cm3": 2.3,
+  "coverage": "uniform horizontal slab covering all accepted directions",
+  "spectrum": "Guan et al. Eq. 3, E interpreted as total energy, normalized to PDG I(p>1 GeV/c,theta=0)=70 /m2/s/sr",
+  "spectrum_normalization_factor": 1.1595376150466596,
+  "normalization_threshold_total_energy_GeV": 1.0055663555317431,
+  "exit_kinetic_energy_floor_MeV": 10,
+  "detector_stopping_model": "polystyrene CSDA proxy for the ROOT-derived detector mass column",
+  "detector_vertical_mass_column_g_cm2": 32.701800543839305,
+  "detector_column_std_g_cm2": 0.08196723833681846,
+  "detector_mass_budget_rays": 96,
+  "mean_material_columns_g_cm2": {
+    "Polyvinyltoluene": 1.197011296654294,
+    "LYSO": 0.8479195033236056,
+    "Silicon": 0.5786879119007817,
+    "Aluminum": 2.162369508538316,
+    "FR4": 5.838509837458901,
+    "Glue": 0.10154884594556285,
+    "Scintillator": 20.67029763625613,
+    "Aluminum3003": 1.3514308694407822,
+    "AcrylicPMMA": 0.001991239342655208
+  },
+  "roof_fractional_rate_reduction": 0.14830381171965024,
+  "scattering_straggling_decay_detection_efficiency_included": false,
+  "sensitivity": {
+    "detector_column_half_and_double_per_hour": {
+      "0": [
+        1.4322906366745372,
+        1.3646259539823082
+      ],
+      "91.44": [
+        1.2152651692168364,
+        1.1664955085121858
+      ]
+    },
+    "exit_100MeV_per_hour": {
+      "0": 1.3667419848549587,
+      "91.44": 1.1681515037032173
+    }
+  }
+}

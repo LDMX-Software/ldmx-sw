@@ -1,0 +1,151 @@
+{
+  "rate_monotonicity": {
+    "geometric": {
+      "specified_subset_edges_checked": 4288,
+      "subset_violations": [],
+      "at_least_k_violations": [],
+      "negative_exclusive_rows": [],
+      "max_exclusive_partition_residual_per_hour": 2.9103830456733704e-11
+    },
+    "no_roof": {
+      "specified_subset_edges_checked": 4288,
+      "subset_violations": [],
+      "at_least_k_violations": [],
+      "negative_exclusive_rows": [],
+      "max_exclusive_partition_residual_per_hour": 2.9103830456733704e-11
+    },
+    "concrete": {
+      "specified_subset_edges_checked": 4288,
+      "subset_violations": [],
+      "at_least_k_violations": [],
+      "negative_exclusive_rows": [],
+      "max_exclusive_partition_residual_per_hour": 2.9103830456733704e-11
+    }
+  },
+  "independent_IID": {
+    "golden": {
+      "power": 16,
+      "replicates": 4,
+      "comparison": {
+        "geometric": {
+          "independent_rate_per_hour": 1.5508885246896358,
+          "independent_se_per_hour": 0.0035158100961623535,
+          "production_rate_per_hour": 1.5502073697818837,
+          "difference_combined_se": 0.1921616971293103
+        },
+        "no_roof": {
+          "independent_rate_per_hour": 2.1641392320738237,
+          "independent_se_per_hour": 0.004906611091496437,
+          "production_rate_per_hour": 2.1631872397267613,
+          "difference_combined_se": 0.19244131997890124
+        },
+        "concrete": {
+          "independent_rate_per_hour": 1.843206010380493,
+          "independent_se_per_hour": 0.004178843447638005,
+          "production_rate_per_hour": 1.8423955253482642,
+          "difference_combined_se": 0.19236914070512873
+        }
+      }
+    },
+    "all_HCAL_layers": {
+      "power": 16,
+      "replicates": 4,
+      "comparison": {
+        "geometric": {
+          "independent_rate_per_hour": 9531.520976226318,
+          "independent_se_per_hour": 40.63747290813944,
+          "production_rate_per_hour": 9467.819058790667,
+          "difference_combined_se": 1.5656602489502456
+        },
+        "no_roof": {
+          "independent_rate_per_hour": 13349.421363453874,
+          "independent_se_per_hour": 57.361230506114616,
+          "production_rate_per_hour": 13259.606540737013,
+          "difference_combined_se": 1.5638845548881781
+        },
+        "concrete": {
+          "independent_rate_per_hour": 11366.594927359334,
+          "independent_se_per_hour": 48.75024132684846,
+          "production_rate_per_hour": 11290.188290398406,
+          "difference_combined_se": 1.5654110933983416
+        }
+      }
+    }
+  },
+  "HCAL_OR_logic_review": "Any layer in each required station; last required hit is the earliest hit layer of the lowest required station. All other hits are unrestricted.",
+  "HCAL_OR_angle_checks": {
+    "any_layer_stations_7": {
+      "power": 17,
+      "replicates": 4,
+      "proposal": "q(c)=2c; any_station checked by direct union of all ten layers",
+      "comparison": {
+        "geometric": {
+          "independent_rate_per_hour": 194194.52103113165,
+          "independent_se_per_hour": 130.8729273230122,
+          "production_rate_per_hour": 193988.2510297487,
+          "difference_combined_se": 1.3291766377146308
+        },
+        "no_roof": {
+          "independent_rate_per_hour": 274400.5696667057,
+          "independent_se_per_hour": 183.07838005143856,
+          "production_rate_per_hour": 274103.77610211784,
+          "difference_combined_se": 1.366261221474736
+        },
+        "concrete": {
+          "independent_rate_per_hour": 233228.18528497338,
+          "independent_se_per_hour": 156.14368320589386,
+          "production_rate_per_hour": 232977.3173670407,
+          "difference_combined_se": 1.3548347160373457
+        }
+      }
+    },
+    "any_station": {
+      "power": 17,
+      "replicates": 4,
+      "proposal": "q(c)=2c; any_station checked by direct union of all ten layers",
+      "comparison": {
+        "geometric": {
+          "independent_rate_per_hour": 1577677.1554798745,
+          "independent_se_per_hour": 675.8054921269643,
+          "production_rate_per_hour": 1577788.1683548926,
+          "difference_combined_se": -0.1579623384856466
+        },
+        "no_roof": {
+          "independent_rate_per_hour": 2199092.8243894116,
+          "independent_se_per_hour": 854.6289930168638,
+          "production_rate_per_hour": 2199177.274000695,
+          "difference_combined_se": -0.0937642383280266
+        },
+        "concrete": {
+          "independent_rate_per_hour": 1874751.3618872375,
+          "independent_se_per_hour": 768.5442884463521,
+          "production_rate_per_hour": 1874869.2228409701,
+          "difference_combined_se": -0.1465631291192448
+        }
+      }
+    }
+  },
+  "tracker_plateau_proof": {
+    "method": "All corners of the expanded TS1-top/LYSO-bottom anchor envelope at each tracker midplane lie strictly inside its convex active polygon.",
+    "margins": [
+      {
+        "layer": 6,
+        "minimum_inside_margin_mm": 8.94148339926869
+      },
+      {
+        "layer": 7,
+        "minimum_inside_margin_mm": 6.819124601300246
+      },
+      {
+        "layer": 8,
+        "minimum_inside_margin_mm": 8.955818150103369
+      },
+      {
+        "layer": 9,
+        "minimum_inside_margin_mm": 6.618744280579449
+      }
+    ],
+    "consequence": "With TS and LYSO required, dropping tracker hit requirements does not enlarge straight-ray geometric acceptance."
+  },
+  "all_checks_completed": true
+}

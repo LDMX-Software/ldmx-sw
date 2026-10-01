@@ -1,0 +1,48 @@
+{
+  "root_display_hcal_bars": 104,
+  "geometric_hcal_crossings": 10,
+  "gdml_schema_files": 9,
+  "hcal_bars": 104,
+  "unique_packed_ids": true,
+  "bars_and_covers_inside_station_envelopes": true,
+  "bar_to_bar_overlaps": 0,
+  "root_imports": 2,
+  "whole_detector_overlaps_cleared": false,
+  "geant4_transport_tested": true,
+  "digitization_or_reconstruction_validated": false,
+  "date_utc": "2026-09-18",
+  "root_version": "6.36.02",
+  "container_image": "ldmx/pro@sha256:3c0b23595174cdb38276f5cef17dbc1e945fbac4c20c65c7804e1d7fcd3227c4",
+  "events_per_entry_point": 1,
+  "particle": "mu-",
+  "energy_GeV": 4.0,
+  "entry_points": [
+    "hcal_only.gdml",
+    "detector.gdml"
+  ],
+  "geant4_exit_codes": [
+    0,
+    0
+  ],
+  "sensitive_detectors_enabled": false,
+  "fresh_branch_cpp_build": false,
+  "browser_controls_checked": [
+    "Focus detectors",
+    "HCal visibility toggle"
+  ],
+  "browser_console_errors": 0,
+  "notes": [
+    "12/8/12 bars per layer are inferred from CAD body widths, not surveyed.",
+    "Whole-detector overlaps and CAD registration have not been cleared.",
+    "Repeated identical material definitions produce Geant4 duplicate-material warnings.",
+    "Browser crossings are straight geometric intersections, not simulated hits."
+  ],
+  "provenance_sha256": "45af1f171f1a89c90a55ba52c707a646456eaf6d7c0af2cb4b6a40c4f5b4aa09",
+  "clean_venv_build_and_checks_passed": true,
+  "viewer_test_environment": {
+    "python": "3.13.5",
+    "numpy": "2.5.3",
+    "lxml": "6.1.3",
+    "matplotlib": "3.11.2"
+  }
+}

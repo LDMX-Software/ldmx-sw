@@ -1,0 +1,197 @@
+{
+  "power": 17,
+  "replicates": 8,
+  "rows": [
+    {
+      "trigger": "any_layer_stations_1",
+      "geometric_per_hour": 823217.2613086858,
+      "geometric_se_per_hour": 85.67385646658667,
+      "no_roof_per_hour": 1154603.8307550026,
+      "no_roof_se_per_hour": 110.03241541127967,
+      "concrete_per_hour": 982345.716516029,
+      "concrete_se_per_hour": 93.47546247646183
+    },
+    {
+      "trigger": "any_layer_stations_2",
+      "geometric_per_hour": 625176.873530185,
+      "geometric_se_per_hour": 90.97064912459767,
+      "no_roof_per_hour": 874063.9759646275,
+      "no_roof_se_per_hour": 141.20386002617357,
+      "concrete_per_hour": 744714.4098252873,
+      "concrete_se_per_hour": 119.26335982703127
+    },
+    {
+      "trigger": "any_layer_stations_3",
+      "geometric_per_hour": 264086.7637107185,
+      "geometric_se_per_hour": 125.98673853574367,
+      "no_roof_per_hour": 374318.4417233006,
+      "no_roof_se_per_hour": 178.17013301291806,
+      "concrete_per_hour": 317685.5802907316,
+      "concrete_se_per_hour": 151.29029686372485
+    },
+    {
+      "trigger": "any_layer_stations_4",
+      "geometric_per_hour": 859922.4222729554,
+      "geometric_se_per_hour": 67.02285852630327,
+      "no_roof_per_hour": 1198738.870973168,
+      "no_roof_se_per_hour": 93.32778690487626,
+      "concrete_per_hour": 1022514.3415286373,
+      "concrete_se_per_hour": 78.83619739972112
+    },
+    {
+      "trigger": "any_layer_stations_5",
+      "geometric_per_hour": 244306.553770187,
+      "geometric_se_per_hour": 62.334938671837044,
+      "no_roof_per_hour": 345663.18426030705,
+      "no_roof_se_per_hour": 89.32952225614724,
+      "concrete_per_hour": 293646.6839240508,
+      "concrete_se_per_hour": 75.51506659876813
+    },
+    {
+      "trigger": "any_layer_stations_6",
+      "geometric_per_hour": 416123.3223057771,
+      "geometric_se_per_hour": 85.09076330989951,
+      "no_roof_per_hour": 582351.5538106125,
+      "no_roof_se_per_hour": 117.49390905919846,
+      "concrete_per_hour": 496350.2981812413,
+      "concrete_se_per_hour": 100.49797828103173
+    },
+    {
+      "trigger": "any_layer_stations_7",
+      "geometric_per_hour": 193988.2510297487,
+      "geometric_se_per_hour": 83.39702563417784,
+      "no_roof_per_hour": 274103.77610211784,
+      "no_roof_se_per_hour": 116.92468942394446,
+      "concrete_per_hour": 232977.3173670407,
+      "concrete_se_per_hour": 99.5249372495315
+    },
+    {
+      "trigger": "layer_0",
+      "geometric_per_hour": 485305.45363103447,
+      "geometric_se_per_hour": 4.431480570404326,
+      "no_roof_per_hour": 680642.3160659136,
+      "no_roof_se_per_hour": 20.003310845649096,
+      "concrete_per_hour": 579103.1845685475,
+      "concrete_se_per_hour": 13.455508625394888
+    },
+    {
+      "trigger": "layer_1",
+      "geometric_per_hour": 485305.71403315745,
+      "geometric_se_per_hour": 3.3421937854703794,
+      "no_roof_per_hour": 679878.9158291052,
+      "no_roof_se_per_hour": 4.9138726602797975,
+      "concrete_per_hour": 578774.9627678072,
+      "concrete_se_per_hour": 3.8955432081628074
+    },
+    {
+      "trigger": "layer_14",
+      "geometric_per_hour": 326170.78585448803,
+      "geometric_se_per_hour": 3.0819287750122175,
+      "no_roof_per_hour": 456383.0836973545,
+      "no_roof_se_per_hour": 4.972411298605457,
+      "concrete_per_hour": 388750.73713157675,
+      "concrete_se_per_hour": 3.899744322288045
+    },
+    {
+      "trigger": "layer_15",
+      "geometric_per_hour": 326176.4503540575,
+      "geometric_se_per_hour": 3.0787726202921255,
+      "no_roof_per_hour": 456205.49005626584,
+      "no_roof_se_per_hour": 71.79680576831937,
+      "concrete_per_hour": 388668.485740836,
+      "concrete_se_per_hour": 33.13259244517868
+    },
+    {
+      "trigger": "layer_16",
+      "geometric_per_hour": 326169.15843723086,
+      "geometric_se_per_hour": 3.731744641128894,
+      "no_roof_per_hour": 454763.67499204713,
+      "no_roof_se_per_hour": 6.540178587377875,
+      "concrete_per_hour": 387985.93930362037,
+      "concrete_se_per_hour": 5.440015099900898
+    },
+    {
+      "trigger": "layer_17",
+      "geometric_per_hour": 326176.26171307877,
+      "geometric_se_per_hour": 3.2976848674938046,
+      "no_roof_per_hour": 454561.1918906549,
+      "no_roof_se_per_hour": 5.840794915403852,
+      "concrete_per_hour": 387872.6882403117,
+      "concrete_se_per_hour": 4.421370596070539
+    },
+    {
+      "trigger": "layer_22",
+      "geometric_per_hour": 485299.91479766206,
+      "geometric_se_per_hour": 2.0623953489125535,
+      "no_roof_per_hour": 676339.7757453461,
+      "no_roof_se_per_hour": 10.114377236425806,
+      "concrete_per_hour": 576983.2748530577,
+      "concrete_se_per_hour": 7.149877573042893
+    },
+    {
+      "trigger": "layer_23",
+      "geometric_per_hour": 485294.6496400059,
+      "geometric_se_per_hour": 3.528032862473699,
+      "no_roof_per_hour": 675818.7456064282,
+      "no_roof_se_per_hour": 15.705490994398783,
+      "concrete_per_hour": 576690.4732292636,
+      "concrete_se_per_hour": 10.022228363139172
+    },
+    {
+      "trigger": "layer_24",
+      "geometric_per_hour": 485300.1366804791,
+      "geometric_se_per_hour": 1.5729269769589211,
+      "no_roof_per_hour": 674094.7463498241,
+      "no_roof_se_per_hour": 17.057920402557137,
+      "concrete_per_hour": 575801.8599572565,
+      "concrete_se_per_hour": 9.331438666842303
+    },
+    {
+      "trigger": "layer_25",
+      "geometric_per_hour": 485302.11307237,
+      "geometric_se_per_hour": 2.552249562840245,
+      "no_roof_per_hour": 673666.0707413151,
+      "no_roof_se_per_hour": 34.250977870404434,
+      "concrete_per_hour": 575530.3889372887,
+      "concrete_se_per_hour": 17.095355965408455
+    },
+    {
+      "trigger": "any_station",
+      "geometric_per_hour": 1577788.1683548926,
+      "geometric_se_per_hour": 192.84081448309684,
+      "no_roof_per_hour": 2199177.274000695,
+      "no_roof_se_per_hour": 284.24643678031583,
+      "concrete_per_hour": 1874869.2228409701,
+      "concrete_se_per_hour": 236.68795612539893
+    },
+    {
+      "trigger": "at_least_two_stations",
+      "geometric_per_hour": 536540.1377271853,
+      "geometric_se_per_hour": 302.52440944595537,
+      "no_roof_per_hour": 754125.6275899843,
+      "no_roof_se_per_hour": 422.61523561680485,
+      "concrete_per_hour": 641727.9276619424,
+      "concrete_se_per_hour": 360.0194765901714
+    },
+    {
+      "trigger": "strict_any_station",
+      "geometric_per_hour": 299910.83036166424,
+      "geometric_se_per_hour": 9.814207788109465,
+      "no_roof_per_hour": 415905.27535247745,
+      "no_roof_se_per_hour": 25.629813194309484,
+      "concrete_per_hour": 355404.08542661835,
+      "concrete_se_per_hour": 16.52622818621341
+    },
+    {
+      "trigger": "strict_at_least_two_stations",
+      "geometric_per_hour": 32672.706870782167,
+      "geometric_se_per_hour": 10.410124685781017,
+      "no_roof_per_hour": 45792.76217202077,
+      "no_roof_se_per_hour": 14.678510083540237,
+      "concrete_per_hour": 39004.88174465649,
+      "concrete_se_per_hour": 12.483766399209093
+    }
+  ],
+  "seed_formula": "202609590 + 100*case_index + replicate",
+  "elapsed_seconds": 19.4461350440979
+}

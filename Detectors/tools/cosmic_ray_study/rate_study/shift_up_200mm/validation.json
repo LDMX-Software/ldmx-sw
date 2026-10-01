@@ -1,0 +1,22 @@
+{
+  "report_pages": 4,
+  "original_three_pages_text_unchanged": true,
+  "latex_overfull_boxes": false,
+  "required_results_present": true,
+  "raised_ROOT_check": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "translated_active_volumes": 109
+  },
+  "centered_ROOT_check": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "translated_active_volumes": 113
+  },
+  "report_sha256": "344f656c1b0f23c4cffb1e21c0b5f97bc0f365ee03c96389a857d6ad260ddc1a",
+  "rendered_page_4_visually_checked": true
+}

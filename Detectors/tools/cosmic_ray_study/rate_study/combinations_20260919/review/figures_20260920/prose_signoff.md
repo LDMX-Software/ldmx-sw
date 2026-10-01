@@ -1,0 +1,1 @@
+Independent writing-agent review approved the overview and figure sequence. The caption and plot header identify red rate pairs as no roof / 3 ft concrete, per hour. Physics review confirmed the matching subsystem palette and distinguished the aligned model from historical offset-layout rays. Rates and their qualifications are unchanged.

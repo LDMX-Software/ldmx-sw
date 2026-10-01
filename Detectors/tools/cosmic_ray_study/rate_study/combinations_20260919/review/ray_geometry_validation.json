@@ -1,0 +1,51 @@
+{
+  "legacy_centered_rays": 192,
+  "legacy_mask_mismatches": 0,
+  "legacy_ROOT_material_rays": 96,
+  "legacy_material_max_abs_difference_g_cm2": 1.0206449019278807e-09,
+  "centered_golden_mean_vertical_column_g_cm2": 32.6868362725336,
+  "broad_independent_python_rays": 16384,
+  "broad_python_mask_mismatches": 0,
+  "broad_ROOT_check": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "layers": 26
+  },
+  "broad_ROOT_material_max_abs_difference_g_cm2": 1.8485808439550055e-09,
+  "broad_ROOT_cumulative_material_max_abs_difference_g_cm2": 2.3685489125568893e-09,
+  "broad_cumulative_columns_monotonic": true,
+  "material_hierarchy_pairs": [
+    [
+      "World/native_recoil/recoil_l14_sensor_vol_10",
+      "World/native_recoil/recoil_l14_sensor_vol_10/recoil_l14_active_sensor"
+    ],
+    [
+      "World/native_recoil/recoil_l14_sensor_vol_20",
+      "World/native_recoil/recoil_l14_sensor_vol_20/recoil_l14_active_sensor"
+    ],
+    [
+      "World/native_recoil/recoil_l14_sensor_vol_30",
+      "World/native_recoil/recoil_l14_sensor_vol_30/recoil_l14_active_sensor"
+    ],
+    [
+      "World/native_recoil/recoil_l14_sensor_vol_40",
+      "World/native_recoil/recoil_l14_sensor_vol_40/recoil_l14_active_sensor"
+    ]
+  ],
+  "max_cumulative_excess_over_full_column_g_cm2": 1.4210854715202004e-14,
+  "model": {
+    "geometry": "exact convex vertical-prism chords in exported frozen scene",
+    "material_objects_original": 356,
+    "calculation_prisms": 262,
+    "tracker_material_policy": "Full silicon parents retained; four same-material active daughters assigned zero additional density.",
+    "hcal_material_policy": "Adjacent same-material bars merged after the original area-tiling assertion.",
+    "units": "Positions mm; density g/cm3; columns g/cm2.",
+    "stop_planes": "Lower surface of each active layer, in descending z order.",
+    "scene_sha256": "1fd4445d5c6415efff280e87c141fe2a3ecd7c956d6f5ec40ccbc407dfd95258",
+    "gdml_sha256": "d433dcb6f7d0679530757ff6a71930cee738753984ed5b059a5f1fed2459a5b7"
+  },
+  "validation_not_transport": true,
+  "passed": true
+}

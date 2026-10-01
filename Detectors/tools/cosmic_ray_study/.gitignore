@@ -1,0 +1,11 @@
+.venv/
+build/
+__pycache__/
+rate_study/**/*.dylib
+rate_study/**/*.so
+rate_study/**/*.log
+rate_study/**/*.aux
+rate_study/**/*.out
+rate_study/**/*.zip
+rate_study/**/checkpoints/
+rate_study/**/pdf_pages/

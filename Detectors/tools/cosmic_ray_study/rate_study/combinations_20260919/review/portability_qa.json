@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-20",
+  "fresh_manifest_copy_verification": true,
+  "isolated_source_pdf_rebuild": true,
+  "pdf_pages": 14,
+  "rebuilt_pdf_text_identical": true,
+  "original_report_pdf_sha256": "970f94de4534cff76a7b6f2110ad8be2325225bc97294373066a0758fbd9a341",
+  "prior_numerical_portability_checks": "before_figures_20260920/portability_qa.json; rate integration unchanged and not rerun for this presentation revision",
+  "passed": true
+}

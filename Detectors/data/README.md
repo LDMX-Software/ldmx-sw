@@ -47,3 +47,9 @@ cd ldmx-sw/Detectors/data
 tar -xzf archived/<detector>.tar.gz
 just configure build # even if you've already done this before!
 ```
+
+### Cosmic stand display
+
+The [cosmic stand viewer](../tools/cosmic_viewer/README.md) combines the ESA
+subsystems with CAD placements and three segmented HCal stations. Its README
+has example images, build commands, and the current geometry limitations.

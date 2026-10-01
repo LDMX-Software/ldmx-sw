@@ -1,0 +1,38 @@
+{
+  "assembly_shift_mm": 0,
+  "ecal_removed": false,
+  "ecal_translation_mm": [
+    46.55962243000067,
+    -46.07628913609999,
+    0.0
+  ],
+  "source_scene_sha256": "782b4a133dfadbd489bec17e0409615cf4d9986654fcacf041baa49b80e9f45d",
+  "required_layers": 26,
+  "cases": [
+    {
+      "label": "No roof",
+      "concrete_cm": 0,
+      "rate_per_hour": 2.162828882928311,
+      "rate_per_day": 51.90789319027947,
+      "fractional_change_from_original": 0.536779405292624
+    },
+    {
+      "label": "3 ft concrete",
+      "concrete_cm": 91.44,
+      "rate_per_hour": 1.8420928782253485,
+      "rate_per_day": 44.210229077408364,
+      "fractional_change_from_original": 0.536795892673221
+    }
+  ],
+  "detector_vertical_mass_column_g_cm2": 32.701800543839305,
+  "detector_column_std_g_cm2": null,
+  "mass_model": "Original 32.70 g/cm2 proxy held fixed, consistent with the earlier position studies.",
+  "root_cross_check": {
+    "rays": 192,
+    "layer_decisions": 4992,
+    "mismatches": 0,
+    "active_volumes": 217,
+    "layers": 26
+  },
+  "no_scattering_straggling_decay_or_detector_efficiency": true
+}
