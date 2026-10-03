@@ -6,6 +6,7 @@
 #include "Framework/Logger.h"
 
 //--- C++ ---//
+#include <map>
 #include <memory>
 
 //--- LDMX ---//
@@ -247,6 +248,12 @@ class CKFProcessor final : public TrackingGeometryUser {
 
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
+
+  // zero field outside the map instead of an out of bounds error
+  bool field_zero_outside_{false};
+
+  // field-map CKF failures by error message
+  std::map<std::string, int> ckf_errors_;
 
 };  // CKFProcessor
 
