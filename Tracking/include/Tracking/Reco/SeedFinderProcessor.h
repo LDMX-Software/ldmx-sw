@@ -139,6 +139,11 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<std::string> strategies_{};
   /// Layer lists parsed from strategies_, one per strategy.
   std::vector<std::vector<int>> strategy_layers_{};
+  /// Constrained fits only after the plain fit passes the cuts.
+  bool prefilter_unconstrained_{false};
+  long nfailprefilter_{0};
+  /// Seeds found per strategy, for the end of job summary.
+  std::vector<long> seeds_per_strategy_{};
   /// Put tagger track positions at the target into the seed fit.
   bool use_target_constraint_{false};
   /// Put the beam spot into the seed fit when no tagger track exists.

@@ -79,6 +79,8 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
       parameters.get<bool>("use_beamspot_constraint", false);
   beamspot_sigma_ =
       parameters.get<std::vector<double>>("beamspot_sigma", {5.77, 23.1});
+  prefilter_unconstrained_ =
+      parameters.get<bool>("prefilter_unconstrained", false);
 
   if (use_target_constraint_ && tagger_trks_collection_.empty()) {
     EXCEPTION_RAISE("BadConf",
@@ -224,10 +226,13 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   //  a strategy is a list of layers from which to make the seed
   //  layer_ numbering starts at 0
-  for (const auto& strategy : strategy_layers_) {
+  seeds_per_strategy_.resize(strategy_layers_.size(), 0);
+  for (size_t is = 0; is < strategy_layers_.size(); ++is) {
     groups_map_.clear();
-    if (groupStrips(measurements, strategy))
+    const size_t n_before = seed_tracks.size();
+    if (groupStrips(measurements, strategy_layers_[is]))
       findSeedsFromMap(seed_tracks, target_pseudo_meas, fit_constraints);
+    seeds_per_strategy_[is] += seed_tracks.size() - n_before;
   }
 
   groups_map_.clear();
@@ -473,6 +478,10 @@ void SeedFinderProcessor::onProcessEnd() {
   ldmx_log(info) << "AVG Time/Event: " << std::fixed << std::setprecision(1)
                  << processing_time_ / nevents_ << " ms";
   ldmx_log(info) << "Total Seeds/Events: " << ntracks_ << "/" << nevents_;
+  for (size_t is = 0; is < seeds_per_strategy_.size(); ++is) {
+    ldmx_log(info) << "  strategy '" << strategies_[is]
+                   << "' seeds: " << seeds_per_strategy_[is];
+  }
   ldmx_log(info) << "Seeds discarded due to multiple hits on layers "
                  << ndoubles_;
   ldmx_log(info) << "not enough seed points " << nmissing_;
@@ -483,6 +492,9 @@ void SeedFinderProcessor::onProcessEnd() {
   ldmx_log(info) << "   nfailphicut=" << nfailphi_;
   ldmx_log(info) << "   nfailthetacut=" << nfailtheta_;
   ldmx_log(info) << "   nfailz0max=" << nfailz0max_;
+  if (prefilter_unconstrained_) {
+    ldmx_log(info) << "   nfailprefilter=" << nfailprefilter_;
+  }
 }
 
 // Given a strategy, group the hits according to some options
@@ -580,6 +592,28 @@ void SeedFinderProcessor::findSeedsFromMap(
     std::vector<const ldmx::Measurement*> constraints;
     for (const auto& c : fit_constraints) constraints.push_back(&c);
     if (constraints.empty()) constraints.push_back(nullptr);
+
+    // constrained fits only for combinations whose plain fit passes the
+    // cuts; otherwise the constraint lets many fake combinations through
+    if (prefilter_unconstrained_ && constraints.front() != nullptr &&
+        meas_for_seeds.size() >= 5) {
+      ldmx::Track plain = seedTracker(
+          meas_for_seeds, meas_for_seeds.at(k / 2).getGlobalPosition()[0],
+          perigee, nullptr);
+      b0_.pop_back();
+      b1_.pop_back();
+      b2_.pop_back();
+      b3_.pop_back();
+      b4_.pop_back();
+      const double p = 1. / std::abs(plain.getQoP());
+      if (p < pmin_ || p > pmax_ || std::abs(plain.getZ0()) > z0max_ ||
+          plain.getD0() < d0min_ || plain.getD0() > d0max_ ||
+          std::abs(plain.getPhi()) > phicut_ ||
+          std::abs(plain.getTheta() - piover2_) > thetacut_) {
+        nfailprefilter_++;
+        constraints.clear();
+      }
+    }
 
     for (const auto* constraint : constraints) {
       // 5 parameters need 5 equations: one per strip, two per constraint

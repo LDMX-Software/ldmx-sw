@@ -1,5 +1,50 @@
+import math
+
 from LDMX.Tracking import geo, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
+
+# Target per detector for the CKF target point: thickness [mm], x/X0.
+# Matched as a substring of the detector tag; anything else is tungsten.
+TARGETS = {
+    "lyso-r4-v15": (1.34, 0.105),
+    "lyso-r4-v16": (1.40, 0.105),
+    # v15 Ti is the old, too thin target, fixed in v16
+    "ti-v15": (1.22, 0.034),
+    "ti-v16": (3.56, 0.100),
+    "al-v1": (8.89, 0.100),
+}
+TUNGSTEN = (0.3504, 0.100)
+# extra target point sigma a [mm] and b [mm GeV] in (u, v), tuned on the
+# v15 tungsten target with 1 GeV signal pulls
+TARGET_SIGMA_EXTRA = [0.10, 0.15]
+TARGET_SIGMA_EXTRA_MS = [0.035, 0.06]
+
+
+def target_constraint_errors(detector):
+    """CKF target point error settings for a detector tag.
+
+    a is the tungsten tuning; b is scaled from tungsten with the multiple
+    scattering dependence sqrt(x/X0) (1 + 0.038 ln x/X0); the thickness feeds
+    the per-track vertex depth term. Only tungsten is validated.
+
+    Returns
+    -------
+    dict
+        target_thickness, target_sigma_extra, target_sigma_extra_ms
+    """
+    thickness, x0 = next(
+        (v for k, v in TARGETS.items() if k in detector), TUNGSTEN
+    )
+
+    def ms(x):
+        return math.sqrt(x) * (1.0 + 0.038 * math.log(x))
+
+    scale = ms(x0) / ms(TUNGSTEN[1])
+    return dict(
+        target_thickness=thickness,
+        target_sigma_extra=list(TARGET_SIGMA_EXTRA),
+        target_sigma_extra_ms=[b * scale for b in TARGET_SIGMA_EXTRA_MS],
+    )
 
 
 class TrackingSequence:
@@ -264,6 +309,19 @@ def full_tracking_sequence(
         input_hits_collection=recoil_meas_collection,
         out_seed_collection=tagged("RecoilRecoSeeds"),
         tagger_trks_collection=tagged("TaggerTracksClean"),
+        # 5-layer sets, then 4-layer sets that need the target point
+        strategies=[
+            "0,1,2,3,4",
+            "0,1,2,3,5",
+            "1,2,3,4,5",
+            "2,3,4,5,6",
+            "0,1,2,3",
+            "2,3,4,5",
+            "4,5,6,7",
+        ],
+        use_target_constraint=True,
+        use_beamspot_constraint=True,
+        prefilter_unconstrained=True,
         bfield=1.5,
         pmin=0.04,
         pmax=819.0,
@@ -293,10 +351,16 @@ def full_tracking_sequence(
         seed_coll_name=seeder_recoil.out_seed_collection,
         out_trk_collection=tagged("RecoilTracks"),
         measurement_collection=recoil_meas_collection,
-        min_hits=5,
+        # >= 5 hits; 5 hit tracks get ndf from the target point
+        min_hits=4,
         outlier_pval_=22.1,
         # the recoil leaves the field map (|y| < 70 mm) on ~40% of seeds
         field_zero_outside=True,
+        use_target_constraint=True,
+        use_beamspot_constraint=True,
+        tagger_trks_collection=tagged("TaggerTracksClean"),
+        target_constraint_max_hits=5,
+        **target_constraint_errors(detector),
     )
 
     # ------------------------------------------------------------------
@@ -314,6 +378,8 @@ def full_tracking_sequence(
         out_trk_collection=tagged("RecoilTracksClean"),
         track_collection=tracking_recoil.out_trk_collection,
         meas_collection=recoil_meas_collection,
+        # same strict ">" cut as the recoil CKF
+        n_measurements_min=tracking_recoil.min_hits,
     )
 
     # ------------------------------------------------------------------
@@ -339,7 +405,8 @@ def full_tracking_sequence(
     tracker_veto = tracking.TrackerVetoProcessor(
         instance_name=tagged("TrackerVetoProcessor"),
         tagger_track_collection=tracking_tagger.out_trk_collection,
-        recoil_track_collection=tracking_recoil.out_trk_collection,
+        # cleaned tracks: several seeds can find the same track
+        recoil_track_collection=greedy_solver_recoil.out_trk_collection,
         output_collection=tagged("TrackerVeto"),
     )
 
