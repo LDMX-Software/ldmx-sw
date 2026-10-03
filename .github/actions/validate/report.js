@@ -64,5 +64,20 @@ function folders(){
   render(true);
 }));
 $('more').onclick = () => render(false);
+// zoom plot in place, click outside or Esc closes
+const zoom = document.createElement('div'); zoom.id = 'zoom'; zoom.hidden = true;
+zoom.innerHTML = '<figure><img alt=""><figcaption></figcaption></figure>';
+document.body.appendChild(zoom);
+const unzoom = () => { zoom.hidden = true; zoom.querySelector('img').src = ''; };
+zoom.onclick = e => { if (e.target === zoom) unzoom(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') unzoom(); });
+$('grid').addEventListener('click', e => {
+  const a = e.target.closest('a');
+  if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+  e.preventDefault();
+  zoom.querySelector('img').src = a.getAttribute('href');
+  zoom.querySelector('figcaption').textContent = a.closest('.card').querySelector('.k').textContent;
+  zoom.hidden = false;
+});
 if (!rows.some(r => r.status !== 'pass')) $('status').value = 'all';
 folders(); render(true);

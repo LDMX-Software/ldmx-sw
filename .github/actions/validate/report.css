@@ -33,3 +33,10 @@ border-radius:3px;font-size:12px}
 .noimg{padding:30px;text-align:center;color:var(--mute)}
 #count{color:var(--mute);margin-bottom:10px}
 #more{margin:16px auto;display:block;padding:6px 14px}
+#zoom{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.75);display:flex;
+align-items:center;justify-content:center;cursor:zoom-out}
+#zoom[hidden]{display:none}
+#zoom figure{margin:0;cursor:default;max-width:95vw}
+#zoom img{display:block;max-width:95vw;max-height:88vh;background:#fff;border-radius:4px}
+#zoom figcaption{color:#eee;font-family:ui-monospace,monospace;font-size:13px;
+margin-top:6px;word-break:break-all}
