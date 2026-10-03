@@ -295,6 +295,8 @@ def full_tracking_sequence(
         measurement_collection=recoil_meas_collection,
         min_hits=5,
         outlier_pval_=22.1,
+        # the recoil leaves the field map (|y| < 70 mm) on ~40% of seeds
+        field_zero_outside=True,
     )
 
     # ------------------------------------------------------------------
