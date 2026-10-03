@@ -122,3 +122,15 @@ class PropagationMapWriter(Processor):
     target_scoring_plane_passname: str = ""
     target_sp_hits_events_passname: str = ""
     ecal_sp_hits_events_passname: str = ""
+
+
+@processor("trigger::TrigClusterNNProducer", "Trigger")
+class TrigClusterNNProducer(Processor):
+    """Configuration for TrigClusterNNProducer"""
+
+    model_path: str = "@CMAKE_INSTALL_PREFIX@/data/Trigger/ecal_nn_trigger.onnx"
+    cluster_coll_name: str = "ecalTrigClusters"
+    ecal_sum_coll_name: str = "ecalTrigSums"
+    hcal_sum_coll_name: str = "hcalTrigQuadsBackLayerSums"
+    input_pass: str = ""
+    score_coll_name: str = "ecalTrigClusterNNScore"
