@@ -111,8 +111,8 @@ def write_sample_page(s, out_dir, title, meta):
 <option value="new">new (not in gold)</option><option value="pass">pass</option>
 <option value="all">all</option></select>
 <label>Sort</label><select id="sort">
-<option value="dist">KS distance D (worst first)</option>
 <option value="sig">significance D&middot;sqrt(n_eff)</option>
+<option value="dist">KS distance D (worst first)</option>
 <option value="prob">KS probability p (worst first)</option>
 <option value="name">name</option></select>
 <label>Search</label><input id="q" type="search" placeholder="histogram name">
