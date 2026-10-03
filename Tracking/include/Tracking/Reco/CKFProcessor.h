@@ -249,6 +249,36 @@ class CKFProcessor final : public TrackingGeometryUser {
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
 
+  // Target point constraint (recoil only), same logic as the seeder
+  bool use_target_constraint_{false};
+  bool use_beamspot_constraint_{false};
+  std::vector<double> beamspot_sigma_{5.77, 23.1};
+  // extra target point sigma [mm] and its 1/p part [mm GeV]
+  std::vector<double> target_sigma_extra_{0., 0.};
+  std::vector<double> target_sigma_extra_ms_{0., 0.};
+  // target thickness for the vertex depth term [mm]
+  double target_thickness_{0.};
+  // apply the target point only up to this many hits, -1 for all
+  int target_constraint_max_hits_{-1};
+  std::string tagger_trks_collection_{""};
+  std::string tagger_trks_event_collection_passname_{""};
+  bool warned_ambiguous_tagger_{false};
+
+  /// 2D point on the target surface with its covariance
+  struct TargetPoint {
+    Acts::Vector2 loc_;
+    Acts::Matrix<2, 2> cov_;
+    bool beamspot_{false};
+  };
+
+  /// Tagger track points at the target, else the beam spot if enabled
+  std::vector<TargetPoint> targetPoints(framework::Event& event);
+
+  // Target constraint statistics
+  int n_tgt_tagger_{0};
+  int n_tgt_beamspot_{0};
+  int n_tgt_nocov_{0};
+
   // zero field outside the map instead of an out of bounds error
   bool field_zero_outside_{false};
 
