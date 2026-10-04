@@ -68,6 +68,8 @@ $('more').onclick = () => render(false);
 const zoom = document.createElement('div'); zoom.id = 'zoom'; zoom.hidden = true;
 zoom.innerHTML = '<figure><img alt=""><figcaption></figcaption></figure>';
 document.body.appendChild(zoom);
+// upscale to fill window, keep aspect
+zoom.querySelector('img').onload = e => e.target.style.setProperty('--ar', e.target.naturalWidth / e.target.naturalHeight);
 const unzoom = () => { zoom.hidden = true; zoom.querySelector('img').src = ''; };
 zoom.onclick = e => { if (e.target === zoom) unzoom(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') unzoom(); });
