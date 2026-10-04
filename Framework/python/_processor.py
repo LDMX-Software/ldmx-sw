@@ -145,11 +145,55 @@ def make_processor(name: str, class_name: str, module_name: str, **kwargs):
     return cls()
 
 
+def _compile_info(libraries):
+    """deduce the compiler flags necessary to compile against the passed libraries
+
+    cmake writes the include directories and compile definitions of each library
+    in ldmx-sw (including the ones inherited from their dependencies) into a file
+    installed next to this module. This is how a processor including a header from
+    (for example) SimCore_G4User is told where the Geant4 headers are.
+
+    Parameters
+    ----------
+    libraries: set[str]
+        names of the libraries being linked to the processor
+
+    Returns
+    -------
+    list[str]
+        flags to append to the compilation command
+    """
+
+    info_file = Path(__file__).parent / "compile_info.txt"
+    if not info_file.is_file():
+        # older install without the compile information
+        return []
+
+    flags = []
+    with open(info_file) as f:
+        for line in f:
+            library, _, entry = line.partition(" ")
+            if library not in libraries:
+                continue
+            kind, _, values = entry.strip().partition(" ")
+            prefix = {"include": "-I", "define": "-D"}.get(kind)
+            if prefix is None:
+                continue
+            for value in values.split(";"):
+                if not value:
+                    continue
+                flag = f"{prefix}{value}"
+                if flag not in flags:
+                    flags.append(flag)
+    return flags
+
+
 def processor_from_file(
     source_file,
     class_name=None,
     needs=None,
     instance_name=None,
+    compile_flags=None,
     compile_notice=True,
     **config_kwargs,
 ):
@@ -184,8 +228,14 @@ def processor_from_file(
         For example, one can gain access to the detector ID infrastructure with
         'DetDescr' or the Ecal Event classes with 'Ecal_Event'
         (or 'Ecal/Event', or 'Ecal::Event')
+        The include directories and compile definitions of these libraries (and of
+        the libraries they depend on) are deduced by cmake when ldmx-sw is built
+        and are passed to the compiler as well.
     instance_name: str, default is class_name
         name to give to instance of this C++ processor
+    compile_flags: list[str]
+        extra arguments to append to the compilation command,
+        for example ['-I/path/to/my/headers', '-lmylibrary']
     compile_notice: bool, default is True
         print a notice when compilation is triggered
     config_kwargs: dict[str, Any]
@@ -215,6 +265,17 @@ def processor_from_file(
     or some other parameter you should also remove the library file (`*.so`)
     before attempting to re-run.
 
+    If your processor needs something that is not provided by any of the libraries
+    of ldmx-sw, you can hand extra arguments to the compiler yourself.
+
+        p.sequence = [
+            ldmxcfg.processor_from_file(
+                'MyAnalyzer.cxx',
+                compile_flags = ['-I/path/to/my/headers', '-L/path/to/my/libs',
+                                 '-lmylibrary']
+            )
+        ]
+
     Returns
     -------
     Processor
@@ -223,6 +284,8 @@ def processor_from_file(
 
     if needs is None:
         needs = []
+    if compile_flags is None:
+        compile_flags = []
     if not isinstance(source_file, Path):
         source_file = Path(source_file)
     if not source_file.is_file():
@@ -247,12 +310,16 @@ def processor_from_file(
             )
         import subprocess
 
-        libs_to_link = {"Framework", *needs}
+        libs_to_link = {"Framework", *[_register.library_name(n) for n in needs]}
         # this compilation command was created through trial and error
         # we compile a shared library with dynamic loading under the C++20 standard
         # linking the requested libraries to our newly built one
         # and including ROOT's non-sytem headers, ldmx-sw headers (if non system)
         # and ldmx-sw libraries (if non-system)
+        # the compile info deduced by cmake provides the headers and definitions
+        # of the dependencies of the linked libraries (e.g. Geant4)
+        # '--no-as-needed' keeps the requested libraries as dependencies of ours
+        # even when no symbol from them is used directly
         cmd = (
             [
                 "g++",
@@ -262,13 +329,16 @@ def processor_from_file(
                 "-o",
                 str(lib),
                 str(src),
+                "-Wl,--no-as-needed",
             ]
-            + [f"-l{lib}" for lib in libs_to_link]
+            + [f"-l{name}" for name in libs_to_link]
             + [
                 "-I/usr/local/include/root",
                 "-I@CMAKE_INSTALL_PREFIX@/include",
                 "-L@CMAKE_INSTALL_PREFIX@/lib",
             ]
+            + _compile_info(libs_to_link)
+            + compile_flags
         )
         if compile_notice:
             print(*cmd)
@@ -276,10 +346,8 @@ def processor_from_file(
         if compile_notice:
             print(f"done compiling {src}")
 
-    instance = make_processor(instance_name, class_name, str(lib), **config_kwargs)
-
-    # load any dependency libraries at runtime as well
+    # load the dependencies before our library so their symbols are available
     for mod in needs:
         _register.library(mod)
 
-    return instance
+    return make_processor(instance_name, class_name, str(lib), **config_kwargs)
