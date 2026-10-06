@@ -129,6 +129,7 @@ en_trigger = [
     trigger_energy_sums.HcalTPSelector(),
     trigger_energy_sums.HCalTrigMipReco(),
     trigger_energy_sums.ECalTrigMipReco(),
+    trigger_energy_sums.TrigClusterNNProducer(),
 ]
 
 # Load PF reconstruction
