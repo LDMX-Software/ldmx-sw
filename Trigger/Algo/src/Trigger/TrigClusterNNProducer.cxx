@@ -1,5 +1,19 @@
 #include "Trigger/TrigClusterNNProducer.h"
 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <iomanip>
+#include <ios>
+#include <numeric>
+#include <ratio>
+
+#include "Framework/Event.h"
+#include "Framework/Exception/Exception.h"
+#include "Framework/Logger.h"
+#include "Trigger/Event/TrigClusterNNScore.h"
+
 namespace trigger {
 
 namespace {

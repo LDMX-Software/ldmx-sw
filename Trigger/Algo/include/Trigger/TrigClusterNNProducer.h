@@ -8,14 +8,8 @@
 #ifndef TRIGGER_TRIGCLUSTERNNPRODUCER_H
 #define TRIGGER_TRIGCLUSTERNNPRODUCER_H
 
-#include <algorithm>  // IWYU pragma: keep
-#include <chrono>     // IWYU pragma: keep
-#include <cmath>      // IWYU pragma: keep
 #include <cstddef>
-#include <cstdint>  // IWYU pragma: keep
-#include <iomanip>  // IWYU pragma: keep
 #include <memory>
-#include <numeric>  // IWYU pragma: keep
 #include <string>
 #include <vector>
 
@@ -24,7 +18,6 @@
 #include "Framework/EventProcessor.h"
 #include "Tools/ONNXRuntime.h"
 #include "Trigger/Event/TrigCaloCluster.h"
-#include "Trigger/Event/TrigClusterNNScore.h"  // IWYU pragma: keep
 #include "Trigger/Event/TrigEnergySum.h"
 
 namespace trigger {

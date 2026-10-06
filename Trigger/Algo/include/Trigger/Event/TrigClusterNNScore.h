@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "TObject.h"  // IWYU pragma: keep, for ClassDef
+#include "Rtypes.h"
 
 namespace trigger {
 
