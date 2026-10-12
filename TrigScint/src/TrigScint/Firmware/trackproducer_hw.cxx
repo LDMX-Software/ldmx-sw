@@ -1,6 +1,4 @@
-#include <stdio.h>
 
-#include <iostream>
 
 #include "TrigScint/Firmware/objdef.h"
 #include "TrigScint/Firmware/trackproducer.h"

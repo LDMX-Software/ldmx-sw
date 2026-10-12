@@ -1,7 +1,6 @@
 
 #include "TrigScint/TestBeamClusterProducer.h"
 
-#include <iterator>  // std::next
 #include <map>
 
 namespace trigscint {

@@ -2,13 +2,10 @@
 #define TRIGSCINT_QIEENCODER_H
 
 #include <fstream>
-#include <iostream>
 
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TrigScint/Event/QIEStream.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 namespace trigscint {
 

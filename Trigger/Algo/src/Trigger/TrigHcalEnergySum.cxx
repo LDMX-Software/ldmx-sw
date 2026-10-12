@@ -1,9 +1,7 @@
 #include "Trigger/TrigHcalEnergySum.h"
 
-#include "DetDescr/HcalGeometry.h"
-#include "Hcal/HcalTriggerGeometry.h"
+#include "DetDescr/HcalTriggerID.h"
 #include "Recon/Event/CaloTrigPrim.h"
-#include "Recon/Event/CalorimeterHit.h"
 #include "Trigger/Event/TrigEnergySum.h"
 
 namespace trigger {

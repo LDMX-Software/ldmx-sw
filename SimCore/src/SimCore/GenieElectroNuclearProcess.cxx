@@ -13,12 +13,10 @@
 #include "Framework/EventGen/EventRecord.h"
 #include "Framework/GHEP/GHepParticle.h"
 #include "Framework/Interaction/InitialState.h"
-#include "Framework/Numerical/RandomGen.h"
 #include "Framework/Utils/AppInit.h"
 #include "Framework/Utils/RunOpt.h"
 #include "GENIE/Framework/Interaction/InitialState.h"
 #include "GENIE/Framework/Utils/RunOpt.h"
-#include "HepMC3/GenEvent.h"
 
 // Geant4
 #include "G4DynamicParticle.hh"
@@ -31,16 +29,13 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4Material.hh"
 #include "G4ParticleTable.hh"
-#include "G4ProcessTable.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Track.hh"
 #include "Randomize.hh"
 
 // ROOT
 #include <TLorentzVector.h>
-#include <TParticle.h>
 
-#include <algorithm>
 #include <cctype>
 #include <cfloat>
 #include <cmath>

@@ -2,10 +2,10 @@
 #define RECON_EVENT_CALOTRIGPRIM_H_
 
 // ldmx-sw
+#include <Rtypes.h>  // For ClassDef
 #include <stdint.h>  //uint32_t
 
 // ROOT
-#include "TObject.h"  //For ClassDef
 
 namespace ldmx {
 

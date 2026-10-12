@@ -1,5 +1,9 @@
 
 #include "DQM/HCalDQM.h"
+
+#include <map>
+
+#include "DetDescr/HcalGeometry.h"
 namespace dqm {
 
 HCalDQM::HCalDQM(const std::string& name, framework::Process& process)

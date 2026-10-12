@@ -12,6 +12,7 @@
 
 // Include standard library headers before the hack or it affects std::
 // internals
+// IWYU pragma: begin_keep
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -72,6 +73,7 @@
 
 // Include the main interface last
 #include "G4CascadeInterface.hh"
+// IWYU pragma: end_keep
 
 // ============================================================================
 // END HACK: restore private and protected keywords

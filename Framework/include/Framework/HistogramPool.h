@@ -13,8 +13,8 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Exception/Exception.h"
 #include "TDirectory.h"
-#include "TH1F.h"
-#include "TH2F.h"
+#include "TH1F.h"  // IWYU pragma: keep
+#include "TH2F.h"  // IWYU pragma: keep
 
 namespace framework {
 

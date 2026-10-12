@@ -1,5 +1,7 @@
 #include "SimCore/G4Session.h"
 
+#include <algorithm>
+
 namespace simcore {
 
 LoggedSession::LoggedSession(std::string logging_prefix)

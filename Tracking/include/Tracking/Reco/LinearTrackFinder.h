@@ -3,18 +3,13 @@
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/RandomNumberSeedService.h"
 
 //--- C++ ---//
-#include <memory>
-#include <random>
 
 //--- LDMX ---//
 #include "Tracking/Reco/TrackingGeometryUser.h"
 
 //--- Tracking ---//
-#include "TFile.h"
-#include "TTree.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/StraightTrack.h"
 

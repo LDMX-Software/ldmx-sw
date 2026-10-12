@@ -8,11 +8,11 @@ class EcalVetoProcessor(Processor):
     num_ecal_layers: int = 32
     verbose: bool = False
     feature_list_name: str = "input"
-    bdt_file: str = make_bdt_path("segmip")
-    bdt_feature_config: str = "segmip"
+    bdt_file: str = make_bdt_path("humberto")
+    bdt_feature_config: str = "humberto"
     roc_file: str = make_roc_path("RoC_v14_8gev")
     beam_energy: float = 8000.0  # MeV
-    disc_cut: float = 0.99741
+    disc_cut: float = 0.954651
     ecal_sp_coll_name: str = "EcalScoringPlaneHits"
     target_sp_coll_name: str = "TargetScoringPlaneHits"
     sp_pass_name: str = ""
@@ -42,11 +42,14 @@ class EcalMipProcessor(Processor):
 class EcalPnetVetoProcessor(Processor):
     """Configuration for ParticleNet Ecal Veto
 
-    ParticleNet trained on v14 geometry ecalPN + signal
+    ParticleNet trained on v15 geometry 8 GeV ecalPN + signal,
+    with the recoil trajectory from tracking (no scoring plane truth).
+    The v14 model is still available as particle_net_ecal_v10.
     """
 
-    model_path: str = make_bdt_path("particle_net_ecal_v10")
-    disc_cut: float = 0.65
+    model_path: str = make_bdt_path("particle_net_ecal_v11")
+    # loosest cut leaving 1 v15 ecal PN after the HCal veto in 1.3e14 EoT
+    disc_cut: float = 0.5664
     collection_name: str = "EcalPnetVeto"
     rec_coll_name: str = "EcalRecHits"
     ecal_rec_hits_passname: str = ""

@@ -1,6 +1,7 @@
 #include "Recon/PFTrackProducer.h"
 
-#include "SimCore/Event/SimParticle.h"
+#include <cmath>
+
 #include "SimCore/Event/SimTrackerHit.h"
 
 namespace recon {

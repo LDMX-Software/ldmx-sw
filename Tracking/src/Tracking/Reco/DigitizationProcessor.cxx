@@ -3,7 +3,13 @@
 #include <algorithm>
 #include <fstream>
 
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/Surfaces/Surface.hpp"
+#include "Framework/RandomNumberSeedService.h"
 #include "Tracking/Digitization/ChargeCarrier.h"
+#include "Tracking/Digitization/SiStripConstants.h"
+#include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/geo/DetectorElement.h"
 
 using namespace framework;
 

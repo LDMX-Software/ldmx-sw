@@ -9,7 +9,7 @@ from LDMX.Biasing import target
 from LDMX.SimCore import generators as gen
 
 
-det = "ldmx-lyso-r4-v15-8gev"
+det = "ldmx-lyso-r4-v16-8gev"
 
 my_sim = target.photo_nuclear(det, gen.single_8gev_e_upstream_tagger())
 my_sim.description = "LYSO Target PN Simulation"
@@ -137,8 +137,9 @@ p.logger.term_level = 1
 
 # Add full tracking for both tagger and recoil trackers: digi, seeds, CFK, ambiguity
 # resolution, GSF, DQM
-p.sequence.extend(full_tracking_sequence.sequence)
-p.sequence.extend(full_tracking_sequence.dqm_sequence)
+trk = full_tracking_sequence.full_tracking_sequence(detector=det)
+p.sequence.extend(trk.sequence)
+p.sequence.extend(trk.dqm_sequence)
 
 p.sequence.extend(
     [

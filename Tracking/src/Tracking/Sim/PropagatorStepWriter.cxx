@@ -2,9 +2,7 @@
 
 //--- ACTS --- //
 #include <Acts/Geometry/GeometryIdentifier.hpp>
-#include <Acts/Geometry/TrackingVolume.hpp>
 #include <Acts/Propagator/ConstrainedStep.hpp>
-#include <Acts/Surfaces/Surface.hpp>
 
 #include "Framework/Exception/Exception.h"
 // mg ... I don't think these are used, and they are not defined in acts v36

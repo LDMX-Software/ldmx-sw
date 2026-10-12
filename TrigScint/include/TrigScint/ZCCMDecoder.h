@@ -1,15 +1,11 @@
 #ifndef TRIGSCINT_ZCCMDECODER_H
 #define TRIGSCINT_ZCCMDECODER_H
 
-#include <TTimeStamp.h>
-
 #include <fstream>
-#include <iostream>
 
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/Event/ZCCMOutput.h"
 namespace trigscint {
 

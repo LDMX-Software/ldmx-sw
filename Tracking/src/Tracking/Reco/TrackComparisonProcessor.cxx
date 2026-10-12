@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <map>
+#include <vector>
 
 #include "Framework/Logger.h"
 #include "SimCore/Event/SimParticle.h"

@@ -11,21 +11,16 @@
 //----------//
 //   STL    //
 //----------//
-#include <algorithm>
 
 //----------//
 //   ROOT   //
 //----------//
-#include "Math/Vector3D.h"
 
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/TrigScintID.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "Tools/AnalysisUtils.h"
 
 namespace dqm {
 

@@ -4,8 +4,6 @@
 #include <TDirectory.h>
 #include <TTree.h>
 
-#include <map>
-
 #include "Framework/Performance/Callback.h"
 #include "Framework/Performance/Timer.h"
 

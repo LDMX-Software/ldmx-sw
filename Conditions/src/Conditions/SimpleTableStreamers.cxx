@@ -1,10 +1,9 @@
 #include "Conditions/SimpleTableStreamers.h"
 
-#include <algorithm>
 #include <iomanip>
 
 #include "DetDescr/DetectorIDInterpreter.h"
-#include "boost/format.hpp"
+#include "boost/format.hpp"  // IWYU pragma: keep
 
 namespace conditions {
 namespace utility {

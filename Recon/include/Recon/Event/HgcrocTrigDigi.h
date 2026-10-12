@@ -5,7 +5,7 @@
 #include <stdint.h>  //uint{32,8}_t
 
 // ROOT
-#include "TObject.h"  //For ClassDef
+#include <Rtypes.h>  // For ClassDef
 
 namespace ldmx {
 

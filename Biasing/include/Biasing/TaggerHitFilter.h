@@ -9,7 +9,6 @@
 
 //~~ Framework ~~//
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 
 // Forward declarations
 class G4Step;

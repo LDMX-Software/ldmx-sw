@@ -1,5 +1,7 @@
 #include "SimCore/BiasOperators/PhotoNuclear.h"
 
+#include "SimCore/G4User/PtrRetrieval.h"
+
 namespace simcore {
 namespace biasoperators {
 

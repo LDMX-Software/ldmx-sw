@@ -1,6 +1,7 @@
 
 #include "DQM/TrigScintDQM.h"
 
+#include "DetDescr/TrigScintID.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {

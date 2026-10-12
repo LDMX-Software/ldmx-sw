@@ -8,16 +8,10 @@
 #define ECALTPSELECTOR_H
 
 // LDMX Framework
-#include "DetDescr/EcalGeometry.h"
-#include "Ecal/EcalTriggerGeometry.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/Event/HgcrocTrigDigi.h"
-#include "TrigUtilities.h"
-#include "Trigger/Event/TrigCaloHit.h"
-#include "Trigger/Event/TrigEnergySum.h"
 
 namespace trigger {
 

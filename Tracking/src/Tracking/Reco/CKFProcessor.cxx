@@ -5,15 +5,25 @@
 #include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
-#include "Tracking/Sim/GeometryContainers.h"
 #include "Tracking/geo/DetectorElement.h"
 
 //--- C++ StdLib ---//
-#include <algorithm>  //std::vector reverse
 #include <iostream>
-#include <typeinfo>
 // eN files
-#include <fstream>
+#include <Acts/Geometry/TrackingGeometry.hpp>
+
+#include "Acts/Definitions/TrackParametrization.hpp"
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
+#include "Acts/EventData/MultiTrajectory.hpp"
+#include "Acts/MagneticField/ConstantBField.hpp"
+#include "Acts/Propagator/MultiEigenStepperLoop.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/TrackFinding/MeasurementSelector.hpp"
+#include "Acts/TrackFinding/TrackStateCreator.hpp"
+#include "Acts/Utilities/Logger.hpp"
+#include "Tracking/Sim/MeasurementCalibrator.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking {
 namespace reco {
@@ -64,9 +74,9 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
 
   // Setup a interpolated bfield map
   if (field_map_.empty())
-    loadBField(map_offset_);
+    loadBField(bfield_distortion_);
   else
-    loadBField(field_map_, map_offset_);
+    loadBField(field_map_, bfield_distortion_);
   const auto map =
       std::static_pointer_cast<InterpolatedMagneticField3>(bField());
 
@@ -890,8 +900,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   tagger_tracking_ = parameters.get<bool>("tagger_tracking", true);
 
   // BField Systematics
-  map_offset_ =
-      parameters.get<std::vector<double>>("map_offset_", {0., 0., 0.});
+  bfield_distortion_ = bFieldDistortion(parameters);
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 }  // end of configure()

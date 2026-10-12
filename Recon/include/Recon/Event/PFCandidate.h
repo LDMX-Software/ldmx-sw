@@ -8,7 +8,7 @@
 #define RECON_EVENT_PFCANDIDATE_H_
 
 // ROOT
-#include "TObject.h"  //For ClassDef
+#include <Rtypes.h>  // For ClassDef
 
 namespace ldmx {
 

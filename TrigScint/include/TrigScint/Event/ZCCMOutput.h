@@ -1,10 +1,11 @@
 #ifndef TRIGSCINT_EVENT_ZCCMOUTPUT_H
 #define TRIGSCINT_EVENT_ZCCMOUTPUT_H
 
-//---< ROOT >---//
-#include "QIEStream.h"  // for definitions of Mask
-#include "TObject.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
+#include <Rtypes.h>
+
+#include <cstdint>
+#include <ostream>
+#include <vector>
 
 namespace trigscint {
 

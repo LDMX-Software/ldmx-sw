@@ -11,17 +11,10 @@
 // LDMX
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Logger.h"
-#include "G4DarkBreM/G4APrime.h"
-#include "G4DarkBreM/G4DarkBreMModel.h"
 #include "G4DarkBreM/G4DarkBremsstrahlung.h"
-#include "G4DarkBreM/G4FractionallyCharged.h"
 #include "SimCore/APrimeConversionToFCPs.h"
-#include "SimCore/G4User/UserEventInformation.h"
 
 // Geant4
-#include "G4Electron.hh"
-#include "G4EventManager.hh"
-#include "G4ProcessManager.hh"
 #include "G4VPhysicsConstructor.hh"
 
 namespace simcore {

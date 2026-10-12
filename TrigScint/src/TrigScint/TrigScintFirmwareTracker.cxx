@@ -1,9 +1,7 @@
 
 #include "TrigScint/TrigScintFirmwareTracker.h"
 
-#include <iterator>
-#include <map>
-
+#include "TrigScint/Event/TrigScintHit.h"
 #include "TrigScint/Firmware/clusterproducer.h"
 #include "TrigScint/Firmware/objdef.h"
 #include "TrigScint/Firmware/trackproducer.h"

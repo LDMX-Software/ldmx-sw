@@ -1,8 +1,10 @@
 #include "Tracking/Reco/Vertexer.h"
 
-#include <chrono>
-
+#include "Acts/Definitions/Units.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/Vertexing/Vertex.hpp"
 #include "TFile.h"
+#include "Tracking/Sim/TrackingUtils.h"
 using namespace framework;
 
 // This producer takes in input two track collections and forms all possible

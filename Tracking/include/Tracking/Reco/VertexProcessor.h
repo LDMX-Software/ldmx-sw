@@ -6,40 +6,29 @@
 #include "Framework/EventProcessor.h"
 
 // --- Tracking --- //
-#include "Tracking/Event/Track.h"
 #include "Tracking/Sim/BFieldXYZUtils.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 // --- ACTS --- //
 
 // Propagator
 
 #include "Acts/Propagator/Propagator.hpp"
-#include "Tracking/EigenStepper.h"
 // #include "Acts/Propagator/Navigator.hpp"
 // #include "Acts/Propagator/StandardAborters.hpp"
 
 // Vertexing
 
-#include "Acts/Vertexing/FullBilloirVertexFitter.hpp"
-#include "Acts/Vertexing/HelicalTrackLinearizer.hpp"
-#include "Acts/Vertexing/Vertex.hpp"
-
 // Magfield
 
 #include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
 // Geometry
-#include "Acts/Surfaces/PerigeeSurface.hpp"
 
 // Root
-#include "TFile.h"
-#include "TH1F.h"
-#include "TLorentzVector.h"
 
 // Propagator with void navigator
 #include "Acts/Propagator/VoidNavigator.hpp"
+#include "Tracking/EigenStepper.h"  // IWYU pragma: keep
 using VoidPropagator =
     Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
 

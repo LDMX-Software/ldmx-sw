@@ -1,5 +1,7 @@
 #include "SimCore/ReSimulator.h"
 
+#include "SimCore/SDs/SensitiveDetector.h"
+
 namespace simcore {
 
 void ReSimulator::configure(framework::config::Parameters& parameters) {

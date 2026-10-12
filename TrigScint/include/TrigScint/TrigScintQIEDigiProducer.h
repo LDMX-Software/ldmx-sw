@@ -10,7 +10,6 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <time.h>
 
 /*~~~~~~~~~~*/
 /*   ROOT   */
@@ -18,9 +17,6 @@
 #include "TRandom3.h"
 
 // LDMX
-#include "DetDescr/TrigScintID.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -29,7 +25,6 @@
 #include "Framework/EventProcessor.h"
 
 // QIE output class
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/SimQIE.h"
 
 namespace trigscint {
@@ -79,6 +74,12 @@ class TrigScintQIEDigiProducer : public framework::Producer {
   /// Name of the output collection that will be used to stored the
   /// digitized trigger scintillator hits
   std::string output_collection_;
+
+  /// Name of the sim particle collection
+  std::string sim_particles_coll_name_;
+
+  /// Pass name for the sim particle collection
+  std::string sim_particles_passname_;
 
   /// Number of strips per array
   int strips_per_array_{50};

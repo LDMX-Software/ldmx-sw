@@ -6,6 +6,10 @@
 
 #include "Recon/Skims/EcalPreselectionSkimmer.h"
 
+#include "Ecal/Event/EcalHit.h"
+#include "Ecal/Event/EcalMipResult.h"
+#include "Ecal/Event/EcalVetoResult.h"
+
 namespace recon {
 
 EcalPreselectionSkimmer::EcalPreselectionSkimmer(const std::string& name,

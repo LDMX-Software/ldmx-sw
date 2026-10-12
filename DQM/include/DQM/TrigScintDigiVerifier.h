@@ -1,14 +1,9 @@
 #ifndef DQM_TSDIGIVERIFIER_H
 #define DQM_TSDIGIVERIFIER_H
 
-#include <algorithm>
-
 // LDMX Framework
-#include "DetDescr/TrigScintID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 namespace dqm {
 

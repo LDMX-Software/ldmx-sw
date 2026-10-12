@@ -6,14 +6,10 @@
 /*----------------*/
 /*   C++ StdLib   */
 /*----------------*/
-#include <iostream>
 
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
-#include "G4ChargedGeantino.hh"
-#include "G4Geantino.hh"
-#include "G4SDManager.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 

@@ -7,7 +7,6 @@
 #include "Framework/Configure/Python.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Process.h"
-#include "Python.h"
 
 using Catch::Approx;
 using Catch::Matchers::ContainsSubstring;

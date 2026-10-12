@@ -11,15 +11,13 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <array>
 #include <iostream>
-#include <map>
 
 //----------//
 //   ROOT   //
 //----------//
+#include <Rtypes.h>  // For ClassDef
 
-#include <TObject.h>  // For ClassDef
 namespace ldmx {
 
 class EcalMipResult {

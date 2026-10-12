@@ -6,6 +6,10 @@
 
 #include "Tools/NoiseGenerator.h"
 
+#include "Framework/Exception/Exception.h"
+#include "Math/ProbFuncMathCore.h"
+#include "Math/QuantFuncMathCore.h"
+
 namespace ldmx {
 
 NoiseGenerator::NoiseGenerator(double noiseValue, bool gauss) {

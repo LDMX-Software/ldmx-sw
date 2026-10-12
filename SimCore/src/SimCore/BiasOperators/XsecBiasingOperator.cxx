@@ -1,6 +1,11 @@
 #include "SimCore/BiasOperators/XsecBiasingOperator.h"
 
 #include "Framework/Exception/Exception.h"
+#include "G4Electron.hh"
+#include "G4Gamma.hh"
+#include "G4KaonZeroLong.hh"
+#include "G4Neutron.hh"
+#include "G4ParticleTable.hh"
 
 namespace simcore {
 

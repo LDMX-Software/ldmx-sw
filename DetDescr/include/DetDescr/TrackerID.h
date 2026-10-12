@@ -33,14 +33,16 @@ class TrackerID : public DetectorID {
    * Create from a DetectorID, but check
    */
   TrackerID(const DetectorID id) : DetectorID(id) {
-    SUBDETECTORID_TEST2("TrackerID", SD_TRACKER_TAGGER, SD_TRACKER_RECOIL);
+    SUBDETECTORID_TEST3("TrackerID", SD_TRACKER_TAGGER, SD_TRACKER_RECOIL,
+                        SD_TRACKER_TESTSTAND);
   }
 
   /**
    * Create from a raw id, but check
    */
   TrackerID(RawValue rawid) : DetectorID(rawid) {
-    SUBDETECTORID_TEST2("TrackerID", SD_TRACKER_TAGGER, SD_TRACKER_RECOIL);
+    SUBDETECTORID_TEST3("TrackerID", SD_TRACKER_TAGGER, SD_TRACKER_RECOIL,
+                        SD_TRACKER_TESTSTAND);
   }
 
   /** Create from values

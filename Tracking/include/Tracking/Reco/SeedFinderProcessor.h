@@ -7,27 +7,16 @@
 
 //---< Tracking >---//
 #include "Tracking/Event/Track.h"
-#include "Tracking/Sim/LdmxSpacePoint.h"
 #include "Tracking/Sim/SeedToTrackParamMaker.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 //---< SimCore >---//
-#include "SimCore/Event/SimTrackerHit.h"
 
 //---< STD C++ >---//
 
-#include <iostream>
-
 //---< ACTS >---//
 #include "Acts/Definitions/Algebra.hpp"
-#include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
-#include "Acts/Utilities/CalibrationContext.hpp"
-#include "Acts/Utilities/Intersection.hpp"
 
 //--- LDMX ---//
-#include "TFile.h"
-#include "TTree.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
 #include "Tracking/Reco/TruthMatchingTool.h"
@@ -77,12 +66,14 @@ class SeedFinderProcessor : public TrackingGeometryUser {
                    const std::vector<int> strategy);
 
   void findSeedsFromMap(std::vector<ldmx::Track>& seeds,
-                        const ldmx::Measurements& pmeas);
+                        const ldmx::Measurements& pmeas,
+                        const ldmx::Measurements& fit_constraints);
 
  private:
+  /// Fit the strips plus an optional target constraint (nullptr = none)
   ldmx::Track seedTracker(const ldmx::Measurements& vmeas, double xOrigin,
                           const Acts::Vector3& perigee_location,
-                          const ldmx::Measurements& pmeas_tgt);
+                          const ldmx::Measurement* constraint);
 
   void lineParabolaToHelix(const Acts::Vector<5> parameters,
                            Acts::Vector<5>& helix_parameters,
@@ -146,6 +137,18 @@ class SeedFinderProcessor : public TrackingGeometryUser {
 
   /// List of stragies for seed finding.
   std::vector<std::string> strategies_{};
+  /// Layer lists parsed from strategies_, one per strategy.
+  std::vector<std::vector<int>> strategy_layers_{};
+  /// Put tagger track positions at the target into the seed fit.
+  bool use_target_constraint_{false};
+  /// Put the beam spot into the seed fit when no tagger track exists.
+  bool use_beamspot_constraint_{false};
+  /// Beam spot sigma at the target in local (u, v) [mm].
+  std::vector<double> beamspot_sigma_{5.77, 23.1};
+  /// Target surface the constraints live on.
+  std::shared_ptr<Acts::Surface> target_surface_;
+  /// Warn only once about several tagger track collections.
+  bool warned_ambiguous_tagger_{false};
   double bfield_{1.5};
 
   std::vector<float> xhit_;

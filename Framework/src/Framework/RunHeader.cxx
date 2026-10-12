@@ -14,6 +14,7 @@ RunHeader::RunHeader(int run_number) : run_number_(run_number) {}
 
 void RunHeader::stream(std::ostream& s) const {
   s << "RunHeader { run: " << getRunNumber() << ", numTries: " << getNumTries()
+    << ", completed: " << (isCompleted() ? "true" : "false")
     << ", detectorName: " << getDetectorName()
     << ", description: " << getDescription() << "\n";
   s << "  intParameters: " << "\n";

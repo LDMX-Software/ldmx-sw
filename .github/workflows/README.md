@@ -58,6 +58,28 @@ plots in the "fail" directory.
 > **Note:** Artifacts are only persisted on 
 > [GitHub for 90 days](https://docs.github.com/en/organizations/managing-organization-settings/configuring-the-retention-period-for-github-actions-artifacts-and-logs-in-your-organization),
 
+### Validation Report
+
+`compare.py` also writes `results.json` with the KS probability `p` and the maximum KS distance `D`
+of every histogram pair, plus a PNG of each plot.
+After all samples finish, `make_report.py` builds a static HTML report with the failing plots ranked
+by `D`, worst first. `D` is used for ranking since `p` underflows to zero for most failures at 10k events.
+Each sample page can filter by status, folder (processor) and minimum `D`, and search histogram names.
+
+The report is always uploaded as the `validation-report` artifact of the run. When the
+`VALIDATION_REPORTS_DEPLOY_KEY` secret is available, it is also pushed to the `gh-pages` branch of
+[LDMX-Software/validation-reports](https://github.com/LDMX-Software/validation-reports) and linked in the PR comment:
+
+- `https://ldmx-software.github.io/validation-reports/pr-<N>/` lists the runs of a PR, newest first
+- `https://ldmx-software.github.io/validation-reports/pr-<N>/run-<run id>-<attempt>/` is one run
+
+Only the newest 5 runs of each PR are kept. The `prune_validation_reports.yml` workflow runs weekly,
+removes the reports of PRs closed more than 90 days ago (`KEEP_CLOSED_DAYS`) and squashes the
+`gh-pages` history so the repository stays under the 1 GB GitHub Pages limit.
+
+Build a report locally from unpacked plot archives (one directory per sample):
+`python3 .github/actions/validate/make_report.py <sample dirs> --out site/run-local`
+
 ### Local Equivalence
 
 When validating, this action is roughly equivalent to the following procedure.
@@ -93,6 +115,13 @@ which would generate validation histograms to look at and upload those histogram
 The `apply-clang-tools.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.
 It checks that the C++ format is respected using clang-format and clang-tidy and, if being run on a PR, 
 pushes any format fixes.
+
+### Unused Includes
+The `include-cleaner.yml` workflow runs on pull requests that change C++ files.
+It runs `just include-cleaner-diff` (clang-include-cleaner) on the changed files and reports unused includes
+as warnings. It does not fail the PR and does not push fixes, since removing an include can break compilation.
+Run `just include-cleaner-diff --edit` locally to remove them, and mark includes that are needed anyway
+(e.g. only used inside a macro) with `// IWYU pragma: keep`.
 
 ### Python Formatting
 The `apply-python-tools.yml` workflow runs on all pushes to `trunk` and any pushes to an open pull request.

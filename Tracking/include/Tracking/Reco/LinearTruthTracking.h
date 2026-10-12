@@ -9,16 +9,10 @@
 #include "SimCore/Event/SimTrackerHit.h"
 
 //---< STD C++ >---//
-#include <iostream>
 
 //--- LDMX ---//
-#include "Ecal/Event/EcalHit.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/StraightTrack.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
-#include "Tracking/Reco/TruthMatchingTool.h"
 
 namespace tracking {
 namespace reco {

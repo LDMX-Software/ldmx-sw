@@ -1,5 +1,8 @@
 #include "Tracking/Reco/LinearSeedFinder.h"
 
+#include <iostream>
+
+#include "Ecal/Event/EcalHit.h"
 #include "Eigen/Dense"
 
 namespace tracking {

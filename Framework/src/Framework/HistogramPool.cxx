@@ -4,13 +4,11 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <stdexcept>
 
 //----------//
 //   ROOT   //
 //----------//
 #include "TH1.h"
-#include "TStyle.h"
 
 namespace framework {
 

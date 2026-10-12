@@ -4,15 +4,12 @@
 //----------//
 //   STL    //
 //----------//
-#include <algorithm>
 
 //----------//
 //   LDMX   //
 //----------//
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/AnalysisUtils.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 namespace dqm {
 

@@ -1,6 +1,8 @@
 
 #include "Biasing/Utility/StepPrinter.h"
 
+#include "SimCore/G4User/TrackingAction.h"
+
 /*~~~~~~~~~~~~*/
 /*   Geant4   */
 /*~~~~~~~~~~~~*/

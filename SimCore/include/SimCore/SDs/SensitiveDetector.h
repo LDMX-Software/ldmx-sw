@@ -4,7 +4,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Factory.h"
 #include "Framework/Logger.h"
-#include "Framework/RunHeader.h"
 #include "SimCore/ConditionsInterface.h"
 #include "SimCore/G4User/TrackMap.h"
 #include "SimCore/G4User/TrackingAction.h"

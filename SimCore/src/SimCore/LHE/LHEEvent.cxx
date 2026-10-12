@@ -1,5 +1,9 @@
 #include "SimCore/LHE/LHEEvent.h"
 
+#include <sstream>
+
+#include "Framework/Exception/Exception.h"
+
 namespace simcore {
 namespace lhe {
 

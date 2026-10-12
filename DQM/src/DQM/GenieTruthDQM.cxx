@@ -4,8 +4,6 @@
 
 #include "DQM/GenieTruthDQM.h"
 
-#include <iostream>
-
 #include "GENIE/Framework/Conventions/KineVar.h"
 #include "SimCore/Event/HepMC3GenEvent.h"
 

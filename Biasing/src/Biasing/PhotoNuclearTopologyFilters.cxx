@@ -1,5 +1,9 @@
 #include "Biasing/PhotoNuclearTopologyFilters.h"
 
+#include <G4RunManager.hh>
+
+#include "SimCore/G4User/UserTrackInformation.h"
+
 namespace biasing {
 
 bool NothingHardFilter::rejectEvent(

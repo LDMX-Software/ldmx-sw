@@ -7,6 +7,10 @@
 
 #include "SimCore/GammaPhysics.h"
 
+#include "G4ProcessManager.hh"
+#include "G4VProcess.hh"
+#include "SimCore/PhotoNuclearModels/PhotoNuclearModel.h"
+
 namespace simcore {
 
 GammaPhysics::GammaPhysics(const G4String& name,

@@ -10,9 +10,10 @@
 #define SIMCORE_EVENT_SIMTRACKERHIT_H_
 
 // ROOT
-#include "TObject.h"  //For ClassDef
 
 // STL
+#include <Rtypes.h>
+
 #include <iostream>
 
 namespace ldmx {

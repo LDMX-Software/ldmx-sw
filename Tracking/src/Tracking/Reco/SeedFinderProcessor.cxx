@@ -1,7 +1,12 @@
 #include "Tracking/Reco/SeedFinderProcessor.h"
 
+#include <algorithm>
+#include <iostream>
+#include <set>
+#include <sstream>
+
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Seeding/EstimateTrackParamsFromSeed.hpp"
+#include "Acts/Utilities/Intersection.hpp"
 #include "Eigen/Dense"
 #include "Tracking/Sim/TrackingUtils.h"
 
@@ -40,6 +45,7 @@ SeedFinderProcessor::SeedFinderProcessor(const std::string& name,
 
 void SeedFinderProcessor::onProcessStart() {
   truth_matching_tool_ = std::make_shared<tracking::sim::TruthMatchingTool>();
+  target_surface_ = tracking::sim::utils::unboundSurface(0.);
 }
 
 void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
@@ -68,6 +74,38 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   loc1cut_ = parameters.get<double>("loc1cut", 0.3);
   strategies_ =
       parameters.get<std::vector<std::string>>("strategies", {"0,1,2,3,4"});
+  use_target_constraint_ = parameters.get<bool>("use_target_constraint", false);
+  use_beamspot_constraint_ =
+      parameters.get<bool>("use_beamspot_constraint", false);
+  beamspot_sigma_ =
+      parameters.get<std::vector<double>>("beamspot_sigma", {5.77, 23.1});
+
+  if (use_target_constraint_ && tagger_trks_collection_.empty()) {
+    EXCEPTION_RAISE("BadConf",
+                    "use_target_constraint needs a tagger_trks_collection");
+  }
+
+  // 5 fit parameters: one equation per strip, two per target constraint
+  const size_t min_layers =
+      (use_target_constraint_ || use_beamspot_constraint_) ? 4 : 5;
+
+  // parse each "l0,l1,..." string into a layer list
+  strategy_layers_.clear();
+  for (const auto& strategy : strategies_) {
+    std::vector<int> layers;
+    std::stringstream ss(strategy);
+    std::string token;
+    while (std::getline(ss, token, ',')) {
+      if (!token.empty()) layers.push_back(std::stoi(token));
+    }
+    std::set<int> distinct(layers.begin(), layers.end());
+    if (distinct.size() < min_layers) {
+      EXCEPTION_RAISE("BadConf",
+                      "Seeding strategy '" + strategy + "' has fewer than " +
+                          std::to_string(min_layers) + " distinct layers");
+    }
+    strategy_layers_.push_back(layers);
+  }
   inflate_factors_ = parameters.get<std::vector<double>>(
       "inflate_factors", {10., 10., 10., 10., 10., 10.});
   bfield_ = parameters.get<double>("bfield", 1.5);
@@ -98,16 +136,28 @@ void SeedFinderProcessor::produce(framework::Event& event) {
   const auto& measurements = event.getCollection<ldmx::Measurement>(
       input_hits_collection_, input_pass_name_);
 
+  // tagger tracks give the target position; an empty name disables it
   std::vector<ldmx::Track> tagger_tracks;
-  if (event.exists(tagger_trks_collection_,
-                   tagger_trks_event_collection_passname_)) {
-    tagger_tracks = event.getCollection<ldmx::Track>(tagger_trks_collection_,
-                                                     input_pass_name_);
+  if (!tagger_trks_collection_.empty()) {
+    // prefer this pass so a re-reco does not see two copies
+    std::string pass = tagger_trks_event_collection_passname_;
+    if (pass.empty() &&
+        event.exists(tagger_trks_collection_, event.getPassName())) {
+      pass = event.getPassName();
+    }
+    if (event.exists(tagger_trks_collection_, pass)) {
+      tagger_tracks =
+          event.getCollection<ldmx::Track>(tagger_trks_collection_, pass);
+    } else if (!warned_ambiguous_tagger_ &&
+               event.exists(tagger_trks_collection_, pass, false)) {
+      ldmx_log(warn) << "Several '" << tagger_trks_collection_
+                     << "' collections found, set "
+                        "tagger_trks_event_collection_passname to pick one";
+      warned_ambiguous_tagger_ = true;
+    }
   }
 
-  // Create an unbound surface at the target
-  std::shared_ptr<Acts::Surface> tgt_surf =
-      tracking::sim::utils::unboundSurface(0.);
+  const auto& tgt_surf = target_surface_;
 
   // Create the pseudomeasurements at the target
 
@@ -149,6 +199,21 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     }
   }
 
+  // Constraints that enter the fit: tagger tracks, else the beam spot
+  ldmx::Measurements fit_constraints;
+  if (use_target_constraint_) fit_constraints = target_pseudo_meas;
+  if (fit_constraints.empty() && use_beamspot_constraint_) {
+    ldmx::Measurement beamspot;
+    beamspot.setLocalPosition(0., 0.);
+    Acts::Vector3 global_pos = tgt_surf->localToGlobal(
+        geometryContext(), Acts::Vector2{0., 0.}, Acts::Vector3{0., 0., 0.});
+    beamspot.setGlobalPosition(global_pos(0), global_pos(1), global_pos(2));
+    beamspot.setTime(0.);
+    beamspot.setLocalCovariance(beamspot_sigma_[0] * beamspot_sigma_[0],
+                                beamspot_sigma_[1] * beamspot_sigma_[1]);
+    fit_constraints.push_back(beamspot);
+  }
+
   if (event.exists(sim_particles_coll_name_, sim_particles_event_passname_)) {
     particle_map = event.getMap<int, ldmx::SimParticle>(
         sim_particles_coll_name_, sim_particles_passname_);
@@ -157,24 +222,13 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 
   ldmx_log(debug) << "Preparing the strategies";
 
-  groups_map_.clear();
-  //  set the seeding strategy
-  //  strategy is a list of layers from which to  make the seed
-  //  this must include 5 layers; layer_ numbering starts at 0.
-  //  std::vector<int> strategy = {9,10,11,12,13};
-  std::vector<int> strategy = {0, 1, 2, 3, 4};
-  bool success = groupStrips(measurements, strategy);
-  if (success) findSeedsFromMap(seed_tracks, target_pseudo_meas);
-
-  //  currently, we only use a single strategy but eventually
-  //  we will use more.  Below is an example of how to add them
-  /*
-  groups_map.clear();
-  strategy = {9,10,11,12,13};
-  success = GroupStrips(measurements,strategy);
-  if (success)
-    FindSeedsFromMap(seed_tracks, target_pseudo_meas);
-  */
+  //  a strategy is a list of layers from which to make the seed
+  //  layer_ numbering starts at 0
+  for (const auto& strategy : strategy_layers_) {
+    groups_map_.clear();
+    if (groupStrips(measurements, strategy))
+      findSeedsFromMap(seed_tracks, target_pseudo_meas, fit_constraints);
+  }
 
   groups_map_.clear();
   // output_tree_->Fill();
@@ -220,13 +274,12 @@ void SeedFinderProcessor::produce(framework::Event& event) {
 // yOrigin is the location along the beam about which we fit the seed helix
 // perigee_location is where the track parameters will be extracted
 
-// while this takes in a target measurement (from tagger, this is pmeas_tgt)
-// this code doesn't do anything with it yet.
+// the optional constraint is a 2D point on the target surface
 
 ldmx::Track SeedFinderProcessor::seedTracker(
     const ldmx::Measurements& vmeas, double xOrigin,
     const Acts::Vector3& perigee_location,
-    const ldmx::Measurements& pmeas_tgt) {
+    const ldmx::Measurement* constraint) {
   // Fit a straight line in the non-bending plane and a parabola in the bending
   // plane
 
@@ -238,29 +291,14 @@ ldmx::Track SeedFinderProcessor::seedTracker(
   Acts::Matrix<5, 5> a = Acts::Matrix<5, 5>::Zero();
   Acts::Vector<5> y = Acts::Vector<5>::Zero();
 
-  for (auto meas : vmeas) {
-    double xmeas = meas.getGlobalPosition()[0] - xOrigin;
-
-    // Get the surface
-    const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
-
-    // Get the global to local transformation
-    auto rot =
-        hit_surface->localToGlobalTransform(geometryContext()).rotation();
-    auto tr =
-        hit_surface->localToGlobalTransform(geometryContext()).translation();
-
+  // accumulate one 2D point on a surface into the normal equations
+  auto add_point = [&](const Acts::Surface& surface, const Acts::Vector2& loc,
+                       double xmeas, double var_u, double var_v) {
+    auto rot = surface.localToGlobalTransform(geometryContext()).rotation();
+    auto tr = surface.localToGlobalTransform(geometryContext()).translation();
     auto rotl2g = rot.transpose();
 
-    // Only for saving purposes
-    Acts::Vector2 loc{meas.getLocalPosition()[0], 0.};
-
-    xhit_.push_back(xmeas);
-    yhit_.push_back(meas.getGlobalPosition()[1]);
-    zhit_.push_back(meas.getGlobalPosition()[2]);
-
     Acts::Matrix<2, 5> a_i;
-
     a_i(0, 0) = rotl2g(0, 1);
     a_i(0, 1) = rotl2g(0, 1) * xmeas;
     a_i(0, 2) = rotl2g(0, 1) * xmeas * xmeas;
@@ -273,23 +311,40 @@ ldmx::Track SeedFinderProcessor::seedTracker(
     a_i(1, 3) = rotl2g(1, 2);
     a_i(1, 4) = rotl2g(1, 2) * xmeas;
 
-    // Fill the yprime vector
     Acts::Vector2 offset = (rot.transpose() * tr).topRows<2>();
     Acts::Vector2 xoffset = {rotl2g(0, 0) * xmeas, rotl2g(1, 0) * xmeas};
 
-    loc(0) = meas.getLocalPosition()[0];
-    loc(1) = 0.;
-    // weight matrix
     Acts::Matrix<2, 2> w_i = Acts::Matrix<2, 2>::Zero();
-
-    w_i(0, 0) = 1. / (u_error_ * u_error_);
-    w_i(1, 1) = 1. / (v_error_ * v_error_);
+    w_i(0, 0) = 1. / var_u;
+    w_i(1, 1) = 1. / var_v;
 
     Acts::Vector2 yprime_i = loc + offset - xoffset;
     y += (a_i.transpose()) * w_i * yprime_i;
+    a += a_i.transpose() * (w_i * a_i);
+  };
 
-    Acts::Matrix<2, 5> wa_i = (w_i * a_i);
-    a += a_i.transpose() * wa_i;
+  for (auto meas : vmeas) {
+    double xmeas = meas.getGlobalPosition()[0] - xOrigin;
+    const Acts::Surface* hit_surface = geometry().getSurface(meas.getLayerID());
+
+    xhit_.push_back(xmeas);
+    yhit_.push_back(meas.getGlobalPosition()[1]);
+    zhit_.push_back(meas.getGlobalPosition()[2]);
+
+    // strips measure u only; v sits at the strip center
+    Acts::Vector2 loc{meas.getLocalPosition()[0], 0.};
+    add_point(*hit_surface, loc, xmeas, u_error_ * u_error_,
+              v_error_ * v_error_);
+  }
+
+  if (constraint) {
+    double xmeas = constraint->getGlobalPosition()[0] - xOrigin;
+    Acts::Vector2 loc{constraint->getLocalPosition()[0],
+                      constraint->getLocalPosition()[1]};
+    auto cov = constraint->getLocalCovariance();
+    // floor at (1 um)^2 so a missing covariance cannot blow up the weight
+    add_point(*target_surface_, loc, xmeas, std::max<double>(cov[0], 1e-6),
+              std::max<double>(cov[1], 1e-6));
   }
 
   Acts::Vector<5> b;
@@ -387,7 +442,7 @@ ldmx::Track SeedFinderProcessor::seedTracker(
       tracking::sim::utils::acts2Ldmx(perigee_location);
   trk.setPerigeeLocation(perigee_ldmx(0), perigee_ldmx(1), perigee_ldmx(2));
   trk.setChi2(0.);
-  trk.setNhits(5);
+  trk.setNhits(vmeas.size());
   trk.setNdf(0);
   trk.setNsharedHits(0);
   trk.setCharge(q < 0 ? -1 : 1);
@@ -454,7 +509,7 @@ bool SeedFinderProcessor::groupStrips(
 
   }  // loop meas
 
-  if (groups_map_.size() < 5)
+  if (groups_map_.size() < strategy.size())
     return false;
   else
     return true;
@@ -464,14 +519,16 @@ bool SeedFinderProcessor::groupStrips(
 // for each of those This will reshuffle all points. (issue?) Will sort the
 // meas_for_seed vector
 
-void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
-                                           const ldmx::Measurements& pmeas) {
+void SeedFinderProcessor::findSeedsFromMap(
+    std::vector<ldmx::Track>& seeds, const ldmx::Measurements& pmeas,
+    const ldmx::Measurements& fit_constraints) {
   std::map<int, std::vector<const ldmx::Measurement*>>::iterator groups_iter =
       groups_map_.begin();
-  // Vector of iterators
-  constexpr size_t k = 5;
+  // Vector of iterators, one per grouped layer
+  const int k = groups_map_.size();
+  if (k < 1) return;
   std::vector<std::vector<const ldmx::Measurement*>::iterator> it;
-  it.reserve(k);
+  it.resize(k);
 
   unsigned int ikey = 0;
   for (auto& key : groups_map_) {
@@ -495,7 +552,7 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
     */
 
     std::vector<ldmx::Measurement> meas_for_seeds;
-    meas_for_seeds.reserve(5);
+    meas_for_seeds.reserve(k);
 
     ldmx_log(debug) << " Grouping ";
 
@@ -509,7 +566,7 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
                 return m1.getGlobalPosition()[0] < m2.getGlobalPosition()[0];
               });
 
-    if (meas_for_seeds.size() < 5) {
+    if (meas_for_seeds.size() < k) {
       nmissing_++;
       return;
     }
@@ -519,88 +576,99 @@ void SeedFinderProcessor::findSeedsFromMap(std::vector<ldmx::Track>& seeds,
     Acts::Vector3 perigee{perigee_location_[0], perigee_location_[1],
                           perigee_location_[2]};
 
-    ldmx::Track seed_track =
-        seedTracker(meas_for_seeds, meas_for_seeds.at(2).getGlobalPosition()[0],
-                    perigee, pmeas);
+    // one seed per constraint; nullptr is the unconstrained fit
+    std::vector<const ldmx::Measurement*> constraints;
+    for (const auto& c : fit_constraints) constraints.push_back(&c);
+    if (constraints.empty()) constraints.push_back(nullptr);
 
-    bool fail = false;
+    for (const auto* constraint : constraints) {
+      // 5 parameters need 5 equations: one per strip, two per constraint
+      if (meas_for_seeds.size() + (constraint ? 2 : 0) < 5) {
+        nmissing_++;
+        continue;
+      }
 
-    // Remove failed fits
-    if (1. / abs(seed_track.getQoP()) < pmin_) {
-      nfailpmin_++;
-      fail = true;
-    } else if (1. / abs(seed_track.getQoP()) > pmax_) {
-      nfailpmax_++;
-      fail = true;
-    }
+      ldmx::Track seed_track = seedTracker(
+          meas_for_seeds, meas_for_seeds.at(k / 2).getGlobalPosition()[0],
+          perigee, constraint);
 
-    // Remove large part of fake tracks and duplicates with the following cuts
-    // for various compatibility checks.
+      bool fail = false;
 
-    else if (abs(seed_track.getZ0()) > z0max_) {
-      nfailz0max_++;
-      fail = true;
-    } else if (seed_track.getD0() < d0min_) {
-      nfaild0min_++;
-      fail = true;
-    } else if (seed_track.getD0() > d0max_) {
-      nfaild0max_++;
-      fail = true;
-    } else if (abs(seed_track.getPhi()) > phicut_) {
-      fail = true;
-      nfailphi_++;
-    } else if (abs(seed_track.getTheta() - piover2_) > thetacut_) {
-      fail = true;
-      nfailtheta_++;
-    }
+      // Remove failed fits
+      if (1. / abs(seed_track.getQoP()) < pmin_) {
+        nfailpmin_++;
+        fail = true;
+      } else if (1. / abs(seed_track.getQoP()) > pmax_) {
+        nfailpmax_++;
+        fail = true;
+      }
 
-    // If I didn't use the target pseudo measurements in the track finding
-    // I can use them for compatibility with the tagger track
+      // Remove large part of fake tracks and duplicates with the following cuts
+      // for various compatibility checks.
 
-    // TODO this should protect against running this check on tagger seeder.
-    // This is true only if this seeder is not run twice on the tagger after
-    // already having tagger tracks available.
-    if (pmeas.size() > 0) {
-      // I can have multiple target pseudo measurements
-      // A seed is rejected if it is found incompatible with all the target
-      // extrapolations
+      else if (abs(seed_track.getZ0()) > z0max_) {
+        nfailz0max_++;
+        fail = true;
+      } else if (seed_track.getD0() < d0min_) {
+        nfaild0min_++;
+        fail = true;
+      } else if (seed_track.getD0() > d0max_) {
+        nfaild0max_++;
+        fail = true;
+      } else if (abs(seed_track.getPhi()) > phicut_) {
+        fail = true;
+        nfailphi_++;
+      } else if (abs(seed_track.getTheta() - piover2_) > thetacut_) {
+        fail = true;
+        nfailtheta_++;
+      }
 
-      // This is set but unused, eventually we will use tagger track position at
-      // target to inform recoil tracking bool tgt_compatible = false;
-      for (auto tgt_pseudomeas : pmeas) {
-        // The d0/z0 are in a frame with the same orientation of the target
-        // surface
-        double delta_loc0 =
-            seed_track.getD0() - tgt_pseudomeas.getLocalPosition()[0];
-        double delta_loc1 =
-            seed_track.getZ0() - tgt_pseudomeas.getLocalPosition()[1];
+      // If I didn't use the target pseudo measurements in the track finding
+      // I can use them for compatibility with the tagger track
 
-        if (abs(delta_loc0) < loc0cut_ && abs(delta_loc1) < loc1cut_) {
-          // found at least 1 compatible target location
-          // tgt_compatible = true;
-          break;
+      // the tagger seeder has no tagger_trks_collection, so pmeas is empty
+      if (pmeas.size() > 0) {
+        // I can have multiple target pseudo measurements
+        // A seed is rejected if it is found incompatible with all the target
+        // extrapolations
+
+        // This is set but unused, eventually we will use tagger track position
+        // at target to inform recoil tracking bool tgt_compatible = false;
+        for (auto tgt_pseudomeas : pmeas) {
+          // The d0/z0 are in a frame with the same orientation of the target
+          // surface
+          double delta_loc0 =
+              seed_track.getD0() - tgt_pseudomeas.getLocalPosition()[0];
+          double delta_loc1 =
+              seed_track.getZ0() - tgt_pseudomeas.getLocalPosition()[1];
+
+          if (abs(delta_loc0) < loc0cut_ && abs(delta_loc1) < loc1cut_) {
+            // found at least 1 compatible target location
+            // tgt_compatible = true;
+            break;
+          }
         }
+      }  // pmeas > 0
+
+      if (!fail) {
+        if (truth_matching_tool_->configured()) {
+          auto truth_info = truth_matching_tool_->truthMatch(meas_for_seeds);
+          seed_track.setTrackID(truth_info.track_id_);
+          seed_track.setPdgID(truth_info.pdg_id_);
+          seed_track.setTruthProb(truth_info.truth_prob_);
+        }
+
+        seeds.push_back(seed_track);
       }
-    }  // pmeas > 0
 
-    if (!fail) {
-      if (truth_matching_tool_->configured()) {
-        auto truth_info = truth_matching_tool_->truthMatch(meas_for_seeds);
-        seed_track.setTrackID(truth_info.track_id_);
-        seed_track.setPdgID(truth_info.pdg_id_);
-        seed_track.setTruthProb(truth_info.truth_prob_);
+      else {
+        b0_.pop_back();
+        b1_.pop_back();
+        b2_.pop_back();
+        b3_.pop_back();
+        b4_.pop_back();
       }
-
-      seeds.push_back(seed_track);
-    }
-
-    else {
-      b0_.pop_back();
-      b1_.pop_back();
-      b2_.pop_back();
-      b3_.pop_back();
-      b4_.pop_back();
-    }
+    }  // constraints
 
     // Go to next combination
     ldmx_log(debug) << "Go to the next combination";

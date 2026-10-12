@@ -1,5 +1,7 @@
 #include "DQM/TrigScintClusterDQM.h"
 
+#include "TrigScint/Event/TrigScintCluster.h"
+
 namespace dqm {
 
 TrigScintClusterDQM::TrigScintClusterDQM(const std::string& name,

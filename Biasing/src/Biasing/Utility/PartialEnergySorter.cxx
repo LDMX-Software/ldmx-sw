@@ -5,7 +5,6 @@
 /*   Geant4   */
 /*~~~~~~~~~~~~*/
 #include "G4EventManager.hh"
-#include "G4RunManager.hh"
 #include "G4Step.hh"
 
 namespace biasing {

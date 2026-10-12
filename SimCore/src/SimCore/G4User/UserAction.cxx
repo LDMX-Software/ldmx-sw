@@ -8,8 +8,6 @@
 /*~~~~~~~~~~~~*/
 #include "G4Event.hh"
 #include "G4Run.hh"
-#include "G4Step.hh"
-#include "G4Track.hh"
 
 namespace simcore {
 

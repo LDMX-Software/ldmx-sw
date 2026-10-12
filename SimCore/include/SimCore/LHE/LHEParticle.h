@@ -9,18 +9,14 @@
 #define SIMCORE_LHEPARTICLE_H_
 
 // LDMX
-#include "Framework/Exception/Exception.h"
 
 // STL
 #include <stdlib.h>
 
 #include <iostream>
-#include <sstream>
 #include <string>
-#include <vector>
 
 // Geant4
-#include "globals.hh"
 
 namespace simcore {
 namespace lhe {

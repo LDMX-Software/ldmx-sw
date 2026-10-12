@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "SimCore/Event/CascadeStep.h"
+
 namespace dqm {
 
 CascadeHistoryDQM::CascadeHistoryDQM(const std::string& name,

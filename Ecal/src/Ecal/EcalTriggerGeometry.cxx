@@ -1,6 +1,5 @@
 #include "Ecal/EcalTriggerGeometry.h"
 
-#include <iostream>
 #include <sstream>
 
 #include "DetDescr/EcalGeometry.h"

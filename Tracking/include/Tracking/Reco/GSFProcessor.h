@@ -4,7 +4,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 #include "Framework/Logger.h"
-#include "Framework/RandomNumberSeedService.h"
 
 //--- C++ ---//
 #include <memory>
@@ -16,64 +15,39 @@
 //--- ACTS ---//
 
 // Utils and Definitions
-#include "Acts/Definitions/Common.hpp"
-#include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Definitions/Units.hpp"
-#include "Acts/EventData/BoundTrackParameters.hpp"
-#include "Acts/Utilities/Logger.hpp"
 
 // geometry
-#include "Acts/Geometry/GeometryContext.hpp"
 
 // magfield
-#include "Acts/MagneticField/MagneticFieldContext.hpp"
-#include "Acts/MagneticField/MagneticFieldProvider.hpp"
 
 // geometry
 #include <Acts/Geometry/TrackingGeometry.hpp>
 
 // propagation testing
-#include "Acts/MagneticField/ConstantBField.hpp"
 #include "Acts/Propagator/ActorList.hpp"
-#include "Acts/Propagator/EigenStepperDenseExtension.hpp"
 #include "Acts/Propagator/MaterialInteractor.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
 #include "Acts/Propagator/StandardAborters.hpp"
 #include "Acts/Propagator/VoidNavigator.hpp"
 #include "Acts/Propagator/detail/SteppingLogger.hpp"
-#include "Acts/Surfaces/PerigeeSurface.hpp"
-#include "Acts/Utilities/Logger.hpp"
-#include "Tracking/EigenStepper.h"
+#include "Tracking/EigenStepper.h"  // IWYU pragma: keep
 
 // Kalman Filter
 
 // #include "Acts/EventData/Measurement.hpp"
 #include "Acts/EventData/MultiTrajectory.hpp"
-#include "Acts/EventData/MultiTrajectoryHelpers.hpp"
 #include "Acts/EventData/VectorTrackContainer.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
-#include "Acts/TrackFinding/CombinatorialKalmanFilter.hpp"
-#include "Acts/TrackFinding/MeasurementSelector.hpp"
-#include "Acts/TrackFitting/GainMatrixUpdater.hpp"
-#include "Acts/Utilities/CalibrationContext.hpp"
 
 //--- Refit with backward propagation ---//
-#include "Acts/TrackFitting/KalmanFitter.hpp"
 
 // GSF
 #include "Acts/Propagator/MultiEigenStepperLoop.hpp"
-#include "Acts/TrackFitting/BetheHeitlerApprox.hpp"
 #include "Acts/TrackFitting/GaussianSumFitter.hpp"
-#include "Acts/TrackFitting/GsfMixtureReduction.hpp"
 
 //--- Tracking ---//
-#include "Tracking/Event/Measurement.h"
-#include "Tracking/Event/Track.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
-#include "Tracking/Sim/IndexSourceLink.h"
-#include "Tracking/Sim/MeasurementCalibrator.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 //--- Interpolated magnetic field ---//
 #include "Tracking/Sim/BFieldXYZUtils.h"
@@ -95,6 +69,8 @@ using Propagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 using GsfPropagator = Acts::Propagator<MultiStepper, Acts::Navigator>;
 using GsfExtrapPropagator =
     Acts::Propagator<Acts::EigenStepper<>, Acts::VoidNavigator>;
+using GsfFitter =
+    Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>;
 
 namespace tracking {
 namespace reco {
@@ -172,6 +148,17 @@ class GSFProcessor final : public TrackingGeometryUser {
   int n_ecal_extrap_failed_{0};
   double processing_time_{0.};
 
+  // Fallback statistics
+  int n_fieldmap_gsf_failed_{0};
+  int n_fallback_gsf_recovered_{0};
+  int n_fieldmap_start_extrap_failed_{0};
+  int n_fallback_start_extrap_recovered_{0};
+  int n_fieldmap_target_extrap_failed_{0};
+  int n_fallback_target_extrap_recovered_{0};
+  int n_fieldmap_ecal_extrap_failed_{0};
+  int n_fallback_ecal_extrap_recovered_{0};
+  int n_start_extrap_failed_{0};
+
   // refitting of tracks
   // bool kf_refit_{false};
   // bool gsf_refit_{false};
@@ -223,9 +210,13 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::string seed_coll_name_{"seedTracks"};
 
   /// Gaussian Sum Fitter instance for track refitting
-  std::unique_ptr<
-      const Acts::GaussianSumFitter<GsfPropagator, Acts::VectorMultiTrajectory>>
-      gsf_;
+  std::unique_ptr<const GsfFitter> gsf_;
+
+  /// Zero-field GSF, fallback for the recoil
+  std::unique_ptr<const GsfFitter> gsf_zero_b_;
+
+  /// Constant-field (bfield_) GSF, fallback for the tagger
+  std::unique_ptr<const GsfFitter> gsf_const_b_;
 
   /// Collection name for input tracks to be refit
   std::string track_collection_{"TaggerTracks"};
@@ -266,11 +257,20 @@ class GSFProcessor final : public TrackingGeometryUser {
   /// Path to magnetic field map file
   std::string field_map_{""};
 
+  /// Bz of the tagger fallback field, in Tesla
+  double bfield_{-1.5};
+
+  /// Mis-placement of the reconstruction field; must match the CKF's
+  BFieldDistortion bfield_distortion_{};
+
   /// Use perigee parameterization for tracks
   bool use_perigee_{false};
 
   // Keep track on which system this processor is running on
   bool tagger_tracking_{true};
+
+  /// ACTS x of the tagger GSF start surface [mm]
+  double tagger_start_x_{-617.};
 
   /// Propagator for track extrapolation using eigen stepper
   std::unique_ptr<const Propagator> propagator_;
@@ -283,12 +283,21 @@ class GSFProcessor final : public TrackingGeometryUser {
   std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
       trk_extrap_;
 
+  // Zero-field extrapolator, fallback for the recoil
+  std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_zero_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
+      trk_extrap_zero_b_;
+
+  // Constant-field extrapolator, fallback for the tagger
+  std::unique_ptr<const GsfExtrapPropagator> propagator_extrap_const_b_;
+  std::shared_ptr<tracking::reco::TrackExtrapolatorTool<GsfExtrapPropagator>>
+      trk_extrap_const_b_;
+
   /// Beam origin surface at z=-700 mm (tagger post-fit extrapolation via
   /// VoidNavigator)
   std::shared_ptr<Acts::Surface> beam_origin_surface_;
 
-  /// Tagger GSF start surface at x≈-617mm in ACTS (1mm inside tagger volume
-  /// outer boundary ~-618mm, 1.5mm upstream of L1 sensors at x=-615.5mm)
+  /// Tagger GSF start surface at x=tagger_start_x_ in ACTS
   std::shared_ptr<Acts::Surface> tagger_start_surface_;
 
   /// Target surface at z=0 mm (recoil track initialization, perigee output)

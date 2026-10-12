@@ -1,6 +1,10 @@
 
 #include "DQM/NuclearDQM.h"
 
+#include <Math/Vector3D.h>  // IWYU pragma: keep
+
+#include <algorithm>
+
 namespace dqm {
 
 NuclearDQM::NuclearDQM(const std::string& name, framework::Process& process)

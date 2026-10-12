@@ -16,16 +16,11 @@
 //----------------//
 #include <memory>  //for smart pointers
 #include <random>  //for random num generators
-#include <set>     //for tracking used detector IDs
 
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/EcalID.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/EventConstants.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/HgcrocEmulator.h"
 #include "Tools/NoiseGenerator.h"
 

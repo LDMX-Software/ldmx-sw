@@ -1,4 +1,7 @@
 #include "SimCore/PhotoNuclearModels/BertiniNothingHardModel.h"
+
+#include <G4Gamma.hh>
+#include <G4HadronInelasticProcess.hh>
 namespace simcore {
 
 bool BertiniNothingHardProcess::acceptEvent() const {

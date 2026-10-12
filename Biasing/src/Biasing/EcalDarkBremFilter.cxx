@@ -9,6 +9,11 @@
 
 #include "Biasing/EcalDarkBremFilter.h"
 
+#include "G4DarkBreM/G4APrime.h"              //checking if particles match A'
+#include "G4DarkBreM/G4DarkBremsstrahlung.h"  //checking for dark brem secondaries
+#include "G4LogicalVolumeStore.hh"            //for the store
+#include "SimCore/G4User/UserTrackInformation.h"  //make sure A' is saved
+
 namespace biasing {
 
 EcalDarkBremFilter::EcalDarkBremFilter(

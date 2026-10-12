@@ -1,9 +1,8 @@
 
 #include "TrigScint/TrigScintFirmwareHitProducer.h"
 
-#include <iterator>
-#include <map>
-
+#include "TrigScint/Event/TrigScintHit.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 #include "TrigScint/Firmware/hitproducer.h"
 #include "TrigScint/Firmware/objdef.h"
 

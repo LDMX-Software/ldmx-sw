@@ -1,8 +1,6 @@
 
 #include <math.h>
 
-#include <any>
-#include <map>
 #include <string>
 
 #include "DetDescr/EcalGeometry.h"

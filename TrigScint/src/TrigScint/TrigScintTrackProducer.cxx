@@ -3,7 +3,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <iterator>  // std::next
 #include <map>
 
 namespace trigscint {
@@ -144,6 +143,8 @@ void TrigScintTrackProducer::produce(framework::Event& event) {
                    << "; skipping event";
     std::vector<ldmx::TrigScintTrack> empty{};
     event.add(output_collection_, empty);
+    event.add(output_collection_ + "Y", empty);
+    event.add(output_collection_ + "X", empty);
     return;
   }
 
@@ -358,6 +359,8 @@ break;
       }
       std::vector<ldmx::TrigScintTrack> empty{};
       event.add(output_collection_, empty);
+      event.add(output_collection_ + "Y", empty);
+      event.add(output_collection_ + "X", empty);
       return;
     }
     // now, if there are multiple seeds sharing the same downstream hits, this

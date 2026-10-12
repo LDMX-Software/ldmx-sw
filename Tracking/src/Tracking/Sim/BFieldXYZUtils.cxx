@@ -1,5 +1,7 @@
 #include "Tracking/Sim/BFieldXYZUtils.h"
 
+#include "Acts/Utilities/Result.hpp"
+
 Acts::Vector3 defaultTransformPos(const Acts::Vector3& pos_) {
   Acts::Vector3 rot_pos;
   rot_pos(0) = pos_(1);

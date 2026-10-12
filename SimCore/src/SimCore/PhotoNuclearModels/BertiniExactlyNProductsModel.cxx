@@ -1,5 +1,7 @@
 #include "SimCore/PhotoNuclearModels/BertiniExactlyNProductsModel.h"
 
+#include <G4Gamma.hh>
+#include <G4HadronInelasticProcess.hh>
 #include <numeric>
 
 namespace simcore {

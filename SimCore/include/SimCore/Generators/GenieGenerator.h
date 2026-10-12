@@ -10,12 +10,11 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TRandom.h"
-#include "TRandomGen.h"
 
 //------------//
 //   GENIE   //
 //------------//
+#include <memory>  // IWYU pragma: keep
 #include <string>
 #include <vector>
 
@@ -26,7 +25,6 @@
 //   LDMX     //
 //------------//
 #include "Framework/Logger.h"
-#include "SimCore/G4User/UserEventInformation.h"
 #include "SimCore/Generators/PrimaryGenerator.h"
 
 // Forward declarations

@@ -10,12 +10,8 @@
 // LDMX
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Hcal/Event/HcalHit.h"
 #include "Hcal/Event/VisiblesVetoResult.h"
 #include "Tools/ONNXRuntime.h"
-
-// recoil tracking
-#include "Tracking/Event/Track.h"
 
 namespace hcal {
 

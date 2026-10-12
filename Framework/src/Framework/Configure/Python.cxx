@@ -14,7 +14,7 @@
 /*~~~~~~~~~~~~*/
 /*   python   */
 /*~~~~~~~~~~~~*/
-#include "Python.h"
+#include "Python.h"  // IWYU pragma: keep
 
 #if PY_MAJOR_VERSION != 3
 #error ("Framework requires compiling with Python3")
@@ -38,9 +38,7 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <any>
 #include <cstring>
-#include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>

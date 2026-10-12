@@ -1,7 +1,6 @@
 #ifndef SIMCORE_SCORINGPLANESD_H
 #define SIMCORE_SCORINGPLANESD_H
 
-#include "DetDescr/DetectorID.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "SimCore/SDs/SensitiveDetector.h"
 

@@ -1,7 +1,6 @@
 #ifndef DQM_ECALPNETVETORESULTS_H
 #define DQM_ECALPNETVETORESULTS_H
 
-#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 

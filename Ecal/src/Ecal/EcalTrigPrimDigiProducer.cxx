@@ -1,5 +1,10 @@
 #include "Ecal/EcalTrigPrimDigiProducer.h"
 
+#include "Ecal/EcalTriggerGeometry.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "Recon/Event/HgcrocTrigDigi.h"
+#include "Tools/HgcrocTriggerCalculations.h"
+
 namespace ecal {
 EcalTrigPrimDigiProducer::EcalTrigPrimDigiProducer(const std::string& name,
                                                    framework::Process& process)

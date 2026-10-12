@@ -10,9 +10,7 @@
 //----------------//
 //   C++ StdLib   //
 //----------------//
-#include <time.h>
 
-#include <iostream>
 #include <vector>
 
 //--------------//
@@ -23,9 +21,7 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
-#include "Math/DistFunc.h"
 #include "TRandom3.h"
 
 namespace ldmx {

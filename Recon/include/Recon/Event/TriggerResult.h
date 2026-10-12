@@ -9,8 +9,9 @@
 #define RECON_EVENT_TRIGGERRESULT_H_
 
 // ROOT
+#include <Rtypes.h>  // For ClassDef
+
 #include "TArrayD.h"
-#include "TObject.h"  //ClassDef
 #include "TString.h"
 
 // STL

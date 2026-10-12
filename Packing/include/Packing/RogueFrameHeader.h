@@ -3,7 +3,6 @@
 #define PACKING_ROGUEFRAMEHEADER_H
 
 #include <cstdint>
-#include <vector>
 
 #include "Packing/Utility/Reader.h"
 

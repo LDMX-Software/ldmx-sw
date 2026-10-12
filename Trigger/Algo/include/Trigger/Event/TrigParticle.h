@@ -2,9 +2,10 @@
 #define TRIGGER_EVENT_TRIGPARTICLE_H
 
 // ROOT
+#include <Rtypes.h>
+
 #include "Math/GenVector/LorentzVector.h"
 #include "Math/GenVector/PositionVector3D.h"
-#include "TObject.h"  //For ClassDef
 
 namespace trigger {
 

@@ -1,10 +1,11 @@
 #ifndef RECON_EVENT_COMPOSITEPULSE_H_
 #define RECON_EVENT_COMPOSITEPULSE_H_
 
+#include <Rtypes.h>  // For ClassDef
+
 #include <vector>
 
 #include "TF1.h"
-#include "TObject.h"  //for ClassDef
 
 namespace ldmx {
 

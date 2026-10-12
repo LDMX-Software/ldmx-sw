@@ -1,13 +1,10 @@
 #include "DQM/VisiblesCutflow.h"
 
 // LDMX
-#include "DetDescr/EcalID.h"
 #include "DetDescr/HcalID.h"
-#include "DetDescr/SimSpecialID.h"
 #include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalVetoResult.h"
 #include "Hcal/Event/HcalHit.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Track.h"
@@ -15,9 +12,6 @@
 // C++
 #include <algorithm>
 #include <cmath>
-#include <fstream>
-#include <iostream>
-#include <numeric>
 
 namespace dqm {
 

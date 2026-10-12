@@ -7,6 +7,8 @@
 
 #include "TrigScint/TestBeamHitAnalyzer.h"
 
+#include "TrigScint/Event/TestBeamHit.h"
+
 namespace trigscint {
 
 TestBeamHitAnalyzer::TestBeamHitAnalyzer(const std::string& name,

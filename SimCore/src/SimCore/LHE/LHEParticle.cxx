@@ -1,5 +1,10 @@
 #include "SimCore/LHE/LHEParticle.h"
 
+#include <sstream>
+#include <vector>
+
+#include "Framework/Exception/Exception.h"
+
 namespace simcore {
 namespace lhe {
 

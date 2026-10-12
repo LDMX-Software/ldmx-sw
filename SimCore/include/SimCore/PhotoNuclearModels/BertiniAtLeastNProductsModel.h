@@ -1,9 +1,6 @@
 #ifndef SIMCORE_BERTINI_AT_LEAST_N_PRODUCTS_MODEL_H
 #define SIMCORE_BERTINI_AT_LEAST_N_PRODUCTS_MODEL_H
-#include <G4CrossSectionDataSetRegistry.hh>
-#include <G4Gamma.hh>
 #include <G4HadProjectile.hh>
-#include <G4HadronInelasticProcess.hh>
 #include <G4Nucleus.hh>
 #include <G4ProcessManager.hh>
 

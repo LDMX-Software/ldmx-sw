@@ -13,8 +13,6 @@
 
 // HepMC3
 #include "HepMC3/Reader.h"
-#include "HepMC3/ReaderAscii.h"
-#include "HepMC3/ReaderAsciiHepMC2.h"
 
 // STL
 #include <memory>

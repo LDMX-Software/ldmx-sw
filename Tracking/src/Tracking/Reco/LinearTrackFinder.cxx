@@ -4,10 +4,8 @@
 #include <algorithm>
 #include <iostream>
 #include <map>
-#include <typeinfo>
 
 // eN files
-#include <fstream>
 
 namespace tracking {
 namespace reco {

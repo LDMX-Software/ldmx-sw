@@ -4,16 +4,16 @@
 //----------------------//
 //   C++ Standard Lib   //
 //----------------------//
+#include <Rtypes.h>
+
 #include <array>
 #include <iostream>
-#include <optional>
 #include <vector>
 
 //----------//
 //   ROOT   //
 //----------//
 #include "Measurement.h"
-#include "TObject.h"
 
 namespace ldmx {
 

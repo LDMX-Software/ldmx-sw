@@ -1,8 +1,9 @@
 #include "SimCore/G4User/TrackMap.h"
 
 // Geant4
-#include "G4Event.hh"
 #include "G4EventManager.hh"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
+#include "SimCore/G4User/UserTrackInformation.h"
 
 namespace simcore {
 

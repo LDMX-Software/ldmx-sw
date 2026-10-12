@@ -1,7 +1,6 @@
 
 #include "TrigScint/TrigScintClusterProducer.h"
 
-#include <iterator>  // std::next
 #include <map>
 
 namespace trigscint {
@@ -469,8 +468,7 @@ void TrigScintClusterProducer::produce(framework::Event& event) {
     }
   }  // over channels
 
-  if (trig_scint_clusters.size() > 0)
-    event.add(output_collection_, trig_scint_clusters);
+  event.add(output_collection_, trig_scint_clusters);
 
   hit_channel_map_.clear();
   // book keep which channels have already been added to a cluster

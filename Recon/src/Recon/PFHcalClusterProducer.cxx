@@ -1,12 +1,9 @@
 #include "Recon/PFHcalClusterProducer.h"
 
-#include "Hcal/Event/HcalCluster.h"
 #include "Hcal/Event/HcalHit.h"
 #include "Recon/DBScanClusterBuilder.h"
 #include "Recon/Event/CaloCluster.h"
 #include "Recon/Event/CalorimeterHit.h"
-#include "TFitResult.h"
-#include "TGraph.h"
 
 namespace recon {
 

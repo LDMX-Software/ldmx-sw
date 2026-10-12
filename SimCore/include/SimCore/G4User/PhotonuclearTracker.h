@@ -11,7 +11,6 @@
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
 #include <map>
-#include <memory>
 #include <vector>
 
 /*~~~~~~~~~~~~*/

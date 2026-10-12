@@ -15,10 +15,6 @@
 //----------//
 //   LDMX   //
 //----------//
-#include "Ecal/Event/EcalHit.h"
-#include "Event/HcalCluster.h"
-#include "Event/HcalHit.h"
-#include "Event/HcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 

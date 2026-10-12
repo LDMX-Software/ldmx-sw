@@ -26,3 +26,6 @@ setup_library(
 
 setup_python(package_name LDMX/TrigScint)
 
+# Install data files (channel/module maps, DAQ map) to install/data/TrigScint.
+setup_data(module TrigScint)
+

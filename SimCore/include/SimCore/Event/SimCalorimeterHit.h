@@ -9,13 +9,13 @@
 #define SIMCORE_EVENT_SIMCALORIMETERHIT_H_
 
 // C++
+#include <Rtypes.h>
+
 #include <functional>  // for track ID encodings
 
 // ROOT
-#include "TObject.h"  //For ClassDef
 
 // LDMX
-#include "SimCore/Event/SimParticle.h"
 
 namespace ldmx {
 

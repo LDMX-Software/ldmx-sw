@@ -9,9 +9,9 @@
 #define RECON_EVENT_FIDUCIALFLAG_H_
 
 // ROOT
+#include <Rtypes.h>  // For ClassDef
+
 #include "TArrayD.h"
-#include "TObject.h"  //ClassDef
-#include "TString.h"
 
 // STL
 #include <iostream>

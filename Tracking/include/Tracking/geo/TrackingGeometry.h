@@ -4,39 +4,18 @@
 #include <Acts/Geometry/CuboidVolumeBuilder.hpp>
 #include <Acts/Geometry/TrackingGeometry.hpp>
 #include <Acts/Geometry/TrackingGeometryBuilder.hpp>
-#include <Acts/Surfaces/DiamondBounds.hpp>
-#include <Acts/Surfaces/PlaneSurface.hpp>
-#include <Acts/Surfaces/SurfaceArray.hpp>
-
-#include "Acts/Definitions/Units.hpp"
-#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
-#include "Acts/Material/HomogeneousVolumeMaterial.hpp"
 
 // Visualization
 #include <Acts/Visualization/GeometryView3D.hpp>
-#include <Acts/Visualization/ObjVisualization3D.hpp>
-#include <Acts/Visualization/ViewConfig.hpp>
 
 // G4
-#include <G4Box.hh>
-#include <G4GDMLParser.hh>
-#include <G4LogicalVolume.hh>
-#include <G4Material.hh>
-#include <G4Polyhedra.hh>
-#include <G4Types.hh>
 #include <G4VPhysicalVolume.hh>
-#include <boost/filesystem.hpp>
 #include <string>
 
 #include "Framework/ConditionsObject.h"
-#include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 #include "G4RunManager.hh"
-#include "G4UIsession.hh"
-#include "G4strstreambuf.hh"
 #include "Tracking/geo/DetectorElement.h"
-#include "Tracking/geo/GeoUtils.h"
 namespace tracking::geo {
 
 /**

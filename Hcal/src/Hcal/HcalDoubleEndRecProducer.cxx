@@ -1,5 +1,11 @@
 #include "Hcal/HcalDoubleEndRecProducer.h"
 
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
+#include "Hcal/Event/HcalHit.h"
+#include "Hcal/HcalReconConditions.h"
+
 namespace hcal {
 
 void HcalDoubleEndRecProducer::configure(framework::config::Parameters& p) {

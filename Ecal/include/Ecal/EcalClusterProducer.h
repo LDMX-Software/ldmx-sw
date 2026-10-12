@@ -8,32 +8,10 @@
 #define ECAL_ECALCLUSTERPRODUCER_H_
 
 //----------//
-//   ROOT   //
-//----------//
-#include "TH1F.h"
-#include "TH2F.h"
-
-//----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/EcalGeometry.h"
-#include "DetDescr/EcalID.h"
-#include "Ecal/CLUE.h"
-#include "Ecal/Event/ClusterAlgoResult.h"
-#include "Ecal/Event/EcalCluster.h"
-#include "Ecal/Event/EcalHit.h"
-#include "Ecal/IntermediateCluster.h"
-#include "Ecal/MyClusterWeight.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/TemplatedClusterFinder.h"
-
-//----------//
-//    STL   //
-//----------//
-#include <memory>
-#include <tuple>
 
 namespace ecal {
 

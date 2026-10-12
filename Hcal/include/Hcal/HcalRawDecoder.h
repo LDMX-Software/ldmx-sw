@@ -2,13 +2,9 @@
 #define HCALRAWDECODER_H
 
 #include <bitset>
-#include <iomanip>
-#include <optional>
 
 #include "DetDescr/HcalElectronicsID.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/EventProcessor.h"
-#include "Hcal/HcalDetectorMap.h"
 #include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Mask.h"
 #include "Packing/Utility/Reader.h"

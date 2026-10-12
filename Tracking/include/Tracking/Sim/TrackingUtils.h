@@ -31,15 +31,11 @@
 
 // --- < ACTS > --- //
 #include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Definitions/PdgParticle.hpp"
 #include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Definitions/Units.hpp"
 #include "Acts/EventData/BoundTrackParameters.hpp"
+#include "Acts/EventData/SourceLink.hpp"
 #include "Acts/Surfaces/PerigeeSurface.hpp"
 #include "Acts/Surfaces/PlaneSurface.hpp"
-#include "Acts/Surfaces/Surface.hpp"
-#include "Tracking/Event/Measurement.h"
-#include "Tracking/Sim/IndexSourceLink.h"
 
 namespace tracking {
 namespace sim {

@@ -243,6 +243,14 @@ class EcalGeometry:
                 "ldmx-ti-v15-8gev.*",
                 "ldmx-al-v15-8gev",
                 "ldmx-al-v15-8gev.*",
+                "ldmx-det-v16-8gev",
+                "ldmx-det-v16-8gev.*",
+                "ldmx-lyso-r4-v16-8gev",
+                "ldmx-lyso-r4-v16-8gev.*",
+                "ldmx-ti-v16-8gev",
+                "ldmx-ti-v16-8gev.*",
+                "ldmx-al-v16-8gev",
+                "ldmx-al-v16-8gev.*",
             ],
             gap=1.5,
             si_thickness=0.4,
@@ -317,7 +325,7 @@ class EcalGeometry:
 
     def reduced_v3():
         eg = EcalGeometry(
-            detectors_valid=["ldmx-reduced-v3"],
+            detectors_valid=["ldmx-esa25-v1"],
             gap=1.5,
             layer_z_positions=[86.00, 92.23, 136.8, 143.03],
             ecal_front_z=240.0,

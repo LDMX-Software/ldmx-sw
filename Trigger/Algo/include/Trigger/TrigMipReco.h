@@ -8,14 +8,10 @@
 #define TRIGGER_TRIGMIPRECO_H
 
 // LDMX Framework
-#include <chrono>
 
-#include "DetDescr/HcalTriggerID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Trigger/Event/TrigCaloHit.h"
-#include "Trigger/Event/TrigMip.h"
 
 namespace trigger {
 

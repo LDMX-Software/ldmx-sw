@@ -8,9 +8,6 @@
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 namespace trigscint {
 

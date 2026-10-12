@@ -7,13 +7,15 @@
 #include "DetDescr/HcalID.h"
 
 // STL
-#include <iostream>
 
 // Geant4
+#include "DetDescr/PackedIndex.h"
 #include "G4Box.hh"
-#include "G4ParticleTypes.hh"
+#include "G4Gamma.hh"
+#include "G4Neutron.hh"
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
+#include "SimCore/G4User/TrackMap.h"
 
 namespace simcore {
 

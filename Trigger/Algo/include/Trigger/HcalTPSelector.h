@@ -8,14 +8,9 @@
 #define TRIGGER_HCALTPSELECTOR_H
 
 // LDMX Framework
-#include "DetDescr/HcalTriggerID.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "Recon/Event/CaloTrigPrim.h"
-#include "TrigUtilities.h"
-#include "Trigger/Event/TrigCaloHit.h"
-#include "Trigger/Event/TrigEnergySum.h"
 
 namespace trigger {
 

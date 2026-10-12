@@ -1,6 +1,5 @@
 #include "Hcal/HcalTrigPrimDigiProducer.h"
 
-#include "DetDescr/HcalGeometry.h"
 #include "Hcal/HcalTriggerGeometry.h"
 #include "Recon/Event/CaloTrigPrim.h"
 #include "Recon/Event/HgcrocDigiCollection.h"

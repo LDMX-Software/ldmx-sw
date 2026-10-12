@@ -8,19 +8,13 @@
 #ifndef EVENTPROC_TRIGSCINTDIGIPRODUCER_H
 #define EVENTPROC_TRIGSCINTDIGIPRODUCER_H
 
-#include <iostream>
 #include <random>  //for random num generators
 
 #include "DetDescr/TrigScintID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/Exception/Exception.h"
-#include "Framework/RandomNumberSeedService.h"
-#include "Recon/Event/EventConstants.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/NoiseGenerator.h"
-#include "TrigScint/Event/TrigScintHit.h"
 
 namespace trigscint {
 

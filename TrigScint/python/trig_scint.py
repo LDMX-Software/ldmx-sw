@@ -92,6 +92,8 @@ class TrigScintQIEDigiProducer(Processor):
     input_collection: str = "TriggerPad3SimHits"
     input_pass_name: str = ""
     output_collection: str = "trigScintQIEDigisPad3"
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_passname: str = ""
     input_pulse_shape: str = "Expo"
     expo_k: float = 0.1
     expo_tmax: float = 5.0
@@ -225,6 +227,12 @@ class TrigScintRecHitProducer(Processor):
     output_collection: str = "trigScintRecHitsPad3"
     verbose: bool = False
     sample_of_interest: int = 2
+
+    use_calib_file: bool = False
+    calib_file: str = ""
+    # If > 0: integrate a window starting at sample_of_interest
+    # If <= 0: integrate all samples (default)
+    integration_window: int = 0
 
     @staticmethod
     def pad1(**kwargs):
@@ -421,6 +429,8 @@ class QIEAnalyzer(Processor):
     input_collection: str = "QIEsamplesPad1"
     input_pass_name: str = ""
     start_sample: int = 2
+    # per-channel charge histograms for the first N events, at most 200
+    n_event_displays: int = 200
     gain: list[float] = [2.0e6] * 16
     pedestals: list[float] = [
         -4.6,

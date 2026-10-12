@@ -1,8 +1,13 @@
 #include "TrigScint/QIEDecoder.h"
 
 #include <TMath.h>
+#include <TTimeStamp.h>
 
 #include <bitset>
+#include <iostream>
+
+#include "TrigScint/Event/QIEStream.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 namespace trigscint {
 

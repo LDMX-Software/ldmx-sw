@@ -1,5 +1,10 @@
 #include "Tracking/dqm/TrackingRecoDQM.h"
 
+#include <algorithm>
+#include <iostream>
+
+#include "Tracking/Sim/TrackingUtils.h"
+
 namespace tracking::dqm {
 
 void TrackingRecoDQM::configure(framework::config::Parameters& parameters) {
@@ -234,8 +239,8 @@ void TrackingRecoDQM::efficiencyPlots(
         track_truth_prob >= track_prob_cut_)
       truth_trk = &(*it);
 
-    // Match not found
-    if (!truth_trk) return;
+    // Match not found, go to next track
+    if (!truth_trk) continue;
 
     auto truth_phi = truth_trk->getPhi();
     auto truth_d0 = truth_trk->getD0();

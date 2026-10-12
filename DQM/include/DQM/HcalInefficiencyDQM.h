@@ -2,15 +2,12 @@
 #define HCALINEFFICIENCYDQM_H
 #include <DetDescr/HcalID.h>
 #include <Hcal/Event/HcalHit.h>
-#include <TCanvas.h>
 
 #include <string>
-#include <vector>
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 namespace dqm {
 class HcalInefficiencyAnalyzer : public framework::Analyzer {
  public:

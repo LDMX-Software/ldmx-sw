@@ -1,6 +1,10 @@
 
 #include "Tools/ONNXRuntime.h"
 
+#include <algorithm>
+#include <functional>
+#include <numeric>
+
 namespace ldmx {
 namespace ort {
 using namespace ::Ort;

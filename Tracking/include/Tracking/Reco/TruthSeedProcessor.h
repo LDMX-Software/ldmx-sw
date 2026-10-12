@@ -8,23 +8,16 @@
 #include "SimCore/Event/SimTrackerHit.h"
 
 // --- Tracking --- //
+#include "Tracking/EigenStepper.h"  // IWYU pragma: keep
 #include "Tracking/Event/Track.h"
-#include "Tracking/Event/TruthTrack.h"
 #include "Tracking/Reco/TrackExtrapolatorTool.h"
 #include "Tracking/Reco/TrackingGeometryUser.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 // --- ACTS --- //
 #include <random>
 
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/EventData/BoundTrackParameters.hpp"
 #include "Acts/Propagator/Navigator.hpp"
 #include "Acts/Propagator/Propagator.hpp"
-#include "Acts/Surfaces/PerigeeSurface.hpp"
-#include "Tracking/EigenStepper.h"
-#include "Tracking/Sim/BFieldXYZUtils.h"
 
 using TruthPropagator = Acts::Propagator<Acts::EigenStepper<>, Acts::Navigator>;
 

@@ -2,8 +2,10 @@
 // #include "Recon/Event/HgcrocDigiCollection.h"
 #include "Recon/DBScanClusterBuilder.h"
 
-#include <iostream>
 #include <set>
+
+#include "TFitResult.h"
+#include "TGraph.h"
 
 namespace recon {
 

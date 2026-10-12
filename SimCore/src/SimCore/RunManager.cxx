@@ -28,12 +28,11 @@
 //------------//
 //   Geant4   //
 //------------//
-#include "FTFP_BERT.hh"
 #include "G4GDMLParser.hh"
 #include "G4GenericBiasingPhysics.hh"
 #include "G4ParallelWorldPhysics.hh"
-#include "G4ProcessTable.hh"
 #include "G4VModularPhysicsList.hh"
+#include "SimCore/KaonPhysics.h"
 
 namespace simcore {
 

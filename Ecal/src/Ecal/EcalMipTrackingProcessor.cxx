@@ -1,5 +1,16 @@
 #include "Ecal/EcalMipTrackingProcessor.h"
 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <iomanip>
+#include <vector>
+
+#include "Ecal/EcalHelper.h"
+#include "Ecal/Event/EcalMipResult.h"
+#include "Ecal/Event/EcalVetoResult.h"
+#include "TDecompSVD.h"
+
 namespace ecal {
 
 void EcalMipTrackingProcessor::onNewRun(const ldmx::RunHeader& rh) {

@@ -1,16 +1,11 @@
 #ifndef TRIGSCINT_QIEDECODER_H
 #define TRIGSCINT_QIEDECODER_H
 
-#include <TTimeStamp.h>
-
 #include <fstream>
-#include <iostream>
 
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "TrigScint/Event/QIEStream.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 namespace trigscint {
 
 class QIEDecoder : public framework::Producer {

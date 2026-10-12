@@ -1,10 +1,10 @@
-"""Plot SiStripWaveforms straight from a decode_to_waveforms.py ROOT file.
+"""Plot SiStripWaveforms straight from a raw_to_measurements.py ROOT file.
 
 This is step 3 of the real-data tracker waveform chain:
 
-    1. compute_pedestals.py                   -> pedestals.json
-    2. decode_to_waveforms.py                 -> <output>.root (TrackerWaveforms)
-    3. plot_waveforms.py       (this script)  -> PNG figures
+    1. compute_pedestals.py                       -> pedestals.json
+    2. raw_to_measurements.py --stop-at fit      -> <output>.root (TrackerWaveforms)
+    3. plot_waveforms.py           (this script)  -> PNG figures
 
 Unlike the in-framework approach, this is a STANDALONE script: it reads the
 ldmx::SiStripWaveform collection directly out of the ROOT event tree with
@@ -50,7 +50,11 @@ import ROOT
 parser = argparse.ArgumentParser(
     description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
 )
-parser.add_argument("root_file", help="ROOT file from decode_to_waveforms.py")
+parser.add_argument(
+    "root_file",
+    help="ROOT file from raw_to_measurements.py (--stop-at fit "
+    "or measurements, so it carries the fit collection)",
+)
 parser.add_argument(
     "--tree", default="LDMX_Events", help="Event tree name (default: LDMX_Events)"
 )
@@ -58,6 +62,21 @@ parser.add_argument(
     "--collection",
     default="TrackerWaveforms",
     help="SiStripWaveform collection name (default: TrackerWaveforms)",
+)
+parser.add_argument(
+    "--fitted-collection",
+    default="FittedSiStripHits",
+    help="FittedSiStripHit collection holding the pulse fits "
+    "(default: FittedSiStripHits). The fit is no longer "
+    "stored on the waveform; it is joined back on via the "
+    "DAQ map. If the collection or the map is missing, the "
+    "fit overlay is simply omitted.",
+)
+parser.add_argument(
+    "--daq-map",
+    default=None,
+    help="DAQ map JSON used to join fits back onto waveforms "
+    "(default: search the install tree and ./Tracking/data)",
 )
 parser.add_argument(
     "--n-examples",
@@ -171,6 +190,18 @@ if branch_name is None:
 
 print(f"Reading '{branch_name}' from '{args.tree}' in {args.root_file}")
 
+
+def find_branch(collection):
+    """First branch named '<collection>' or '<collection>_<pass>', else None."""
+    for b in tree.GetListOfBranches():
+        name = b.GetName()
+        if name == collection or name.startswith(collection + "_"):
+            return name
+    return None
+
+
+fitted_branch = find_branch(args.fitted_collection)
+
 # ---------------------------------------------------------------------------
 # Scan the tree: collect top-N waveforms by peak significance + occupancy
 # ---------------------------------------------------------------------------
@@ -233,10 +264,97 @@ else:
 have_noise = bool(ped_noise)
 
 
+# ---------------------------------------------------------------------------
+# DAQ map: needed to join the fit results back onto the waveforms
+# ---------------------------------------------------------------------------
+# The pulse fit is not stored on the SiStripWaveform; SiStripWaveformFitProcessor
+# writes it to a FittedSiStripHit keyed by (layer_id, strip_id).  Applying the
+# same DAQ-map strip transform the C++ uses (channelmap::stripId) turns a
+# waveform's (feb, hybrid, pchannel) into that key, so the join is exact.
+DAQ_MAP_CANDIDATES = [
+    os.path.join(
+        os.environ.get("LDMX_INSTALL_PREFIX", ""),
+        "data/Tracking/daqmap_esa25_slice_test.json",
+    ),
+    "Tracking/data/daqmap_esa25_slice_test.json",
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "../data/daqmap_esa25_slice_test.json",
+    ),
+]
+
+
+def load_daq_map(path):
+    """Map (feb, hybrid) -> sensor record from the DAQ map JSON."""
+    with open(path) as fh:
+        doc = json.load(fh)
+    sensors = {}
+    for s in doc["sensors"]:
+        sensors[(int(s["feb"]), int(s["hybrid"]))] = {
+            "layer_id": int(s["layer_id"]),
+            "n_strips": int(s["n_strips"]),
+            "first_strip": int(s["first_strip"]),
+            "reversed": bool(s["reversed"]),
+        }
+    return sensors
+
+
+def strip_id(pch, sensor):
+    """Sensor strip index for a physical channel, matching channelmap::stripId."""
+    if sensor["reversed"]:
+        return sensor["first_strip"] + sensor["n_strips"] - 1 - pch
+    return sensor["first_strip"] + pch
+
+
+daq_map = {}
+if fitted_branch is not None:
+    candidates = [args.daq_map] if args.daq_map else DAQ_MAP_CANDIDATES
+    for cand in candidates:
+        if cand and os.path.exists(cand):
+            daq_map = load_daq_map(cand)
+            print(f"Loaded DAQ map for {len(daq_map)} sensors from '{cand}'")
+            break
+    if not daq_map:
+        print(
+            "WARNING: no DAQ map found; cannot join fit results onto "
+            "waveforms, so the fit overlay will be omitted. Pass --daq-map."
+        )
+
+have_fits = bool(fitted_branch) and bool(daq_map)
+if fitted_branch is None:
+    print(
+        f"WARNING: no '{args.fitted_collection}' branch; fit overlay omitted. "
+        "Re-run raw_to_measurements.py with --stop-at fit (or measurements) "
+        "to produce it."
+    )
+elif have_fits:
+    print(f"Joining fits from '{fitted_branch}' via the DAQ map")
+
+NO_FIT = {
+    "fit_converged": False,
+    "fit_amplitude": 0.0,
+    "fit_t0": 0.0,
+    "fit_chi2": 0.0,
+    "fit_ndf": 0,
+}
+
+
 top = []  # list of waveform record dicts
 occupancy = {}  # (feb, hybrid) -> np.array(N_STRIPS) of counts
 
 for ievt, entry in enumerate(tree):
+    # Index this event's fits by the address the fit processor assigned them.
+    fits = {}
+    if have_fits:
+        for h in getattr(entry, fitted_branch):
+            fits[(int(h.getLayerID()), int(h.getStripID()))] = {
+                "fit_converged": True,
+                "fit_amplitude": float(h.getAmplitude()),
+                "fit_t0": float(h.getT0()),
+                "fit_chi2": float(h.getChi2()),
+                "fit_ndf": int(h.getNDF()),
+            }
+
     collection = getattr(entry, branch_name)
     for wf in collection:
         samples = list(wf.getSamples())
@@ -253,25 +371,28 @@ for ievt, entry in enumerate(tree):
         peak_amp = max(samples) if samples else 0
         peak_sigma = (peak_amp / noise) if noise > 0 else 0.0
 
-        top.append(
-            {
-                "event": ievt,
-                "feb": feb,
-                "hybrid": hybrid,
-                "pchannel": pch,
-                "n_triggers": int(wf.getNTriggers()),
-                "noise": noise,
-                "peak_amp": peak_amp,
-                "peak_sigma": peak_sigma,
-                "samples": samples,
-                "label": hybrid_label(feb, hybrid),
-                "fit_converged": bool(wf.isFitConverged()),
-                "fit_amplitude": float(wf.getFitAmplitude()),
-                "fit_t0": float(wf.getFitT0()),
-                "fit_chi2": float(wf.getFitChi2()),
-                "fit_ndf": int(wf.getFitNDF()),
-            }
-        )
+        # Join the fit back on.  A waveform with no entry either failed the fit
+        # or came from a hybrid the DAQ map does not cover; either way it is
+        # plotted without an overlay.
+        fit = NO_FIT
+        sensor = daq_map.get(key)
+        if sensor is not None:
+            fit = fits.get((sensor["layer_id"], strip_id(pch, sensor)), NO_FIT)
+
+        record = {
+            "event": ievt,
+            "feb": feb,
+            "hybrid": hybrid,
+            "pchannel": pch,
+            "n_triggers": int(wf.getNTriggers()),
+            "noise": noise,
+            "peak_amp": peak_amp,
+            "peak_sigma": peak_sigma,
+            "samples": samples,
+            "label": hybrid_label(feb, hybrid),
+        }
+        record.update(fit)
+        top.append(record)
 
 tfile.Close()
 

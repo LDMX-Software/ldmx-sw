@@ -1,5 +1,10 @@
 #include "SimCore/Generators/LHEPrimaryGenerator.h"
 
+#include "Framework/Exception/Exception.h"
+#include "G4IonTable.hh"
+#include "G4RunManager.hh"
+#include "SimCore/G4User/UserPrimaryParticleInformation.h"
+
 namespace simcore {
 namespace generators {
 

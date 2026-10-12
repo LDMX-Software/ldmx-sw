@@ -9,16 +9,10 @@
 #define EVENTPROC_ECALPNETVETOPROCESSOR_H_
 
 // LDMX
-#include <algorithm>
-#include <numeric>
-
 #include "DetDescr/EcalGeometry.h"
-#include "Ecal/EcalHelper.h"
 #include "Ecal/Event/EcalHit.h"
-#include "Ecal/Event/EcalVetoResult.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimTrackerHit.h"
 #include "Tools/ONNXRuntime.h"
 
 namespace ecal {
@@ -71,7 +65,8 @@ class EcalPnetVetoProcessor : public framework::Producer {
   const static std::vector<std::string> INPUT_NAMES;
   const static std::vector<unsigned int> INPUT_SIZES;
 
-  float disc_cut_ = -99;
+  /** disc_cut as a logit difference, the probability saturates in float */
+  double disc_cut_logit_{0};
   std::vector<std::vector<float>> data_;
   std::unique_ptr<ldmx::ort::ONNXRuntime> rt_;
 

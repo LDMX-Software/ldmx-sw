@@ -56,8 +56,7 @@ class TrackerPedestals : public framework::ConditionsObject {
   float noise(uint8_t feb, uint8_t hybrid, uint8_t apv, uint8_t channel) const {
     const Channel* c = find(feb, hybrid, apv, channel);
     if (!c) return 0.f;
-    const float sum =
-        std::accumulate(c->noise_.begin(), c->noise_.end(), 0.f);
+    const float sum = std::accumulate(c->noise_.begin(), c->noise_.end(), 0.f);
     return sum / static_cast<float>(c->noise_.size());
   }
 

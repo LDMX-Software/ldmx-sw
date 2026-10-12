@@ -7,7 +7,6 @@
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "Tracking/Digitization/PulseShape.h"
-#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Digitization/StripPulseFitter.h"
 
 namespace tracking::reco {

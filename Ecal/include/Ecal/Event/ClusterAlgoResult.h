@@ -10,7 +10,6 @@
 
 // ROOT
 #include "TArrayD.h"
-#include "TObject.h"  //For ClassDef
 #include "TString.h"
 
 // STL

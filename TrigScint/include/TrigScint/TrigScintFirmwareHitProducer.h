@@ -10,14 +10,8 @@
 /*~~~~~~~~~~*/
 /*   ROOT   */
 /*~~~~~~~~~~*/
-#include "TRandom3.h"
 
 // LDMX
-#include "DetDescr/TrigScintID.h"
-#include "Recon/Event/EventConstants.h"
-#include "Tools/NoiseGenerator.h"
-#include "TrigScint/Event/TrigScintHit.h"
-#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -28,8 +22,6 @@
 /*~~~~~~~~~~~*/
 /* TrigScint */
 /*~~~~~~~~~~~*/
-#include "TrigScint/Firmware/objdef.h"
-#include "TrigScint/SimQIE.h"
 
 namespace trigscint {
 

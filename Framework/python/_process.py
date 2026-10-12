@@ -60,6 +60,11 @@ class Process:
     skip_corrupted_input_files: bool
         whether to skip past files that are marked "zombie" by ROOT
         helpful for batch processing
+    allow_incomplete_input_files: bool
+        For experts. Whether to run over input files whose runs were never
+        finished, for example because the producing job was preempted.
+        Events are missing from the end of such a run, so the sample it gives
+        is biased. By default the process refuses to read them.
     log_frequency : int
         Print the event number whenever its modulus with this frequency is zero
     logger : Logger
@@ -102,6 +107,7 @@ class Process:
     skim_default_is_keep: bool = True
     skim_rules: list[str] = []
     skip_corrupted_input_files: bool = False
+    allow_incomplete_input_files: bool = False
     log_frequency: int = -1
     logger: Logger = field(default_factory=Logger)
     compression_setting: int = 9

@@ -100,6 +100,9 @@ def full_tracking_sequence(
 
     TrackGeo.get_instance().set_detector(detector)
 
+    # ACTS x 1 mm inside tagger volume upstream edge (v16: 2.5 mm further out)
+    tagger_start_x = -619.5 if "v16" in detector else -617.0
+
     # ------------------------------------------------------------------
     # Truth seeder
     # ------------------------------------------------------------------
@@ -241,9 +244,11 @@ def full_tracking_sequence(
         instance_name=tagged("SeedTagger"),
         input_hits_collection=tagger_meas_collection,
         out_seed_collection=tagged("TaggerRecoSeeds"),
-        # Perigee upstream of all tagger sensors (ACTS x from -12.5 to -615.5 mm).
+        # the tagger has no upstream tracks to constrain it
+        tagger_trks_collection="",
+        # Perigee upstream of all tagger sensors.
         # World boundary is at ACTS x = -650 mm.
-        perigee_location=[-617.0, 0.0, 0.0],
+        perigee_location=[tagger_start_x, 0.0, 0.0],
         pmin=0.03,
         pmax=63.0,
         d0min=-36.9,
@@ -258,6 +263,7 @@ def full_tracking_sequence(
         perigee_location=[0.0, 0.0, 0.0],
         input_hits_collection=recoil_meas_collection,
         out_seed_collection=tagged("RecoilRecoSeeds"),
+        tagger_trks_collection=tagged("TaggerTracksClean"),
         bfield=1.5,
         pmin=0.04,
         pmax=819.0,
@@ -314,6 +320,7 @@ def full_tracking_sequence(
     gsf_tagger = tracking.GSFProcessor(
         instance_name=tagged("Tagger_GSF"),
         tagger_tracking=True,
+        tagger_start_x=tagger_start_x,
         track_collection=greedy_solver_tagger.out_trk_collection,
         meas_collection=tagger_meas_collection,
         out_trk_collection=tagged("GSFTaggerTracks"),
@@ -438,10 +445,11 @@ def full_tracking_sequence(
         *digi_sequence,
         truth_tracking,
         seeder_tagger,
-        seeder_recoil,
         tracking_tagger,
-        tracking_recoil,
+        # ambiguity-solved tagger tracks constrain the recoil seed fit
         greedy_solver_tagger,
+        seeder_recoil,
+        tracking_recoil,
         greedy_solver_recoil,
         gsf_tagger,
         gsf_recoil,

@@ -1,11 +1,6 @@
 #ifndef BIASING_ECALPROCESSFILTER_H
 #define BIASING_ECALPROCESSFILTER_H
 
-/*~~~~~~~~~~~~~~~~*/
-/*   C++ StdLib   */
-/*~~~~~~~~~~~~~~~~*/
-#include <algorithm>
-
 /*~~~~~~~~~~~~~*/
 /*   SimCore   */
 /*~~~~~~~~~~~~~*/
@@ -15,7 +10,6 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 
 // Forward declaration
 class G4Step;

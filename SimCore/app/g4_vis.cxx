@@ -1,6 +1,5 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "G4GDMLParser.hh"
 #include "G4GeometryManager.hh"
 #include "G4PhysListFactory.hh"
 #include "G4RunManager.hh"

@@ -1,4 +1,11 @@
 #include "Hcal/HcalSingleEndRecProducer.h"
+
+#include "DetDescr/HcalDigiID.h"
+#include "DetDescr/HcalGeometry.h"
+#include "DetDescr/HcalID.h"
+#include "Hcal/Event/HcalHit.h"
+#include "Hcal/HcalReconConditions.h"
+
 namespace hcal {
 
 std::tuple<double, double, int> HcalSingleEndRecProducer::extractMeasurements(

@@ -2,13 +2,9 @@
 #define IDEALCLUSTERBUILDER_H
 
 #include <algorithm>
-#include <cmath>
 #include <iostream>
 #include <map>
 #include <vector>
-
-#include "TFitResult.h"
-#include "TGraph.h"
 
 using std::cout;
 using std::endl;

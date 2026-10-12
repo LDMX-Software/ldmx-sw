@@ -1,0 +1,50 @@
+
+name: Prune Validation Reports
+
+# remove reports of long closed PRs and squash the pages history
+on:
+  schedule:
+    - cron: '0 9 * * 0'
+  workflow_dispatch:
+
+env:
+  REPORTS_REPO: LDMX-Software/validation-reports
+  KEEP_CLOSED_DAYS: 90
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune closed PRs
+        env:
+          DEPLOY_KEY: ${{ secrets.VALIDATION_REPORTS_DEPLOY_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${DEPLOY_KEY}" > ~/.ssh/reports_key
+          chmod 600 ~/.ssh/reports_key
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/reports_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+          git clone -q --depth 1 --branch gh-pages "git@github.com:${REPORTS_REPO}.git" reports
+          cd reports
+          lease=$(git rev-parse HEAD)
+          cutoff=$(date -u -d "-${KEEP_CLOSED_DAYS} days" +%s)
+          for d in pr-*/; do
+            [[ -d "$d" ]] || continue
+            n=${d#pr-}; n=${n%/}
+            closed_at=$(gh pr view "$n" --repo "${{ github.repository }}" --json closedAt --jq '.closedAt // ""' || true)
+            # open or unknown PRs are kept
+            [[ -n "$closed_at" ]] || continue
+            if (( $(date -u -d "$closed_at" +%s) < cutoff )); then
+              echo "removing $d (closed ${closed_at})"
+              rm -rf "$d"
+            fi
+          done
+          touch .nojekyll
+          # single commit keeps the repo small
+          git checkout -q --orphan pruned
+          git add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "Prune validation reports"
+          # fails if a report was pushed meanwhile
+          git push --force-with-lease="gh-pages:${lease}" origin pruned:gh-pages

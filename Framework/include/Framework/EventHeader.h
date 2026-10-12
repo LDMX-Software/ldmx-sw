@@ -9,11 +9,11 @@
 #define EVENT_EVENTHEADER_H_
 
 // ROOT
-#include "TObject.h"  //For ClassDef
+#include <Rtypes.h>  // For ClassDef
+
 #include "TTimeStamp.h"
 
 // STL
-#include <iostream>
 #include <map>
 #include <string>
 

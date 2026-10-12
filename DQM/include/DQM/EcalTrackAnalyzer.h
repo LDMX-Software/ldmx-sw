@@ -12,7 +12,6 @@
 // LDMX Framework
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Tracking/Event/Track.h"
 
 namespace dqm {
 

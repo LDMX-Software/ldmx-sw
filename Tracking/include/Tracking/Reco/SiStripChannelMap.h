@@ -41,6 +41,38 @@ inline constexpr int16_t pchannel(uint8_t apv_id, uint8_t channel) {
       (apv_id * K_CHANNELS_PER_APV + (K_CHANNELS_PER_APV - 1) - channel));
 }
 
+/**
+ * Inverse of pchannel(): recover the (APV id, APV channel) pair from a physical
+ * strip number.  Needed because SiStripWaveform stores only the pchannel, but
+ * the pedestal table is keyed by the full electronics address.
+ *
+ * Round-trips exactly with pchannel() for all valid (apv, channel):
+ *   apvChannelFromPchannel(pchannel(a, c), a', c') gives a' == a, c' == c.
+ */
+inline constexpr void apvChannelFromPchannel(int16_t pchannel, uint8_t& apv_id,
+                                             uint8_t& channel) {
+  const int x = (K_CHANNELS_PER_HYBRID - 1) - pchannel;
+  apv_id = static_cast<uint8_t>(x / K_CHANNELS_PER_APV);
+  channel =
+      static_cast<uint8_t>((K_CHANNELS_PER_APV - 1) - (x % K_CHANNELS_PER_APV));
+}
+
+/**
+ * Map a physical strip number (pchannel) onto a sensor strip index using a
+ * DAQ-map transform: an optional readout reversal plus a per-sensor offset.
+ *
+ * @param pchannel    physical strip within the hybrid, [0, kChannelsPerHybrid).
+ * @param n_strips    number of bonded strips on the sensor.
+ * @param first_strip sensor strip index that pchannel 0 (or the reversed end)
+ *                    maps to.
+ * @param reversed    true if the hybrid reads the sensor in descending order.
+ */
+inline constexpr int stripId(int16_t pchannel, int n_strips, int first_strip,
+                             bool reversed) {
+  return reversed ? first_strip + n_strips - 1 - pchannel
+                  : first_strip + pchannel;
+}
+
 /// Build the per-channel pedestal-map key "feb:hybrid:apv:channel".
 inline std::string channelKey(uint8_t feb, uint8_t hybrid, uint8_t apv,
                               uint8_t channel) {

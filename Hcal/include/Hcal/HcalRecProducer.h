@@ -10,18 +10,9 @@
 #ifndef HCAL_HCALRECPRODUCER_H_
 #define HCAL_HCALRECPRODUCER_H_
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <memory>  //for smart pointers
-
 //----------//
 //   LDMX   //
 //----------//
-#include "DetDescr/DetectorID.h"
-#include "DetDescr/HcalDigiID.h"
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/EventProcessor.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 

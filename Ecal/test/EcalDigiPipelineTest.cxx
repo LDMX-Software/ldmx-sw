@@ -154,7 +154,7 @@ class EcalFakeSimHits : public framework::Producer {
    * The maximum value to be readout is 4096 TDC which
    * is equivalent to ~10000fC deposited charge.
    */
-  const double MAX_ENERGY = 10000. * MEV_PER_FC;
+  double max_energy_;
 
   /**
    * Minimum energy to make a sim hit for [MeV]
@@ -162,22 +162,48 @@ class EcalFakeSimHits : public framework::Producer {
    *
    * One MIP is ~0.13 MeV, so we choose that.
    */
-  const double MIN_ENERGY = MIP_SI_ENERGY;
+  double min_energy_;
+
+  /// last arrival time of the sim hit to make [ns]
+  double max_time_;
+
+  /// first arrival time of the sim hit to make [ns]
+  double min_time_;
 
   /**
-   * The step between energies is calculated depending on the min, max energy
-   * and the total number of sim hits_ you desire.
-   * [MeV]
+   * The step between energies (times) is calculated depending on the min, max
+   * energy (time) and the number of steps to take to get there.
    */
-  const double ENERGY_STEP = (MAX_ENERGY - MIN_ENERGY) / NUM_TEST_SIM_HITS;
+  double energy_step_;
+  double time_step_;
 
   /// current energy of the sim hit we are on
-  double curr_energy_ = MIN_ENERGY;
+  double curr_energy_;
+
+  /// current arrival time of the sim hit we are on
+  double curr_time_;
 
  public:
   EcalFakeSimHits(const std::string& name, framework::Process& p)
       : framework::Producer(name, p) {}
   ~EcalFakeSimHits() {}
+
+  void configure(framework::config::Parameters& ps) final override {
+    min_energy_ = ps.get<double>("min_energy", MIP_SI_ENERGY);
+    max_energy_ = ps.get<double>("max_energy", 10000. * MEV_PER_FC);
+    // 299mm is about 1ns from target and in middle of ECal,
+    // so the default arrival time of 1ns is an in-time hit
+    min_time_ = ps.get<double>("min_time", 1.);
+    max_time_ = ps.get<double>("max_time", 1.);
+    // should match the number of events the process runs
+    int n_steps = ps.get<int>("n_steps", NUM_TEST_SIM_HITS);
+
+    energy_step_ = (max_energy_ - min_energy_) / n_steps;
+    time_step_ = (max_time_ - min_time_) / n_steps;
+
+    curr_energy_ = min_energy_;
+    curr_time_ = min_time_;
+  }
 
   void beforeNewRun(ldmx::RunHeader& header) final override {
     header.setDetectorName("ldmx-det-v15-8gev");
@@ -189,16 +215,16 @@ class EcalFakeSimHits : public framework::Producer {
 
     ldmx::EcalID id(0, 0, 0);
     pretend_sim_hits[0].setID(id.raw());
-    // incidentID, trackID, pdg ID, edep, time - 299mm is about 1ns from target
-    // and in middle of ECal
-    pretend_sim_hits[0].addContrib(-1, -1, 0, curr_energy_, 1.);
+    // incidentID, trackID, pdg ID, edep, time
+    pretend_sim_hits[0].addContrib(-1, -1, 0, curr_energy_, curr_time_);
     // sim position in middle of ECal
     pretend_sim_hits[0].setPosition(0., 0., 299.);
 
     // needs to be correct collection name
     REQUIRE_NOTHROW(event.add("EcalSimHits", pretend_sim_hits));
 
-    curr_energy_ += ENERGY_STEP;
+    curr_energy_ += energy_step_;
+    curr_time_ += time_step_;
 
     return;
   }
@@ -221,6 +247,7 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
   std::string ecal_digis_passname_;
   std::string ecal_rechits_passname_;
   std::string ecal_trig_digis_passname_;
+  bool check_trig_prim_;
 
  public:
   EcalCheckEnergyReconstruction(const std::string& name, framework::Process& p)
@@ -228,6 +255,9 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
   ~EcalCheckEnergyReconstruction() {}
 
   void configure(framework::config::Parameters& parameters) final override {
+    // the trigger primitives are an in-time, single-sample estimate,
+    // so they are not expected to see out-of-time hits
+    check_trig_prim_ = parameters.get<bool>("check_trig_prim", true);
     ecal_simhits_passname_ =
         parameters.get<std::string>("ecal_simhits_passname", "");
     ecal_digis_passname_ =
@@ -273,9 +303,18 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
       ntuple_.setVar<int>("DaqDigiADC", daq_digi.soi().adcT());
       ntuple_.setVar<int>("DaqDigiTOT", daq_digi.tot());
 
+      // arrival time of the hit at the chip, helpful when the failure
+      // depends on where in the readout window the pulse lands
+      INFO("sim hit arrival time = " << sim_hits.at(0).getContrib(0).time_
+                                     << " ns");
+      INFO("digi is " << (is_in_adc_mode ? "ADC" : "TOT") << " mode");
+
       const auto rec_hits = event.getCollection<ldmx::EcalHit>(
           "EcalRecHits", ecal_rechits_passname_);
       CHECK(rec_hits.size() == 1);
+      // a hit that was read out but not reconstructed has nothing left
+      // for us to check, keep going so that all events are checked
+      if (rec_hits.size() != 1) return;
 
       auto hit = rec_hits.at(0);
       ldmx::EcalID id(hit.getID());
@@ -286,6 +325,8 @@ class EcalCheckEnergyReconstruction : public framework::Analyzer {
       CHECK_THAT(daq_energy, IsCloseEnough(truth_energy, MAX_ENERGY_ERROR_DAQ,
                                            MAX_ENERGY_PERCENT_ERROR_DAQ));
       ntuple_.setVar<float>("RecEnergy", hit.getAmplitude());
+
+      if (not check_trig_prim_) return;
 
       const auto trig_digis{event.getObject<ldmx::HgcrocTrigDigiCollection>(
           "ecalTrigDigis", ecal_trig_digis_passname_)};
@@ -327,6 +368,27 @@ DECLARE_ANALYZER(ecal::test::EcalCheckEnergyReconstruction)
  */
 TEST_CASE("Ecal Digi Pipeline test", "[Ecal][functionality]") {
   const std::string config_file{"ecal_digi_pipeline_test_config.py"};
+  char** args{nullptr};
+
+  auto cfg{framework::config::run("ldmxcfg.Process.last_process", config_file,
+                                  args, 0)};
+  auto p{std::make_unique<framework::Process>(cfg)};
+  p->run();
+}
+
+/**
+ * Test for the Ecal Digi Pipeline with out-of-time hits
+ *
+ * A hit large enough to be read out in TOT mode has its TOT measurement
+ * reported in the sample where the pulse fell back below threshold, which is
+ * only the sample of interest if the hit is in time. This scans the arrival
+ * time of such a hit across the readout window and makes sure that, whenever
+ * the chip decides to read the hit out, we reconstruct the energy it deposited.
+ *
+ * @see https://github.com/LDMX-Software/ldmx-sw/issues/1944
+ */
+TEST_CASE("Ecal Digi Pipeline out-of-time test", "[Ecal][functionality]") {
+  const std::string config_file{"ecal_digi_out_of_time_test_config.py"};
   char** args{nullptr};
 
   auto cfg{framework::config::run("ldmxcfg.Process.last_process", config_file,

@@ -1,6 +1,11 @@
 
 
 #include "Hcal/HcalRawDecoder.h"
+
+#include <iomanip>
+
+#include "Hcal/HcalDetectorMap.h"
+
 // un comment for HcalRawDecoder-specific debug printouts to std::cout
 // #define DEBUG
 

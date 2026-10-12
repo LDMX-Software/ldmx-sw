@@ -1,6 +1,7 @@
 #include "Ecal/EcalHelper.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace ecal {
 

@@ -48,6 +48,11 @@ this_denv_workspace := if denv_workspace_in_ldmx_sw_parent == "true" {
 
 export APPTAINER_CACHEDIR := env("APPTAINER_CACHEDIR", this_denv_workspace / ".apptainer")
 
+# unpacked copies of Docker Hub images distributed via CVMFS
+
+cvmfs_unpacked := "/cvmfs/unpacked.cern.ch/registry.hub.docker.com"
+resolve_image := quote(just_executable()) + " --justfile " + quote(justfile()) + " resolve-image"
+
 _default:
     @just --list --justfile {{ justfile() }} --list-heading "{{ help_message }}"
 
@@ -76,11 +81,22 @@ check-validation archive:
     fi
     # unpack the logs so we can compare them
     tar xzf ${_archive} gold.log output.log
-    # use sed replace (by blank) to run the diff without the initial HH:MM:SS timestamp
-    if ! diff  -I '^#' <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' gold.log) <(sed -e 's/^[0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}/ /g' output.log) > log.diff; then
-      # do not error out (don't set rc here) if diff is non-zero, the timestamps printed out
-      # by some processors prevent a full text diff so we do the character
-      # count check below to look for big changes
+    # mask what changes on every run so only real differences are reported:
+    # HH:MM:SS and epoch prefixes, the PYTHIA date, the commit, per event timing
+    _mask_run_stamps() {
+      sed -E \
+        -e 's/^[0-9]{2}:[0-9]{2}:[0-9]{2}/ /' \
+        -e 's/^[0-9]{10} /EPOCH /' \
+        -e 's/Now is .* at [0-9:]+/Now is DATE/' \
+        -e 's/revision = [0-9a-f]+/revision = SHA/' \
+        -e '/[Tt]ime\/[Ee]vent/ s/[0-9]+(\.[0-9]+)?(e[-+]?[0-9]+)?/N/g' \
+        "$1"
+    }
+    _mask_run_stamps gold.log > gold.masked.log
+    _mask_run_stamps output.log > output.masked.log
+    if ! diff -I '^#' gold.masked.log output.masked.log > log.diff; then
+      # do not error out (don't set rc here) if diff is non-zero,
+      # the character count check below looks for big changes
       _n_diff_lines=$(grep -c '^[<>]' log.diff || echo 0)
       warn "Text Differences Between Logs (${_n_diff_lines} lines differ)"
       start_group diff gold.log output.log
@@ -89,19 +105,43 @@ check-validation archive:
     fi
     # check character count of logs, allowing up to 0.5% difference to avoid
     # false positives from minor run-to-run output variations
-    ngold=$(wc --chars gold.log | cut -f 1 -d ' ')
-    nnew=$(wc --chars output.log | cut -f 1 -d ' ')
+    ngold=$(wc --chars gold.masked.log | cut -f 1 -d ' ')
+    nnew=$(wc --chars output.masked.log | cut -f 1 -d ' ')
     if (( ngold != nnew )); then
       if (( ngold > 0 )); then
-        char_diff_pct=$(( (nnew - ngold) * 100 / ngold ))
-        char_abs_pct=${char_diff_pct#-}
-        if (( char_abs_pct > 0 )); then
+        # basis points (0.01%) since integer percent truncates to 0 below 1%
+        char_diff_bp=$(( (nnew - ngold) * 10000 / ngold ))
+        char_abs_bp=${char_diff_bp#-}
+        char_abs_pct=$(printf '%d.%02d' $(( char_abs_bp / 100 )) $(( char_abs_bp % 100 )))
+        if (( char_abs_bp > 50 )); then
           error "Log character count differs by ${char_abs_pct}%: gold=${ngold}, new=${nnew}"
           rc=1
         else
-          warn "Log character count differs by ${char_abs_pct}% (gold=${ngold}, new=${nnew}); within tolerance"
+          warn "Log character count differs by ${char_abs_pct}% (gold=${ngold}, new=${nnew}); within 0.5% tolerance"
         fi
       fi
+    fi
+    # count log messages per severity, catches e.g. a fatal appearing or going away
+    _count_levels() {
+      grep -oE '^\[ [^]]* \] -?[0-9]+ +(trace|debug|info|warn|error|fatal):' "$1" |
+        awk '{sub(":", "", $NF); n[$NF]++} END {for (l in n) print l, n[l]}'
+    }
+    declare -A _gold_n _new_n
+    while read -r l n; do _gold_n[$l]=$n; done < <(_count_levels gold.log)
+    while read -r l n; do _new_n[$l]=$n; done < <(_count_levels output.log)
+    _counts=""
+    _changed=""
+    for l in fatal error warn info debug trace; do
+      g=${_gold_n[$l]:-0}
+      n=${_new_n[$l]:-0}
+      _counts+=" ${l}=${g}/${n}"
+      if (( g != n )); then
+        _changed+=" ${l} ${g} -> ${n};"
+      fi
+    done
+    echo "Log message counts (gold/new):${_counts}"
+    if [[ -n "${_changed}" ]]; then
+      warn "Log message counts changed:${_changed%;}"
     fi
     # compare total wall-clock run time if gold.time is available in the archive
     # gold.time has one line per sample: "<sample> <seconds>"
@@ -283,12 +323,12 @@ init:
       if denv check --workspace --quiet; then
         echo "\033[32mWorkspace already initialized.\033[0m"
       else
-        denv init --clean-env --name ldmx ldmx/dev:latest
+        denv init --clean-env --name ldmx "$({{ resolve_image }} ldmx/dev:latest)"
       fi
     else
       # denv v1.1.0 and later has updated denv init to allow us
       # to avoid overwriting quietly
-      denv init --clean-env --no-over --no-mkdir --name ldmx ldmx/dev:latest
+      denv init --clean-env --no-over --no-mkdir --name ldmx "$({{ resolve_image }} ldmx/dev:latest)"
     fi
     denv config print
 
@@ -370,6 +410,41 @@ tidy-cpp-all *args=default_tidy_args: (_clang-tool-impl "git ls-files | grep -v 
 
 # tidy C++ files that are different relative to trunk
 tidy-cpp-diff *args=default_tidy_args: (_clang-tool-impl "git diff --name-only --diff-filter=d origin/trunk | grep -v HLS_Arbitrary_Precision_Types" "clang-tidy" args)
+
+# skip files not in the build, the tool needs their compile commands
+_include_cleaner_skip := 'Tracking/EigenStepper\.h$|HLS_Arbitrary_Precision_Types|^Trigger/Algo_HLS/|^EventDisplay/|^Framework/test/standalone/|LinkDef\.h$'
+
+# only removals, insertions tend to name internal Boost/ROOT headers
+default_include_cleaner_args := '--print=changes'
+
+# check all C++ files for unused includes, needs 'just configure'
+include-cleaner-all *args=default_include_cleaner_args: (_include-cleaner-impl "git ls-files" args)
+
+# check C++ files that are different relative to trunk for unused includes (--edit removes them, review before committing)
+include-cleaner-diff *args=default_include_cleaner_args: (_include-cleaner-impl "git diff --name-only --diff-filter=d origin/trunk" args)
+
+[private]
+_include-cleaner-impl file_list_cmd *args:
+    #!/usr/bin/env sh
+    set -eu
+    if [ ! -f build/compile_commands.json ]; then
+      echo "build/compile_commands.json not found, run 'just configure' first"
+      exit 1
+    fi
+    # inside the workspace so denv can see it
+    cpp_list="$(mktemp -p build)"
+    trap 'rm -f "${cpp_list}"' EXIT
+    {{ file_list_cmd }} | grep -E '\.(h|cxx)$' | grep -v -E '{{ _include_cleaner_skip }}' > "${cpp_list}" || true
+    if [ ! -s "${cpp_list}" ]; then
+      echo "no C++ files (extensions .h and .cxx) to check"
+      exit 0
+    fi
+    # edits change headers other jobs are parsing, so edit one file at a time
+    jobs="100%"
+    case "{{ args }}" in *--edit*) jobs=1 ;; esac
+    # one file per call since --print only takes one, -w hides compiler warnings
+    denv parallel --will-cite --tag -j "${jobs}" --arg-file "${cpp_list}" \
+      clang-include-cleaner -p build --disable-insert --extra-arg=-w {{ args }} {}
 
 # shellcheck doesn't have a "apply-formatting" option
 # because it really is more of a tidier (its changes could affect code meaning)
@@ -459,13 +534,61 @@ g4-vis-x gdml_file macro_file="":
     # SSH; needs indirect GLX enabled on your LOCAL X server -- XQuartz/Xorg +iglx).
     APPTAINERENV_LIBGL_ALWAYS_INDIRECT=1 denv g4-vis "{{ gdml_file }}" "{{ macro_file }}"
 
+# print the CVMFS unpacked path of IMAGE if apptainer can use it, IMAGE otherwise
+[private]
+resolve-image IMAGE:
+    #!/usr/bin/env sh
+    # set LDMX_NO_CVMFS to always use the registry image
+    image="{{ IMAGE }}"
+    runner="${DENV_RUNNER:-}"
+    if [ -z "${runner}" ]; then
+      # same order as denv
+      for r in apptainer singularity podman docker; do
+        if command -v "${r}" > /dev/null 2>&1; then
+          runner="${r}"
+          break
+        fi
+      done
+    fi
+    unpacked=""
+    case "${runner}" in
+      apptainer|singularity) ;;
+      *) unpacked="skip" ;;
+    esac
+    # only plain Docker Hub names, not paths, URLs, digests, or other registries
+    case "${image}" in
+      */*/*|*@*|*://*|/*|.*|*.*/*|*:*/*) unpacked="skip" ;;
+      */*) ;;
+      *) unpacked="skip" ;;
+    esac
+    [ -n "${LDMX_NO_CVMFS:-}" ] && unpacked="skip"
+    if [ -z "${unpacked}" ]; then
+      case "${image}" in
+        *:*) unpacked="{{ cvmfs_unpacked }}/${image}" ;;
+        *) unpacked="{{ cvmfs_unpacked }}/${image}:latest" ;;
+      esac
+      if [ -d "${unpacked}/.singularity.d" ]; then
+        printf '\033[32mUsing %s from CVMFS.\033[0m\n' "${image}" >&2
+        image="${unpacked}"
+      fi
+    fi
+    printf '%s\n' "${image}"
+
 # change which image is used for the denv
 use IMAGE:
-    denv config image {{ IMAGE }}
+    denv config image "$({{ resolve_image }} {{ IMAGE }})"
 
 # make sure the image is pulled down
 pull IMAGE:
-    denv config image {{ IMAGE }} && denv config image pull
+    #!/usr/bin/env sh
+    set -eu
+    image="$({{ resolve_image }} {{ IMAGE }})"
+    denv config image "${image}"
+    # CVMFS keeps its images current
+    case "${image}" in
+      {{ cvmfs_unpacked }}/*) ;;
+      *) denv config image pull ;;
+    esac
 
 # mount a directory into the denv
 mount DIR:

@@ -1,5 +1,6 @@
 #include "Tracking/Reco/StripFitProcessor.h"
 
+#include "Tracking/Digitization/SiStripConstants.h"
 #include "Tracking/Event/FittedSiStripHit.h"
 #include "Tracking/Event/SimSiStripHit.h"
 
@@ -75,7 +76,8 @@ void StripFitProcessor::produce(framework::Event& event) {
         raw.getLayerID(), raw.getStripID(),
         static_cast<float>(result.amplitude), static_cast<float>(result.t0),
         static_cast<float>(result.chi2), result.ndf, raw.getTrackID(),
-        raw.getPdgID(), raw.getSimHitID(), raw.getEdep());
+        raw.getPdgID(), raw.getSimHitID(), raw.getEdep(),
+        tracking::digitization::NOISE_SIGMA_ADC);
 
     ldmx_log(trace) << "Fitted: layer=" << raw.getLayerID()
                     << " strip=" << raw.getStripID()

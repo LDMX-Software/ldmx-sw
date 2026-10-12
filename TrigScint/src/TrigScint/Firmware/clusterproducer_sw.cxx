@@ -1,7 +1,5 @@
-#include <stdio.h>
 
 #include <array>
-#include <iostream>
 
 #include "TrigScint/Firmware/clusterproducer.h"
 #include "TrigScint/Firmware/objdef.h"

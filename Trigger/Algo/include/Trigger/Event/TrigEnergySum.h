@@ -2,10 +2,10 @@
 #define TRIGGER_EVENT_TRIGENERGYSUM_H_
 
 // ldmx-sw
+#include <Rtypes.h>
 #include <stdint.h>  //uint32_t
 
 // ROOT
-#include "TObject.h"  //For ClassDef
 
 namespace trigger {
 

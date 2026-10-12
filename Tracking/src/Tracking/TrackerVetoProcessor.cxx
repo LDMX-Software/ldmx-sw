@@ -6,6 +6,9 @@
 
 #include "Tracking/TrackerVetoProcessor.h"
 
+#include "Tracking/Event/Track.h"
+#include "Tracking/Event/TrackerVetoResult.h"
+
 namespace tracking {
 
 void TrackerVetoProcessor::configure(framework::config::Parameters& ps) {

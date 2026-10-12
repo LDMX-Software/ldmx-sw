@@ -1,15 +1,11 @@
 #ifndef DQM_NUCLEARDQM_H
 #define DQM_NUCLEARDQM_H
 
-#include <Math/Vector3D.h>
-
-#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
 #include "SimCore/Event/SimParticle.h"
 

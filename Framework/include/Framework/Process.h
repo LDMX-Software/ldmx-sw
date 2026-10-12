@@ -10,14 +10,11 @@
 // LDMX
 #include "Framework/Conditions.h"
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 #include "Framework/Performance/Tracker.h"
 #include "Framework/RunHeader.h"
 #include "Framework/StorageControl.h"
 
 // STL
-#include <csignal>
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -133,9 +130,13 @@ class Process {
    * Run through the processors and let them know
    * that we are starting a new run.
    *
+   * The header is written to the output file once the producers have
+   * filled it, so a killed job still leaves it behind.
+   *
    * @param[in] header RunHeader for the new run
+   * @param[in] out output file to write the header to, if any
    */
-  void newRun(ldmx::RunHeader& header);
+  void newRun(ldmx::RunHeader& header, EventFile* out);
 
   /**
    * File is being opened
@@ -175,6 +176,14 @@ class Process {
    * allow the Process to skip input files that are corrupted
    */
   bool skip_corrupted_input_files_;
+
+  /**
+   * allow the Process to read input files whose runs never finished
+   *
+   * For experts. Such a file is missing events off the end of a run, so the
+   * sample it gives is biased.
+   */
+  bool allow_incomplete_input_files_;
 
   /** Storage controller */
   StorageControl storage_controller_;

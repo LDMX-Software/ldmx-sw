@@ -1,12 +1,8 @@
 #ifndef SIMCORE_PHOTONUCLEAR_MODEL_H
 #define SIMCORE_PHOTONUCLEAR_MODEL_H
-#include <G4CrossSectionDataSetRegistry.hh>
 #include <G4HadronInelasticProcess.hh>
-#include <G4HadronicInteraction.hh>
-#include <G4PhotoNuclearCrossSection.hh>
 #include <G4ProcessManager.hh>
 #include <string>
-#include <utility>
 
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Factory.h"

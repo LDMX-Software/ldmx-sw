@@ -1,12 +1,9 @@
 #ifndef RESIMVERIFIER_H
 #define RESIMVERIFIER_H
 
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Hcal/Event/HcalHit.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace dqm {

@@ -11,7 +11,6 @@
 /*~~~~~~~~~~~*/
 /*   Event   */
 /*~~~~~~~~~~~*/
-#include "Framework/Exception/Exception.h"
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -25,7 +24,6 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <map>
 
 namespace ldmx {
 class EventHeader;

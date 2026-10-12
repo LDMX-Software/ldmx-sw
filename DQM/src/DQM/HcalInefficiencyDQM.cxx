@@ -1,6 +1,10 @@
 
 #include "DQM/HcalInefficiencyDQM.h"
 
+#include <vector>
+
+#include "SimCore/Event/SimCalorimeterHit.h"
+
 namespace dqm {
 
 void HcalInefficiencyAnalyzer::configure(

@@ -4,12 +4,10 @@
 //----------//
 //   STL    //
 //----------//
-#include <algorithm>
 
 //----------//
 //   ROOT   //
 //----------//
-#include <Math/Vector3D.h>
 
 /*~~~~~~~~~~~~~~~*/
 /*   Framework   */
@@ -17,7 +15,6 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Tools/AnalysisUtils.h"
 
 namespace dqm {
 

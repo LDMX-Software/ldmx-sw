@@ -1,5 +1,8 @@
 #include "DQM/DarkBremInteraction.h"
 
+#include "Math/Vector3D.h"  // IWYU pragma: keep
+#include "SimCore/Event/SimParticle.h"
+
 namespace dqm {
 
 void DarkBremInteraction::configure(framework::config::Parameters& parameters) {

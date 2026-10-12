@@ -1,15 +1,11 @@
 #pragma once
 
-#include <iostream>
-
 #include "Acts/Definitions/Algebra.hpp"
 #include "Acts/Geometry/GeometryContext.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
-#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
 #include "Acts/Surfaces/Surface.hpp"
 #include "Acts/Surfaces/SurfacePlacementBase.hpp"
 #include "Framework/Exception/Exception.h"
-#include "Tracking/geo/GeoUtils.h"
 
 // This class is necessary in order to apply any transformation change passed
 // via the geometry context to the final sensitive element.

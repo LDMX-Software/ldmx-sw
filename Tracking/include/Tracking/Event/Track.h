@@ -4,6 +4,8 @@
 //----------------------//
 //   C++ Standard Lib   //
 //----------------------//
+#include <Rtypes.h>
+
 #include <iostream>
 #include <optional>
 #include <vector>
@@ -11,7 +13,6 @@
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
 
 // --- ACTS --- //
 // #include "Acts/Definitions/TrackParametrization.hpp"

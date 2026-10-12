@@ -10,11 +10,6 @@
 #ifndef BIASING_TARGETDARKBREMFILTER_H_
 #define BIASING_TARGETDARKBREMFILTER_H_
 
-//----------------//
-//   C++ StdLib   //
-//----------------//
-#include <algorithm>
-
 //------------//
 //   Geant4   //
 //------------//
@@ -31,9 +26,6 @@
 /*   Core   */
 /*~~~~~~~~~~*/
 #include "Framework/Logger.h"
-#include "G4DarkBreM/G4APrime.h"  //checking if particles match A'
-#include "G4Electron.hh"          //to check if track is electron
-#include "SimCore/G4User/UserTrackInformation.h"  //make sure A' is saved
 
 namespace biasing {
 

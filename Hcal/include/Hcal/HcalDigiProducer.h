@@ -6,22 +6,13 @@
 //----------------//
 #include <memory>  //for smart pointers
 #include <random>  //for random num generators
-#include <set>     //for tracking used detector IDs
 
 //----------//
 //   LDMX   //
 //----------//
 #include <TRandom2.h>
 
-#include "DetDescr/HcalDigiID.h"
-#include "DetDescr/HcalGeometry.h"
-#include "DetDescr/HcalID.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/RandomNumberSeedService.h"
-#include "Recon/Event/EventConstants.h"
-#include "Recon/Event/HgcrocDigiCollection.h"
-#include "Recon/Event/HgcrocPulseTruth.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
 #include "Tools/HgcrocEmulator.h"
 #include "Tools/NoiseGenerator.h"
 

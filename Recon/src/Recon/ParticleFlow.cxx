@@ -1,6 +1,9 @@
 #include "Recon/ParticleFlow.h"
 
+#include <cmath>
 #include <vector>
+
+#include "Ecal/Event/EcalCluster.h"
 
 namespace recon {
 

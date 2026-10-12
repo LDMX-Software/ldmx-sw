@@ -8,9 +8,9 @@
 #define TRACKER_EVENT_TRACKERVETORESULTS_H_
 
 // ROOT
-#include <iostream>
+#include <Rtypes.h>
 
-#include "TObject.h"  //ClassDef
+#include <iostream>
 
 namespace ldmx {
 

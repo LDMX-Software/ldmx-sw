@@ -5,13 +5,13 @@
 //----------------------//
 //   C++ Standard Lib   //
 //----------------------//
-#include <iostream>
+#include <Rtypes.h>
+
 #include <vector>
 
 //----------//
 //   ROOT   //
 //----------//
-#include "TObject.h"
 
 namespace ldmx {
 

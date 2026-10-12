@@ -8,16 +8,9 @@
 #define PARTICLEFLOW_H
 
 // LDMX Framework
-#include "Ecal/Event/EcalCluster.h"
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"  //Needed to declare processor
-#include "Hcal/Event/HcalCluster.h"
-#include "Recon/Event/CaloCluster.h"
-#include "Recon/Event/PFCandidate.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "TGraph.h"
 
 namespace recon {
 

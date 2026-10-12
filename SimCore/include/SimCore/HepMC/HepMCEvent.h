@@ -8,7 +8,6 @@
 #define SIMCORE_HEPMCEVENT_H_
 
 // LDMX
-#include "Framework/Exception/Exception.h"
 #include "SimCore/HepMC/HepMCParticle.h"
 
 // HepMC3
@@ -16,10 +15,8 @@
 #include "HepMC3/GenVertex.h"
 
 // Geant4
-#include "globals.hh"
 
 // STL
-#include <iostream>
 #include <memory>
 #include <vector>
 

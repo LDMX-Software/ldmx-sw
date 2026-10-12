@@ -12,9 +12,6 @@
 //   LDMX   //
 //----------//
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimCalorimeterHit.h"
-#include "SimCore/Event/SimParticle.h"
-#include "Tools/AnalysisUtils.h"
 
 namespace recon {
 

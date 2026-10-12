@@ -1,21 +1,12 @@
 #ifndef SIMCORE_KAON_PHYSICS_H
 #define SIMCORE_KAON_PHYSICS_H
 
-#include <G4DecayTable.hh>
-#include <G4KaonMinus.hh>
-#include <G4KaonPlus.hh>
-#include <G4KaonZeroLong.hh>
-#include <G4KaonZeroShort.hh>
 #include <G4ParticleDefinition.hh>
 #include <G4VDecayChannel.hh>
 #include <G4VPhysicsConstructor.hh>
-#include <iomanip>
-#include <iostream>
-#include <numeric>
 #include <vector>
 
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 #include "Framework/Logger.h"
 
 namespace simcore {

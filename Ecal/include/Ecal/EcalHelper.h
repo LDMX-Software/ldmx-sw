@@ -11,11 +11,8 @@
 // LDMX
 #include "Tracking/Event/Track.h"
 
-// C++
-#include <cmath>
-
 // ROOT
-#include "Math/Vector3D.h"
+#include "Math/Vector3D.h"  // IWYU pragma: keep
 
 namespace ecal {
 

@@ -1,5 +1,9 @@
 #include "Trigger/HcalTPSelector.h"
 
+#include "DetDescr/HcalTriggerID.h"
+#include "Recon/Event/CaloTrigPrim.h"
+#include "Trigger/Event/TrigCaloHit.h"
+
 namespace trigger {
 
 void HcalTPSelector::configure(framework::config::Parameters& ps) {

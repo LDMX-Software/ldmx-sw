@@ -9,16 +9,11 @@
 #pragma once
 
 #include <algorithm>
-#include <boost/container/flat_map.hpp>
 #include <boost/container/flat_set.hpp>
 #include <cassert>
-#include <cstddef>
-#include <iostream>
 #include <utility>
 
-#include "Acts/EventData/SourceLink.hpp"
 #include "Acts/Geometry/GeometryIdentifier.hpp"
-#include "Acts/Surfaces/Surface.hpp"
 #include "Tracking/Sim/GroupBy.h"
 #include "Tracking/Sim/Range.h"
 

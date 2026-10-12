@@ -5,7 +5,9 @@
 
 #include "DQM/EcalTrackAnalyzer.h"
 
-#include "Ecal/Event/EcalHit.h"
+#include <cmath>
+
+#include "Tracking/Event/Track.h"
 
 namespace dqm {
 

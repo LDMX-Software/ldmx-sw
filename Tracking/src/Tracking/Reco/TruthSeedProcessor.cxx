@@ -1,6 +1,11 @@
 #include "Tracking/Reco/TruthSeedProcessor.h"
 
-#include "Tracking/Sim/GeometryContainers.h"
+#include "Acts/Definitions/Algebra.hpp"
+#include "Acts/Definitions/TrackParametrization.hpp"
+#include "Acts/EventData/BoundTrackParameters.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Tracking/Sim/BFieldXYZUtils.h"
+#include "Tracking/Sim/TrackingUtils.h"
 
 namespace tracking::reco {
 

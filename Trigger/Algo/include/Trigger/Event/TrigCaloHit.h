@@ -1,8 +1,8 @@
 #ifndef TRIGGER_EVENT_TRIGCALOHIT_H
 #define TRIGGER_EVENT_TRIGCALOHIT_H
+#include <Rtypes.h>
 
 // ROOT
-#include "TObject.h"  //For ClassDef
 
 namespace trigger {
 

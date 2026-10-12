@@ -6,11 +6,8 @@
 /*~~~~~~~~~~~~~~~~*/
 #include <any>
 #include <boost/core/demangle.hpp>
-#include <iostream>
-#include <limits>
 #include <map>
 #include <string>
-#include <type_traits>
 #include <typeinfo>
 #include <vector>
 

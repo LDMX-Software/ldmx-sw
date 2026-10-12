@@ -1,9 +1,12 @@
 #ifndef DISCRETEINPUTS_IO
 #define DISCRETEINPUTS_IO
 
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <iostream>
 #include <vector>
 
-#include "../../../Algo_HLS/Ecal/src/data.h"
 #include "DiscreteInputs.h"
 
 namespace trigger {

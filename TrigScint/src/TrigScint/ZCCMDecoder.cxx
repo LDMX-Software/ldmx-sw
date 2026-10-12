@@ -1,8 +1,10 @@
 #include "TrigScint/ZCCMDecoder.h"
 
-#include <TMath.h>
-
 #include <bitset>
+#include <iostream>
+
+#include "TrigScint/Event/QIEStream.h"
+#include "TrigScint/Event/TrigScintQIEDigis.h"
 
 namespace trigscint {
 

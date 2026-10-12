@@ -1,4 +1,6 @@
 #include "DQM/ReSimVerifier.h"
+
+#include "SimCore/Event/SimParticle.h"
 namespace dqm {
 
 void ReSimVerifier::configure(framework::config::Parameters& parameters) {

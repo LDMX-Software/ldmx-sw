@@ -34,11 +34,11 @@ setup_library(module Framework
                ROOT::Hist
                ROOT::TreePlayer
                Boost::log
-               Boost::atomic
-               Boost::regex
                Framework::Exception
                Framework::Configure
                Framework::Performance
+  private_dependencies Boost::atomic
+                       Boost::regex
   linkdef include/Framework/LinkDef.h)
 target_include_directories(Framework PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"

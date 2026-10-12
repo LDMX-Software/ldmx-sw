@@ -3,11 +3,8 @@
 //--- Framework ---//
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "Framework/RandomNumberSeedService.h"
 
 //--- C++ ---//
-#include <memory>
-#include <random>
 
 //--- LDMX ---//
 #include "Tracking/Reco/TrackingGeometryUser.h"
@@ -15,27 +12,19 @@
 //--- ACTS ---//
 
 // Utils and Definitions
-#include "Acts/Definitions/Common.hpp"
-#include "Acts/Utilities/Logger.hpp"
 
 // geometry
-#include "Acts/Geometry/GeometryContext.hpp"
 
 // geometry
-#include <Acts/Geometry/TrackingGeometry.hpp>
-
-#include "Acts/Geometry/GeometryIdentifier.hpp"
 
 //--- Tracking ---//
+#include <boost/container/flat_map.hpp>
+#include <boost/container/flat_set.hpp>
+
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/Track.h"
-#include "Tracking/Reco/TrackExtrapolatorTool.h"
-#include "Tracking/Sim/IndexSourceLink.h"
-#include "Tracking/Sim/MeasurementCalibrator.h"
-#include "Tracking/Sim/TrackingUtils.h"
 
 //--- Interpolated magnetic field ---//
-#include "Tracking/Sim/BFieldXYZUtils.h"
 
 namespace tracking {
 namespace reco {

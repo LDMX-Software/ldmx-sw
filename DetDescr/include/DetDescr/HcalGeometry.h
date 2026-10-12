@@ -10,10 +10,9 @@
 #include "DetDescr/HcalID.h"
 #include "Framework/ConditionsObject.h"
 #include "Framework/Configure/Parameters.h"
-#include "Framework/Exception/Exception.h"
 
 // ROOT
-#include "Math/Vector3D.h"
+#include "Math/Vector3D.h"  // IWYU pragma: keep
 
 // STL
 #include <map>

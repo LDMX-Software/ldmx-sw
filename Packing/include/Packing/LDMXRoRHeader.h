@@ -4,7 +4,6 @@
 
 #include <cstdint>
 #include <unordered_map>
-#include <vector>
 
 #include "Packing/Utility/Reader.h"
 
@@ -61,6 +60,23 @@ class LDMXRoRHeader {
    * -1) if the name is not found in our maps above.
    */
   static std::tuple<int, int> subsystem(const std::string& name);
+
+  /**
+   * Get the subsystem name from subsystem and contributor IDs
+   *
+   * Uses both the subsystem ID (compiled into firmware) and contributor ID
+   * (configured into firmware) to uniquely identify the subsystem.
+   * This is necessary because some subsystems share the same subsystem ID
+   * but have different contributor IDs (e.g., ecal and hcal both use
+   * subsystem ID 5 but have different contributor IDs).
+   *
+   * @param[in] subsystem_id the subsystem ID from the RoR header
+   * @param[in] contributor_id the contributor ID from the RoR header
+   * @return subsystem name string (lowercase: 'tdaq', 'ts', 'tracker', 'ecal',
+   * 'hcal') or a generic name if the combination is not recognized
+   */
+  static std::string getSubsystemName(uint8_t subsystem_id,
+                                      uint8_t contributor_id);
 
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);

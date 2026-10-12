@@ -2,6 +2,7 @@
 #include "Packing/RawDataFile/File.h"
 
 #include "DetDescr/DetectorID.h"
+#include "Packing/RawDataFile/EventPacket.h"
 #include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Mask.h"
 

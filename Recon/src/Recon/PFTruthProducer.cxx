@@ -1,5 +1,7 @@
 #include "Recon/PFTruthProducer.h"
 
+#include <cmath>
+
 #include "SimCore/Event/SimParticle.h"
 #include "SimCore/Event/SimTrackerHit.h"
 

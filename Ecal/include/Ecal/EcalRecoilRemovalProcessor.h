@@ -10,23 +10,13 @@
 
 // LDMX
 #include "DetDescr/EcalGeometry.h"
-#include "DetDescr/EcalID.h"
-#include "DetDescr/SimSpecialID.h"
-#include "Ecal/EcalHelper.h"
-#include "Ecal/Event/EcalHit.h"
 #include "Ecal/Event/EcalTrajectoryInfo.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
-#include "SimCore/Event/SimParticle.h"
-#include "SimCore/Event/SimTrackerHit.h"
-#include "Tools/AnalysisUtils.h"
 
 // C++
 #include <stdlib.h>
 
-#include <chrono>
-#include <fstream>
-#include <iomanip>
 #include <map>
 
 namespace ecal {

@@ -1,8 +1,6 @@
 #include "Ecal/EcalRawDecoder.h"
 
 #include <bitset>
-#include <iomanip>
-#include <optional>
 
 #include "DetDescr/EcalElectronicsID.h"
 #include "DetDescr/EcalID.h"

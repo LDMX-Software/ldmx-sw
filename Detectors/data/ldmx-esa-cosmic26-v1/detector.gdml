@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gdml [
+<!ENTITY constants SYSTEM "constants.gdml">
+<!ENTITY materials SYSTEM "shared_gdml_files/materials.gdml">
+<!ENTITY visattributes SYSTEM "shared_gdml_files/visattributes.gdml">
+]>
+
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
+
+  <define> 
+    &constants; 
+
+    <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/> 
+
+  </define>
+
+  <materials>
+    &materials;
+  </materials>
+
+  <solids>
+    <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+  </solids>
+
+    
+  <structure>
+    <volume name="World">
+      <materialref ref="Air"/>
+      <solidref ref="world_box"/>
+      <physvol copynumber="1"> 
+        <file name="hcal.gdml"/> 
+        <positionref ref="hadron_calorimeter_pos"/> 
+      </physvol>
+      <auxiliary auxtype="DetElem" auxvalue="Top"/>
+    </volume>
+  </structure>
+
+  <userinfo>
+    <!-- detector version -->
+    <auxiliary auxtype="DetectorVersion" auxvalue="1">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa-cosmic26-v1"/>
+      <auxiliary auxtype="Author" auxvalue="Wilde Hedin"/>
+      <auxiliary auxtype="Description" auxvalue="The HCal teststand geometry that will be used to measure cosmic muons at SLAC."/>
+    </auxiliary>
+
+    <!-- define regions -->
+    <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>
+
+    <auxiliary auxtype="ColorMode" auxvalue="Material"/>
+    &visattributes;
+    
+  </userinfo>
+
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
+  </setup>
+</gdml>
+

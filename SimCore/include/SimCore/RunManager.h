@@ -10,8 +10,6 @@
 /*~~~~~~~~~~~~~~~~*/
 /*   C++ StdLib   */
 /*~~~~~~~~~~~~~~~~*/
-#include <any>
-#include <map>
 #include <string>
 
 //------------//
@@ -24,8 +22,7 @@
 /*   Framework   */
 /*~~~~~~~~~~~~~~~*/
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
-#include "SimCore/KaonPhysics.h"
+#include "Framework/Logger.h"
 
 namespace simcore {
 

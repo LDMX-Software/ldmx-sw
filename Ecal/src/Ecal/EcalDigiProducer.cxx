@@ -8,8 +8,13 @@
 
 #include "Ecal/EcalDigiProducer.h"
 
+#include <set>  //for tracking used detector IDs
+
 #include "DetDescr/EcalGeometry.h"
+#include "DetDescr/EcalID.h"
 #include "Framework/RandomNumberSeedService.h"
+#include "Recon/Event/HgcrocDigiCollection.h"
+#include "SimCore/Event/SimCalorimeterHit.h"
 
 namespace ecal {
 

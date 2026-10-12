@@ -1,10 +1,8 @@
 #include "TrigScint/SimQIE.h"
 
-#include <exception>
-#include <iostream>
+#include <cmath>
 
 #include "Framework/Exception/Exception.h"
-#include "TMath.h"
 
 namespace trigscint {
 

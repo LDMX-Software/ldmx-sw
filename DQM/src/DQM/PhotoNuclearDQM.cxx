@@ -1,6 +1,8 @@
 
 #include "DQM/PhotoNuclearDQM.h"
 
+#include "SimCore/Event/PhotonuclearInteraction.h"
+
 namespace dqm {
 
 PhotoNuclearDQM::PhotoNuclearDQM(const std::string& name,

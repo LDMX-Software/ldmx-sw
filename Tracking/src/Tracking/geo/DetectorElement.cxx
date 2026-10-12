@@ -1,6 +1,10 @@
 #include "Tracking/geo/DetectorElement.h"
 
+#include <iostream>
+
+#include "Acts/Material/HomogeneousSurfaceMaterial.hpp"
 #include "Framework/Exception/Exception.h"
+#include "Tracking/geo/GeoUtils.h"
 #include "Tracking/geo/GeometryContext.h"
 
 namespace tracking::geo {

@@ -2,7 +2,6 @@
 #define SIMCORE_XSECBIASINGOPERATOR_H_
 
 #include "Framework/Configure/Parameters.h"
-#include "Framework/EventProcessor.h"
 #include "Framework/Factory.h"
 #include "Framework/Logger.h"
 #include "Framework/RunHeader.h"
@@ -13,14 +12,8 @@
 #include "G4BOptnChangeCrossSection.hh"
 #include "G4BiasingProcessInterface.hh"
 #include "G4BiasingProcessSharedData.hh"
-#include "G4Electron.hh"
-#include "G4Gamma.hh"
-#include "G4KaonZeroLong.hh"
-#include "G4Neutron.hh"
 #include "G4ParticleDefinition.hh"
-#include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
-#include "G4RunManager.hh"
 #include "G4Track.hh"
 #include "G4VBiasingOperator.hh"
 

@@ -1,6 +1,5 @@
 #include "Tracking/dqm/TrackerDigiDQM.h"
 
-#include "SimCore/Event/SimParticle.h"
 #include "Tracking/Event/Measurement.h"
 
 namespace tracking::dqm {
