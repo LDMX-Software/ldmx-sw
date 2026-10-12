@@ -43,6 +43,9 @@ class PFTrackProducer : public framework::Producer {
   double min_electron_momentum_z_{};
   // maximum trackID allowed for beam electron selection
   int max_electron_track_id_{};
+  // decode track IDs that were bitwise-encoded by OverlayProducer
+  // (version tag in bits 27-31, event index in bits 24-26)
+  bool decode_overlay_track_ids_{};
 };
 }  // namespace recon
 

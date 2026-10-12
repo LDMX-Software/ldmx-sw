@@ -1,5 +1,6 @@
 #include "Recon/PileupFinder.h"
 
+#include <map>
 #include <vector>
 
 namespace recon {
@@ -51,10 +52,19 @@ void PileupFinder::produce(framework::Event& event) {
   std::vector<ldmx::EcalHit> output_hits;
   std::vector<unsigned int> pileup_hit_i_ds;
 
-  // this needs to be a two-step procedure: loop over all clusters deemed to be
-  // pileup to find all their associated hits
-  //  then loop over that list to make a collection of output hits that doesn't
-  //  contain them
+  // debug: PID distribution of all PF candidates
+  if (pf_cands.size() > 0) {
+    std::map<int, int> pid_counts;
+    for (const auto& pf_cand : pf_cands) pid_counts[pf_cand.getPID()]++;
+    std::string pid_str;
+    for (const auto& [pid, count] : pid_counts) {
+      pid_str +=
+          " PID " + std::to_string(pid) + ": " + std::to_string(count) + ",";
+    }
+    ldmx_log(debug) << "PF candidate PIDs (" << pf_cands.size()
+                    << " total):" << pid_str;
+  }
+
   for (const auto& pf_cand : pf_cands) {
     if (pf_cand.getPID() == 3 || pf_cand.getPID() == 7) {
       // we have both ecal cluster and track
@@ -63,7 +73,12 @@ void PileupFinder::produce(framework::Event& event) {
                   mom_vec[2] * mom_vec[2];
       mom = sqrt(mom);
 
-      if (mom < min_mom_) continue;
+      if (mom < min_mom_) {
+        ldmx_log(debug) << "PID " << pf_cand.getPID()
+                        << " candidate rejected: momentum " << mom
+                        << " < min_momentum " << min_mom_ << " MeV.";
+        continue;
+      }
       ldmx_log(trace) << "Got pileup candidate with PID = " << pf_cand.getPID()
                       << " and momentum = " << mom << " MeV.";
 
@@ -92,6 +107,11 @@ void PileupFinder::produce(framework::Event& event) {
     }
   }
   event.add(output_rec_hit_coll_name_, output_hits);
+  ldmx_log(debug) << "Pileup finding summary: " << ecal_hits.size()
+                  << " input rec hits, " << pileup_hit_i_ds.size()
+                  << " pileup hit IDs collected, " << output_hits.size()
+                  << " hits kept, " << (ecal_hits.size() - output_hits.size())
+                  << " hits removed.";
 }
 void PileupFinder::onProcessEnd() {
   ldmx_log(debug) << "Process ends!";

@@ -53,6 +53,9 @@ class PFTrackProducer(Processor):
     do_electron_tracking: bool = False
     min_electron_momentum_z: float = 2500.0
     max_electron_track_id: int = 30
+    # strip the OverlayProducer bitwise encoding (version/event-index bits)
+    # from track IDs before applying the trackID-based selection cuts
+    decode_overlay_track_ids: bool = False
 
 
 @processor("recon::ParticleFlow", "Recon")
