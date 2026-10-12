@@ -5,7 +5,7 @@
 
 namespace recon {
 
-void PileupFinder::configure(framework::config::Parameters& ps) {
+void PileupFinder::configure(framework::config::Parameters &ps) {
   // I/O
   rec_hit_coll_name_ = ps.getParameter<std::string>("rec_hit_coll_name");
   rec_hit_pass_name_ = ps.getParameter<std::string>("rec_hit_pass_name");
@@ -20,8 +20,8 @@ void PileupFinder::configure(framework::config::Parameters& ps) {
 }
 
 // get pileup candidates from PFlow and make a cleaned-up hit collection
-void PileupFinder::produce(framework::Event& event) {
-  if (!event.exists(rec_hit_coll_name_, rec_hit_pass_name_)) {  // ecal rechits
+void PileupFinder::produce(framework::Event &event) {
+  if (!event.exists(rec_hit_coll_name_, rec_hit_pass_name_)) { // ecal rechits
     ldmx_log(error) << "Unable to find (one) collection named "
                     << rec_hit_coll_name_ << "_" << rec_hit_pass_name_;
     return;
@@ -37,13 +37,13 @@ void PileupFinder::produce(framework::Event& event) {
     return;
   }
 
-  const auto& ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
+  const auto &ecal_hits{event.getCollection<ldmx::EcalHit>(rec_hit_coll_name_,
                                                            rec_hit_pass_name_)};
 
-  const auto& pf_cands{event.getCollection<ldmx::PFCandidate>(
+  const auto &pf_cands{event.getCollection<ldmx::PFCandidate>(
       pf_cand_coll_name_, pf_cand_pass_name_)};
 
-  const auto& clusters{event.getCollection<ldmx::CaloCluster>(
+  const auto &clusters{event.getCollection<ldmx::CaloCluster>(
       cluster_coll_name_, cluster_pass_name_)};
   // get PID 3 and 7 -- the ones with track and ecal matching
   // get the high-momentum track ones from there -- pileup candidate!
@@ -55,9 +55,10 @@ void PileupFinder::produce(framework::Event& event) {
   // debug: PID distribution of all PF candidates
   if (pf_cands.size() > 0) {
     std::map<int, int> pid_counts;
-    for (const auto& pf_cand : pf_cands) pid_counts[pf_cand.getPID()]++;
+    for (const auto &pf_cand : pf_cands)
+      pid_counts[pf_cand.getPID()]++;
     std::string pid_str;
-    for (const auto& [pid, count] : pid_counts) {
+    for (const auto &[pid, count] : pid_counts) {
       pid_str +=
           " PID " + std::to_string(pid) + ": " + std::to_string(count) + ",";
     }
@@ -65,7 +66,7 @@ void PileupFinder::produce(framework::Event& event) {
                     << " total):" << pid_str;
   }
 
-  for (const auto& pf_cand : pf_cands) {
+  for (const auto &pf_cand : pf_cands) {
     if (pf_cand.getPID() == 3 || pf_cand.getPID() == 7) {
       // we have both ecal cluster and track
       std::vector<float> mom_vec = pf_cand.getTrackPxPyPz();
@@ -86,23 +87,23 @@ void PileupFinder::produce(framework::Event& event) {
       int pf_cl_idx = pf_cand.getEcalIndex();
       ldmx_log(trace) << "Got Ecal cluster with index " << pf_cl_idx
                       << " while cluster array length is " << clusters.size();
-      if (pf_cl_idx < 0)  // was never set
+      if (pf_cl_idx < 0) // was never set
         continue;
       auto cl = clusters[pf_cl_idx];
       auto hit_i_ds = cl.getHitIDs();
       // add to collection of pileup hits
       pileup_hit_i_ds.insert(pileup_hit_i_ds.end(), hit_i_ds.begin(),
                              hit_i_ds.end());
-    }  // if trk/ecal matched
-  }  // over PF objects
+    } // if trk/ecal matched
+  } // over PF objects
 
   for (auto hit : ecal_hits) {
     auto found_index = std::find(std::begin(pileup_hit_i_ds),
                                  std::end(pileup_hit_i_ds), hit.getID());
     // When the element is not found, std::find returns the end of the range
     if (found_index ==
-        std::end(pileup_hit_i_ds)) {  // hit not part of any pileup cluster
-      output_hits.emplace_back(hit);  // keep it
+        std::end(pileup_hit_i_ds)) { // hit not part of any pileup cluster
+      output_hits.emplace_back(hit); // keep it
       ldmx_log(trace) << "Got no-pileup hit! ";
     }
   }
@@ -119,6 +120,6 @@ void PileupFinder::onProcessEnd() {
   return;
 }
 
-}  // namespace recon
+} // namespace recon
 
 DECLARE_PRODUCER(recon::PileupFinder);

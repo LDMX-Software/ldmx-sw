@@ -168,7 +168,7 @@ void EcalClusterProducer::produce(framework::Event& event) {
       cluster.addHits(interm_cluster[cluster_indx].hits());
       ecal_clusters.push_back(cluster);
     }
-
+    // #HANS doesnt seems to be sorted
     event.add(cluster_coll_name_, ecal_clusters);
     event.add(algo_coll_name_, algo_result);
   }  // end on simple clustering

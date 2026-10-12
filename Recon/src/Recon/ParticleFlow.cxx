@@ -17,7 +17,7 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   // Algorithm configuration
   single_particle_ = ps.get<bool>("single_particle");
   use_existing_ecal_clusters_ = ps.get<bool>("use_existing_ecal_clusters");
-
+  //#HANS this is strange
   // Calibration factors, from jason, temperary
   std::vector<float> em1{250.0,  750.0,  1250.0, 1750.0, 2250.0, 2750.0,
                          3250.0, 3750.0, 4250.0, 4750.0, 5250.0, 5750.};
@@ -263,7 +263,7 @@ void ParticleFlow::produce(framework::Event& event) {
 
     //
     // track / ecal cluster arbitration
-    //
+    // #HANS it might be that these needs to be sorted first in order to make sence
     std::vector<bool> tk_is_em_linked(tracks.size(), false);
     std::vector<bool> em_is_tk_linked(ecal_clusters.size(), false);
     std::map<int, int> tk_em_pairs{};

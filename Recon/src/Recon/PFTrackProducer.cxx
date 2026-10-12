@@ -40,10 +40,15 @@ void PFTrackProducer::produce(framework::Event& event) {
     for (const auto& sp_hit : ecal_sp_hits) {
       if (sp_hit.getPdgID() == 22 || sp_hit.getPdgID() == 2112) continue;
       if (fabs(240 - sp_hit.getPosition()[2]) > 0.1) continue;
+
       // recover the original track ID if the input was overlay-encoded
-      const int track_id =
-          decode_overlay_track_ids_ ? decodeTrackID(sp_hit.getTrackID())
-                                    : sp_hit.getTrackID();
+      int track_id;
+      if (decode_overlay_track_ids_) {
+        track_id = decodeTrackID(sp_hit.getTrackID());
+      } else {
+        track_id = sp_hit.getTrackID();
+      }
+      
       if (do_electron_tracking_) {  // only select electron SP hits_
         if (sp_hit.getPdgID() != 11) continue;
         if (track_id < 2 &&
