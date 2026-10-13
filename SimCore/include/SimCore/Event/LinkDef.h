@@ -20,5 +20,9 @@
 #pragma link C++ class std::vector < ldmx::CascadeStep> + ;
 #pragma link C++ class ldmx::CascadeHistory + ;
 #pragma link C++ class std::map < int, ldmx::CascadeHistory> + ;
+#pragma link C++ class ldmx::VertexRecord + ;
+#pragma link C++ class ldmx::VertexRecord::ParticleInfo + ;
+#pragma link C++ class std::vector < ldmx::VertexRecord > + ;
+#pragma link C++ class std::vector < ldmx::VertexRecord::ParticleInfo > + ;
 
 #endif

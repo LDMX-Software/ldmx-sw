@@ -21,20 +21,21 @@
 #include "SimCore/Generators/PrimaryGenerator.h"
 #include "SimCore/RunManager.h"
 #include "SimCore/SDs/SensitiveDetector.h"
+#include "SimCore/VertexRecordStore.h"
 
 namespace simcore {
 
-Simulator::Simulator(const std::string& name, framework::Process& process)
+Simulator::Simulator(const std::string &name, framework::Process &process)
     : simcore::SimulatorBase(name, process) {}
 
-void Simulator::configure(framework::config::Parameters& parameters) {
+void Simulator::configure(framework::config::Parameters &parameters) {
   SimulatorBase::configure(parameters);
 }
 
-void Simulator::beforeNewRun(ldmx::RunHeader& header) {
+void Simulator::beforeNewRun(ldmx::RunHeader &header) {
   // Get the detector header from the user detector construction
-  DetectorConstruction* detector =
-      dynamic_cast<RunManager*>(RunManager::GetRunManager())
+  DetectorConstruction *detector =
+      dynamic_cast<RunManager *>(RunManager::GetRunManager())
           ->getDetectorConstruction();
 
   header.setDetectorName(detector->getDetectorName());
@@ -46,8 +47,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
                          parameters_.get<bool>("root_primary_gen_use_seed"));
 
   // lambda function for dumping 3-vectors into the run header
-  auto three_vector_dump = [&header](const std::string& name,
-                                     const std::vector<double>& vec) {
+  auto three_vector_dump = [&header](const std::string &name,
+                                     const std::vector<double> &vec) {
     header.setFloatParameter(name + " X", vec.at(0));
     header.setFloatParameter(name + " Y", vec.at(1));
     header.setFloatParameter(name + " Z", vec.at(2));
@@ -60,10 +61,10 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   }
 
   // lambda function for dumping vectors of strings to the run header
-  auto string_vector_dump = [&header](const std::string& name,
-                                      const std::vector<std::string>& vec) {
+  auto string_vector_dump = [&header](const std::string &name,
+                                      const std::vector<std::string> &vec) {
     int index = 0;
-    for (auto const& val : vec) {
+    for (auto const &val : vec) {
       header.setStringParameter(name + " " + std::to_string(++index), val);
     }
   };
@@ -98,8 +99,8 @@ void Simulator::beforeNewRun(ldmx::RunHeader& header) {
   header.setStringParameter("SIM revision", GIT_SHA1);
 }
 
-void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {
-  const framework::RandomNumberSeedService& rseed =
+void Simulator::onNewRun(const ldmx::RunHeader &runHeader) {
+  const framework::RandomNumberSeedService &rseed =
       getCondition<framework::RandomNumberSeedService>(
           framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
   std::vector<int> seeds;
@@ -110,7 +111,7 @@ void Simulator::onNewRun(const ldmx::RunHeader& runHeader) {
   run_ = runHeader.getRunNumber();
 }
 
-void Simulator::produce(framework::Event& event) {
+void Simulator::produce(framework::Event &event) {
   // Generate and process a Geant4 event.
   num_events_began_++;
   // Save the state of the random engine to an output stream. A string
@@ -125,10 +126,10 @@ void Simulator::produce(framework::Event& event) {
   // sequence. This will immediately force the simulation to move on to
   // the next event.
   if (run_manager_->GetCurrentEvent()->IsAborted()) {
-    run_manager_->TerminateOneEvent();  // clean up event objects
+    run_manager_->TerminateOneEvent(); // clean up event objects
     SensitiveDetector::Factory::get().apply(
         [](auto sd) { sd->onFinishedEvent(); });
-    this->abortEvent();  // get out of processors loop
+    this->abortEvent(); // get out of processors loop
   }
 
   // Terminate the event.  This checks if an event is to be stored or
@@ -136,19 +137,20 @@ void Simulator::produce(framework::Event& event) {
   num_events_completed_++;
 
   // store event-wide information in EventHeader
-  auto& event_header = event.getEventHeader();
+  auto &event_header = event.getEventHeader();
   updateEventHeader(event_header);
 
   event_header.setStringParameter("eventSeed", stream.str());
 
-  auto event_info = static_cast<UserEventInformation*>(
+  auto event_info = static_cast<UserEventInformation *>(
       run_manager_->GetCurrentEvent()->GetUserInformation());
 
   auto hepmc3_events = event_info->getHepMC3GenEvents();
-  for (auto& hepmc3ev : hepmc3_events) {
+  for (auto &hepmc3ev : hepmc3_events) {
     hepmc3ev.event_number = event.getEventHeader().getEventNumber();
   }
-  if (hepmc3_events.size() > 0) event.add("SimHepMC3Events", hepmc3_events);
+  if (hepmc3_events.size() > 0)
+    event.add("SimHepMC3Events", hepmc3_events);
 
   saveTracks(event);
 
@@ -157,7 +159,7 @@ void Simulator::produce(framework::Event& event) {
   savePhotonuclearInteractions(event);
 
   // Extract and save Bertini cascade histories if any were recorded
-  auto& history_store = bertini::CascadeHistoryStore::getInstance();
+  auto &history_store = bertini::CascadeHistoryStore::getInstance();
   ldmx_log(debug) << "Checking cascade history store: "
                   << (history_store.empty() ? "empty" : "has histories");
   if (!history_store.empty()) {
@@ -165,6 +167,15 @@ void Simulator::produce(framework::Event& event) {
     ldmx_log(info) << "Saving " << cascade_histories.size()
                    << " cascade histories to event";
     event.add("PhotonuclearCascadeHistories", cascade_histories);
+  }
+
+  // Save recorded interaction vertices if any user action recorded them
+  auto &vertex_store = VertexRecordStore::getInstance();
+  if (!vertex_store.empty()) {
+    auto vertex_records = vertex_store.extractVertices();
+    ldmx_log(debug) << "Saving " << vertex_records.size()
+                    << " vertex records to event";
+    event.add("VertexRecords", vertex_records);
   }
 
   run_manager_->TerminateOneEvent();
@@ -206,6 +217,6 @@ void Simulator::setSeeds(std::vector<int> seeds) {
   G4Random::setTheSeeds(seed_vec.data());
 }
 
-}  // namespace simcore
+} // namespace simcore
 
 DECLARE_PRODUCER(simcore::Simulator)
