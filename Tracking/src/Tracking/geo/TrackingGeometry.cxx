@@ -12,7 +12,7 @@
 
 #include "Framework/Exception/Exception.h"
 #include "G4UIsession.hh"
-#include "G4strstreambuf.hh"
+#include "G4ios.hh"
 
 namespace tracking::geo {
 
@@ -76,10 +76,8 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
   if (G4RunManager::GetRunManager() == nullptr) {
     // no run manager ==> no simulation
     silence = std::make_unique<SilentG4>();
-    // these lines compied from G4UImanager::SetCoutDestination
-    // to avoid creating G4UImanager unnecessarily
-    G4coutbuf.SetDestination(silence.get());
-    G4cerrbuf.SetDestination(silence.get());
+    // avoid creating G4UImanager unnecessarily
+    G4iosSetDestination(silence.get());
   }
 
   // Get the world volume
@@ -125,8 +123,7 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
     // we created the session and silenced G4
     // undo that now incase others have use for G4
     // nullptr => standard (ldmx_log(trace) and std::cerr)
-    G4coutbuf.SetDestination(nullptr);
-    G4cerrbuf.SetDestination(nullptr);
+    G4iosSetDestination(nullptr);
   }
 }
 

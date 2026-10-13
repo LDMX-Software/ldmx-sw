@@ -417,7 +417,8 @@ G4VParticleChange* GenieElectroNuclearProcess::PostStepDoIt(
     G4ProcessManager* pman = track.GetDefinition()->GetProcessManager();
     for (int i_proc = 0; i_proc < pman->GetProcessList()->size(); i_proc++) {
       G4VProcess* p = (*(pman->GetProcessList()))[i_proc];
-      if (p->GetProcessName().contains(PROCESS_NAME)) {
+      if (G4StrUtil::contains(p->GetProcessName(),
+                              std::string_view(PROCESS_NAME))) {
         pman->SetProcessActivation(p, false);
         break;
       }
