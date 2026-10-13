@@ -46,6 +46,12 @@ void TrigClusterNNProducer::configure(framework::config::Parameters& ps) {
   score_coll_name_ = ps.get<std::string>("score_coll_name");
 
   const auto model_path{ps.get<std::string>("model_path")};
+  if (model_path.empty()) {
+    EXCEPTION_RAISE("NoModel",
+                    "No model_path given and CI_DATA is not set. Pass the "
+                    "path to ecal_nn_trigger.onnx (from the ci-data "
+                    "repository) as model_path.");
+  }
   rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(model_path);
 
   // the batch dimension is reported as -1 by the wrapper

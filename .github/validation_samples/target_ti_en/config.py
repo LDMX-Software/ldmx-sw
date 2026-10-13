@@ -62,9 +62,7 @@ nn_trigger = [
     trigger_energy_sums.EcalTPSelector(),
     trigger_energy_sums.TrigHcalEnergySum(),
     trigger_energy_sums.TrigEcalClusterProducer(),
-    trigger_energy_sums.TrigClusterNNProducer(
-        model_path=f"{os.environ['CI_DATA']}/target_ti_en/ecal_nn_trigger.onnx"
-    ),
+    trigger_energy_sums.TrigClusterNNProducer(),
 ]
 
 # Load the TS modules

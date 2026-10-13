@@ -1,4 +1,14 @@
-from LDMX.Framework import Processor, processor
+import os
+
+from LDMX.Framework import Processor, field, processor
+
+
+def _default_nn_model_path():
+    """ECal NN trigger model distributed via ci-data, if CI_DATA is set"""
+    ci_data = os.environ.get("CI_DATA")
+    if ci_data is None:
+        return ""
+    return f"{ci_data}/target_genie/ecal_nn_trigger.onnx"
 
 
 @processor("trigger::EcalTPSelector", "Trigger")
@@ -128,7 +138,7 @@ class PropagationMapWriter(Processor):
 class TrigClusterNNProducer(Processor):
     """Configuration for TrigClusterNNProducer"""
 
-    model_path: str = "@CMAKE_INSTALL_PREFIX@/data/Trigger/ecal_nn_trigger.onnx"
+    model_path: str = field(default_factory=_default_nn_model_path)
     cluster_coll_name: str = "ecalTrigClusters"
     ecal_sum_coll_name: str = "ecalTrigSums"
     hcal_sum_coll_name: str = "hcalTrigQuadsBackLayerSums"
