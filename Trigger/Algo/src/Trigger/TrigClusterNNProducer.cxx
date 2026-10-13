@@ -48,9 +48,8 @@ void TrigClusterNNProducer::configure(framework::config::Parameters& ps) {
   const auto model_path{ps.get<std::string>("model_path")};
   if (model_path.empty()) {
     EXCEPTION_RAISE("NoModel",
-                    "No model_path given and CI_DATA is not set. Pass the "
-                    "path to ecal_nn_trigger.onnx (from the ci-data "
-                    "repository) as model_path.");
+                    "model_path is empty. Pass the path to "
+                    "ecal_nn_trigger.onnx.");
   }
   rt_ = std::make_unique<ldmx::ort::ONNXRuntime>(model_path);
 

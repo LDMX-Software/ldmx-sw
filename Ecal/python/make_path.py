@@ -62,3 +62,42 @@ def make_roc_path(roc_name):
         sys.exit(1)
 
     return full_path
+
+
+def make_ci_data_path(relative_path):
+    """Get the full path to a file in the ci-data repository
+
+    Exits entire python script if CI_DATA is not set or the file does not exist.
+
+    Parameters
+    ----------
+    relative_path : str
+        Path to the file relative to the top of the ci-data repository
+
+    Returns
+    -------
+    str
+        full path to the ci-data file
+
+    Examples
+    --------
+        nn.model_path = make_ci_data_path( 'target_genie/ecal_nn_trigger.onnx' )
+    """
+
+    url = f"https://github.com/LDMX-Software/ci-data/raw/main/{relative_path}"
+    ci_data = os.environ.get("CI_DATA")
+    if ci_data is None:
+        print(
+            f"ERROR: CI_DATA is not set, cannot find '{relative_path}'. "
+            f"Download it from {url} and pass its path explicitly."
+        )
+        sys.exit(1)
+
+    full_path = os.path.join(ci_data, relative_path)
+    if not os.path.isfile(full_path):
+        print(
+            f"ERROR: ci-data file '{full_path}' does not exist. Download it from {url}."
+        )
+        sys.exit(1)
+
+    return full_path

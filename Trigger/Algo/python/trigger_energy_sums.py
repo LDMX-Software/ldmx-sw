@@ -1,14 +1,5 @@
-import os
-
+from LDMX.Ecal.make_path import make_ci_data_path
 from LDMX.Framework import Processor, field, processor
-
-
-def _default_nn_model_path():
-    """ECal NN trigger model distributed via ci-data, if CI_DATA is set"""
-    ci_data = os.environ.get("CI_DATA")
-    if ci_data is None:
-        return ""
-    return f"{ci_data}/target_genie/ecal_nn_trigger.onnx"
 
 
 @processor("trigger::EcalTPSelector", "Trigger")
@@ -136,9 +127,16 @@ class PropagationMapWriter(Processor):
 
 @processor("trigger::TrigClusterNNProducer", "Trigger")
 class TrigClusterNNProducer(Processor):
-    """Configuration for TrigClusterNNProducer"""
+    """Configuration for TrigClusterNNProducer
 
-    model_path: str = field(default_factory=_default_nn_model_path)
+    The ONNX model is kept in the ci-data repository, download it from
+    https://github.com/LDMX-Software/ci-data/raw/main/target_genie/ecal_nn_trigger.onnx
+    and set model_path to where you saved it.
+    """
+
+    model_path: str = field(
+        default_factory=lambda: make_ci_data_path("target_genie/ecal_nn_trigger.onnx")
+    )
     cluster_coll_name: str = "ecalTrigClusters"
     ecal_sum_coll_name: str = "ecalTrigSums"
     hcal_sum_coll_name: str = "hcalTrigQuadsBackLayerSums"
