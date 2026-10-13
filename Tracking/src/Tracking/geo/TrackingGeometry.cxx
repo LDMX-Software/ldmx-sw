@@ -77,7 +77,7 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
     // no run manager ==> no simulation
     silence = std::make_unique<SilentG4>();
     // avoid creating G4UImanager unnecessarily
-    G4iosSetDestination(silence.get());
+    G4coutDestination(silence.get());
   }
 
   // Get the world volume
@@ -123,7 +123,7 @@ TrackingGeometry::TrackingGeometry(const std::string& name,
     // we created the session and silenced G4
     // undo that now incase others have use for G4
     // nullptr => standard (ldmx_log(trace) and std::cerr)
-    G4iosSetDestination(nullptr);
+    G4coutDestination(nullptr);
   }
 }
 
