@@ -129,7 +129,9 @@ en_trigger = [
     trigger_energy_sums.HcalTPSelector(),
     trigger_energy_sums.HCalTrigMipReco(),
     trigger_energy_sums.ECalTrigMipReco(),
-    trigger_energy_sums.TrigClusterNNProducer(),
+    trigger_energy_sums.TrigClusterNNProducer(
+        model_path=f"{os.environ['CI_DATA']}/target_genie/ecal_nn_trigger.onnx"
+    ),
 ]
 
 # Load PF reconstruction
