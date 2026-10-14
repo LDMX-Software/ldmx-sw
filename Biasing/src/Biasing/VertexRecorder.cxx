@@ -82,28 +82,31 @@ void VertexRecorder::stepping(const G4Step *step) {
 
   // All secondaries of this step are the vertex products; tag them so they
   // are saved and their track IDs link them back to this vertex.
-  for (auto secondary : *step->GetSecondary()) {
-    if (secondary->GetCreatorProcess() != proc)
-      continue;
-    simcore::UserTrackInformation::get(secondary)->setSaveFlag(true);
-    product_track_ids_.push_back(secondary->GetTrackID());
+  const auto *secondaries = step->GetSecondaryInCurrentStep();
+  if (secondaries) {
+    for (const auto *secondary : *secondaries) {
+      if (secondary->GetCreatorProcess() != proc)
+        continue;
+      simcore::UserTrackInformation::get(secondary)->setSaveFlag(true);
+      product_track_ids_.push_back(secondary->GetTrackID());
 
-    // Record the product's initial state alongside the incoming particle.
-    ldmx::VertexRecord::ParticleInfo product;
-    product.track_id_ = secondary->GetTrackID();
-    product.pdg_id_ = secondary->GetParticleDefinition()->GetPDGEncoding();
-    product.energy_ = secondary->GetKineticEnergy() +
-                      secondary->GetParticleDefinition()->GetPDGMass();
-    const G4ThreeVector &pp{secondary->GetMomentum()};
-    const G4ThreeVector &xp{secondary->GetPosition()};
-    product.px_ = pp.x();
-    product.py_ = pp.y();
-    product.pz_ = pp.z();
-    product.x_ = xp.x();
-    product.y_ = xp.y();
-    product.z_ = xp.z();
-    product.time_ = secondary->GetGlobalTime();
-    vertex.addOutgoingParticle(product);
+      // Record the product's initial state alongside the incoming particle.
+      ldmx::VertexRecord::ParticleInfo product;
+      product.track_id_ = secondary->GetTrackID();
+      product.pdg_id_ = secondary->GetParticleDefinition()->GetPDGEncoding();
+      product.energy_ = secondary->GetKineticEnergy() +
+                        secondary->GetParticleDefinition()->GetPDGMass();
+      const G4ThreeVector &pp{secondary->GetMomentum()};
+      const G4ThreeVector &xp{secondary->GetPosition()};
+      product.px_ = pp.x();
+      product.py_ = pp.y();
+      product.pz_ = pp.z();
+      product.x_ = xp.x();
+      product.y_ = xp.y();
+      product.z_ = xp.z();
+      product.time_ = secondary->GetGlobalTime();
+      vertex.addOutgoingParticle(product);
+    }
   }
 
   simcore::VertexRecordStore::getInstance().addVertex(vertex);
