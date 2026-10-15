@@ -64,6 +64,9 @@ void EcalClusterProducer::configure(framework::config::Parameters& ps) {
       ps.get<int>("clue3d_sc_min_layers", clue3d_.sc_min_layers);
   clue3d_.coincide_dist =
       ps.get<double>("clue3d_coincide_dist", clue3d_.coincide_dist);
+  clue3d_.ghost_ratio =
+      ps.get<double>("clue3d_ghost_ratio", clue3d_.ghost_ratio);
+  clue3d_.ghost_dist = ps.get<double>("clue3d_ghost_dist", clue3d_.ghost_dist);
   clue3d_.min_cluster_energy =
       ps.get<double>("clue3d_min_cluster_energy", clue3d_.min_cluster_energy);
   clue3d_.share = ps.get<bool>("clue3d_share", clue3d_.share);

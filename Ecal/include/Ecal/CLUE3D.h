@@ -31,19 +31,19 @@ class CLUE3D {
     // 3D: layers looked at on each side
     int sibling_layers{2};
     // 3D: density radius [mm], kernel weight of other layers
-    double dens_xy3d{20.};
+    double dens_xy3d{15.};
     double kernel3d{0.5};
     // 3D: seed separation [mm], min density [MeV], min self fraction
     double crit_xy3d{10.};
     double crit_rho3d{50.};
-    double self_frac3d{0.15};
+    double self_frac3d{0.05};
     // 3D: outlier separation in units of crit_xy3d
     double outlier_mult3d{2.};
     // orphan layer clusters within this of an axis are attached [mm]
     double attach_radius{40.};
     // satellites below sc_ratio of a cluster within sc_radius merge [mm]
     double sc_ratio{0.06};
-    double sc_radius{100.};
+    double sc_radius{150.};
     // clusters spanning fewer layers merge regardless of energy
     int sc_min_layers{5};
     // clusters below this are dropped [MeV]
@@ -54,6 +54,9 @@ class CLUE3D {
     double share_min_energy{300.};
     // shared clusters closer than this are merged [mm]
     double coincide_dist{4.};
+    // smaller than ghost_ratio of a cluster within ghost_dist merges [mm]
+    double ghost_ratio{0.15};
+    double ghost_dist{12.};
     // exponential transverse profile slope per layer [mm]
     std::vector<double> profile_lambda{};
     // log weight W0 and window around the max cell [mm]

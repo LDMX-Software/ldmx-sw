@@ -409,9 +409,11 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
         auto& b = cls[big[j]];
         if (members[big[i]].empty() || members[big[j]].empty()) continue;
         double zz = a.e < b.e ? a.z : b.z;
-        if (dist(a.axisX(zz), a.axisY(zz), b.axisX(zz), b.axisY(zz)) >
-            p_.coincide_dist)
-          continue;
+        double d = dist(a.axisX(zz), a.axisY(zz), b.axisX(zz), b.axisY(zz));
+        // small ghosts between showers also merge
+        bool ghost = d < p_.ghost_dist &&
+                     std::min(a.e, b.e) < p_.ghost_ratio * std::max(a.e, b.e);
+        if (d > p_.coincide_dist && !ghost) continue;
         std::map<int, double> f;
         for (std::size_t k = 0; k < members[big[i]].size(); k++)
           f[members[big[i]][k]] += fracs[big[i]][k];
