@@ -235,6 +235,9 @@ class CKFProcessor(Processor):
         at z = -400 mm, i.e. the centre of the dipole.
     bfield_scale : float
         Overall scaling of the reconstruction field strength. Default 1.
+    field_zero_outside : bool
+        Zero field outside the field map instead of an out of bounds error,
+        which otherwise aborts the field-map CKF for the whole seed.
     """
 
     dumpobj: bool = False
@@ -260,6 +263,7 @@ class CKFProcessor(Processor):
     tagger_tracking: bool = False
     measurement_collection: str = ""
     outlier_pval_: float = 3.84
+    field_zero_outside: bool = False
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_event_passname: str = ""
     input_pass_name: str = ""

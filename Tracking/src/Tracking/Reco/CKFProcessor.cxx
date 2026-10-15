@@ -24,6 +24,7 @@
 #include "Acts/Utilities/Logger.hpp"
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/Sim/ZeroOutsideBField.h"
 
 namespace tracking {
 namespace reco {
@@ -84,7 +85,12 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
 
   // Setup the steppers
-  const auto stepper = Acts::EigenStepper<>{map};
+  // optionally zero field outside the map instead of failing the track
+  std::shared_ptr<const Acts::MagneticFieldProvider> field = map;
+  if (field_zero_outside_) {
+    field = std::make_shared<tracking::sim::ZeroOutsideBField>(map);
+  }
+  const auto stepper = Acts::EigenStepper<>{field};
   const auto const_stepper = Acts::EigenStepper<>{const_b_field};
   const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
@@ -106,7 +112,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // tracking geometry (e.g. ECAL scoring plane) without being stopped at
   // volume boundaries.
   propagator_extrap_ = std::make_unique<ExtrapPropagator>(
-      Acts::EigenStepper<>{map}, Acts::VoidNavigator{});
+      Acts::EigenStepper<>{field}, Acts::VoidNavigator{});
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_extrap_, geometryContext(), magneticFieldContext());
 
@@ -401,6 +407,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
     // If field-map CKF fails, try appropriate fallback based on tracking system
     if (!results.ok()) {
+      ckf_errors_[results.error().message()]++;
       if (!tagger_tracking_) {
         // Recoil tracking: try zero-B CKF as fallback
         n_fieldmap_ckf_failed_recoil_++;
@@ -800,6 +807,9 @@ void CKFProcessor::onProcessEnd() {
 
   // CKF fallback statistics
   ldmx_log(info) << "CKF Fallback Statistics::";
+  for (const auto& [msg, n] : ckf_errors_) {
+    ldmx_log(info) << "  field-map CKF error '" << msg << "': " << n;
+  }
   if (tagger_tracking_) {
     ldmx_log(info) << "  Tagger: Field-map CKF failed "
                    << n_fieldmap_ckf_failed_tagger_
@@ -903,6 +913,8 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   bfield_distortion_ = bFieldDistortion(parameters);
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
+
+  field_zero_outside_ = parameters.get<bool>("field_zero_outside", false);
 }  // end of configure()
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(
