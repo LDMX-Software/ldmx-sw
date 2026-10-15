@@ -45,8 +45,8 @@ void logCentroid(const std::vector<double>& x, const std::vector<double>& y,
 }  // namespace
 
 double CLUE3D::lambda(int layer) const {
-  if (layer >= 0 && layer < static_cast<int>(p_.profile_lambda.size()))
-    return p_.profile_lambda[layer];
+  if (layer >= 0 && layer < static_cast<int>(p_.profile_lambda_.size()))
+    return p_.profile_lambda_[layer];
   // median radius / 1.68 from v15 gun showers
   return std::max(2., 1.9 * std::exp(0.12 * layer));
 }
@@ -64,8 +64,8 @@ void CLUE3D::cluster2D(const std::vector<int>& idx) {
   for (int i = 0; i < n; i++) {
     rho[i] = e(i);
     for (int j = 0; j < n; j++) {
-      if (j != i && dist(x(i), y(i), x(j), y(j)) < p_.dc2d)
-        rho[i] += p_.kernel2d * e(j);
+      if (j != i && dist(x(i), y(i), x(j), y(j)) < p_.dc2d_)
+        rho[i] += p_.kernel2d_ * e(j);
     }
   }
   // detid breaks density ties
@@ -77,7 +77,7 @@ void CLUE3D::cluster2D(const std::vector<int>& idx) {
     for (int j = 0; j < n; j++) {
       if (j == i || !higher(j, i)) continue;
       double d = dist(x(i), y(i), x(j), y(j));
-      if (d < p_.deltao2d && d < delta[i]) {
+      if (d < p_.deltao2d_ && d < delta[i]) {
         delta[i] = d;
         nh[i] = j;
       }
@@ -91,39 +91,39 @@ void CLUE3D::cluster2D(const std::vector<int>& idx) {
   std::vector<int> lc_of(n, -1);
   const int first = lcs_.size();
   for (int i : order) {
-    bool seed = nh[i] < 0 || (rho[i] >= p_.rhoc2d && delta[i] > p_.deltas2d);
+    bool seed = nh[i] < 0 || (rho[i] >= p_.rhoc2d_ && delta[i] > p_.deltas2d_);
     if (seed) {
       lc_of[i] = lcs_.size();
       lcs_.emplace_back();
     } else {
       lc_of[i] = lc_of[nh[i]];
     }
-    lcs_[lc_of[i]].hits.push_back(idx[i]);
+    lcs_[lc_of[i]].hits_.push_back(idx[i]);
   }
 
   for (std::size_t c = first; c < lcs_.size(); c++) {
     auto& lc = lcs_[c];
     std::vector<double> hx, hy, he;
-    for (int h : lc.hits) {
+    for (int h : lc.hits_) {
       hx.push_back(hits[h].getXPos());
       hy.push_back(hits[h].getYPos());
       he.push_back(hits[h].getEnergy());
-      lc.e += hits[h].getEnergy();
+      lc.e_ += hits[h].getEnergy();
     }
-    logCentroid(hx, hy, he, p_.w0, p_.pos_window, lc.x, lc.y);
-    lc.z = hits[lc.hits[0]].getZPos();
-    lc.layer = layer_of_[lc.hits[0]];
+    logCentroid(hx, hy, he, p_.w0_, p_.pos_window_, lc.x_, lc.y_);
+    lc.z_ = hits[lc.hits_[0]].getZPos();
+    lc.layer_ = layer_of_[lc.hits_[0]];
   }
 }
 
 void CLUE3D::cluster3D() {
   const int m = lcs_.size();
   std::map<int, std::vector<int>> by_layer;
-  for (int i = 0; i < m; i++) by_layer[lcs_[i].layer].push_back(i);
+  for (int i = 0; i < m; i++) by_layer[lcs_[i].layer_].push_back(i);
 
   auto loop_siblings = [&](int i, auto&& f) {
-    int l = lcs_[i].layer;
-    for (int dl = -p_.sibling_layers; dl <= p_.sibling_layers; dl++) {
+    int l = lcs_[i].layer_;
+    for (int dl = -p_.sibling_layers_; dl <= p_.sibling_layers_; dl++) {
       if (dl == 0) continue;
       auto it = by_layer.find(l + dl);
       if (it == by_layer.end()) continue;
@@ -133,28 +133,28 @@ void CLUE3D::cluster3D() {
 
   for (int i = 0; i < m; i++) {
     auto& a = lcs_[i];
-    a.rho = a.e;
+    a.rho_ = a.e_;
     loop_siblings(i, [&](int j) {
-      if (dist(a.x, a.y, lcs_[j].x, lcs_[j].y) < p_.dens_xy3d)
-        a.rho += p_.kernel3d * lcs_[j].e;
+      if (dist(a.x_, a.y_, lcs_[j].x_, lcs_[j].y_) < p_.dens_xy3d_)
+        a.rho_ += p_.kernel3d_ * lcs_[j].e_;
     });
   }
   auto higher = [&](int a, int b) {
-    if (lcs_[a].rho != lcs_[b].rho) return lcs_[a].rho > lcs_[b].rho;
-    if (lcs_[a].e != lcs_[b].e) return lcs_[a].e > lcs_[b].e;
+    if (lcs_[a].rho_ != lcs_[b].rho_) return lcs_[a].rho_ > lcs_[b].rho_;
+    if (lcs_[a].e_ != lcs_[b].e_) return lcs_[a].e_ > lcs_[b].e_;
     return a > b;
   };
-  const double max_d = p_.outlier_mult3d * p_.crit_xy3d;
+  const double max_d = p_.outlier_mult3d_ * p_.crit_xy3d_;
   for (int i = 0; i < m; i++) {
     auto& a = lcs_[i];
-    a.delta = std::numeric_limits<double>::max();
-    a.nh = -1;
+    a.delta_ = std::numeric_limits<double>::max();
+    a.nh_ = -1;
     loop_siblings(i, [&](int j) {
       if (!higher(j, i)) return;
-      double d = dist(a.x, a.y, lcs_[j].x, lcs_[j].y);
-      if (d < max_d && d < a.delta) {
-        a.delta = d;
-        a.nh = j;
+      double d = dist(a.x_, a.y_, lcs_[j].x_, lcs_[j].y_);
+      if (d < max_d && d < a.delta_) {
+        a.delta_ = d;
+        a.nh_ = j;
       }
     });
   }
@@ -164,12 +164,12 @@ void CLUE3D::cluster3D() {
   int ncl = 0;
   for (int i : order) {
     auto& a = lcs_[i];
-    bool seed = a.delta > p_.crit_xy3d && a.rho >= p_.crit_rho3d &&
-                a.e / a.rho > p_.self_frac3d;
+    bool seed = a.delta_ > p_.crit_xy3d_ && a.rho_ >= p_.crit_rho3d_ &&
+                a.e_ / a.rho_ > p_.self_frac3d_;
     if (seed)
-      a.cid = ncl++;
+      a.cid_ = ncl++;
     else
-      a.cid = a.nh >= 0 ? lcs_[a.nh].cid : -1;
+      a.cid_ = a.nh_ >= 0 ? lcs_[a.nh_].cid_ : -1;
   }
 }
 
@@ -185,9 +185,9 @@ void CLUE3D::fitAxis(Cluster& c, const std::vector<int>& idx,
     etot += e;
     sz += e * hits[idx[k]].getZPos();
   }
-  c.e = etot;
+  c.e_ = etot;
   if (etot <= 0) return;
-  c.z = sz / etot;
+  c.z_ = sz / etot;
 
   // axis from core hits only, if any
   bool any_core = false;
@@ -206,7 +206,7 @@ void CLUE3D::fitAxis(Cluster& c, const std::vector<int>& idx,
     }
     if (he.empty()) continue;
     double lx, ly;
-    logCentroid(hx, hy, he, p_.w0, p_.pos_window, lx, ly);
+    logCentroid(hx, hy, he, p_.w0_, p_.pos_window_, lx, ly);
     double el = std::accumulate(he.begin(), he.end(), 0.);
     double w = el / (lambda(layer) * lambda(layer));
     double z = hits[idx[ks[0]]].getZPos();
@@ -220,14 +220,14 @@ void CLUE3D::fitAxis(Cluster& c, const std::vector<int>& idx,
   }
   double den = s * szz - sz1 * sz1;
   if (by_layer.size() > 1 && den > 1e-9 * s * szz) {
-    c.dxdz = (s * sxz - sz1 * sx) / den;
-    c.dydz = (s * syz - sz1 * sy) / den;
+    c.dxdz_ = (s * sxz - sz1 * sx) / den;
+    c.dydz_ = (s * syz - sz1 * sy) / den;
   } else {
-    c.dxdz = c.dydz = 0;
+    c.dxdz_ = c.dydz_ = 0;
   }
   double zbar = sz1 / s;
-  c.x = sx / s + c.dxdz * (c.z - zbar);
-  c.y = sy / s + c.dydz * (c.z - zbar);
+  c.x_ = sx / s + c.dxdz_ * (c.z_ - zbar);
+  c.y_ = sy / s + c.dydz_ * (c.z_ - zbar);
 }
 
 std::vector<CLUE3D::Cluster> CLUE3D::cluster(
@@ -237,7 +237,7 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
   layer_of_.assign(hits.size(), 0);
   std::map<int, std::vector<int>> by_layer;
   for (std::size_t i = 0; i < hits.size(); i++) {
-    if (hits[i].getEnergy() <= p_.hit_ecut || hits[i].getEnergy() <= 0)
+    if (hits[i].getEnergy() <= p_.hit_ecut_ || hits[i].getEnergy() <= 0)
       continue;
     layer_of_[i] = ldmx::EcalID(hits[i].getID()).layer();
     by_layer[layer_of_[i]].push_back(i);
@@ -248,17 +248,17 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
   // hits of 3D linked layer clusters define the axes
   core_.assign(hits.size(), 0);
   for (const auto& lc : lcs_)
-    if (lc.cid >= 0)
-      for (int h : lc.hits) core_[h] = 1;
+    if (lc.cid_ >= 0)
+      for (int h : lc.hits_) core_[h] = 1;
 
   // hit members of the 3D clusters
   int ncl = 0;
-  for (const auto& lc : lcs_) ncl = std::max(ncl, lc.cid + 1);
+  for (const auto& lc : lcs_) ncl = std::max(ncl, lc.cid_ + 1);
   std::vector<std::vector<int>> members(ncl);
   for (const auto& lc : lcs_)
-    if (lc.cid >= 0)
-      members[lc.cid].insert(members[lc.cid].end(), lc.hits.begin(),
-                             lc.hits.end());
+    if (lc.cid_ >= 0)
+      members[lc.cid_].insert(members[lc.cid_].end(), lc.hits_.begin(),
+                              lc.hits_.end());
   auto fit_all = [&](std::vector<Cluster>& cls,
                      const std::vector<std::vector<int>>& mem) {
     cls.assign(mem.size(), Cluster{});
@@ -270,21 +270,22 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
 
   // attach orphan layer clusters to the nearest axis, else keep alone
   for (const auto& lc : lcs_) {
-    if (lc.cid >= 0) continue;
+    if (lc.cid_ >= 0) continue;
     int best = -1;
-    double best_d = p_.attach_radius;
+    double best_d = p_.attach_radius_;
     for (std::size_t k = 0; k < cls.size(); k++) {
-      double d = dist(lc.x, lc.y, cls[k].axisX(lc.z), cls[k].axisY(lc.z));
+      double d = dist(lc.x_, lc.y_, cls[k].axisX(lc.z_), cls[k].axisY(lc.z_));
       if (d < best_d) {
         best_d = d;
         best = k;
       }
     }
     if (best >= 0) {
-      members[best].insert(members[best].end(), lc.hits.begin(), lc.hits.end());
+      members[best].insert(members[best].end(), lc.hits_.begin(),
+                           lc.hits_.end());
     } else {
-      members.push_back(lc.hits);
-      for (int h : lc.hits) core_[h] = 1;
+      members.push_back(lc.hits_);
+      for (int h : lc.hits_) core_[h] = 1;
     }
   }
   fit_all(cls, members);
@@ -294,11 +295,11 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
     std::vector<int> order(cls.size());
     std::iota(order.begin(), order.end(), 0);
     std::sort(order.begin(), order.end(),
-              [&](int a, int b) { return cls[a].e < cls[b].e; });
+              [&](int a, int b) { return cls[a].e_ < cls[b].e_; });
     std::vector<double> esum(cls.size());
     std::vector<int> nlay(cls.size());
     for (std::size_t k = 0; k < cls.size(); k++) {
-      esum[k] = cls[k].e;
+      esum[k] = cls[k].e_;
       std::vector<int> ls;
       for (int h : members[k]) ls.push_back(layer_of_[h]);
       std::sort(ls.begin(), ls.end());
@@ -306,16 +307,16 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
     }
     for (int sat : order) {
       int best = -1;
-      double best_d = p_.sc_radius;
-      bool short_sat = nlay[sat] < p_.sc_min_layers;
+      double best_d = p_.sc_radius_;
+      bool short_sat = nlay[sat] < p_.sc_min_layers_;
       for (std::size_t k = 0; k < cls.size(); k++) {
         // only merge into clusters that are not short themselves
         if (static_cast<int>(k) == sat || members[k].empty() ||
-            esum[k] <= esum[sat] || nlay[k] < p_.sc_min_layers ||
-            (!short_sat && esum[sat] >= p_.sc_ratio * esum[k]))
+            esum[k] <= esum[sat] || nlay[k] < p_.sc_min_layers_ ||
+            (!short_sat && esum[sat] >= p_.sc_ratio_ * esum[k]))
           continue;
-        double d = dist(cls[sat].x, cls[sat].y, cls[k].axisX(cls[sat].z),
-                        cls[k].axisY(cls[sat].z));
+        double d = dist(cls[sat].x_, cls[sat].y_, cls[k].axisX(cls[sat].z_),
+                        cls[k].axisY(cls[sat].z_));
         if (d < best_d) {
           best_d = d;
           best = k;
@@ -338,7 +339,7 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
   // drop tiny clusters
   std::vector<std::vector<int>> kept;
   for (std::size_t k = 0; k < cls.size(); k++)
-    if (cls[k].e >= p_.min_cluster_energy) kept.push_back(members[k]);
+    if (cls[k].e_ >= p_.min_cluster_energy_) kept.push_back(members[k]);
   members = std::move(kept);
   fit_all(cls, members);
   std::vector<std::vector<double>> fracs(members.size());
@@ -348,15 +349,15 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
   // share hits between large clusters with an exponential profile
   std::vector<int> big;
   for (std::size_t k = 0; k < cls.size(); k++)
-    if (cls[k].e >= p_.share_min_energy) big.push_back(k);
-  if (p_.share && big.size() > 1) {
+    if (cls[k].e_ >= p_.share_min_energy_) big.push_back(k);
+  if (p_.share_ && big.size() > 1) {
     std::vector<int> shared_hits;
     for (int k : big)
       shared_hits.insert(shared_hits.end(), members[k].begin(),
                          members[k].end());
     std::vector<std::vector<int>> mem(big.size());
     std::vector<std::vector<double>> fr(big.size());
-    for (int it = 0; it < p_.share_iters; it++) {
+    for (int it = 0; it < p_.share_iters_; it++) {
       for (auto& v : mem) v.clear();
       for (auto& v : fr) v.clear();
       for (int h : shared_hits) {
@@ -368,7 +369,7 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
           const auto& c = cls[big[b]];
           double d = dist(hits[h].getXPos(), hits[h].getYPos(), c.axisX(hz),
                           c.axisY(hz));
-          w[b] = c.e * std::exp(-d / lam);
+          w[b] = c.e_ * std::exp(-d / lam);
           sw += w[b];
         }
         if (sw <= 0) {
@@ -408,12 +409,13 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
         auto& a = cls[big[i]];
         auto& b = cls[big[j]];
         if (members[big[i]].empty() || members[big[j]].empty()) continue;
-        double zz = a.e < b.e ? a.z : b.z;
+        double zz = a.e_ < b.e_ ? a.z_ : b.z_;
         double d = dist(a.axisX(zz), a.axisY(zz), b.axisX(zz), b.axisY(zz));
         // small ghosts between showers also merge
-        bool ghost = d < p_.ghost_dist &&
-                     std::min(a.e, b.e) < p_.ghost_ratio * std::max(a.e, b.e);
-        if (d > p_.coincide_dist && !ghost) continue;
+        bool ghost =
+            d < p_.ghost_dist_ &&
+            std::min(a.e_, b.e_) < p_.ghost_ratio_ * std::max(a.e_, b.e_);
+        if (d > p_.coincide_dist_ && !ghost) continue;
         std::map<int, double> f;
         for (std::size_t k = 0; k < members[big[i]].size(); k++)
           f[members[big[i]][k]] += fracs[big[i]][k];
@@ -437,38 +439,38 @@ std::vector<CLUE3D::Cluster> CLUE3D::cluster(
   for (std::size_t k = 0; k < members.size(); k++) {
     Cluster c;
     fitAxis(c, members[k], fracs[k]);
-    if (c.e < p_.min_cluster_energy) continue;
-    c.hits = members[k];
-    c.frac = fracs[k];
+    if (c.e_ < p_.min_cluster_energy_) continue;
+    c.hits_ = members[k];
+    c.frac_ = fracs[k];
     double sxx{0}, syy{0}, szz{0}, sx{0}, sy{0}, e0{0};
-    for (std::size_t i = 0; i < c.hits.size(); i++) {
-      const auto& h = hits[c.hits[i]];
-      double e = c.frac[i] * h.getEnergy();
+    for (std::size_t i = 0; i < c.hits_.size(); i++) {
+      const auto& h = hits[c.hits_[i]];
+      double e = c.frac_[i] * h.getEnergy();
       sx += e * h.getXPos();
       sy += e * h.getYPos();
       sxx += e * h.getXPos() * h.getXPos();
       syy += e * h.getYPos() * h.getYPos();
-      szz += e * (h.getZPos() - c.z) * (h.getZPos() - c.z);
-      if (layer_of_[c.hits[i]] == 0) {
-        c.x0 += e * h.getXPos();
-        c.y0 += e * h.getYPos();
-        c.z0 = h.getZPos();
+      szz += e * (h.getZPos() - c.z_) * (h.getZPos() - c.z_);
+      if (layer_of_[c.hits_[i]] == 0) {
+        c.x0_ += e * h.getXPos();
+        c.y0_ += e * h.getYPos();
+        c.z0_ = h.getZPos();
         e0 += e;
       }
     }
-    sx /= c.e;
-    sy /= c.e;
-    c.rms_x = std::sqrt(std::max(0., sxx / c.e - sx * sx));
-    c.rms_y = std::sqrt(std::max(0., syy / c.e - sy * sy));
-    c.rms_z = std::sqrt(szz / c.e);
+    sx /= c.e_;
+    sy /= c.e_;
+    c.rms_x_ = std::sqrt(std::max(0., sxx / c.e_ - sx * sx));
+    c.rms_y_ = std::sqrt(std::max(0., syy / c.e_ - sy * sy));
+    c.rms_z_ = std::sqrt(szz / c.e_);
     if (e0 > 0) {
-      c.x0 /= e0;
-      c.y0 /= e0;
+      c.x0_ /= e0;
+      c.y0_ /= e0;
     }
     out.push_back(std::move(c));
   }
   std::sort(out.begin(), out.end(),
-            [](const Cluster& a, const Cluster& b) { return a.e > b.e; });
+            [](const Cluster& a, const Cluster& b) { return a.e_ > b.e_; });
   return out;
 }
 

@@ -19,73 +19,73 @@ class CLUE3D {
  public:
   struct Params {
     // hits below this are ignored [MeV]
-    double hit_ecut{0.};
+    double hit_ecut_{0.};
     // 2D: density radius, seed and outlier separation [mm]
-    double dc2d{10.};
+    double dc2d_{10.};
     // 2D: weight of neighbors in the density
-    double kernel2d{0.2};
-    double deltas2d{10.};
-    double deltao2d{25.};
+    double kernel2d_{0.2};
+    double deltas2d_{10.};
+    double deltao2d_{25.};
     // 2D: min seed density [MeV]
-    double rhoc2d{5.};
+    double rhoc2d_{5.};
     // 3D: layers looked at on each side
-    int sibling_layers{2};
+    int sibling_layers_{2};
     // 3D: density radius [mm], kernel weight of other layers
-    double dens_xy3d{15.};
-    double kernel3d{0.5};
+    double dens_xy3d_{15.};
+    double kernel3d_{0.5};
     // 3D: seed separation [mm], min density [MeV], min self fraction
-    double crit_xy3d{10.};
-    double crit_rho3d{50.};
-    double self_frac3d{0.05};
+    double crit_xy3d_{10.};
+    double crit_rho3d_{50.};
+    double self_frac3d_{0.05};
     // 3D: outlier separation in units of crit_xy3d
-    double outlier_mult3d{2.};
+    double outlier_mult3d_{2.};
     // orphan layer clusters within this of an axis are attached [mm]
-    double attach_radius{40.};
+    double attach_radius_{40.};
     // satellites below sc_ratio of a cluster within sc_radius merge [mm]
-    double sc_ratio{0.06};
-    double sc_radius{150.};
+    double sc_ratio_{0.06};
+    double sc_radius_{150.};
     // clusters spanning fewer layers merge regardless of energy
-    int sc_min_layers{5};
+    int sc_min_layers_{5};
     // clusters below this are dropped [MeV]
-    double min_cluster_energy{20.};
+    double min_cluster_energy_{20.};
     // energy sharing between clusters above share_min_energy [MeV]
-    bool share{true};
-    int share_iters{30};
-    double share_min_energy{300.};
+    bool share_{true};
+    int share_iters_{30};
+    double share_min_energy_{300.};
     // shared clusters closer than this are merged [mm]
-    double coincide_dist{4.};
+    double coincide_dist_{4.};
     // smaller than ghost_ratio of a cluster within ghost_dist merges [mm]
-    double ghost_ratio{0.15};
-    double ghost_dist{12.};
+    double ghost_ratio_{0.15};
+    double ghost_dist_{12.};
     // exponential transverse profile slope per layer [mm]
-    std::vector<double> profile_lambda{};
+    std::vector<double> profile_lambda_{};
     // log weight W0 and window around the max cell [mm]
-    double w0{4.};
-    double pos_window{15.};
+    double w0_{4.};
+    double pos_window_{15.};
   };
 
   struct LayerCluster {
-    double e{0}, x{0}, y{0}, z{0};
-    int layer{0};
-    std::vector<int> hits;
-    double rho{0}, delta{0};
-    int nh{-1};
-    int cid{-1};
+    double e_{0}, x_{0}, y_{0}, z_{0};
+    int layer_{0};
+    std::vector<int> hits_;
+    double rho_{0}, delta_{0};
+    int nh_{-1};
+    int cid_{-1};
   };
 
   struct Cluster {
-    double e{0};
+    double e_{0};
     // energy weighted centroid, on the fitted axis in x,y
-    double x{0}, y{0}, z{0};
-    double dxdz{0}, dydz{0};
-    double rms_x{0}, rms_y{0}, rms_z{0};
+    double x_{0}, y_{0}, z_{0};
+    double dxdz_{0}, dydz_{0};
+    double rms_x_{0}, rms_y_{0}, rms_z_{0};
     // first layer centroid
-    double x0{0}, y0{0}, z0{0};
-    std::vector<int> hits;
-    std::vector<double> frac;
+    double x0_{0}, y0_{0}, z0_{0};
+    std::vector<int> hits_;
+    std::vector<double> frac_;
     // x,y of the axis at z
-    double axisX(double zz) const { return x + dxdz * (zz - z); }
-    double axisY(double zz) const { return y + dydz * (zz - z); }
+    double axisX(double zz) const { return x_ + dxdz_ * (zz - z_); }
+    double axisY(double zz) const { return y_ + dydz_ * (zz - z_); }
   };
 
   CLUE3D() = default;

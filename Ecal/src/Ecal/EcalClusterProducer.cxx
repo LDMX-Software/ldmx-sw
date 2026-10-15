@@ -40,43 +40,47 @@ void EcalClusterProducer::configure(framework::config::Parameters& ps) {
   reclustering_ = ps.get<bool>("reclustering");
   algorithm_ = ps.get<std::string>("algorithm", "clue");
 
-  clue3d_.hit_ecut = ps.get<double>("clue3d_hit_ecut", clue3d_.hit_ecut);
-  clue3d_.dc2d = ps.get<double>("clue3d_dc2d", clue3d_.dc2d);
-  clue3d_.kernel2d = ps.get<double>("clue3d_kernel2d", clue3d_.kernel2d);
-  clue3d_.deltas2d = ps.get<double>("clue3d_deltas2d", clue3d_.deltas2d);
-  clue3d_.deltao2d = ps.get<double>("clue3d_deltao2d", clue3d_.deltao2d);
-  clue3d_.rhoc2d = ps.get<double>("clue3d_rhoc2d", clue3d_.rhoc2d);
-  clue3d_.sibling_layers =
-      ps.get<int>("clue3d_sibling_layers", clue3d_.sibling_layers);
-  clue3d_.dens_xy3d = ps.get<double>("clue3d_dens_xy3d", clue3d_.dens_xy3d);
-  clue3d_.kernel3d = ps.get<double>("clue3d_kernel3d", clue3d_.kernel3d);
-  clue3d_.crit_xy3d = ps.get<double>("clue3d_crit_xy3d", clue3d_.crit_xy3d);
-  clue3d_.crit_rho3d = ps.get<double>("clue3d_crit_rho3d", clue3d_.crit_rho3d);
-  clue3d_.self_frac3d =
-      ps.get<double>("clue3d_self_frac3d", clue3d_.self_frac3d);
-  clue3d_.outlier_mult3d =
-      ps.get<double>("clue3d_outlier_mult3d", clue3d_.outlier_mult3d);
-  clue3d_.attach_radius =
-      ps.get<double>("clue3d_attach_radius", clue3d_.attach_radius);
-  clue3d_.sc_ratio = ps.get<double>("clue3d_sc_ratio", clue3d_.sc_ratio);
-  clue3d_.sc_radius = ps.get<double>("clue3d_sc_radius", clue3d_.sc_radius);
-  clue3d_.sc_min_layers =
-      ps.get<int>("clue3d_sc_min_layers", clue3d_.sc_min_layers);
-  clue3d_.coincide_dist =
-      ps.get<double>("clue3d_coincide_dist", clue3d_.coincide_dist);
-  clue3d_.ghost_ratio =
-      ps.get<double>("clue3d_ghost_ratio", clue3d_.ghost_ratio);
-  clue3d_.ghost_dist = ps.get<double>("clue3d_ghost_dist", clue3d_.ghost_dist);
-  clue3d_.min_cluster_energy =
-      ps.get<double>("clue3d_min_cluster_energy", clue3d_.min_cluster_energy);
-  clue3d_.share = ps.get<bool>("clue3d_share", clue3d_.share);
-  clue3d_.share_iters = ps.get<int>("clue3d_share_iters", clue3d_.share_iters);
-  clue3d_.share_min_energy =
-      ps.get<double>("clue3d_share_min_energy", clue3d_.share_min_energy);
-  clue3d_.profile_lambda = ps.get<std::vector<double>>("clue3d_profile_lambda",
-                                                       clue3d_.profile_lambda);
-  clue3d_.w0 = ps.get<double>("clue3d_w0", clue3d_.w0);
-  clue3d_.pos_window = ps.get<double>("clue3d_pos_window", clue3d_.pos_window);
+  clue3d_.hit_ecut_ = ps.get<double>("clue3d_hit_ecut", clue3d_.hit_ecut_);
+  clue3d_.dc2d_ = ps.get<double>("clue3d_dc2d", clue3d_.dc2d_);
+  clue3d_.kernel2d_ = ps.get<double>("clue3d_kernel2d", clue3d_.kernel2d_);
+  clue3d_.deltas2d_ = ps.get<double>("clue3d_deltas2d", clue3d_.deltas2d_);
+  clue3d_.deltao2d_ = ps.get<double>("clue3d_deltao2d", clue3d_.deltao2d_);
+  clue3d_.rhoc2d_ = ps.get<double>("clue3d_rhoc2d", clue3d_.rhoc2d_);
+  clue3d_.sibling_layers_ =
+      ps.get<int>("clue3d_sibling_layers", clue3d_.sibling_layers_);
+  clue3d_.dens_xy3d_ = ps.get<double>("clue3d_dens_xy3d", clue3d_.dens_xy3d_);
+  clue3d_.kernel3d_ = ps.get<double>("clue3d_kernel3d", clue3d_.kernel3d_);
+  clue3d_.crit_xy3d_ = ps.get<double>("clue3d_crit_xy3d", clue3d_.crit_xy3d_);
+  clue3d_.crit_rho3d_ =
+      ps.get<double>("clue3d_crit_rho3d", clue3d_.crit_rho3d_);
+  clue3d_.self_frac3d_ =
+      ps.get<double>("clue3d_self_frac3d", clue3d_.self_frac3d_);
+  clue3d_.outlier_mult3d_ =
+      ps.get<double>("clue3d_outlier_mult3d", clue3d_.outlier_mult3d_);
+  clue3d_.attach_radius_ =
+      ps.get<double>("clue3d_attach_radius", clue3d_.attach_radius_);
+  clue3d_.sc_ratio_ = ps.get<double>("clue3d_sc_ratio", clue3d_.sc_ratio_);
+  clue3d_.sc_radius_ = ps.get<double>("clue3d_sc_radius", clue3d_.sc_radius_);
+  clue3d_.sc_min_layers_ =
+      ps.get<int>("clue3d_sc_min_layers", clue3d_.sc_min_layers_);
+  clue3d_.coincide_dist_ =
+      ps.get<double>("clue3d_coincide_dist", clue3d_.coincide_dist_);
+  clue3d_.ghost_ratio_ =
+      ps.get<double>("clue3d_ghost_ratio", clue3d_.ghost_ratio_);
+  clue3d_.ghost_dist_ =
+      ps.get<double>("clue3d_ghost_dist", clue3d_.ghost_dist_);
+  clue3d_.min_cluster_energy_ =
+      ps.get<double>("clue3d_min_cluster_energy", clue3d_.min_cluster_energy_);
+  clue3d_.share_ = ps.get<bool>("clue3d_share", clue3d_.share_);
+  clue3d_.share_iters_ =
+      ps.get<int>("clue3d_share_iters", clue3d_.share_iters_);
+  clue3d_.share_min_energy_ =
+      ps.get<double>("clue3d_share_min_energy", clue3d_.share_min_energy_);
+  clue3d_.profile_lambda_ = ps.get<std::vector<double>>(
+      "clue3d_profile_lambda", clue3d_.profile_lambda_);
+  clue3d_.w0_ = ps.get<double>("clue3d_w0", clue3d_.w0_);
+  clue3d_.pos_window_ =
+      ps.get<double>("clue3d_pos_window", clue3d_.pos_window_);
 }
 
 void EcalClusterProducer::produce(framework::Event& event) {
@@ -96,24 +100,24 @@ void EcalClusterProducer::produce(framework::Event& event) {
     std::vector<ldmx::EcalCluster> ecal_clusters;
     for (const auto& c : clusters) {
       ldmx::EcalCluster cluster;
-      cluster.setEnergy(c.e);
-      cluster.setCentroidXYZ(c.x, c.y, c.z);
-      cluster.setDXDZ(c.dxdz);
-      cluster.setDYDZ(c.dydz);
-      cluster.setRMSXYZ(c.rms_x, c.rms_y, c.rms_z);
-      cluster.setFirstLayerCentroidXYZ(c.x0, c.y0, c.z0);
+      cluster.setEnergy(c.e_);
+      cluster.setCentroidXYZ(c.x_, c.y_, c.z_);
+      cluster.setDXDZ(c.dxdz_);
+      cluster.setDYDZ(c.dydz_);
+      cluster.setRMSXYZ(c.rms_x_, c.rms_y_, c.rms_z_);
+      cluster.setFirstLayerCentroidXYZ(c.x0_, c.y0_, c.z0_);
       // 3D clusters span all layers
       cluster.setLayer(0);
       std::vector<unsigned int> ids;
       std::vector<float> hx, hy, hz, he;
-      for (std::size_t i = 0; i < c.hits.size(); i++) {
-        const auto& h = ecal_hits[c.hits[i]];
+      for (std::size_t i = 0; i < c.hits_.size(); i++) {
+        const auto& h = ecal_hits[c.hits_[i]];
         ids.push_back(h.getID());
         hx.push_back(h.getXPos());
         hy.push_back(h.getYPos());
         hz.push_back(h.getZPos());
         // shared energy of the hit
-        he.push_back(c.frac[i] * h.getEnergy());
+        he.push_back(c.frac_[i] * h.getEnergy());
       }
       cluster.setNHits(ids.size());
       cluster.setIDs(ids);
