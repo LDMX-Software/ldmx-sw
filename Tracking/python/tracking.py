@@ -139,12 +139,8 @@ class SeedFinderProcessor(Processor):
         layers (4 when a target constraint is enabled).
     use_target_constraint : bool
         Put the tagger track position at the target into the seed fit,
-        one seed per tagger track.
-    use_beamspot_constraint : bool
-        Put the beam spot at the target into the seed fit when no tagger
-        track constraint is available.
-    beamspot_sigma : list of float
-        Beam spot sigma at the target in local (u, v) [mm].
+        one seed per tagger track. Fatal error if the tagger track
+        collection is missing.
     prefilter_unconstrained : bool
         With a constraint on, run the constrained fits only for 5+ hit
         combinations whose plain fit passes the seed cuts. Keeps fake
@@ -161,8 +157,6 @@ class SeedFinderProcessor(Processor):
     thetacut: float = 0.2
     strategies: list[str] = ["0,1,2,3,4"]
     use_target_constraint: bool = False
-    use_beamspot_constraint: bool = False
-    beamspot_sigma: list[float] = [5.77, 23.1]
     prefilter_unconstrained: bool = False
     bfield: float = 1.5
     input_hits_collection: str = "TaggerSimHits"
@@ -243,11 +237,8 @@ class CKFProcessor(Processor):
     use_target_constraint : bool
         Recoil only. Add the tagger track position at the target to the fit
         as a 2D point (Kalman update at the target). Not counted as a hit;
-        adds 2 to the ndf.
-    use_beamspot_constraint : bool
-        Recoil only. Use the beam spot when no tagger track point exists.
-    beamspot_sigma : list[float]
-        Beam spot sigma at the target in local (u, v) [mm].
+        adds 2 to the ndf. Fatal error if the tagger track collection is
+        missing.
     field_zero_outside : bool
         Zero field outside the field map instead of an out of bounds error,
         which otherwise aborts the field-map CKF for the whole seed.
@@ -291,8 +282,6 @@ class CKFProcessor(Processor):
     measurement_collection: str = ""
     outlier_pval_: float = 3.84
     use_target_constraint: bool = False
-    use_beamspot_constraint: bool = False
-    beamspot_sigma: list[float] = [5.77, 23.1]
     field_zero_outside: bool = False
     target_constraint_max_hits: int = -1
     target_sigma_extra: list[float] = [0.0, 0.0]

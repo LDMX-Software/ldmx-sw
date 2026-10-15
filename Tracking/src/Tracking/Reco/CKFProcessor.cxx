@@ -220,8 +220,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
   // target points for the recoil fit; none when the constraint is off
   std::vector<TargetPoint> target_points;
-  if (!tagger_tracking_ &&
-      (use_target_constraint_ || use_beamspot_constraint_)) {
+  if (!tagger_tracking_ && use_target_constraint_) {
     target_points = targetPoints(event);
   }
 
@@ -534,7 +533,6 @@ void CKFProcessor::produce(framework::Event& event) {
           Acts::Vector2 best_r{Acts::Vector2::Zero()};
           Acts::Matrix<2, 2> best_s_inv{Acts::Matrix<2, 2>::Identity()};
           Acts::Matrix<2, 2> best_v{Acts::Matrix<2, 2>::Zero()};
-          bool best_is_bs{false};
           // extra error: vertex depth, scattering and no material in the
           // back extrapolation, a (+) depth (+) b/p per direction
           const double p_gev = 1. / std::abs(x[Acts::eBoundQOverP]);
@@ -559,7 +557,6 @@ void CKFProcessor::produce(framework::Event& event) {
               best_r = r;
               best_s_inv = s_inv;
               best_v = tp.cov_ + extra;
-              best_is_bs = tp.beamspot_;
             }
           }
           const Acts::Matrix<6, 2> k = c * h.transpose() * best_s_inv;
@@ -572,10 +569,7 @@ void CKFProcessor::produce(framework::Event& event) {
               target_surface_, x_new, c_new, opt_target->particleHypothesis());
           chi2_tgt = best_chi2;
           ndf_tgt = 2;
-          if (best_is_bs)
-            n_tgt_beamspot_++;
-          else
-            n_tgt_tagger_++;
+          n_tgt_tagger_++;
         } else {
           n_tgt_nocov_++;
         }
@@ -931,10 +925,9 @@ void CKFProcessor::onProcessEnd() {
                                  n_fieldmap_target_extrap_failed_recoil_
                            : 0.0)
                    << "%)";
-    if (use_target_constraint_ || use_beamspot_constraint_) {
+    if (use_target_constraint_) {
       ldmx_log(info) << "Target constraint:: tagger " << n_tgt_tagger_
-                     << ", beam spot " << n_tgt_beamspot_ << ", no covariance "
-                     << n_tgt_nocov_;
+                     << ", no covariance " << n_tgt_nocov_;
     }
     ldmx_log(info) << "  Recoil ECAL: Field-map extrap failed "
                    << n_fieldmap_ecal_extrap_failed_recoil_
@@ -995,10 +988,6 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
 
   use_target_constraint_ = parameters.get<bool>("use_target_constraint", false);
-  use_beamspot_constraint_ =
-      parameters.get<bool>("use_beamspot_constraint", false);
-  beamspot_sigma_ =
-      parameters.get<std::vector<double>>("beamspot_sigma", {5.77, 23.1});
   field_zero_outside_ = parameters.get<bool>("field_zero_outside", false);
   target_constraint_max_hits_ =
       parameters.get<int>("target_constraint_max_hits", -1);
@@ -1015,8 +1004,7 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
     EXCEPTION_RAISE("BadConf",
                     "use_target_constraint needs a tagger_trks_collection");
   }
-  if (tagger_tracking_ &&
-      (use_target_constraint_ || use_beamspot_constraint_)) {
+  if (tagger_tracking_ && use_target_constraint_) {
     EXCEPTION_RAISE("BadConf", "target constraint is for recoil tracking");
   }
 }  // end of configure()
@@ -1044,24 +1032,19 @@ auto CKFProcessor::targetPoints(framework::Event& event)
         tp.cov_ = cov.topLeftCorner<2, 2>();
         points.push_back(tp);
       }
-    } else if (!warned_ambiguous_tagger_ &&
-               event.exists(tagger_trks_collection_, pass, false)) {
-      ldmx_log(warn) << "Several '" << tagger_trks_collection_
-                     << "' collections found, set "
-                        "tagger_trks_event_collection_passname to pick one";
-      warned_ambiguous_tagger_ = true;
+    } else {
+      // the target constraint needs the tagger tracker
+      if (event.exists(tagger_trks_collection_, pass, false)) {
+        EXCEPTION_RAISE("BadConf",
+                        "Several '" + tagger_trks_collection_ +
+                            "' collections found, set "
+                            "tagger_trks_event_collection_passname to pick "
+                            "one");
+      }
+      EXCEPTION_RAISE("NoTaggerTracks", "No '" + tagger_trks_collection_ +
+                                            "' collection for the target "
+                                            "constraint, run tagger tracking");
     }
-  }
-
-  // beam spot only when no tagger track point exists
-  if (points.empty() && use_beamspot_constraint_) {
-    TargetPoint bs;
-    bs.loc_ = Acts::Vector2::Zero();
-    bs.cov_ = Acts::Matrix<2, 2>::Zero();
-    bs.cov_(0, 0) = beamspot_sigma_[0] * beamspot_sigma_[0];
-    bs.cov_(1, 1) = beamspot_sigma_[1] * beamspot_sigma_[1];
-    bs.beamspot_ = true;
-    points.push_back(bs);
   }
   return points;
 }

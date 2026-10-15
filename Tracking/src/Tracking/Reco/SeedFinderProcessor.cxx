@@ -75,10 +75,6 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   strategies_ =
       parameters.get<std::vector<std::string>>("strategies", {"0,1,2,3,4"});
   use_target_constraint_ = parameters.get<bool>("use_target_constraint", false);
-  use_beamspot_constraint_ =
-      parameters.get<bool>("use_beamspot_constraint", false);
-  beamspot_sigma_ =
-      parameters.get<std::vector<double>>("beamspot_sigma", {5.77, 23.1});
   prefilter_unconstrained_ =
       parameters.get<bool>("prefilter_unconstrained", false);
 
@@ -88,8 +84,7 @@ void SeedFinderProcessor::configure(framework::config::Parameters& parameters) {
   }
 
   // 5 fit parameters: one equation per strip, two per target constraint
-  const size_t min_layers =
-      (use_target_constraint_ || use_beamspot_constraint_) ? 4 : 5;
+  const size_t min_layers = use_target_constraint_ ? 4 : 5;
 
   // parse each "l0,l1,..." string into a layer list
   strategy_layers_.clear();
@@ -150,6 +145,18 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     if (event.exists(tagger_trks_collection_, pass)) {
       tagger_tracks =
           event.getCollection<ldmx::Track>(tagger_trks_collection_, pass);
+    } else if (use_target_constraint_) {
+      // the target constraint needs the tagger tracker
+      if (event.exists(tagger_trks_collection_, pass, false)) {
+        EXCEPTION_RAISE("BadConf",
+                        "Several '" + tagger_trks_collection_ +
+                            "' collections found, set "
+                            "tagger_trks_event_collection_passname to pick "
+                            "one");
+      }
+      EXCEPTION_RAISE("NoTaggerTracks", "No '" + tagger_trks_collection_ +
+                                            "' collection for the target "
+                                            "constraint, run tagger tracking");
     } else if (!warned_ambiguous_tagger_ &&
                event.exists(tagger_trks_collection_, pass, false)) {
       ldmx_log(warn) << "Several '" << tagger_trks_collection_
@@ -201,20 +208,9 @@ void SeedFinderProcessor::produce(framework::Event& event) {
     }
   }
 
-  // Constraints that enter the fit: tagger tracks, else the beam spot
+  // Constraints that enter the fit: tagger tracks only
   ldmx::Measurements fit_constraints;
   if (use_target_constraint_) fit_constraints = target_pseudo_meas;
-  if (fit_constraints.empty() && use_beamspot_constraint_) {
-    ldmx::Measurement beamspot;
-    beamspot.setLocalPosition(0., 0.);
-    Acts::Vector3 global_pos = tgt_surf->localToGlobal(
-        geometryContext(), Acts::Vector2{0., 0.}, Acts::Vector3{0., 0., 0.});
-    beamspot.setGlobalPosition(global_pos(0), global_pos(1), global_pos(2));
-    beamspot.setTime(0.);
-    beamspot.setLocalCovariance(beamspot_sigma_[0] * beamspot_sigma_[0],
-                                beamspot_sigma_[1] * beamspot_sigma_[1]);
-    fit_constraints.push_back(beamspot);
-  }
 
   if (event.exists(sim_particles_coll_name_, sim_particles_event_passname_)) {
     particle_map = event.getMap<int, ldmx::SimParticle>(

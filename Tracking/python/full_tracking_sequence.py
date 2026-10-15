@@ -320,7 +320,6 @@ def full_tracking_sequence(
             "4,5,6,7",
         ],
         use_target_constraint=True,
-        use_beamspot_constraint=True,
         prefilter_unconstrained=True,
         bfield=1.5,
         pmin=0.04,
@@ -357,7 +356,6 @@ def full_tracking_sequence(
         # the recoil leaves the field map (|y| < 70 mm) on ~40% of seeds
         field_zero_outside=True,
         use_target_constraint=True,
-        use_beamspot_constraint=True,
         tagger_trks_collection=tagged("TaggerTracksClean"),
         target_constraint_max_hits=5,
         **target_constraint_errors(detector),

@@ -146,10 +146,6 @@ class SeedFinderProcessor : public TrackingGeometryUser {
   std::vector<long> seeds_per_strategy_{};
   /// Put tagger track positions at the target into the seed fit.
   bool use_target_constraint_{false};
-  /// Put the beam spot into the seed fit when no tagger track exists.
-  bool use_beamspot_constraint_{false};
-  /// Beam spot sigma at the target in local (u, v) [mm].
-  std::vector<double> beamspot_sigma_{5.77, 23.1};
   /// Target surface the constraints live on.
   std::shared_ptr<Acts::Surface> target_surface_;
   /// Warn only once about several tagger track collections.
