@@ -103,8 +103,22 @@ class Measurement {
    */
   void setLayerID(const int& layer_id) {
     layer_id_ = layer_id;
-    layer_ = ((layer_id_ / 100) % 10 - 1) * 2 + layer_id % 2;
+    layer_ = layerIndex(layer_id);
   };
+
+  /**
+   * Internal layer index from a sensor ID (vol * 1000 + ly * 100 + sensor).
+   * Tagger 0-13, recoil L1-L4 0-7 (axial/stereo pairs), recoil L5 8, L6 9.
+   *
+   * @param layer_id The sensor ID.
+   * @return The internal layer index.
+   */
+  static int layerIndex(int layer_id) {
+    const int ly = (layer_id / 100) % 10;
+    // recoil L5/L6 are axial only, last digit is the module
+    if (layer_id / 1000 == 3 && ly >= 5) return ly + 3;
+    return (ly - 1) * 2 + layer_id % 2;
+  }
 
   /// @return The layer ID of the sensor associated with this measurement.
   [[nodiscard]] int getLayerID() const { return layer_id_; };

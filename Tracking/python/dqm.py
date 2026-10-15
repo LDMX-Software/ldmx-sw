@@ -91,6 +91,8 @@ class TrackingRecoDQM(Processor):
         Maximum q/p for histograms.
     pmax : float
         Maximum momentum for histograms.
+    n_layers : int
+        Number of layers (Measurement::getLayer), 14 tagger, 10 recoil.
     track_states : list[str]
         Track states to build histograms for.
     do_truth : bool
@@ -133,6 +135,7 @@ class TrackingRecoDQM(Processor):
     qopmin: float = -10.0
     qopmax: float = 10.0
     pmax: float = 10.0
+    n_layers: int = 14
     track_states: list[str] = ["ecal", "target"]
     do_truth: bool = True
     track_collection: str = "TruthTracks"
@@ -163,6 +166,8 @@ class TrackingRecoDQM(Processor):
         qopmin = self.qopmin
         qopmax = self.qopmax
         pmax = self.pmax
+        nly = self.n_layers
+        nlb = nly + 1  # layer histogram bins
 
         self.histogram("N_tracks", "N tracks", 10, 0, 10)
         self.histogram("d0", "d0 [mm]", nbins, d0min, d0max)
@@ -174,7 +179,7 @@ class TrackingRecoDQM(Processor):
         self.histogram("pt_bending", "pT bending plane [MeV]", nbins, 0.0, pmax * 1000)
         self.histogram("pt_beam", "pT beam axis [MeV]", nbins, 0, 500)
         self.histogram("nHits", "nHits", 15, 0, 15)
-        self.histogram("layers_hit", "Num layers hit", 15, 0, 15)
+        self.histogram("layers_hit", "Num layers hit", nlb, 0, nlb)
         self.histogram("measurement_dedx", "Measurement dE/dx (MeV/mm)", 60, 0.0, 0.6)
         self.histogram("Chi2", "Chi2", nbins, 0, 100)
         self.histogram("ndf", "ndf", 10, 0, 10)
@@ -424,7 +429,7 @@ class TrackingRecoDQM(Processor):
         )
 
         # Per-layer unbiased U-residuals and pulls
-        for i in range(14):
+        for i in range(nly):
             self.histogram(
                 f"unbiased_res_u_l{i}",
                 f"Unbiased U residual layer {i} (mm)",
@@ -443,7 +448,7 @@ class TrackingRecoDQM(Processor):
         if self.do_truth:
             self.histogram("truth_N_tracks", "truth_N tracks", 10, 0, 10)
             self.histogram("truth_nHits", "truth nHits", 15, 0, 15)
-            self.histogram("truth_layers_hit", "truth layers hit", 15, 0, 15)
+            self.histogram("truth_layers_hit", "truth layers hit", nlb, 0, nlb)
             self.histogram("truth_d0", "truth d0 [mm]", nbins, d0min, d0max)
             self.histogram("truth_z0", "truth z0 [mm]", nbins, z0min, z0max)
             self.histogram("truth_phi", "truth #phi", nbins, phimin, phimax)
@@ -506,7 +511,7 @@ class TrackingRecoDQM(Processor):
                 0.0,
                 0.6,
             )
-            self.histogram("match_layers_hit", "match layers hit", 15, 0, 15)
+            self.histogram("match_layers_hit", "match layers hit", nlb, 0, nlb)
             self.histogram("match_kminus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
             self.histogram("match_kplus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
             self.histogram("match_piminus_p", "truth p [MeV]", nbins, 0.0, pmax * 1000)
@@ -526,7 +531,7 @@ class TrackingRecoDQM(Processor):
             self.histogram("fake_p", "fake p [MeV]", nbins, 0, pmax * 1000)
             self.histogram("fake_qop", "fake qOverP [GeV^{-1}]", nbins, -40, 40)
             self.histogram("fake_nHits", "fake nHits", 15, 0, 15)
-            self.histogram("fake_layers_hit", "fake layers hit", 15, 0, 15)
+            self.histogram("fake_layers_hit", "fake layers hit", nlb, 0, nlb)
             self.histogram(
                 "fake_measurement_dedx",
                 "Fake measurement dE/dx (MeV/mm)",
@@ -549,7 +554,7 @@ class TrackingRecoDQM(Processor):
             self.histogram("dup_p", "dup p [MeV]", 100, 0, pmax * 1000)
             self.histogram("dup_qop", "dup qOverP [GeV^{-1}]", nbins, qopmin, qopmax)
             self.histogram("dup_nHits", "dup nHits", 15, 0, 15)
-            self.histogram("dup_layers_hit", "dup layers hit", 15, 0, 15)
+            self.histogram("dup_layers_hit", "dup layers hit", nlb, 0, nlb)
             self.histogram(
                 "dup_measurement_dedx",
                 "Dup measurement dE/dx (MeV/mm)",

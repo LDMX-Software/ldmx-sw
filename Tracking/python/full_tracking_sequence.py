@@ -356,6 +356,7 @@ def full_tracking_sequence(
 
     dqm_seed_recoil = tkdqm.TrackingRecoDQM(
         instance_name=tagged("SeedRecoilDQM"),
+        n_layers=10,
         track_collection=seeder_recoil.out_seed_collection,
         truth_collection=tagged("RecoilTruthTracks"),
         measurement_collection=recoil_meas_collection,
@@ -374,6 +375,7 @@ def full_tracking_sequence(
 
     dqm_recoil_ckf = tkdqm.TrackingRecoDQM(
         instance_name=tagged("RecoilDQM"),
+        n_layers=10,
         track_collection=tracking_recoil.out_trk_collection,
         truth_collection=tagged("RecoilTruthTracks"),
         track_states=["ecal", "target"],
@@ -394,6 +396,7 @@ def full_tracking_sequence(
 
     dqm_recoil_gas = tkdqm.TrackingRecoDQM(
         instance_name=tagged("RecoilGASDQM"),
+        n_layers=10,
         track_collection=greedy_solver_recoil.out_trk_collection,
         truth_collection=tagged("RecoilTruthTracks"),
         track_states=["ecal", "target"],
@@ -414,6 +417,7 @@ def full_tracking_sequence(
 
     dqm_recoil_gsf = tkdqm.TrackingRecoDQM(
         instance_name=tagged("RecoilGSFDQM"),
+        n_layers=10,
         track_collection=gsf_recoil.out_trk_collection,
         truth_collection=tagged("RecoilTruthTracks"),
         track_states=["ecal", "target"],
@@ -432,6 +436,7 @@ def full_tracking_sequence(
 
     dqm_digi_recoil = tkdqm.DigiDQM(
         instance_name=tagged("RecoilDigiDQM"),
+        n_sensors=10,
         sim_coll_name="RecoilSimHits",
         digi_coll_name="" if use_truth_smearing else digi_recoil.out_collection,
         fitted_coll_name="" if use_truth_smearing else fit_recoil.out_collection,

@@ -9,12 +9,6 @@
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Sim/TrackingUtils.h"
 
-// Helper: decode the raw sensor index (from getSensorID / FittedSiStripHit
-// layer_id) into the compact internal layer index 0..N-1 used by Measurement.
-static inline int sensorIndexToLayer(int raw_id) {
-  return ((raw_id / 100) % 10 - 1) * 2 + raw_id % 2;
-}
-
 namespace tracking::dqm {
 
 void DigiDQM::configure(framework::config::Parameters& parameters) {
@@ -46,7 +40,8 @@ void DigiDQM::analyze(const framework::Event& event) {
     for (const auto& hit : sim_hits) {
       // getSensorID maps the G4 layer/module IDs to the same compact index
       // that DigitizationProcessor stores in Measurement::layer_id_.
-      int layer = sensorIndexToLayer(tracking::sim::utils::getSensorID(hit));
+      int layer =
+          ldmx::Measurement::layerIndex(tracking::sim::utils::getSensorID(hit));
       if (layer < 0 || layer >= n_sensors_) continue;
 
       const std::string s = std::to_string(layer);
@@ -73,7 +68,7 @@ void DigiDQM::analyze(const framework::Event& event) {
       // FittedSiStripHit::getLayerID() stores the same raw sensor index
       // as Measurement::layer_id_ (set by getSensorID in
       // DigitizationProcessor).
-      int layer = sensorIndexToLayer(hit.getLayerID());
+      int layer = ldmx::Measurement::layerIndex(hit.getLayerID());
       if (layer < 0 || layer >= n_sensors_) continue;
 
       const std::string s = std::to_string(layer);
