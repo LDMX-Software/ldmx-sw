@@ -32,6 +32,7 @@
 #include "G4EmParameters.hh"
 #include "G4GDMLParser.hh"
 #include "G4GenericBiasingPhysics.hh"
+#include "G4HadronicParameters.hh"
 #include "G4ParallelWorldPhysics.hh"
 #include "G4UImanager.hh"
 #include "G4VModularPhysicsList.hh"
@@ -60,6 +61,8 @@ void RunManager::setupPhysics() {
   // Same PN cross section as our custom PN models
   G4UImanager::GetUIpointer()->ApplyCommand(
       "/physics_lists/em/UseGammaNuclearXS false");
+  // Bertini multi-body angles as in 11.2, 11.5 replaces the 11.3 algorithm
+  G4HadronicParameters::Instance()->SetBertiniAngularEmissionsAs11_2(true);
 
   parallel_world_path_ = parameters_.get<std::string>("scoring_planes");
   is_pw_enabled_ = !parallel_world_path_.empty();
