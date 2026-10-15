@@ -171,6 +171,7 @@ p.sequence.extend(
         hcal_pf,
         track_pf,
         pf_comb,
+        dqm.ParticleFlowDQM(),
         *target_dqm,
         dqm.ElectroNuclearDQM(),
         dqm.EcalClusterAnalyzer(),

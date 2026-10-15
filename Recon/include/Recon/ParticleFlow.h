@@ -14,7 +14,7 @@
 #include "Recon/Event/CaloCluster.h"
 #include "Recon/Event/PFCandidate.h"
 #include "SimCore/Event/SimTrackerHit.h"
-#include "TGraph.h"
+#include "Tracking/Event/Track.h"
 
 namespace recon {
 
@@ -33,9 +33,8 @@ class ParticleFlow : public framework::Producer {
 
   virtual void onProcessEnd();
 
-  void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::SimTrackerHit& tk);
-  void fillCandCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& cl,
-                    TGraph gResponse, int PIDnb);
+  void fillCandTrack(ldmx::PFCandidate& cand, const ldmx::Track& tk,
+                     const std::vector<ldmx::SimTrackerHit>& sp_hits);
   void fillCandEMCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& em);
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
 
@@ -44,8 +43,14 @@ class ParticleFlow : public framework::Producer {
       framework::Event& event, std::string inputClusterCollName,
       std::string inputClusterPassName);
 
-  TGraph* e_corr_{0};
-  TGraph* h_corr_{0};
+  static double correction(const std::vector<double>& energies,
+                           const std::vector<double>& factors, double energy);
+
+  // energy correction tables: raw energy [MeV] and factor
+  std::vector<double> ecal_corr_energies_;
+  std::vector<double> ecal_corr_factors_;
+  std::vector<double> hcal_corr_energies_;
+  std::vector<double> hcal_corr_factors_;
 
   // name of collection for PF inputs to be passed
   std::string input_ecal_coll_name_;
@@ -54,6 +59,9 @@ class ParticleFlow : public framework::Producer {
   std::string input_ecal_passname_;
   std::string input_hcal_passname_;
   std::string input_tracks_passname_;
+  // Ecal scoring plane hits used for candidate truth info
+  std::string truth_sp_coll_name_;
+  std::string truth_sp_passname_;
   // bool to toggle using pre-existing clusters instead of making new
   bool use_existing_ecal_clusters_;
   // name of collection for PF outputs
