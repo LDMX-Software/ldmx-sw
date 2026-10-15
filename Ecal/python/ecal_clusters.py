@@ -49,6 +49,10 @@ class EcalClusterProducer(Processor):
         recluster merged clusters or not
         No reclustering leads to more undercounting
         reclustering leads to more overcounting
+    algorithm: str
+        "clue" (uses the settings above) or "clue3d"
+    clue3d_*: float
+        CLUE3D settings, see Ecal/CLUE3D.h; energies in MeV, lengths in mm
     """
 
     rec_hit_coll_name: str = "EcalRecHits"
@@ -65,3 +69,29 @@ class EcalClusterProducer(Processor):
     deltac: float = 10.0
     deltao: float = 40.0
     reclustering: bool = False
+    algorithm: str = "clue"
+    clue3d_hit_ecut: float = 0.0
+    clue3d_dc2d: float = 10.0
+    clue3d_kernel2d: float = 0.2
+    clue3d_deltas2d: float = 10.0
+    clue3d_deltao2d: float = 25.0
+    clue3d_rhoc2d: float = 5.0
+    clue3d_sibling_layers: int = 2
+    clue3d_dens_xy3d: float = 20.0
+    clue3d_kernel3d: float = 0.5
+    clue3d_crit_xy3d: float = 10.0
+    clue3d_crit_rho3d: float = 50.0
+    clue3d_self_frac3d: float = 0.15
+    clue3d_outlier_mult3d: float = 2.0
+    clue3d_attach_radius: float = 40.0
+    clue3d_sc_ratio: float = 0.06
+    clue3d_sc_radius: float = 100.0
+    clue3d_sc_min_layers: int = 5
+    clue3d_min_cluster_energy: float = 20.0
+    clue3d_share: bool = True
+    clue3d_share_iters: int = 30
+    clue3d_share_min_energy: float = 300.0
+    clue3d_coincide_dist: float = 4.0
+    clue3d_profile_lambda: list[float] = []
+    clue3d_w0: float = 4.0
+    clue3d_pos_window: float = 15.0
