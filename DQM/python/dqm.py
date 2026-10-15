@@ -2538,6 +2538,86 @@ class EcalTrackAnalyzer(Processor):
         )
 
 
+@processor("dqm::ParticleFlowDQM", "DQM")
+class ParticleFlowDQM(Processor):
+    """Monitor PF candidates and charged truth residuals."""
+
+    pf_cand_coll_name: str = "PFCandidates"
+    pf_cand_pass_name: str = ""
+
+    def __post_init__(self):
+        # multiplicities
+        self.histogram("n_cands", "Number of PF candidates", 20, -0.5, 19.5)
+        self.histogram("n_charged", "Number of charged PF candidates", 20, -0.5, 19.5)
+        self.histogram("n_neutral", "Number of neutral PF candidates", 20, -0.5, 19.5)
+        # PID bitmask: 1 track, 2 Ecal, 4 Hcal
+        pid_labels = [
+            "None",  # 0
+            "Tk",  # 1
+            "ECal",  # 2
+            "Tk+ECal",  # 3
+            "HCal",  # 4
+            "Tk+HCal",  # 5
+            "ECal+HCal",  # 6
+            "Tk+ECal+HCal",  # 7
+        ]
+        self.histogram("pid", "", pid_labels)
+
+        # charged candidates
+        self.histogram("charged_track_p", "Charged cand track p [MeV]", 100, 0, 8000)
+        self.histogram(
+            "charged_is_ecal_linked", "Track linked to Ecal cluster", 2, -0.5, 1.5
+        )
+        self.histogram("charged_ecal_e_over_p", "Linked Ecal E / track p", 100, 0, 2.5)
+        self.histogram(
+            "charged_ecal_raw_e_over_p", "Linked raw Ecal E / track p", 100, 0, 2.5
+        )
+        self.histogram(
+            "charged_cluster_dx", "Ecal cluster x - track x [mm]", 100, -50, 50
+        )
+        self.histogram(
+            "charged_cluster_dy", "Ecal cluster y - track y [mm]", 100, -50, 50
+        )
+
+        # charged truth residuals
+        self.histogram("charged_truth_pdg", "Charged cand truth PDG ID", 60, -30, 30)
+        self.histogram(
+            "charged_dp_over_p", "(track p - true p) / true p", 100, -0.5, 0.5
+        )
+        self.histogram(
+            "charged_dx_truth", "Track x - true x at Ecal [mm]", 100, -10, 10
+        )
+        self.histogram(
+            "charged_dy_truth", "Track y - true y at Ecal [mm]", 100, -10, 10
+        )
+        self.histogram(
+            "charged_p_vs_truth_p",
+            "True p [MeV]",
+            80,
+            0,
+            8000,
+            "Track p [MeV]",
+            80,
+            0,
+            8000,
+        )
+
+        # neutral candidates
+        self.histogram("neutral_ecal_only_e", "Ecal only neutral E [MeV]", 100, 0, 8000)
+        self.histogram(
+            "neutral_ecal_hcal_ecal_e", "Ecal+Hcal neutral, Ecal E [MeV]", 100, 0, 8000
+        )
+        self.histogram(
+            "neutral_ecal_hcal_hcal_e", "Ecal+Hcal neutral, Hcal E [MeV]", 100, 0, 8000
+        )
+        self.histogram("neutral_hcal_only_e", "Hcal only neutral E [MeV]", 100, 0, 8000)
+
+        # event sums
+        self.histogram("sum_charged_p", "Sum charged track p [MeV]", 100, 0, 10000)
+        self.histogram("sum_neutral_e", "Sum neutral E [MeV]", 100, 0, 10000)
+        self.histogram("sum_pf_e", "Sum PF energy [MeV]", 100, 0, 10000)
+
+
 @processor("dqm::EcalSPTrackCompare", "DQM")
 class EcalSPTrackCompare(Processor):
     """Compare primary electron at ECal scoring plane with reconstructed EcalTracks."""

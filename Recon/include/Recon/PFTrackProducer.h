@@ -1,6 +1,6 @@
 /**
  * @file PFTrackProducer.h
- * @brief Track selection skeleton for PFlow Reco
+ * @brief Track selection for PFlow Reco
  * @author Christian Herwig, Fermilab
  */
 
@@ -16,7 +16,11 @@ namespace recon {
 
 /**
  * @class PFTrackProducer
- * @brief
+ * @brief Selects the tracks passed to ParticleFlow
+ *
+ * Outputs ldmx::Track in both modes. In truth mode, Ecal scoring plane hits
+ * are wrapped into tracks with a single AtECAL state. In reco mode, tracks
+ * are selected from a reconstructed collection and must have an AtECAL state.
  */
 class PFTrackProducer : public framework::Producer {
  public:
@@ -28,7 +32,11 @@ class PFTrackProducer : public framework::Producer {
   virtual void produce(framework::Event& event);
 
  private:
-  bool truth_tracking_{true};
+  void produceTruth(framework::Event& event);
+  void produceReco(framework::Event& event);
+
+  // use Ecal scoring plane hits instead of reconstructed tracks
+  bool truth_tracking_{false};
 
   // name of collection for track inputs to be passed
   std::string input_track_coll_name_;
@@ -36,6 +44,8 @@ class PFTrackProducer : public framework::Producer {
   std::string input_pass_name_;
   // name of collection for pfTracks to be output
   std::string output_track_coll_name_;
+
+  // truth mode
   // boolean to cheat to select only electron tracks
   //  in this cheating truth tracker
   bool do_electron_tracking_{};
@@ -43,6 +53,17 @@ class PFTrackProducer : public framework::Producer {
   double min_electron_momentum_z_{};
   // maximum trackID allowed for beam electron selection
   int max_electron_track_id_{};
+
+  // reco mode
+  // name and pass of the reconstructed track collection
+  std::string reco_track_coll_name_;
+  std::string reco_track_pass_name_;
+  // minimum number of hits on track
+  int min_n_hits_{};
+  // maximum chi2/ndf, negative disables the cut
+  double max_chi2_ndf_{};
+  // minimum momentum at the Ecal face in MeV
+  double min_momentum_{};
 };
 }  // namespace recon
 

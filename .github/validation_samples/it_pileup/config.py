@@ -147,6 +147,7 @@ from LDMX.Recon import pf_reco
 track_pf = pf_reco.PFTrackProducer()
 track_pf.input_track_coll_name += overlay_str  # "EcalScoringPlaneHitsOverlay"
 track_pf.input_pass_name = this_pass_name
+track_pf.truth_tracking = True
 track_pf.do_electron_tracking = True
 # reference info
 truth_pf = pf_reco.PFTruthProducer()
@@ -177,6 +178,8 @@ pf_comb.input_ecal_coll_name = cluster.cluster_coll_name  # use CLUE
 pf_comb.input_ecal_passname = this_pass_name
 pf_comb.input_hcal_passname = this_pass_name
 pf_comb.input_tracks_passname = this_pass_name
+pf_comb.truth_sp_coll_name += overlay_str
+pf_comb.truth_sp_passname = this_pass_name
 
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
@@ -350,6 +353,7 @@ p.sequence.extend(
         ecal_pf,
         hcal_pf,
         pf_comb,
+        dqm.ParticleFlowDQM(pf_cand_pass_name=this_pass_name),
         pu_finder,
     ]
 )
