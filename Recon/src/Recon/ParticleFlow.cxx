@@ -57,8 +57,10 @@ double ParticleFlow::correction(const std::vector<double>& energies,
 void ParticleFlow::fillCandTrack(
     ldmx::PFCandidate& cand, const ldmx::Track& tk,
     const std::vector<ldmx::SimTrackerHit>& sp_hits) {
-  std::vector<double> xyz = tk.getPosition(ldmx::AtECAL);
-  std::vector<double> pxyz = tk.getMomentum(ldmx::AtECAL);
+  auto ts = tk.getTrackState(ldmx::AtECAL);
+  if (!ts || ts->pos_.size() < 3 || ts->mom_.size() < 3) return;
+  const std::vector<double>& xyz = ts->pos_;
+  const std::vector<double>& pxyz = ts->mom_;
   float ecal_z = 248;
   float ecal_x =
       xyz[0] + pxyz[0] / pxyz[2] * (ecal_z - xyz[2]);  // project onto ecal face
