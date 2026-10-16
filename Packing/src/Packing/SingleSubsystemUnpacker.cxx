@@ -86,6 +86,7 @@ void SingleSubsystemUnpacker::produce(framework::Event& event) {
 
     // buff has subsystem data without RoR header
     event.add(output_name_, buff);
+    event.getEventHeader().setRealData();
     // Store the full 64-bit RoR timestamp as two 32-bit halves since
     // EventHeader::setIntParameter only accepts int.
     uint64_t ts = ror_header.timestamp();

@@ -45,8 +45,6 @@ class QIEDecoder : public framework::Producer {
   int n_channels_{50};
   // number of time samples making up the event
   int n_samples_{5};
-  // configurable flag, to set the isRealData bit in the event header
-  bool is_real_data_{false};
 
 };  // encoder
 

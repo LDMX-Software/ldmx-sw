@@ -72,7 +72,6 @@ class ZCCMDecoder(Processor):
     output_collection: str = "decodedZCCM"
     number_channels: int = 84
     number_time_samples: int = 70
-    is_real_data: bool = True
 
     @staticmethod
     def tagger(map_file, **kwargs):

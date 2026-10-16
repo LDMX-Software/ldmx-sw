@@ -55,8 +55,6 @@ class ZCCMDecoder : public framework::Producer {
   int n_channels_{number_of_lanes_ * ZCCMOutput::NUM_CHAN_PER_LANE};
   // number of time samples making up the event
   int n_samples_{70};
-  // configurable flag, to set the isRealData bit in the event header
-  bool is_real_data_{true};
   // keep track of which of max 4 modules are used (get from lane/module map)
   int modules_used_[4] = {0};
 

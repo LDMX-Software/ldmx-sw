@@ -35,7 +35,6 @@ dec.input_pass_name = input_pass
 dec.verbose = True
 dec.number_channels = n_chan  # default: 50
 dec.number_time_samples = n_samp  # default: 5
-dec.is_real_data = True  # default: False
 # dec.spill_counter_conversion=125.0e6  #default: 125.e6 #not used
 
 

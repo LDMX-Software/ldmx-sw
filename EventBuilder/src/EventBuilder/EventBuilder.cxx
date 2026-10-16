@@ -258,6 +258,7 @@ void EventBuilder::produce(framework::Event& event) {
         }
         event.getEventHeader().setIntParameter(
             "RoR Timestamp", static_cast<long long>(event_timestamp));
+        event.getEventHeader().setRealData();
         // Still create PhysicsEventData for binary output file
         PhysicsEventData final_event =
             assemblePayload(assembled_event_fragments);
@@ -397,6 +398,7 @@ void EventBuilder::produce(framework::Event& event) {
     }
     event.getEventHeader().setIntParameter(
         "RoR Timestamp", static_cast<long long>(event_timestamp));
+    event.getEventHeader().setRealData();
     // Still create PhysicsEventData for binary output file
     PhysicsEventData final_event = assemblePayload(assembled_event_fragments);
     writeEventBinary(final_event, "events.bin");
