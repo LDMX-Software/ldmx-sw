@@ -116,6 +116,7 @@ def full_tracking_sequence(
     use_truth_smearing=True,
     detector="ldmx-det-v15-8gev",
     tag="",
+    use_target_constraint=True,
 ):
     """Build and return the full LDMX tracking processor sequence.
 
@@ -132,6 +133,10 @@ def full_tracking_sequence(
         (e.g. a smear/digi comparison) to avoid name conflicts.
         Example: ``tag="Smear"`` turns ``"TaggerTracks"`` into
         ``"SmearTaggerTracks"``.
+    use_target_constraint : bool
+        If True (default), the recoil seeder and CKF use the tagger track at
+        the target and fail if the tagger tracks are missing. Set False when
+        the tagger tracking does not run.
 
     Returns
     -------
@@ -315,12 +320,10 @@ def full_tracking_sequence(
             "0,1,2,3,5",
             "1,2,3,4,5",
             "2,3,4,5,6",
-            "0,1,2,3",
-            "2,3,4,5",
-            "4,5,6,7",
-        ],
-        use_target_constraint=True,
-        prefilter_unconstrained=True,
+        ]
+        + (["0,1,2,3", "2,3,4,5", "4,5,6,7"] if use_target_constraint else []),
+        use_target_constraint=use_target_constraint,
+        prefilter_unconstrained=use_target_constraint,
         bfield=1.5,
         pmin=0.04,
         pmax=819.0,
@@ -351,11 +354,11 @@ def full_tracking_sequence(
         out_trk_collection=tagged("RecoilTracks"),
         measurement_collection=recoil_meas_collection,
         # >= 5 hits; 5 hit tracks get ndf from the target point
-        min_hits=4,
+        min_hits=4 if use_target_constraint else 5,
         outlier_pval_=22.1,
         # the recoil leaves the field map (|y| < 70 mm) on ~40% of seeds
         field_zero_outside=True,
-        use_target_constraint=True,
+        use_target_constraint=use_target_constraint,
         tagger_trks_collection=tagged("TaggerTracksClean"),
         target_constraint_max_hits=5,
         **target_constraint_errors(detector),
@@ -579,7 +582,7 @@ def recoil_sequence(
 
     Includes digi, truth seeding, seed finding, CKF, ambiguity solver, and
     GSF for the recoil tracker only. The tracker veto is omitted (it requires
-    a tagger track). Useful for studies and configs where tagger reconstruction
+    a tagger track) and so is the target constraint. Useful for studies and configs where tagger reconstruction
     is not needed.
 
     Parameters
@@ -598,7 +601,10 @@ def recoil_sequence(
     TrackingSequence
     """
     full = full_tracking_sequence(
-        use_truth_smearing=use_truth_smearing, detector=detector, tag=tag
+        use_truth_smearing=use_truth_smearing,
+        detector=detector,
+        tag=tag,
+        use_target_constraint=False,
     )
 
     if use_truth_smearing:

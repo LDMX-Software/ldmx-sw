@@ -54,7 +54,7 @@ import LDMX.Hcal.digi as hcal_digi_and_reco
 # Load the HCAL modules
 import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
-from LDMX.Tracking import full_tracking_sequence
+from LDMX.Tracking.full_tracking_sequence import recoil_sequence
 
 
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
@@ -112,23 +112,17 @@ hcal_wab = hcal.HcalWABVetoProcessor()
 
 p.logger.term_level = 1
 # Example to show trace level logging for recoil CKF  (only)
-# p.logger.custom(full_tracking_sequence.dqm_recoil_ckf, level = -1)
+# p.logger.custom(recoil_seq.dqm_recoil_ckf, level = -1)
 
-# Add full tracking for both recoil trackers:
+# Recoil only tracking, no tagger tracks for the target constraint:
 # digi, seeds, CKF, ambiguity resolution, GSF, DQM
-recoil_tracking = [
-    full_tracking_sequence.digi_recoil,
-    full_tracking_sequence.truth_tracking,
-    full_tracking_sequence.seeder_recoil,
-    full_tracking_sequence.tracking_recoil,
-    full_tracking_sequence.greedy_solver_recoil,
-    full_tracking_sequence.gsf_recoil,
-]
+recoil_seq = recoil_sequence(detector=det)
+recoil_tracking = recoil_seq.sequence
 
 recoil_tracker_dqm = [
-    full_tracking_sequence.dqm_recoil_ckf,
-    #     full_tracking_sequence.dqm_recoil_gas,
-    #     full_tracking_sequence.dqm_recoil_gsf
+    recoil_seq.dqm_recoil_ckf,
+    #     recoil_seq.dqm_recoil_gas,
+    #     recoil_seq.dqm_recoil_gsf
 ]
 
 p.sequence.extend(
