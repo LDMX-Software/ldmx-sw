@@ -489,7 +489,7 @@ class GreedyAmbiguitySolver(Processor):
     """
 
     maximum_shared_hits: int = 2
-    maximum_iterations: int = 1000
+    maximum_iterations: int = 100000
     n_measurements_min: int = 5
     out_trk_collection: str = "TaggerTracksClean"
     track_collection: str = "TaggerTracks"
