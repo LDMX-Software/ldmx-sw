@@ -139,12 +139,12 @@ class SeedFinderProcessor(Processor):
         layers (4 when a target constraint is enabled).
     use_target_constraint : bool
         Put the tagger track position at the target into the seed fit,
-        one seed per tagger track.
-    use_beamspot_constraint : bool
-        Put the beam spot at the target into the seed fit when no tagger
-        track constraint is available.
-    beamspot_sigma : list of float
-        Beam spot sigma at the target in local (u, v) [mm].
+        one seed per tagger track. Fatal error if the tagger track
+        collection is missing.
+    prefilter_unconstrained : bool
+        With a constraint on, run the constrained fits only for 5+ hit
+        combinations whose plain fit passes the seed cuts. Keeps fake
+        combinations in busy events from passing because of the constraint.
     """
 
     perigee_location: list[float] = []
@@ -157,8 +157,7 @@ class SeedFinderProcessor(Processor):
     thetacut: float = 0.2
     strategies: list[str] = ["0,1,2,3,4"]
     use_target_constraint: bool = False
-    use_beamspot_constraint: bool = False
-    beamspot_sigma: list[float] = [5.77, 23.1]
+    prefilter_unconstrained: bool = False
     bfield: float = 1.5
     input_hits_collection: str = "TaggerSimHits"
     out_seed_collection: str = "SeedTracks"
@@ -235,9 +234,28 @@ class CKFProcessor(Processor):
         at z = -400 mm, i.e. the centre of the dipole.
     bfield_scale : float
         Overall scaling of the reconstruction field strength. Default 1.
+    use_target_constraint : bool
+        Recoil only. Add the tagger track position at the target to the fit
+        as a 2D point (Kalman update at the target). Not counted as a hit;
+        adds 2 to the ndf. Fatal error if the tagger track collection is
+        missing.
     field_zero_outside : bool
         Zero field outside the field map instead of an out of bounds error,
         which otherwise aborts the field-map CKF for the whole seed.
+    target_constraint_max_hits : int
+        Apply the target point only to tracks with at most this many hits;
+        -1 applies it to all.
+    target_sigma_extra : list[float]
+        Extra target point sigma in (u, v) [mm], added in quadrature.
+    target_sigma_extra_ms : list[float]
+        Extra target point sigma in (u, v) scaling as 1/p [mm GeV].
+    target_thickness : float
+        Target thickness [mm]. Adds the vertex depth term
+        thickness * slope / sqrt(12) per direction to the target point sigma.
+    tagger_trks_collection : str
+        Tagger tracks giving the target point.
+    tagger_trks_event_collection_passname : str
+        Pass name of the tagger tracks.
     """
 
     dumpobj: bool = False
@@ -263,7 +281,14 @@ class CKFProcessor(Processor):
     tagger_tracking: bool = False
     measurement_collection: str = ""
     outlier_pval_: float = 3.84
+    use_target_constraint: bool = False
     field_zero_outside: bool = False
+    target_constraint_max_hits: int = -1
+    target_sigma_extra: list[float] = [0.0, 0.0]
+    target_sigma_extra_ms: list[float] = [0.0, 0.0]
+    target_thickness: float = 0.0
+    tagger_trks_collection: str = ""
+    tagger_trks_event_collection_passname: str = ""
     sim_particles_coll_name: str = "SimParticles"
     sim_particles_event_passname: str = ""
     input_pass_name: str = ""
