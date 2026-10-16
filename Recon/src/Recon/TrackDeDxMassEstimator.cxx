@@ -119,6 +119,8 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
 
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
     float the_ih = 1. / sqrt(1. / n_hits * sum_dedx_inv2);
+    // m^2 = (Ih - C) p^2 / K [MeV^2], for every track, negative when Ih < C
+    float mass2 = (the_ih - fit_res_c_) * momentum * momentum / fit_res_k_;
 
     float mass = 0.;
     if (the_ih > fit_res_c_) {
@@ -133,6 +135,7 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
     mass_est.setNhits(n_hits);
     mass_est.setIh(the_ih);
     mass_est.setMass(mass);
+    mass_est.setMassSquared(mass2);
     mass_est.setTrackIndex(i);
     mass_est.setTrackType(track_type);
     mass_est.setPdgId(pdg_id);
