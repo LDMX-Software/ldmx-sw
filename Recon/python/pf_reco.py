@@ -65,17 +65,22 @@ class PFTrackProducer(Processor):
     min_n_hits: int = 0
     max_chi2_ndf: float = -1.0  # negative disables
     min_momentum: float = 0.0  # MeV at Ecal face
+    max_shared_frac: float = 0.5  # drop tracks sharing more hits with a better one
     output_track_coll_name: str = "PFTracks"
 
 
 @processor("recon::ParticleFlow", "Recon")
 class PFProducer(Processor):
-    """Configuration for particle reco"""
+    """Configuration for particle reco
 
-    input_ecal_coll_name: str = "PFEcalClusters"
+    By default the Ecal input is CLUE3D without superclustering, from
+    pf_ecal_clusters(), and satellites are merged by Ecal to Ecal linking.
+    """
+
+    input_ecal_coll_name: str = "PFEcalClustersCLUE3D"
     input_hcal_coll_name: str = "PFHcalClusters"
     input_track_coll_name: str = "PFTracks"
-    use_existing_ecal_clusters: bool = False
+    use_existing_ecal_clusters: bool = True
     output_coll_name: str = "PFCandidates"
     single_particle: bool = False
     input_ecal_passname: str = ""
@@ -83,6 +88,30 @@ class PFProducer(Processor):
     input_tracks_passname: str = ""
     truth_sp_coll_name: str = "EcalScoringPlaneHits"
     truth_sp_passname: str = ""
+    # dE/dx estimates made on the PF tracks, empty name disables
+    input_mass_coll_name: str = "PFTrackDeDx"
+    input_mass_passname: str = ""
+    # linking and particle ID
+    link_max_dist: float = 2.0  # RMS-normalized
+    link_min_rms: float = 5.0  # mm, floor on the cluster RMS
+    electron_ep_min: float = 0.7
+    excess_ep: float = 1.6
+    # dE/dx m2 [MeV^2] above proton_min is p, kaon_min to proton_min is K;
+    # only below the momentum limits [MeV], m2 resolution grows as p^2
+    proton_min_mass2: float = 4.0e5
+    kaon_min_mass2: float = 1.2e5
+    proton_max_p: float = 1500.0
+    kaon_max_p: float = 1000.0
+    # Ecal to Ecal linking of satellites, for CLUE3D clusters without
+    # superclustering; radius 0 disables. Same rules as clue3d_sc_*
+    ecal_link_radius: float = 150.0  # mm
+    ecal_link_ratio: float = 0.06
+    ecal_link_min_layers: int = 5
+    # soft clusters that stay photons: E [MeV], isolation and start z [mm]
+    photon_keep_min_e: float = 100.0
+    photon_keep_min_dist: float = 35.0
+    photon_keep_max_zstart: float = 330.0
+    dedx_min_hits: int = 3
     # energy corrections vs raw cluster energy [MeV], empty means none
     # old Ecal table overcorrected electrons, disabled until rederived
     ecal_corr_energies: list[float] = []
@@ -128,3 +157,29 @@ class PFTruthProducer(Processor):
     sim_particles_event_passname: str = ""
     ecal_sp_hits_event_passname: str = ""
     target_sp_hits_event_passname: str = ""
+
+
+def pf_ecal_clusters(**kwargs):
+    """CLUE3D Ecal clusters for PF, superclustering left to PF linking"""
+    from LDMX.Ecal.ecal_clusters import EcalClusterProducer
+
+    return EcalClusterProducer(
+        instance_name="PFEcalClusterCLUE3D",
+        cluster_coll_name="PFEcalClustersCLUE3D",
+        algo_coll_name="PFClusterAlgoResultCLUE3D",
+        algorithm="clue3d",
+        clue3d_sc_radius=0.0,
+        **kwargs,
+    )
+
+
+def pf_track_dedx(**kwargs):
+    """dE/dx estimates on the PF tracks, indices match for PF"""
+    from LDMX.Recon.track_dedx_mass_estimator import TrackDeDxMassEstimator
+
+    return TrackDeDxMassEstimator(
+        instance_name="PFTrackDeDxEstimator",
+        track_collection="PFTracks",
+        out_collection="PFTrackDeDx",
+        **kwargs,
+    )

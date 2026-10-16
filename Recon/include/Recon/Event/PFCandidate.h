@@ -30,7 +30,15 @@ class PFCandidate {
   /*
      Setters
    */
+  // detector bitmask: 1 track, 2 Ecal, 4 Hcal
   void setPID(int x_) { pid_ = x_; }
+  // reconstructed particle type as a signed PDG ID
+  void setPdgId(int x_) { pdg_id_ = x_; }
+  void setCharge(int x_) { charge_ = x_; }
+  // tracker dE/dx estimate of the charged track
+  void setDeDxMassSquared(float x_) { dedx_mass2_ = x_; }
+  void setDeDxIh(float x_) { dedx_ih_ = x_; }
+  void setDeDxNhits(int x_) { dedx_nhits_ = x_; }
   void setMass(float x_) { mass_ = x_; }
   void setEnergy(float x_) { energy_ = x_; }
 
@@ -106,11 +114,17 @@ class PFCandidate {
   void setTruthMass(double x_) { truth_mass_ = x_; }
   void setTruthEnergy(double x_) { truth_energy_ = x_; }
   void setTruthPdgId(int x_) { truth_pdg_id_ = x_; }
+  void setTruthTrackId(int x_) { truth_track_id_ = x_; }
 
   /*
      Getters
    */
   int getPID() const { return pid_; }
+  int getPdgId() const { return pdg_id_; }
+  int getCharge() const { return charge_; }
+  float getDeDxMassSquared() const { return dedx_mass2_; }
+  float getDeDxIh() const { return dedx_ih_; }
+  int getDeDxNhits() const { return dedx_nhits_; }
   float getMass() const { return mass_; }
   float getEnergy() const { return energy_; }
 
@@ -167,10 +181,18 @@ class PFCandidate {
   double getTruthMass() { return truth_mass_; }
   double getTruthEnergy() { return truth_energy_; }
   int getTruthPdgId() { return truth_pdg_id_; }
+  int getTruthTrackId() const { return truth_track_id_; }
 
  private:
   /* Particle ID enum */
   int pid_{0};
+  /* Reconstructed particle type and charge */
+  int pdg_id_{0};
+  int charge_{0};
+  /* Tracker dE/dx, nhits 0 when not available */
+  float dedx_mass2_{0};
+  float dedx_ih_{0};
+  int dedx_nhits_{0};
   float mass_{0};
   float energy_{0};
 
@@ -230,6 +252,7 @@ class PFCandidate {
   double truth_mass_{0};
   double truth_energy_{0};
   int truth_pdg_id_{0};
+  int truth_track_id_{-1};
 
   /* Indices of the components making up the PFlow object */
   int track_idx_{-1};
@@ -237,7 +260,7 @@ class PFCandidate {
   int hcal_idx_{-1};
 
   /* The ROOT class definition. */
-  ClassDef(PFCandidate, 2);
+  ClassDef(PFCandidate, 3);
 };
 }  // namespace ldmx
 

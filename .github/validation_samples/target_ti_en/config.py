@@ -148,8 +148,10 @@ from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
-ecal_pf = pf_reco.PFEcalClusterProducer()
 hcal_pf = pf_reco.PFHcalClusterProducer()
+# PF inputs: CLUE3D Ecal clusters and dE/dx on the PF tracks
+pf_ecal_clue3d = pf_reco.pf_ecal_clusters()
+pf_dedx = pf_reco.pf_track_dedx()
 track_pf = pf_reco.PFTrackProducer()
 pf_comb = pf_reco.PFProducer()
 
@@ -183,9 +185,10 @@ p.sequence.extend(
         target_clusters,
         count,
         trigger,
-        ecal_pf,
         hcal_pf,
         track_pf,
+        pf_dedx,
+        pf_ecal_clue3d,
         pf_comb,
         dqm.ParticleFlowDQM(),
         *target_dqm,
