@@ -82,7 +82,7 @@ void TargetENProcessFilter::stepping(const G4Step* step) {
                     << " particle via " << process_name << " process.";
 
     // Only record the process that is being biased
-    if (!process_name.contains(process_)) {
+    if (!G4StrUtil::contains(process_name, std::string_view(process_))) {
       ldmx_log(debug) << "Process was not " << process_
                       << "--> Killing all tracks!";
 
