@@ -134,7 +134,6 @@ if arg.ts is not None:
     )
     qie_decoder.number_channels = n_channels
     qie_decoder.number_time_samples = n_timesamples
-    qie_decoder.is_real_data = True
     qie_decoder.input_collection = "TrigScintRaw"
     p.sequence.extend(
         [qie_decoder, dqm.NtuplizeTrigScintQIEDigis(input_name="decodedQIEUp")]

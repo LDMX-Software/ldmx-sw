@@ -50,7 +50,6 @@ dec.input_pass_name = "builder"
 dec.output_collection = dec.output_collection + "Pad"  # -> decodedZCCMPad{1..}
 dec.number_channels = 84
 dec.number_time_samples = 30
-dec.is_real_data = True
 
 # Stage 2: standard reco chain (TrigScintRecHit -> TrigScintCluster) for the
 # three plastic pads.

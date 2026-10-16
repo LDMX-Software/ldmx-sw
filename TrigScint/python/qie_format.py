@@ -68,7 +68,6 @@ class QIEDecoder(Processor):
     output_collection: str = "decodedQIETag"
     number_channels: int = 50
     number_time_samples: int = 5
-    is_real_data: bool = False
     verbose: bool = False
 
     @staticmethod
