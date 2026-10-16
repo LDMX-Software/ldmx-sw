@@ -1,6 +1,22 @@
 """register objects with global variables for later use by the configuration"""
 
 
+def library_name(name: str) -> str:
+    """deduce the name of a library from how the user referred to it
+
+    The cmake, C++, and library syntax for referring to a submodule are all
+    accepted, so 'Ecal/Event', 'Ecal::Event', and 'Ecal_Event' all lead to
+    the same library name.
+
+    Parameters
+    ----------
+    name : str
+        name of module whose library we want
+    """
+
+    return name.replace("/", "_").replace("::", "_")
+
+
 def library(name: str):
     """register a new library to be loaded at run time
 
@@ -33,8 +49,7 @@ def library(name: str):
 
     full_path = name
     if not full_path.endswith(".so"):
-        actual_module_name = name.replace("/", "_").replace("::", "_")
-        full_path = f"@CMAKE_INSTALL_PREFIX@/lib/lib{actual_module_name}.so"
+        full_path = f"@CMAKE_INSTALL_PREFIX@/lib/lib{library_name(name)}.so"
 
     from ._process import Process
 
