@@ -1,6 +1,8 @@
 #include "Recon/PFTrackProducer.h"
 
+#include <algorithm>
 #include <cmath>
+#include <set>
 
 #include "SimCore/Event/SimTrackerHit.h"
 #include "Tracking/Event/Track.h"
@@ -20,6 +22,7 @@ void PFTrackProducer::configure(framework::config::Parameters& ps) {
   min_n_hits_ = ps.get<int>("min_n_hits");
   max_chi2_ndf_ = ps.get<double>("max_chi2_ndf");
   min_momentum_ = ps.get<double>("min_momentum");
+  max_shared_frac_ = ps.get<double>("max_shared_frac");
 }
 
 namespace {
@@ -133,8 +136,21 @@ void PFTrackProducer::produceReco(framework::Event& event) {
   const auto tracks = event.getCollection<ldmx::Track>(reco_track_coll_name_,
                                                        reco_track_pass_name_);
 
+  // best tracks first: more hits, then lower chi2/ndf
+  std::vector<const ldmx::Track*> ranked;
+  for (const auto& tk : tracks) ranked.push_back(&tk);
+  auto chi2ndf = [](const ldmx::Track* t) {
+    return t->getNdf() > 0 ? t->getChi2() / t->getNdf() : 9e9;
+  };
+  std::stable_sort(ranked.begin(), ranked.end(), [&](auto a, auto b) {
+    if (a->getNhits() != b->getNhits()) return a->getNhits() > b->getNhits();
+    return chi2ndf(a) < chi2ndf(b);
+  });
+
   std::vector<ldmx::Track> pf_tracks;
-  for (const auto& tk : tracks) {
+  std::vector<std::set<unsigned int>> used_hits;
+  for (const auto* tk_ptr : ranked) {
+    const auto& tk = *tk_ptr;
     // need the Ecal face state for linking
     auto mom = tk.getMomentum(ldmx::AtECAL);
     if (mom.empty()) {
@@ -147,6 +163,20 @@ void PFTrackProducer::produceReco(framework::Event& event) {
         (tk.getNdf() <= 0 || tk.getChi2() / tk.getNdf() > max_chi2_ndf_))
       continue;
     if (getP(mom) < min_momentum_) continue;
+    // drop duplicates sharing most hits with a better track
+    auto idxs = tk.getMeasurementsIdxs();
+    std::set<unsigned int> hits(idxs.begin(), idxs.end());
+    bool duplicate = false;
+    for (const auto& prev : used_hits) {
+      int n_shared = 0;
+      for (auto h : hits) n_shared += prev.count(h);
+      if (!hits.empty() && n_shared > max_shared_frac_ * hits.size()) {
+        duplicate = true;
+        break;
+      }
+    }
+    if (duplicate) continue;
+    used_hits.push_back(hits);
     pf_tracks.push_back(tk);
     ldmx_log(debug) << "Adding track: nhits=" << tk.getNhits()
                     << ", p = " << getP(mom) << ", trackID=" << tk.getTrackID();
