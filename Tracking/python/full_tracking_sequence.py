@@ -3,6 +3,7 @@ import math
 from LDMX.Tracking import geo, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
 
+
 # Target per detector for the CKF target point: thickness [mm], x/X0.
 # Matched as a substring of the detector tag; anything else is tungsten.
 TARGETS = {
@@ -32,19 +33,17 @@ def target_constraint_errors(detector):
     dict
         target_thickness, target_sigma_extra, target_sigma_extra_ms
     """
-    thickness, x0 = next(
-        (v for k, v in TARGETS.items() if k in detector), TUNGSTEN
-    )
+    thickness, x0 = next((v for k, v in TARGETS.items() if k in detector), TUNGSTEN)
 
     def ms(x):
         return math.sqrt(x) * (1.0 + 0.038 * math.log(x))
 
     scale = ms(x0) / ms(TUNGSTEN[1])
-    return dict(
-        target_thickness=thickness,
-        target_sigma_extra=list(TARGET_SIGMA_EXTRA),
-        target_sigma_extra_ms=[b * scale for b in TARGET_SIGMA_EXTRA_MS],
-    )
+    return {
+        "target_thickness": thickness,
+        "target_sigma_extra": list(TARGET_SIGMA_EXTRA),
+        "target_sigma_extra_ms": [b * scale for b in TARGET_SIGMA_EXTRA_MS],
+    }
 
 
 class TrackingSequence:
@@ -582,8 +581,8 @@ def recoil_sequence(
 
     Includes digi, truth seeding, seed finding, CKF, ambiguity solver, and
     GSF for the recoil tracker only. The tracker veto is omitted (it requires
-    a tagger track) and so is the target constraint. Useful for studies and configs where tagger reconstruction
-    is not needed.
+    a tagger track) and so is the target constraint. Useful for studies and
+    configs where tagger reconstruction is not needed.
 
     Parameters
     ----------
