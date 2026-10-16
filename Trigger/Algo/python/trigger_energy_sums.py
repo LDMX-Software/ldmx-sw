@@ -1,4 +1,5 @@
-from LDMX.Framework import Processor, processor
+from LDMX.Ecal.make_path import make_ci_data_path
+from LDMX.Framework import Processor, field, processor
 
 
 @processor("trigger::EcalTPSelector", "Trigger")
@@ -122,3 +123,22 @@ class PropagationMapWriter(Processor):
     target_scoring_plane_passname: str = ""
     target_sp_hits_events_passname: str = ""
     ecal_sp_hits_events_passname: str = ""
+
+
+@processor("trigger::TrigClusterNNProducer", "Trigger")
+class TrigClusterNNProducer(Processor):
+    """Configuration for TrigClusterNNProducer
+
+    The ONNX model is kept in the ci-data repository, download it from
+    https://github.com/LDMX-Software/ci-data/raw/main/target_genie/ecal_nn_trigger.onnx
+    and set model_path to where you saved it.
+    """
+
+    model_path: str = field(
+        default_factory=lambda: make_ci_data_path("target_genie/ecal_nn_trigger.onnx")
+    )
+    cluster_coll_name: str = "ecalTrigClusters"
+    ecal_sum_coll_name: str = "ecalTrigSums"
+    hcal_sum_coll_name: str = "hcalTrigQuadsBackLayerSums"
+    input_pass: str = ""
+    score_coll_name: str = "ecalTrigClusterNNScore"

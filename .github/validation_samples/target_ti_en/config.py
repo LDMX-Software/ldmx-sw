@@ -50,6 +50,21 @@ from LDMX.Tracking import full_tracking_sequence
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
+# Load the trigger emulation and the ECal NN trigger
+from LDMX.Ecal import ecal_trig_digi
+from LDMX.Hcal import hcal_trig_digi
+from LDMX.Trigger import trigger_energy_sums
+
+
+nn_trigger = [
+    ecal_trig_digi.EcalTrigPrimDigiProducer(),
+    hcal_trig_digi.HcalTrigPrimDigiProducer(),
+    trigger_energy_sums.EcalTPSelector(),
+    trigger_energy_sums.TrigHcalEnergySum(),
+    trigger_energy_sums.TrigEcalClusterProducer(),
+    trigger_energy_sums.TrigClusterNNProducer(),
+]
+
 # Load the TS modules
 from LDMX.TrigScint.trig_scint import (
     TrigScintClusterProducer,
@@ -160,6 +175,7 @@ p.sequence.extend(
         hcal_digi,
         hcal_reco,
         hcal_veto,
+        *nn_trigger,
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
