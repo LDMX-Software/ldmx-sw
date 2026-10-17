@@ -1,60 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE gdml [
-<!ENTITY constants SYSTEM "constants.gdml">
 <!ENTITY materials SYSTEM "shared_gdml_files/materials.gdml">
 <!ENTITY visattributes SYSTEM "shared_gdml_files/visattributes.gdml">
 ]>
-
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
-
-  <define> 
-    &constants; 
-
-    <position name="hadron_calorimeter_pos" x="0.0" y="0.0" z="0.0"/> 
-
-  </define>
-
+  <!--
+Entry point in the STEP coordinate frame (mm): X/Y horizontal, +Z up.
+CAD supports are visualization context only, so this transport geometry contains no unassigned CAD material.
+Alignment, envelopes and HCal readout reconstruction still need review.
+-->
+  <define/>
   <materials>
     &materials;
   </materials>
-
   <solids>
-    <box lunit="mm" name="world_box" x="world_dim" y="world_dim" z="world_dim"/>
+    <box name="cosmic_world_box" lunit="mm" x="15000" y="6000" z="12000"/>
   </solids>
-
-    
   <structure>
     <volume name="World">
       <materialref ref="Air"/>
-      <solidref ref="world_box"/>
-      <physvol copynumber="1"> 
-        <file name="hcal.gdml"/> 
-        <positionref ref="hadron_calorimeter_pos"/> 
+      <solidref ref="cosmic_world_box"/>
+      <!--ESA target/trigger/tracker/ECal internals, registered to the current STEP frame. The rotation sends ESA +z down CAD -z.-->
+      <physvol name="native_target" copynumber="2">
+        <file name="target.gdml"/>
+        <position name="target_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3066.3880545"/>
+        <rotation name="target_rot" unit="deg" x="180" y="0" z="0"/>
       </physvol>
-      <auxiliary auxtype="DetElem" auxvalue="Top"/>
+      <physvol name="native_trig_scint" copynumber="3">
+        <file name="trig_scint.gdml"/>
+        <position name="trig_scint_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3410.4135545"/>
+        <rotation name="trig_scint_rot" unit="deg" x="180" y="0" z="0"/>
+      </physvol>
+      <physvol name="native_recoil" copynumber="5">
+        <file name="recoil.gdml"/>
+        <position name="recoil_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3206.8880545"/>
+        <rotation name="recoil_rot" unit="deg" x="180" y="0" z="0"/>
+      </physvol>
+      <physvol name="native_ecal" copynumber="6">
+        <file name="ecal.gdml"/>
+        <position name="ecal_pos" unit="mm" x="4978.55243868" y="-128.723940966" z="2352.03243963"/>
+        <rotation name="ecal_rot" unit="deg" x="180" y="0" z="0"/>
+      </physvol>
+      <!--Three independent HCal station volumes keep each bar at geometry depth 2. Section IDs: top=1, above ECal=0, below ECal=2; the HCal readout geometry does not describe this layout yet.-->
+      <physvol name="hcal_top" copynumber="11">
+        <file name="hcal_top.gdml"/>
+        <position name="hcal_top_pos" unit="mm" x="5000.00595703" y="-108.422841688" z="3747.27520142"/>
+      </physvol>
+      <physvol name="hcal_above_ecal" copynumber="10">
+        <file name="hcal_above_ecal.gdml"/>
+        <position name="hcal_above_ecal_pos" unit="mm" x="5006.55461069" y="-84.571585909" z="2758.49584962"/>
+      </physvol>
+      <physvol name="hcal_below_ecal" copynumber="12">
+        <file name="hcal_below_ecal.gdml"/>
+        <position name="hcal_below_ecal_pos" unit="mm" x="5004.76652231" y="-109.673940913" z="2256.46764755"/>
+      </physvol>
     </volume>
   </structure>
-
   <userinfo>
-    <!-- detector version -->
     <auxiliary auxtype="DetectorVersion" auxvalue="1">
       <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa-cosmic26-v1"/>
-      <auxiliary auxtype="Author" auxvalue="Wilde Hedin"/>
-      <auxiliary auxtype="Description" auxvalue="The HCal teststand geometry that will be used to measure cosmic muons at SLAC."/>
+      <auxiliary auxtype="Author" auxvalue="Emrys Peets, Wilde Hedin"/>
+      <auxiliary auxtype="Description" auxvalue="CAD-registered ESA geometry with segmented cosmic HCal; candidate alignment"/>
     </auxiliary>
-
-    <!-- define regions -->
     <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
     </auxiliary>
-
+    <auxiliary auxtype="Region" auxvalue="MagnetRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>
+    <auxiliary auxtype="Region" auxvalue="trig_scint">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
+    </auxiliary>
+    <auxiliary auxtype="Region" auxvalue="target">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
+    </auxiliary>
     <auxiliary auxtype="ColorMode" auxvalue="Material"/>
     &visattributes;
-    
   </userinfo>
-
   <setup name="Default" version="1.0">
     <world ref="World"/>
   </setup>
 </gdml>
-

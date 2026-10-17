@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
+  <!--
+HCal top: 2 crossed layers, 24 separate scintillator bars.
+Dimensions/materials and packed IDs follow iss2119; positions follow the STEP body centers.
+The CAD body is replaced, not overlaid with active material. Bar counts are inferred from CAD width.
+The air envelope is local to this station; it does not span the tracker or ECal.
+-->
+  <define/>
+  <solids>
+    <box name="hcal_top_envelope" lunit="mm" x="2002" y="2002" z="46.371582031"/>
+    <box name="hcal_top_scint_box_x" lunit="mm" x="2000" y="50" z="20"/>
+    <box name="hcal_top_scint_box_y" lunit="mm" x="50" y="2000" z="20"/>
+    <box name="hcal_top_cover_1" lunit="mm" x="600" y="2000" z="0.5"/>
+    <box name="hcal_top_cover_2" lunit="mm" x="2000" y="600" z="0.5"/>
+  </solids>
+  <structure>
+    <!--Packed copy number: version 1 in bits 24-31, section in 16-23, layer in 8-15, strip in 0-7. Layers count from the top; strips start at zero.-->
+    <volume name="hcal_top_scint_box_x_volume">
+      <materialref ref="Scintillator"/>
+      <solidref ref="hcal_top_scint_box_x"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+    </volume>
+    <volume name="hcal_top_scint_box_y_volume">
+      <materialref ref="Scintillator"/>
+      <solidref ref="hcal_top_scint_box_y"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+    </volume>
+    <volume name="hcal_top_cover_1_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="hcal_top_cover_1"/>
+    </volume>
+    <volume name="hcal_top_cover_2_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="hcal_top_cover_2"/>
+    </volume>
+    <volume name="hcal_top">
+      <materialref ref="Air"/>
+      <solidref ref="hcal_top_envelope"/>
+      <!--Layer 1: CAD occurrence 3803, center Z=3758.710992 mm; each strip is a separate physical volume.-->
+      <physvol name="hcal_top_layer1_strip0" copynumber="16843008">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip0_pos" unit="mm" x="-271.528335998" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip1" copynumber="16843009">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip1_pos" unit="mm" x="-221.528335998" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip2" copynumber="16843010">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip2_pos" unit="mm" x="-171.528335998" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip3" copynumber="16843011">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip3_pos" unit="mm" x="-121.528335998" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip4" copynumber="16843012">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip4_pos" unit="mm" x="-71.5283359977" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip5" copynumber="16843013">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip5_pos" unit="mm" x="-21.5283359977" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip6" copynumber="16843014">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip6_pos" unit="mm" x="28.4716640023" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip7" copynumber="16843015">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip7_pos" unit="mm" x="78.4716640023" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip8" copynumber="16843016">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip8_pos" unit="mm" x="128.471664002" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip9" copynumber="16843017">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip9_pos" unit="mm" x="178.471664002" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip10" copynumber="16843018">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip10_pos" unit="mm" x="228.471664002" y="0" z="11.4357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer1_strip11" copynumber="16843019">
+        <volumeref ref="hcal_top_scint_box_y_volume"/>
+        <position name="hcal_top_layer1_strip11_pos" unit="mm" x="278.471664002" y="0" z="11.4357910155"/>
+      </physvol>
+      <!--Layer 2: CAD occurrence 1165, center Z=3735.339410 mm; each strip is a separate physical volume.-->
+      <physvol name="hcal_top_layer2_strip0" copynumber="16843264">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip0_pos" unit="mm" x="0" y="-276.351885752" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip1" copynumber="16843265">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip1_pos" unit="mm" x="0" y="-226.351885752" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip2" copynumber="16843266">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip2_pos" unit="mm" x="0" y="-176.351885752" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip3" copynumber="16843267">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip3_pos" unit="mm" x="0" y="-126.351885752" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip4" copynumber="16843268">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip4_pos" unit="mm" x="0" y="-76.351885752" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip5" copynumber="16843269">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip5_pos" unit="mm" x="0" y="-26.351885752" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip6" copynumber="16843270">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip6_pos" unit="mm" x="0" y="23.648114248" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip7" copynumber="16843271">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip7_pos" unit="mm" x="0" y="73.648114248" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip8" copynumber="16843272">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip8_pos" unit="mm" x="0" y="123.648114248" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip9" copynumber="16843273">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip9_pos" unit="mm" x="0" y="173.648114248" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip10" copynumber="16843274">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip10_pos" unit="mm" x="0" y="223.648114248" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_layer2_strip11" copynumber="16843275">
+        <volumeref ref="hcal_top_scint_box_x_volume"/>
+        <position name="hcal_top_layer2_strip11_pos" unit="mm" x="0" y="273.648114248" z="-11.9357910155"/>
+      </physvol>
+      <physvol name="hcal_top_cover_1_placement">
+        <volumeref ref="hcal_top_cover_1_volume"/>
+        <position name="hcal_top_cover_1_pos" unit="mm" x="3.4716640023" y="0" z="21.6857910155"/>
+      </physvol>
+      <physvol name="hcal_top_cover_2_placement">
+        <volumeref ref="hcal_top_cover_2_volume"/>
+        <position name="hcal_top_cover_2_pos" unit="mm" x="0" y="-1.35188575204" z="-1.6857910155"/>
+      </physvol>
+      <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
+    </volume>
+  </structure>
+  <setup name="Default" version="1.0">
+    <world ref="hcal_top"/>
+  </setup>
+</gdml>
