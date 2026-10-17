@@ -96,8 +96,10 @@ class PFProducer(Processor):
     link_min_rms: float = 5.0  # mm, floor on the cluster RMS
     electron_ep_min: float = 0.7
     excess_ep: float = 1.6
-    # dE/dx m2 [MeV^2] above proton_min is p, kaon_min to proton_min is K;
-    # only below the momentum limits [MeV], m2 resolution grows as p^2
+    # charged hadron mass hypothesis from dE/dx m2 [MeV^2]: above proton_min
+    # p, kaon_min to proton_min K, else pi; only below the momentum limits
+    # [MeV], m2 resolution grows as p^2. Types follow CMS PF: e, mu, gamma,
+    # charged hadron (pdg 211), neutral hadron (pdg 130)
     proton_min_mass2: float = 4.0e5
     kaon_min_mass2: float = 1.2e5
     proton_max_p: float = 1500.0

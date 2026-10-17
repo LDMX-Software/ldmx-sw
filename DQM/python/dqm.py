@@ -2606,8 +2606,8 @@ class ParticleFlowDQM(Processor):
     neutral_hcal_match_angle: float = 30.0  # deg, Hcal only candidates
 
     def __post_init__(self):
-        # same order as the Category enum in ParticleFlowDQM.cxx
-        reco_types = [
+        # truth species, same order as Category in ParticleFlowDQM.cxx
+        species = [
             "e",
             "#mu",
             "#pi^{#pm}",
@@ -2617,7 +2617,8 @@ class ParticleFlowDQM(Processor):
             "n. had.",
             "other",
         ]
-        truth_types = [*reco_types, "no match"]
+        # PF types as in CMS, same order as PFType in ParticleFlowDQM.cxx
+        pf_types = ["e", "#mu", "had^{#pm}", "#gamma", "had^{0}", "other"]
 
         # multiplicities
         self.histogram("n_cands", "Number of PF candidates", 20, -0.5, 19.5)
@@ -2635,7 +2636,7 @@ class ParticleFlowDQM(Processor):
             "Tk+ECal+HCal",  # 7
         ]
         self.histogram("pid", "", pid_labels)
-        self.histogram("reco_type", "", reco_types)
+        self.histogram("reco_type", "", pf_types)
 
         # charged candidates
         self.histogram("charged_track_p", "Charged cand track p [MeV]", 100, 0, 8000)
@@ -2691,7 +2692,7 @@ class ParticleFlowDQM(Processor):
         self.histogram(
             "charged_dedx_mass2_vs_truth",
             "",
-            reco_types,
+            species,
             ylabel="dE/dx m^{2} [MeV^{2}]",
             ybins=100,
             ymin=-1.0e6,
@@ -2700,7 +2701,7 @@ class ParticleFlowDQM(Processor):
         self.histogram(
             "charged_e_over_p_vs_truth",
             "",
-            reco_types,
+            species,
             ylabel="Linked Ecal E / track p",
             ybins=100,
             ymin=0,
@@ -2729,19 +2730,35 @@ class ParticleFlowDQM(Processor):
         self.histogram(
             "sum_pf_e_over_truth", "Sum PF E / sum truth visible E", 100, 0, 2
         )
+        # confusion per truth particle at the Ecal face; last reco bin is not
+        # found, last truth bin of pf_confusion counts unmatched candidates
         self.histogram(
-            "type_confusion",
+            "pf_confusion",
             "Truth type",
-            truth_types,
-            ylabel="Reco type",
-            ybins=reco_types,
+            [*pf_types, "no truth"],
+            ylabel="PF type",
+            ybins=[*pf_types, "not found"],
         )
-        self.histogram("truth_type", "", reco_types)
-        self.histogram("truth_type_matched", "", reco_types)
+        self.histogram(
+            "charged_hadron_confusion",
+            "Truth charged hadron",
+            ["#pi^{#pm}", "K^{#pm}", "p", "no truth"],
+            ylabel="PF type (mass hypothesis)",
+            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other or not found"],
+        )
+        self.histogram(
+            "neutral_confusion",
+            "Truth neutral",
+            ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
+            ylabel="PF type",
+            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other or not found"],
+        )
+        self.histogram("truth_type", "", species)
+        self.histogram("truth_type_matched", "", species)
         self.histogram(
             "response_vs_type",
             "",
-            reco_types,
+            pf_types,
             ylabel="Candidate E / truth visible E",
             ybins=100,
             ymin=0,

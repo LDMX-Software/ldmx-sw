@@ -454,23 +454,9 @@ void ParticleFlow::recoverEcal(ldmx::PFCandidate& cand, const ldmx::Track& tk,
   }
 }
 
-// mass hypothesis of the charged ID [MeV]
-double ParticleFlow::massOf(int pdg) {
-  switch (std::abs(pdg)) {
-    case 11:
-      return 0.511;
-    case 211:
-      return 139.57;
-    case 321:
-      return 493.68;
-    case 2212:
-      return 938.27;
-    default:
-      return 0.;
-  }
-}
-
-// charged ID: heavy from dE/dx at low p, electron from E/p, else pion
+// charged ID, types as in CMS PF: electron from E/p and shower depth, else
+// charged hadron (pdg 211 by convention); dE/dx at low p only sets the
+// hadron mass hypothesis (p, K or pi), used for the energy
 void ParticleFlow::identifyCharged(ldmx::PFCandidate& cand) const {
   auto p = cand.getTrackPxPyPz();
   double trk_p = std::hypot(p[0], p[1], p[2]);
@@ -479,11 +465,15 @@ void ParticleFlow::identifyCharged(ldmx::PFCandidate& cand) const {
   // m2 resolution grows as p^2, so dE/dx only separates at low p
   bool has_dedx = cand.getDeDxNhits() >= dedx_min_hits_;
   double m2 = cand.getDeDxMassSquared();
-  if (has_dedx && trk_p < proton_max_p_ && m2 > proton_min_mass2_) {
-    cand.setPdgId(2212 * q);
-  } else if (has_dedx && trk_p < kaon_max_p_ && m2 > kaon_min_mass2_ &&
-             m2 <= proton_min_mass2_) {
-    cand.setPdgId(321 * q);
+  bool is_proton = has_dedx && trk_p < proton_max_p_ && m2 > proton_min_mass2_;
+  bool is_kaon = has_dedx && trk_p < kaon_max_p_ && m2 > kaon_min_mass2_ &&
+                 m2 <= proton_min_mass2_;
+  if (is_proton) {
+    cand.setPdgId(211 * q);
+    cand.setMass(938.27);
+  } else if (is_kaon) {
+    cand.setPdgId(211 * q);
+    cand.setMass(493.68);
   } else if ((cand.getPID() & 2) && ep > electron_ep_min_ &&
              cand.getEcalDepth() <
                  electron_max_depth_ +
@@ -492,8 +482,10 @@ void ParticleFlow::identifyCharged(ldmx::PFCandidate& cand) const {
     // EM showers stay shallow, hadronic ones start late and go deep
     // no upper E/p, overlapping photons are split off as excess
     cand.setPdgId(-11 * q);
+    cand.setMass(0.511);
   } else {
     cand.setPdgId(211 * q);
+    cand.setMass(139.57);
   }
 }
 
@@ -681,17 +673,14 @@ void ParticleFlow::produce(framework::Event& event) {
       }
       cand.setCharge(static_cast<int>(tracks[i].getCharge()));
       identifyCharged(cand);
-      int apdg = std::abs(cand.getPdgId());
-      if (apdg == 211 || apdg == 321 || apdg == 2212) {
+      if (std::abs(cand.getPdgId()) == 211) {
         absorbHadronShower(cand, tracks[i], ecal_clusters, em_is_tk_linked,
                            hcal_clusters, had_is_em_linked);
       }
-      // charged energy from the track and the ID mass
+      // charged energy from the track and the mass hypothesis
       auto p = cand.getTrackPxPyPz();
       double trk_p = std::hypot(p[0], p[1], p[2]);
-      double mass = massOf(cand.getPdgId());
-      cand.setMass(mass);
-      cand.setEnergy(std::hypot(trk_p, mass));
+      cand.setEnergy(std::hypot(trk_p, cand.getMass()));
       pf_cands.push_back(cand);
 
       // Ecal energy well above the track momentum is a neutral overlap
@@ -717,7 +706,8 @@ void ParticleFlow::produce(framework::Event& event) {
         cand.setHcalIndex(em_had_pairs[i]);
       }
       // Hcal energy means a hadronic shower
-      cand.setPdgId(em_is_had_linked[i] ? 2112 : 22);
+      // pdg 130 for neutral hadrons, as in CMS PF
+      cand.setPdgId(em_is_had_linked[i] ? 130 : 22);
       cand.setEnergy(cand.getEcalEnergy() + cand.getHcalEnergy());
       if (cand.getEnergy() >= min_neutral_e_) pf_cands.push_back(cand);
     }
@@ -728,7 +718,7 @@ void ParticleFlow::produce(framework::Event& event) {
       ldmx::PFCandidate cand;
       fillCandHadCalo(cand, hcal_clusters[i]);
       cand.setHcalIndex(i);
-      cand.setPdgId(2112);
+      cand.setPdgId(130);
       cand.setEnergy(cand.getHcalEnergy());
       if (cand.getEnergy() >= min_neutral_e_) pf_cands.push_back(cand);
     }

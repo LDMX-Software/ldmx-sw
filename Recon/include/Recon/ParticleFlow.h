@@ -38,7 +38,6 @@ class ParticleFlow : public framework::Producer {
   void fillCandEMCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& em);
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
   void identifyCharged(ldmx::PFCandidate& cand) const;
-  static double massOf(int pdg);
   static ldmx::CaloCluster mergeClusters(
       const std::vector<ldmx::CaloCluster>& clusters, int root,
       const std::vector<int>& members);
@@ -104,7 +103,8 @@ class ParticleFlow : public framework::Producer {
   double electron_ep_min_{};
   // linked Ecal E/p above which the excess becomes a photon
   double excess_ep_{};
-  // dE/dx mass squared windows [MeV^2] and their momentum limits [MeV]
+  // dE/dx mass squared windows [MeV^2] and their momentum limits [MeV] for
+  // the p and K mass hypotheses of charged hadrons
   double proton_min_mass2_{};
   double kaon_min_mass2_{};
   double proton_max_p_{};

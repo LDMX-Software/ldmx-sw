@@ -13,8 +13,11 @@ namespace dqm {
 
 namespace {
 
-// bins shared by the reco and truth type axes, see dqm.py; charged up to kP
-enum Category { kE, kMu, kPi, kK, kP, kGamma, kNHad, kOther, kNone };
+// truth species, bins of the per species axes in dqm.py; charged up to kP
+enum Category { kE, kMu, kPi, kK, kP, kGamma, kNHad, kOther };
+
+// PF types as in CMS, bins of the PF type axes in dqm.py
+enum PFType { kPFE, kPFMu, kPFH, kPFGamma, kPFH0, kPFOther, kPFNotFound };
 
 int category(int pdg) {
   switch (std::abs(pdg)) {
@@ -38,6 +41,64 @@ int category(int pdg) {
     default:
       return kOther;
   }
+}
+
+// PF type of a candidate from its pdg
+int pfType(int pdg) {
+  switch (std::abs(pdg)) {
+    case 11:
+      return kPFE;
+    case 13:
+      return kPFMu;
+    case 211:
+      return kPFH;
+    case 22:
+      return kPFGamma;
+    case 130:
+      return kPFH0;
+    default:
+      return kPFOther;
+  }
+}
+
+// PF type a truth species should end up as
+int truthPFType(int pdg) {
+  switch (category(pdg)) {
+    case kE:
+      return kPFE;
+    case kMu:
+      return kPFMu;
+    case kPi:
+    case kK:
+    case kP:
+      return kPFH;
+    case kGamma:
+      return kPFGamma;
+    case kNHad:
+      return kPFH0;
+    default:
+      return kPFOther;
+  }
+}
+
+// neutral hadron rows of the neutral matrix: n, K0, other
+int neutralRow(int pdg) {
+  switch (std::abs(pdg)) {
+    case 2112:
+      return 0;
+    case 130:
+    case 310:
+      return 1;
+    default:
+      return 2;
+  }
+}
+
+// charged hadron mass hypothesis column: pi, K, p
+int massColumn(float mass) {
+  if (mass > 700) return 2;
+  if (mass > 300) return 1;
+  return 0;
 }
 
 // a particle crossing the Ecal front face
@@ -93,7 +154,7 @@ void ParticleFlowDQM::analyze(const framework::Event& event) {
   for (auto& cand : cands) {
     int pid = cand.getPID();
     histograms_.fill("pid", pid);
-    histograms_.fill("reco_type", category(cand.getPdgId()));
+    histograms_.fill("reco_type", pfType(cand.getPdgId()));
     pf_e += cand.getEnergy();
     double ecal_e = cand.getEcalEnergy();
     double hcal_e = cand.getHcalEnergy();
@@ -278,22 +339,49 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     }
   }
 
-  // type confusion and energy response
+  // unmatched candidates and energy response
+  std::vector<int> truth_cand(truth.size(), -1);
   for (size_t i = 0; i < cands.size(); i++) {
-    int r_cat = category(cands[i].getPdgId());
+    int r_type = pfType(cands[i].getPdgId());
     if (cand_truth[i] < 0) {
-      histograms_.fill("type_confusion", kNone, r_cat);
+      // last truth bin: candidates without a truth particle
+      histograms_.fill("pf_confusion", kPFNotFound, r_type);
+      if (r_type == kPFH) {
+        histograms_.fill("charged_hadron_confusion", 3,
+                         massColumn(cands[i].getMass()));
+      }
       if (!(cands[i].getPID() & 1)) {
         histograms_.fill("unmatched_neutral_e", cands[i].getEnergy());
       }
       continue;
     }
+    truth_cand[cand_truth[i]] = i;
     const auto& t = truth[cand_truth[i]];
-    histograms_.fill("type_confusion", category(t.pdg_), r_cat);
     // charged energy includes the mass, calorimeters see the visible part
     double ref = (cands[i].getPID() & 1) ? t.total_e_ : t.visible_e_;
     if (ref > 0) {
-      histograms_.fill("response_vs_type", r_cat, cands[i].getEnergy() / ref);
+      histograms_.fill("response_vs_type", r_type, cands[i].getEnergy() / ref);
+    }
+  }
+
+  // confusion per truth particle, last reco bin is not found
+  for (size_t j = 0; j < truth.size(); j++) {
+    const auto& t = truth[j];
+    int c = truth_cand[j];
+    int r_type = c < 0 ? kPFNotFound : pfType(cands[c].getPdgId());
+    histograms_.fill("pf_confusion", truthPFType(t.pdg_), r_type);
+    int sp = category(t.pdg_);
+    if (sp == kPi || sp == kK || sp == kP) {
+      // columns: h with pi, K, p hypothesis, anything else or not found
+      int col = r_type == kPFH ? massColumn(cands[c].getMass()) : 3;
+      histograms_.fill("charged_hadron_confusion", sp - kPi, col);
+    }
+    if (sp == kNHad) {
+      // columns: h0, gamma, both gammas of a pi0, anything else or not found
+      int col = 3;
+      if (r_type == kPFH0) col = 0;
+      if (r_type == kPFGamma) col = 1;
+      histograms_.fill("neutral_confusion", neutralRow(t.pdg_), col);
     }
   }
   for (const auto& t : truth) {
@@ -332,14 +420,32 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     }
   }
   // truth pi0 photons entering the Ecal, for the pair efficiency
-  std::map<int, int> n_photons;
-  for (const auto& t : truth) {
-    if (t.pdg_ != 22) continue;
-    int pa = pi0_parent(t.track_id_);
-    if (pa >= 0) n_photons[pa]++;
+  std::map<int, std::vector<int>> pi0_photons;
+  for (size_t j = 0; j < truth.size(); j++) {
+    if (truth[j].pdg_ != 22) continue;
+    int pa = pi0_parent(truth[j].track_id_);
+    if (pa >= 0) pi0_photons[pa].push_back(j);
   }
-  for (const auto& [pa, n] : n_photons) {
-    histograms_.fill("truth_pi0_photons_in_ecal", n);
+  for (const auto& [pa, photons] : pi0_photons) {
+    histograms_.fill("truth_pi0_photons_in_ecal", photons.size());
+    if (photons.size() < 2) continue;
+    // pi0 row of the neutral matrix, both photons at the Ecal face
+    int n_gamma = 0, n_h0 = 0;
+    for (int j : photons) {
+      int c = truth_cand[j];
+      if (c < 0) continue;
+      int r_type = pfType(cands[c].getPdgId());
+      n_gamma += r_type == kPFGamma;
+      n_h0 += r_type == kPFH0;
+    }
+    int col = 3;
+    if (n_gamma >= 2)
+      col = 2;
+    else if (n_h0 > 0)
+      col = 0;
+    else if (n_gamma == 1)
+      col = 1;
+    histograms_.fill("neutral_confusion", 3, col);
   }
 }
 
