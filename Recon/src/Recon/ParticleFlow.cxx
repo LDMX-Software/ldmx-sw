@@ -37,6 +37,8 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   kaon_min_mass2_ = ps.get<double>("kaon_min_mass2");
   proton_max_p_ = ps.get<double>("proton_max_p");
   kaon_max_p_ = ps.get<double>("kaon_max_p");
+  recovery_radius_ = ps.get<double>("recovery_radius");
+  recovery_stop_ep_ = ps.get<double>("recovery_stop_ep");
   ecal_link_radius_ = ps.get<double>("ecal_link_radius");
   ecal_link_ratio_ = ps.get<double>("ecal_link_ratio");
   ecal_link_min_layers_ = ps.get<int>("ecal_link_min_layers");
@@ -264,6 +266,38 @@ std::vector<ldmx::CaloCluster> ParticleFlow::linkEcalClusters(
   return merged;
 }
 
+// a linked track with low E/p absorbs nearby unlinked clusters, closest
+// first, to recover electron showers split by clustering
+void ParticleFlow::recoverEcal(ldmx::PFCandidate& cand, const ldmx::Track& tk,
+                               const std::vector<ldmx::CaloCluster>& clusters,
+                               std::vector<bool>& used) const {
+  auto ts = tk.getTrackState(ldmx::AtECAL);
+  if (recovery_radius_ <= 0 || !ts || ts->mom_.size() < 3 || ts->mom_[2] <= 0)
+    return;
+  const auto& xyz = ts->pos_;
+  const auto& pxyz = ts->mom_;
+  double trk_p = std::hypot(pxyz[0], pxyz[1], pxyz[2]);
+  if (cand.getEcalEnergy() >= electron_ep_min_ * trk_p) return;
+  std::vector<std::pair<double, int>> near;
+  for (int j = 0; j < static_cast<int>(clusters.size()); j++) {
+    if (used[j]) continue;
+    double z = clusters[j].getCentroidZ();
+    double d = std::hypot(
+        xyz[0] + pxyz[0] / pxyz[2] * (z - xyz[2]) - clusters[j].getCentroidX(),
+        xyz[1] + pxyz[1] / pxyz[2] * (z - xyz[2]) - clusters[j].getCentroidY());
+    if (d < recovery_radius_) near.emplace_back(d, j);
+  }
+  std::sort(near.begin(), near.end());
+  for (const auto& [d, j] : near) {
+    if (cand.getEcalEnergy() >= recovery_stop_ep_ * trk_p) break;
+    double e = clusters[j].getEnergy();
+    double corr = correction(ecal_corr_energies_, ecal_corr_factors_, e);
+    cand.setEcalEnergy(cand.getEcalEnergy() + e * corr);
+    cand.setEcalRawEnergy(cand.getEcalRawEnergy() + e);
+    used[j] = true;
+  }
+}
+
 // mass hypothesis of the charged ID [MeV]
 double ParticleFlow::massOf(int pdg) {
   switch (std::abs(pdg)) {
@@ -468,6 +502,7 @@ void ParticleFlow::produce(framework::Event& event) {
           fillCandHadCalo(cand, hcal_clusters[em_had_pairs[em_idx]]);
           cand.setHcalIndex(em_had_pairs[em_idx]);
         }
+        recoverEcal(cand, tracks[i], ecal_clusters, em_is_tk_linked);
       }
       if (auto it = mass_estimates.find(i); it != mass_estimates.end()) {
         cand.setDeDxMassSquared(it->second.getMassSquared());
