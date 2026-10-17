@@ -536,6 +536,8 @@ class HcalReadoutGeometry:
     # the side HCal since they share the same scintillator orientation.
     # More changes are required in the software to sucessfully digitize and
     # reconstruct the data obtained when using this geometry.
+    # This still describes the two section layout, not the three CAD stations
+    # (top, above ECal, below ECal) now in the GDML.
     def make_cosmic26_v1():
 
         scint_thickness = 20.0

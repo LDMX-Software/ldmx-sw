@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
+  <!--
+HCal above_ecal: 4 crossed layers, 32 separate scintillator bars.
+Dimensions/materials and packed IDs follow iss2119; positions follow the STEP body centers.
+The CAD body is replaced, not overlaid with active material. Bar counts are inferred from CAD width.
+The air envelope is local to this station; it does not span the tracker or ECal.
+-->
+  <define/>
+  <solids>
+    <box name="hcal_above_ecal_envelope" lunit="mm" x="2002" y="2002" z="99.200000001"/>
+    <box name="hcal_above_ecal_scint_box_x" lunit="mm" x="2000" y="50" z="20"/>
+    <box name="hcal_above_ecal_scint_box_y" lunit="mm" x="50" y="2000" z="20"/>
+    <box name="hcal_above_ecal_cover_1" lunit="mm" x="2000" y="400" z="0.5"/>
+    <box name="hcal_above_ecal_cover_2" lunit="mm" x="400" y="2000" z="0.5"/>
+    <box name="hcal_above_ecal_cover_3" lunit="mm" x="2000" y="400" z="0.5"/>
+    <box name="hcal_above_ecal_cover_4" lunit="mm" x="400" y="2000" z="0.5"/>
+  </solids>
+  <structure>
+    <!--Packed copy number: version 1 in bits 24-31, section in 16-23, layer in 8-15, strip in 0-7. Layers count from the top; strips start at zero.-->
+    <volume name="hcal_above_ecal_scint_box_x_volume">
+      <materialref ref="Scintillator"/>
+      <solidref ref="hcal_above_ecal_scint_box_x"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+    </volume>
+    <volume name="hcal_above_ecal_scint_box_y_volume">
+      <materialref ref="Scintillator"/>
+      <solidref ref="hcal_above_ecal_scint_box_y"/>
+      <auxiliary auxtype="VisAttributes" auxvalue="ScintillatorMaterialVis"/>
+    </volume>
+    <volume name="hcal_above_ecal_cover_1_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="hcal_above_ecal_cover_1"/>
+    </volume>
+    <volume name="hcal_above_ecal_cover_2_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="hcal_above_ecal_cover_2"/>
+    </volume>
+    <volume name="hcal_above_ecal_cover_3_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="hcal_above_ecal_cover_3"/>
+    </volume>
+    <volume name="hcal_above_ecal_cover_4_volume">
+      <materialref ref="Aluminum3003"/>
+      <solidref ref="hcal_above_ecal_cover_4"/>
+    </volume>
+    <volume name="hcal_above_ecal">
+      <materialref ref="Air"/>
+      <solidref ref="hcal_above_ecal_envelope"/>
+      <!--Layer 1: CAD occurrence 1272, center Z=2796.345850 mm; each strip is a separate physical volume.-->
+      <physvol name="hcal_above_ecal_layer1_strip0" copynumber="16777472">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip0_pos" unit="mm" x="0" y="-206.950003815" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip1" copynumber="16777473">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip1_pos" unit="mm" x="0" y="-156.950003815" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip2" copynumber="16777474">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip2_pos" unit="mm" x="0" y="-106.950003815" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip3" copynumber="16777475">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip3_pos" unit="mm" x="0" y="-56.9500038147" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip4" copynumber="16777476">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip4_pos" unit="mm" x="0" y="-6.9500038147" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip5" copynumber="16777477">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip5_pos" unit="mm" x="0" y="43.0499961853" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip6" copynumber="16777478">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip6_pos" unit="mm" x="0" y="93.0499961853" z="37.8500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer1_strip7" copynumber="16777479">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer1_strip7_pos" unit="mm" x="0" y="143.049996185" z="37.8500000005"/>
+      </physvol>
+      <!--Layer 2: CAD occurrence 1268, center Z=2770.945850 mm; each strip is a separate physical volume.-->
+      <physvol name="hcal_above_ecal_layer2_strip0" copynumber="16777728">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip0_pos" unit="mm" x="-177.984378823" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip1" copynumber="16777729">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip1_pos" unit="mm" x="-127.984378823" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip2" copynumber="16777730">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip2_pos" unit="mm" x="-77.9843788227" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip3" copynumber="16777731">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip3_pos" unit="mm" x="-27.9843788227" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip4" copynumber="16777732">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip4_pos" unit="mm" x="22.0156211773" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip5" copynumber="16777733">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip5_pos" unit="mm" x="72.0156211773" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip6" copynumber="16777734">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip6_pos" unit="mm" x="122.015621177" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer2_strip7" copynumber="16777735">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer2_strip7_pos" unit="mm" x="172.015621177" y="-1.13686837722e-13" z="12.4500000005"/>
+      </physvol>
+      <!--Layer 3: CAD occurrence 1270, center Z=2745.545850 mm; each strip is a separate physical volume.-->
+      <physvol name="hcal_above_ecal_layer3_strip0" copynumber="16777984">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip0_pos" unit="mm" x="0" y="-206.950003815" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip1" copynumber="16777985">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip1_pos" unit="mm" x="0" y="-156.950003815" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip2" copynumber="16777986">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip2_pos" unit="mm" x="0" y="-106.950003815" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip3" copynumber="16777987">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip3_pos" unit="mm" x="0" y="-56.9500038147" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip4" copynumber="16777988">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip4_pos" unit="mm" x="0" y="-6.9500038147" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip5" copynumber="16777989">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip5_pos" unit="mm" x="0" y="43.0499961853" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip6" copynumber="16777990">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip6_pos" unit="mm" x="0" y="93.0499961853" z="-12.9500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer3_strip7" copynumber="16777991">
+        <volumeref ref="hcal_above_ecal_scint_box_x_volume"/>
+        <position name="hcal_above_ecal_layer3_strip7_pos" unit="mm" x="0" y="143.049996185" z="-12.9500000005"/>
+      </physvol>
+      <!--Layer 4: CAD occurrence 1266, center Z=2720.145850 mm; each strip is a separate physical volume.-->
+      <physvol name="hcal_above_ecal_layer4_strip0" copynumber="16778240">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip0_pos" unit="mm" x="-177.984378823" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip1" copynumber="16778241">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip1_pos" unit="mm" x="-127.984378823" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip2" copynumber="16778242">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip2_pos" unit="mm" x="-77.9843788227" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip3" copynumber="16778243">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip3_pos" unit="mm" x="-27.9843788227" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip4" copynumber="16778244">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip4_pos" unit="mm" x="22.0156211773" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip5" copynumber="16778245">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip5_pos" unit="mm" x="72.0156211773" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip6" copynumber="16778246">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip6_pos" unit="mm" x="122.015621177" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_layer4_strip7" copynumber="16778247">
+        <volumeref ref="hcal_above_ecal_scint_box_y_volume"/>
+        <position name="hcal_above_ecal_layer4_strip7_pos" unit="mm" x="172.015621177" y="1.13686837722e-13" z="-38.3500000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_cover_1_placement">
+        <volumeref ref="hcal_above_ecal_cover_1_volume"/>
+        <position name="hcal_above_ecal_cover_1_pos" unit="mm" x="0" y="-31.9500038147" z="48.1000000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_cover_2_placement">
+        <volumeref ref="hcal_above_ecal_cover_2_volume"/>
+        <position name="hcal_above_ecal_cover_2_pos" unit="mm" x="-2.9843788227" y="-1.13686837722e-13" z="22.7000000005"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_cover_3_placement">
+        <volumeref ref="hcal_above_ecal_cover_3_volume"/>
+        <position name="hcal_above_ecal_cover_3_pos" unit="mm" x="0" y="-31.9500038147" z="-2.70000000051"/>
+      </physvol>
+      <physvol name="hcal_above_ecal_cover_4_placement">
+        <volumeref ref="hcal_above_ecal_cover_4_volume"/>
+        <position name="hcal_above_ecal_cover_4_pos" unit="mm" x="-2.9843788227" y="1.13686837722e-13" z="-28.1000000005"/>
+      </physvol>
+      <auxiliary auxtype="Region" auxvalue="CalorimeterRegion"/>
+      <auxiliary auxtype="DetElem" auxvalue="Hcal"/>
+    </volume>
+  </structure>
+  <setup name="Default" version="1.0">
+    <world ref="hcal_above_ecal"/>
+  </setup>
+</gdml>
