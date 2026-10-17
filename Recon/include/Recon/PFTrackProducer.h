@@ -64,6 +64,8 @@ class PFTrackProducer : public framework::Producer {
   double max_chi2_ndf_{};
   // minimum momentum at the Ecal face in MeV
   double min_momentum_{};
+  // max fraction of hits shared with a better track before dropping
+  double max_shared_frac_{};
 };
 }  // namespace recon
 

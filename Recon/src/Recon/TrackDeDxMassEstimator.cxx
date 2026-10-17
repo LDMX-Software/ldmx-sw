@@ -18,6 +18,7 @@ void TrackDeDxMassEstimator::configure(framework::config::Parameters& ps) {
   fit_res_k_ = ps.get<double>("fit_res_k");
   input_pass_name_ = ps.get<std::string>("input_pass_name");
   track_collection_ = ps.get<std::string>("track_collection");
+  out_collection_ = ps.get<std::string>("out_collection");
 
   ldmx_log(info) << "Track Collection used for TrackDeDxMassEstimator "
                  << track_collection_;
@@ -29,7 +30,7 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
   if (!event.exists(track_collection_, input_pass_name_)) {
     ldmx_log(error) << "Track collection " << track_collection_ << "_"
                     << input_pass_name_ << " not in event, exiting...";
-    event.add("TrackDeDxMassEstimate", mass_estimates);
+    event.add(out_collection_, mass_estimates);
     return;
   }
   const std::vector<ldmx::Track> tracks{
@@ -65,7 +66,7 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
     if (!event.exists(simhit_collection_, input_pass_name_)) {
       ldmx_log(error) << " SimHit collection (" << simhit_collection_ << "_"
                       << input_pass_name_ << ") does not exists, exiting...";
-      event.add("TrackDeDxMassEstimate", mass_estimates);
+      event.add(out_collection_, mass_estimates);
       return;
     }
     simhits = event.getCollection<ldmx::SimTrackerHit>(simhit_collection_,
@@ -119,6 +120,8 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
 
     // Ih = (1/N * sum_i^N(dE/dx_i)^-2)^-1/2
     float the_ih = 1. / sqrt(1. / n_hits * sum_dedx_inv2);
+    // m^2 = (Ih - C) p^2 / K [MeV^2], for every track, negative when Ih < C
+    float mass2 = (the_ih - fit_res_c_) * momentum * momentum / fit_res_k_;
 
     float mass = 0.;
     if (the_ih > fit_res_c_) {
@@ -133,6 +136,7 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
     mass_est.setNhits(n_hits);
     mass_est.setIh(the_ih);
     mass_est.setMass(mass);
+    mass_est.setMassSquared(mass2);
     mass_est.setTrackIndex(i);
     mass_est.setTrackType(track_type);
     mass_est.setPdgId(pdg_id);
@@ -140,7 +144,7 @@ void TrackDeDxMassEstimator::produce(framework::Event& event) {
   }
 
   // Add the mass estimates to the event
-  event.add("TrackDeDxMassEstimate", mass_estimates);
+  event.add(out_collection_, mass_estimates);
 }
 }  // namespace recon
 
