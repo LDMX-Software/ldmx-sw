@@ -32,13 +32,15 @@ class PFCandidate {
    */
   // detector bitmask: 1 track, 2 Ecal, 4 Hcal
   void setPID(int x_) { pid_ = x_; }
-  // reconstructed particle type as a signed PDG ID
+  // PF type as a signed PDG ID, as in CMS: 11 e, 13 mu, 22 gamma,
+  // 211 charged hadron, 130 neutral hadron; see getMass for the hypothesis
   void setPdgId(int x_) { pdg_id_ = x_; }
   void setCharge(int x_) { charge_ = x_; }
   // tracker dE/dx estimate of the charged track
   void setDeDxMassSquared(float x_) { dedx_mass2_ = x_; }
   void setDeDxIh(float x_) { dedx_ih_ = x_; }
   void setDeDxNhits(int x_) { dedx_nhits_ = x_; }
+  // mass hypothesis used for the energy [MeV]
   void setMass(float x_) { mass_ = x_; }
   void setEnergy(float x_) { energy_ = x_; }
 
