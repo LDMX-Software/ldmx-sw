@@ -76,6 +76,7 @@ void ParticleFlowDQM::configure(framework::config::Parameters& ps) {
   truth_min_energy_ = ps.get<double>("truth_min_energy");
   neutral_match_dist_ = ps.get<double>("neutral_match_dist");
   neutral_match_max_ratio_ = ps.get<double>("neutral_match_max_ratio");
+  neutral_hcal_match_angle_ = ps.get<double>("neutral_hcal_match_angle");
 }
 
 void ParticleFlowDQM::analyze(const framework::Event& event) {
@@ -238,12 +239,15 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     return cands[a].getEnergy() > cands[b].getEnergy();
   });
   for (size_t i : neutral) {
-    auto xyz = (cands[i].getPID() & 2) ? cands[i].getEcalClusterXYZ()
-                                       : cands[i].getHcalClusterXYZ();
-    // Hcal clusters are wider, scale the window
-    double max_d = neutral_match_dist_ * ((cands[i].getPID() & 2) ? 1. : 3.);
+    bool has_ecal = cands[i].getPID() & 2;
+    auto xyz =
+        has_ecal ? cands[i].getEcalClusterXYZ() : cands[i].getHcalClusterXYZ();
+    // Ecal: distance at the cluster [mm]; Hcal only: angle from the target
+    // [rad], hadron showers are wide and the side Hcal is not along z
+    auto cand_dir = direction(cands[i]);
     int best = -1;
-    double best_d = max_d;
+    double best_d = has_ecal ? neutral_match_dist_
+                             : neutral_hcal_match_angle_ * M_PI / 180.;
     for (size_t j = 0; j < truth.size(); j++) {
       if (truth[j].matched_) continue;
       // fragments must not count as found particles
@@ -251,8 +255,18 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
       if (ratio < 1. / neutral_match_max_ratio_ ||
           ratio > neutral_match_max_ratio_)
         continue;
-      auto [tx, ty] = project(truth[j], xyz[2]);
-      double d = std::hypot(tx - xyz[0], ty - xyz[1]);
+      double d;
+      if (has_ecal) {
+        auto [tx, ty] = project(truth[j], xyz[2]);
+        d = std::hypot(tx - xyz[0], ty - xyz[1]);
+      } else {
+        const auto& t = truth[j];
+        double pt = std::hypot(t.px_, t.py_, t.pz_);
+        double c =
+            (t.px_ * cand_dir[0] + t.py_ * cand_dir[1] + t.pz_ * cand_dir[2]) /
+            pt;
+        d = std::acos(std::clamp(c, -1., 1.));
+      }
       if (d < best_d) {
         best_d = d;
         best = j;
