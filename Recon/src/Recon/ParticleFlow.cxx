@@ -410,6 +410,28 @@ void ParticleFlow::absorbHadronShower(
   }
 }
 
+// energy-weighted RMS distance of the cluster hits from the straight track
+// line through the Ecal; EM showers are narrow, hadronic ones wide [mm]
+double ParticleFlow::ecalWidth(const ldmx::CaloCluster& cl,
+                               const ldmx::Track& tk) const {
+  auto ts = tk.getTrackState(ldmx::AtECAL);
+  if (!ts || ts->mom_.size() < 3 || ts->mom_[2] <= 0) return 0.;
+  const auto& pos = ts->pos_;
+  const auto& mom = ts->mom_;
+  const auto& hx = cl.getHitX();
+  const auto& hy = cl.getHitY();
+  const auto& hz = cl.getHitZ();
+  const auto& he = cl.getHitE();
+  double e = 0, er2 = 0;
+  for (size_t k = 0; k < he.size() && k < hz.size(); k++) {
+    double x = pos[0] + mom[0] / mom[2] * (hz[k] - pos[2]);
+    double y = pos[1] + mom[1] / mom[2] * (hz[k] - pos[2]);
+    e += he[k];
+    er2 += he[k] * (std::pow(hx[k] - x, 2) + std::pow(hy[k] - y, 2));
+  }
+  return e > 0 ? std::sqrt(er2 / e) : 0.;
+}
+
 // energy-weighted mean hit depth behind the Ecal front [mm]
 double ParticleFlow::ecalDepth(const ldmx::CaloCluster& cl) const {
   const auto& hz = cl.getHitZ();
@@ -649,6 +671,7 @@ void ParticleFlow::produce(framework::Event& event) {
       if (tk_is_em_linked[i]) {  // if track is linked with ECal cluster
         int em_idx = tk_em_pairs[i];
         fillCandEMCalo(cand, ecal_clusters[em_idx]);
+        cand.setEcalWidth(ecalWidth(ecal_clusters[em_idx], tracks[i]));
         cand.setEcalIndex(em_idx);
         if (em_is_had_linked[em_idx]) {  // if ECal is linked with HCal
           fillCandHadCalo(cand, hcal_clusters[em_had_pairs[em_idx]]);

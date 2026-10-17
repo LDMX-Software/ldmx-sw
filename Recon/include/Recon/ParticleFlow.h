@@ -44,6 +44,7 @@ class ParticleFlow : public framework::Producer {
   std::vector<ldmx::CaloCluster> linkHcalClusters(
       const std::vector<ldmx::CaloCluster>& clusters) const;
   double ecalDepth(const ldmx::CaloCluster& cl) const;
+  double ecalWidth(const ldmx::CaloCluster& cl, const ldmx::Track& tk) const;
   void absorbHadronShower(ldmx::PFCandidate& cand, const ldmx::Track& tk,
                           const std::vector<ldmx::CaloCluster>& ecal,
                           std::vector<bool>& ecal_used,

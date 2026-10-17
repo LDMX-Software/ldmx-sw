@@ -72,6 +72,8 @@ class PFCandidate {
   void setEcalEnergy(float x_) { ecal_energy_ = x_; }
   // energy-weighted mean depth behind the Ecal front [mm]
   void setEcalDepth(float x_) { ecal_depth_ = x_; }
+  // energy-weighted RMS distance of the hits from the track line [mm]
+  void setEcalWidth(float x_) { ecal_width_ = x_; }
   void setEcalRawEnergy(float x_) { ecal_raw_energy_ = x_; }
   void setEcalClusterXYZ(float x_, float y_, float z_) {
     ecal_cluster_x_ = x_;
@@ -152,6 +154,7 @@ class PFCandidate {
 
   float getEcalEnergy() const { return ecal_energy_; }
   float getEcalDepth() const { return ecal_depth_; }
+  float getEcalWidth() const { return ecal_width_; }
   float getEcalRawEnergy() const { return ecal_raw_energy_; }
   std::vector<float> getEcalClusterXYZ() const {
     return {ecal_cluster_x_, ecal_cluster_y_, ecal_cluster_z_};
@@ -222,6 +225,7 @@ class PFCandidate {
   /* Ecal energy, cluster info */
   float ecal_energy_{0};
   float ecal_depth_{0};
+  float ecal_width_{0};
   float ecal_raw_energy_{0};
   float ecal_cluster_x_{0};
   float ecal_cluster_y_{0};
