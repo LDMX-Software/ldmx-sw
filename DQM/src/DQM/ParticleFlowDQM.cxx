@@ -16,6 +16,9 @@ namespace {
 // truth species, bins of the per species axes in dqm.py; charged up to kP
 enum Category { kE, kMu, kPi, kK, kP, kGamma, kNHad, kOther };
 
+// where a neutral hadron interacts, from its sim end point
+enum Region { kRegionEcal, kRegionSideHcal, kRegionBackHcal, kNoInteraction };
+
 // PF types as in CMS, bins of the PF type axes in dqm.py
 enum PFType { kPFE, kPFMu, kPFH, kPFGamma, kPFH0, kPFOther, kPFNotFound };
 
@@ -81,16 +84,17 @@ int truthPFType(int pdg) {
   }
 }
 
-// neutral hadron rows of the neutral matrix: n, K0, other
-int neutralRow(int pdg) {
+// neutral hadron rows of the neutral matrix: n by interaction region
+// (0 to 3, see Region), K0, other neutral hadrons
+int neutralRow(int pdg, int region) {
   switch (std::abs(pdg)) {
     case 2112:
-      return 0;
+      return region;
     case 130:
     case 310:
-      return 1;
+      return 4;
     default:
-      return 2;
+      return 5;
   }
 }
 
@@ -146,6 +150,19 @@ bool ParticleFlowDQM::reconstructable(int pdg, double px, double py, double pz,
   }
 }
 
+// interaction region from the sim end point: Ecal box, side Hcal around
+// it, back Hcal behind it, or no interaction (left the detector)
+int ParticleFlowDQM::interactionRegion(const std::vector<double>& end) const {
+  double x = std::abs(end[0]), y = std::abs(end[1]), z = end[2];
+  if (x > hcal_max_xy_ || y > hcal_max_xy_ || z > hcal_max_z_ || z < 0)
+    return kNoInteraction;
+  if (z < ecal_back_z_) {
+    return (x < ecal_half_xy_ && y < ecal_half_xy_) ? kRegionEcal
+                                                    : kRegionSideHcal;
+  }
+  return kRegionBackHcal;
+}
+
 void ParticleFlowDQM::configure(framework::config::Parameters& ps) {
   pf_cand_coll_name_ = ps.get<std::string>("pf_cand_coll_name");
   pf_cand_pass_name_ = ps.get<std::string>("pf_cand_pass_name");
@@ -162,6 +179,10 @@ void ParticleFlowDQM::configure(framework::config::Parameters& ps) {
   reco_min_p_heavy_ = ps.get<double>("reco_min_p_heavy");
   reco_min_ke_neutral_ = ps.get<double>("reco_min_ke_neutral");
   reco_min_ke_pi0_ = ps.get<double>("reco_min_ke_pi0");
+  ecal_back_z_ = ps.get<double>("ecal_back_z");
+  ecal_half_xy_ = ps.get<double>("ecal_half_xy");
+  hcal_max_z_ = ps.get<double>("hcal_max_z");
+  hcal_max_xy_ = ps.get<double>("hcal_max_xy");
 }
 
 void ParticleFlowDQM::analyze(const framework::Event& event) {
@@ -391,6 +412,15 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     }
   }
 
+  // sim particles give where neutral hadrons interact, and pi0 parents
+  bool has_particles =
+      event.exists(sim_particles_coll_name_, sim_particles_pass_name_);
+  std::map<int, ldmx::SimParticle> particles;
+  if (has_particles) {
+    particles = event.getMap<int, ldmx::SimParticle>(sim_particles_coll_name_,
+                                                     sim_particles_pass_name_);
+  }
+
   // unmatched truth with any candidate at its position: seen, but with the
   // wrong energy or merged into another particle ("other"), not lost
   std::vector<bool> seen(truth.size(), false);
@@ -446,10 +476,14 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
       int col = r_type == kPFNotFound ? 4 : 3;
       if (r_type == kPFH0) col = 0;
       if (r_type == kPFGamma) col = 1;
-      histograms_.fill("neutral_confusion", neutralRow(t.pdg_), col);
+      int region = kNoInteraction;
+      if (auto it = particles.find(t.track_id_); it != particles.end()) {
+        region = interactionRegion(it->second.getEndPoint());
+      }
+      int row = neutralRow(t.pdg_, region);
+      histograms_.fill("neutral_confusion", row, col);
       if (reco) {
-        histograms_.fill("neutral_confusion_reconstructable",
-                         neutralRow(t.pdg_), col);
+        histograms_.fill("neutral_confusion_reconstructable", row, col);
       }
     }
   }
@@ -463,9 +497,7 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
   }
 
   // diphoton mass of photon pairs from the same pi0
-  if (!event.exists(sim_particles_coll_name_, sim_particles_pass_name_)) return;
-  const auto& particles = event.getMap<int, ldmx::SimParticle>(
-      sim_particles_coll_name_, sim_particles_pass_name_);
+  if (!has_particles) return;
   auto pi0_parent = [&particles](int track_id) {
     auto it = particles.find(track_id);
     if (it == particles.end() || it->second.getParents().empty()) return -1;
@@ -515,7 +547,7 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
       col = 0;
     else if (n_gamma == 1)
       col = 1;
-    histograms_.fill("neutral_confusion", 3, col);
+    histograms_.fill("neutral_confusion", 6, col);
     const auto& pi0 = particles.at(pa);
     double pi0_ke = pi0.getEnergy() - pi0.getMass();
     double pi0_theta = std::acos(
@@ -524,7 +556,7 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
                                   pi0.getMomentum()[2])));
     if (pi0_ke > reco_min_ke_pi0_ &&
         pi0_theta < reco_max_theta_ * M_PI / 180.) {
-      histograms_.fill("neutral_confusion_reconstructable", 3, col);
+      histograms_.fill("neutral_confusion_reconstructable", 6, col);
     }
   }
 }
