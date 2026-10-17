@@ -31,6 +31,7 @@ class ParticleFlowDQM : public framework::Analyzer {
                     std::vector<ldmx::PFCandidate>& cands);
   bool reconstructable(int pdg, double px, double py, double pz,
                        double ke) const;
+  int interactionRegion(const std::vector<double>& end) const;
 
   std::string pf_cand_coll_name_{"PFCandidates"};
   std::string pf_cand_pass_name_{""};
@@ -53,6 +54,12 @@ class ParticleFlowDQM : public framework::Analyzer {
   double reco_min_p_heavy_{800.};
   double reco_min_ke_neutral_{1000.};
   double reco_min_ke_pi0_{2000.};
+  // regions for neutral hadron end points [mm]: Ecal box up to ecal_back_z
+  // within ecal_half_xy, side Hcal around it, back Hcal behind it
+  double ecal_back_z_{760.};
+  double ecal_half_xy_{300.};
+  double hcal_max_z_{4000.};
+  double hcal_max_xy_{1600.};
 };
 
 }  // namespace dqm

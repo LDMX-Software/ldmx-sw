@@ -2611,6 +2611,11 @@ class ParticleFlowDQM(Processor):
     reco_min_p_heavy: float = 800.0  # MeV
     reco_min_ke_neutral: float = 1000.0  # MeV
     reco_min_ke_pi0: float = 2000.0  # MeV
+    # where neutral hadrons interact, from the sim end point [mm]
+    ecal_back_z: float = 760.0
+    ecal_half_xy: float = 300.0
+    hcal_max_z: float = 4000.0
+    hcal_max_xy: float = 1600.0
 
     def __post_init__(self):
         # truth species, same order as Category in ParticleFlowDQM.cxx
@@ -2760,7 +2765,15 @@ class ParticleFlowDQM(Processor):
         self.histogram(
             "neutral_confusion",
             "Truth neutral",
-            ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
+            [
+                "n Ecal",
+                "n side Hcal",
+                "n back Hcal",
+                "n no interaction",
+                "K^{0}",
+                "other n. had.",
+                "#pi^{0} (2#gamma at Ecal)",
+            ],
             ylabel="PF type",
             ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other", "not found"],
         )
@@ -2782,7 +2795,15 @@ class ParticleFlowDQM(Processor):
         self.histogram(
             "neutral_confusion_reconstructable",
             "Truth neutral",
-            ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
+            [
+                "n Ecal",
+                "n side Hcal",
+                "n back Hcal",
+                "n no interaction",
+                "K^{0}",
+                "other n. had.",
+                "#pi^{0} (2#gamma at Ecal)",
+            ],
             ylabel="PF type",
             ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other", "not found"],
         )
