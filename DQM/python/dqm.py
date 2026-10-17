@@ -2589,8 +2589,9 @@ class ParticleFlowDQM(Processor):
 
     Truth is every particle entering the Ecal front face above
     truth_min_energy. Charged candidates match by track ID, neutral ones
-    by position within neutral_match_dist (3x for Hcal only candidates) and
-    energy within a factor neutral_match_max_ratio.
+    by position within neutral_match_dist (Hcal only candidates by angle from
+    the target within neutral_hcal_match_angle) and energy within a factor
+    neutral_match_max_ratio.
     """
 
     pf_cand_coll_name: str = "PFCandidates"
@@ -2602,6 +2603,7 @@ class ParticleFlowDQM(Processor):
     truth_min_energy: float = 50.0  # MeV, kinetic for hadrons
     neutral_match_dist: float = 30.0  # mm
     neutral_match_max_ratio: float = 2.0  # candidate vs truth E, either way
+    neutral_hcal_match_angle: float = 30.0  # deg, Hcal only candidates
 
     def __post_init__(self):
         # same order as the Category enum in ParticleFlowDQM.cxx

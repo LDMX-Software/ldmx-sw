@@ -42,6 +42,8 @@ class ParticleFlowDQM : public framework::Analyzer {
   double neutral_match_dist_{30.};
   // max energy ratio either way for a neutral match
   double neutral_match_max_ratio_{2.};
+  // Hcal only candidate to truth match cone from the target [deg]
+  double neutral_hcal_match_angle_{30.};
 };
 
 }  // namespace dqm
