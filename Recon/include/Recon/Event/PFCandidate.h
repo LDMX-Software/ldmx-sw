@@ -10,6 +10,8 @@
 // ROOT
 #include <Rtypes.h>  // For ClassDef
 
+#include <vector>
+
 namespace ldmx {
 
 /**
@@ -70,6 +72,24 @@ class PFCandidate {
   void setHcalIndex(int x) { hcal_idx_ = x; }
 
   void setEcalEnergy(float x_) { ecal_energy_ = x_; }
+  // rec hits behind the candidate with the raw energy it owns of each; a hit
+  // shared by Ecal clusters is listed in each candidate with its share
+  void clearEcalHits() {
+    ecal_hit_ids_.clear();
+    ecal_hit_energies_.clear();
+  }
+  void clearHcalHits() {
+    hcal_hit_ids_.clear();
+    hcal_hit_energies_.clear();
+  }
+  void addEcalHits(const std::vector<unsigned int>& ids,
+                   const std::vector<float>& energies) {
+    addHits(ecal_hit_ids_, ecal_hit_energies_, ids, energies);
+  }
+  void addHcalHits(const std::vector<unsigned int>& ids,
+                   const std::vector<float>& energies) {
+    addHits(hcal_hit_ids_, hcal_hit_energies_, ids, energies);
+  }
   // energy-weighted mean depth behind the Ecal front [mm]
   void setEcalDepth(float x_) { ecal_depth_ = x_; }
   // energy-weighted RMS distance of the hits from the track line [mm]
@@ -153,6 +173,18 @@ class PFCandidate {
   }
 
   float getEcalEnergy() const { return ecal_energy_; }
+  const std::vector<unsigned int>& getEcalHitIds() const {
+    return ecal_hit_ids_;
+  }
+  const std::vector<float>& getEcalHitEnergies() const {
+    return ecal_hit_energies_;
+  }
+  const std::vector<unsigned int>& getHcalHitIds() const {
+    return hcal_hit_ids_;
+  }
+  const std::vector<float>& getHcalHitEnergies() const {
+    return hcal_hit_energies_;
+  }
   float getEcalDepth() const { return ecal_depth_; }
   float getEcalWidth() const { return ecal_width_; }
   float getEcalRawEnergy() const { return ecal_raw_energy_; }
@@ -225,6 +257,16 @@ class PFCandidate {
   /* Ecal energy, cluster info */
   float ecal_energy_{0};
   float ecal_depth_{0};
+  /* Rec hits used and the raw energy owned of each [MeV] */
+  std::vector<unsigned int> ecal_hit_ids_;
+  std::vector<float> ecal_hit_energies_;
+  std::vector<unsigned int> hcal_hit_ids_;
+  std::vector<float> hcal_hit_energies_;
+
+  /* append hits, summing the energy of ids already listed */
+  static void addHits(std::vector<unsigned int>& ids, std::vector<float>& es,
+                      const std::vector<unsigned int>& new_ids,
+                      const std::vector<float>& new_es);
   float ecal_width_{0};
   float ecal_raw_energy_{0};
   float ecal_cluster_x_{0};
@@ -270,7 +312,7 @@ class PFCandidate {
   int hcal_idx_{-1};
 
   /* The ROOT class definition. */
-  ClassDef(PFCandidate, 3);
+  ClassDef(PFCandidate, 4);
 };
 }  // namespace ldmx
 
