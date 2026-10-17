@@ -39,6 +39,9 @@ class ParticleFlow : public framework::Producer {
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
   void identifyCharged(ldmx::PFCandidate& cand) const;
   static double massOf(int pdg);
+  void recoverEcal(ldmx::PFCandidate& cand, const ldmx::Track& tk,
+                   const std::vector<ldmx::CaloCluster>& clusters,
+                   std::vector<bool>& used) const;
   double trackClusterDist(const std::vector<double>& xyz,
                           const std::vector<double>& pxyz,
                           const ldmx::CaloCluster& cl) const;
@@ -92,6 +95,10 @@ class ParticleFlow : public framework::Producer {
   double kaon_min_mass2_{};
   double proton_max_p_{};
   double kaon_max_p_{};
+  // low E/p tracks absorb unlinked clusters within this radius [mm]
+  // until E/p reaches recovery_stop_ep, 0 disables
+  double recovery_radius_{};
+  double recovery_stop_ep_{};
   // Ecal to Ecal linking, radius 0 disables [mm]
   double ecal_link_radius_{};
   double ecal_link_ratio_{};

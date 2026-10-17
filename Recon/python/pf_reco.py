@@ -102,6 +102,10 @@ class PFProducer(Processor):
     kaon_min_mass2: float = 1.2e5
     proton_max_p: float = 1500.0
     kaon_max_p: float = 1000.0
+    # low E/p tracks absorb unlinked Ecal clusters within the radius until
+    # E/p reaches recovery_stop_ep; recovers split electron showers, 0 disables
+    recovery_radius: float = 30.0  # mm
+    recovery_stop_ep: float = 0.85
     # Ecal to Ecal linking of satellites, for CLUE3D clusters without
     # superclustering; radius 0 disables. Same rules as clue3d_sc_*
     ecal_link_radius: float = 150.0  # mm
