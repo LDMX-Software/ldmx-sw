@@ -145,6 +145,8 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
   cand.setEcalClusterEDXDZ(em.getEDXDZ());
   cand.setEcalClusterEDYDZ(em.getEDYDZ());
   cand.setEcalDepth(ecalDepth(em));
+  cand.clearEcalHits();
+  cand.addEcalHits(em.getHitIDs(), em.getHitE());
   cand.setPID(cand.getPID() | 2);  // OR with 010
 }
 // produce candidate HCal info
@@ -154,6 +156,8 @@ void ParticleFlow::fillCandHadCalo(ldmx::PFCandidate& cand,
   float corr = correction(hcal_corr_energies_, hcal_corr_factors_, energy);
   cand.setHcalEnergy(energy * corr);
   cand.setHcalRawEnergy(energy);
+  cand.clearHcalHits();
+  cand.addHcalHits(had.getHitIDs(), had.getHitE());
   cand.setHcalClusterXYZ(had.getCentroidX(), had.getCentroidY(),
                          had.getCentroidZ());
   cand.setHcalClusterEXYZ(had.getRMSX(), had.getRMSY(), had.getRMSZ());
@@ -400,11 +404,13 @@ void ParticleFlow::absorbHadronShower(
     if (is_hcal) {
       cand.setHcalEnergy(cand.getHcalEnergy() + e);
       cand.setHcalRawEnergy(cand.getHcalRawEnergy() + raw);
+      cand.addHcalHits(cl.getHitIDs(), cl.getHitE());
       cand.setPID(cand.getPID() | 4);
       hcal_used[j] = true;
     } else {
       cand.setEcalEnergy(cand.getEcalEnergy() + e);
       cand.setEcalRawEnergy(cand.getEcalRawEnergy() + raw);
+      cand.addEcalHits(cl.getHitIDs(), cl.getHitE());
       ecal_used[j] = true;
     }
   }
@@ -472,6 +478,7 @@ void ParticleFlow::recoverEcal(ldmx::PFCandidate& cand, const ldmx::Track& tk,
     double corr = correction(ecal_corr_energies_, ecal_corr_factors_, e);
     cand.setEcalEnergy(cand.getEcalEnergy() + e * corr);
     cand.setEcalRawEnergy(cand.getEcalRawEnergy() + e);
+    cand.addEcalHits(clusters[j].getHitIDs(), clusters[j].getHitE());
     used[j] = true;
   }
 }
@@ -713,6 +720,8 @@ void ParticleFlow::produce(framework::Event& event) {
         fillCandEMCalo(excess, ecal_clusters[tk_em_pairs[i]]);
         excess.setEcalIndex(tk_em_pairs[i]);
         excess.setPdgId(22);
+        // hits stay with the charged candidate, one candidate per hit
+        excess.clearEcalHits();
         excess.setEnergy(ecal_e - trk_p);
         pf_cands.push_back(excess);
       }
