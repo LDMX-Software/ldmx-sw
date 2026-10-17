@@ -2740,28 +2740,29 @@ class ParticleFlowDQM(Processor):
         self.histogram(
             "sum_pf_e_over_truth", "Sum PF E / sum truth visible E", 100, 0, 2
         )
-        # confusion per truth particle at the Ecal face; last reco bin is not
-        # found, last truth bin of pf_confusion counts unmatched candidates
+        # confusion per truth particle at the Ecal face; "other": a candidate
+        # at its position but wrong energy or merged, "not found": nothing
+        # there; last truth bin of pf_confusion counts unmatched candidates
         self.histogram(
             "pf_confusion",
             "Truth type",
             [*pf_types, "no truth"],
             ylabel="PF type",
-            ybins=[*pf_types, "not found"],
+            ybins=[*pf_types[:5], "other", "not found"],
         )
         self.histogram(
             "charged_hadron_confusion",
             "Truth charged hadron",
             ["#pi^{#pm}", "K^{#pm}", "p", "no truth"],
             ylabel="PF type (mass hypothesis)",
-            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other or not found"],
+            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other", "not found"],
         )
         self.histogram(
             "neutral_confusion",
             "Truth neutral",
             ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
             ylabel="PF type",
-            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other or not found"],
+            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other", "not found"],
         )
         # same, for reconstructable truth only
         self.histogram(
@@ -2769,21 +2770,21 @@ class ParticleFlowDQM(Processor):
             "Truth type",
             [*pf_types, "no truth"],
             ylabel="PF type",
-            ybins=[*pf_types, "not found"],
+            ybins=[*pf_types[:5], "other", "not found"],
         )
         self.histogram(
             "charged_hadron_confusion_reconstructable",
             "Truth charged hadron",
             ["#pi^{#pm}", "K^{#pm}", "p", "no truth"],
             ylabel="PF type (mass hypothesis)",
-            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other or not found"],
+            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other", "not found"],
         )
         self.histogram(
             "neutral_confusion_reconstructable",
             "Truth neutral",
             ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
             ylabel="PF type",
-            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other or not found"],
+            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other", "not found"],
         )
         self.histogram("truth_type", "", species)
         self.histogram("truth_type_matched", "", species)

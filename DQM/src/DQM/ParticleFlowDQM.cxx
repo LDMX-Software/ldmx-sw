@@ -391,11 +391,38 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     }
   }
 
-  // confusion per truth particle, last reco bin is not found
+  // unmatched truth with any candidate at its position: seen, but with the
+  // wrong energy or merged into another particle ("other"), not lost
+  std::vector<bool> seen(truth.size(), false);
+  for (size_t j = 0; j < truth.size(); j++) {
+    if (truth_cand[j] >= 0) continue;
+    for (const auto& cand : cands) {
+      int pid = cand.getPID();
+      if (pid & 4 && !(pid & 2)) {
+        auto d = direction(cand);
+        const auto& t = truth[j];
+        double pt = std::hypot(t.px_, t.py_, t.pz_);
+        double cs = (t.px_ * d[0] + t.py_ * d[1] + t.pz_ * d[2]) / pt;
+        if (cs > std::cos(neutral_hcal_match_angle_ * M_PI / 180.))
+          seen[j] = true;
+      } else {
+        auto xyz =
+            (pid & 2) ? cand.getEcalClusterXYZ() : cand.getEcalPositionXYZ();
+        auto [tx, ty] = project(truth[j], xyz[2]);
+        if (std::hypot(tx - xyz[0], ty - xyz[1]) < neutral_match_dist_)
+          seen[j] = true;
+      }
+      if (seen[j]) break;
+    }
+  }
+
+  // confusion per truth particle; last two reco bins: other (seen, wrong
+  // energy or merged) and not found (nothing at its position)
   for (size_t j = 0; j < truth.size(); j++) {
     const auto& t = truth[j];
     int c = truth_cand[j];
-    int r_type = c < 0 ? kPFNotFound : pfType(cands[c].getPdgId());
+    int r_type = c >= 0 ? pfType(cands[c].getPdgId())
+                        : (seen[j] ? kPFOther : kPFNotFound);
     bool reco = reconstructable(t.pdg_, t.px_, t.py_, t.pz_, t.visible_e_);
     histograms_.fill("pf_confusion", truthPFType(t.pdg_), r_type);
     if (reco) {
@@ -404,8 +431,10 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     }
     int sp = category(t.pdg_);
     if (sp == kPi || sp == kK || sp == kP) {
-      // columns: h with pi, K, p hypothesis, anything else or not found
-      int col = r_type == kPFH ? massColumn(cands[c].getMass()) : 3;
+      // columns: h with pi, K, p hypothesis, other, not found
+      int col = r_type == kPFH          ? massColumn(cands[c].getMass())
+                : r_type == kPFNotFound ? 4
+                                        : 3;
       histograms_.fill("charged_hadron_confusion", sp - kPi, col);
       if (reco) {
         histograms_.fill("charged_hadron_confusion_reconstructable", sp - kPi,
@@ -413,8 +442,8 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
       }
     }
     if (sp == kNHad) {
-      // columns: h0, gamma, both gammas of a pi0, anything else or not found
-      int col = 3;
+      // columns: h0, gamma, both gammas of a pi0, other, not found
+      int col = r_type == kPFNotFound ? 4 : 3;
       if (r_type == kPFH0) col = 0;
       if (r_type == kPFGamma) col = 1;
       histograms_.fill("neutral_confusion", neutralRow(t.pdg_), col);
@@ -470,15 +499,16 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     histograms_.fill("truth_pi0_photons_in_ecal", photons.size());
     if (photons.size() < 2) continue;
     // pi0 row of the neutral matrix, both photons at the Ecal face
-    int n_gamma = 0, n_h0 = 0;
+    int n_gamma = 0, n_h0 = 0, n_seen = 0;
     for (int j : photons) {
       int c = truth_cand[j];
+      n_seen += c >= 0 || seen[j];
       if (c < 0) continue;
       int r_type = pfType(cands[c].getPdgId());
       n_gamma += r_type == kPFGamma;
       n_h0 += r_type == kPFH0;
     }
-    int col = 3;
+    int col = n_seen > 0 ? 3 : 4;
     if (n_gamma >= 2)
       col = 2;
     else if (n_h0 > 0)
