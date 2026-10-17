@@ -155,6 +155,9 @@ void ParticleFlowDQM::analyze(const framework::Event& event) {
     int pid = cand.getPID();
     histograms_.fill("pid", pid);
     histograms_.fill("reco_type", pfType(cand.getPdgId()));
+    if (pfType(cand.getPdgId()) == kPFH) {
+      histograms_.fill("charged_hadron_mass", massColumn(cand.getMass()));
+    }
     pf_e += cand.getEnergy();
     double ecal_e = cand.getEcalEnergy();
     double hcal_e = cand.getHcalEnergy();
