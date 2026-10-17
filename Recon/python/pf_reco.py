@@ -123,14 +123,14 @@ class PFProducer(Processor):
     ecal_corr_energies: list[float] = []
     ecal_corr_factors: list[float] = []
     # Hcal raw energy is scintillator only; factors from neutron guns
-    # (0.5 to 4 GeV): median KE / raw merged energy, scaled 0.9 to remove
-    # the overshoot seen after merging
-    hcal_corr_energies: list[float] = [7.7, 27.3, 61.7, 168.3]
-    hcal_corr_factors: list[float] = [58.7, 32.9, 29.2, 21.4]
+    # (0.5 to 4 GeV): median (KE - Ecal energy) / raw Hcal energy on neutral
+    # candidates, so the Ecal part of the shower is not counted twice
+    hcal_corr_energies: list[float] = [8.6, 27.9, 63.4, 169.5]
+    hcal_corr_factors: list[float] = [42.7, 28.7, 24.7, 20.3]
     # Hcal to Hcal linking cone from the target, 0 disables
     hcal_merge_angle: float = 40.0  # deg
     # track to Hcal link cone from the track at the Ecal face, 0 disables
-    hcal_track_angle: float = 25.0  # deg
+    hcal_track_angle: float = 15.0  # deg
     # energy subtraction: charged hadrons absorb free Ecal clusters within the
     # radius and Hcal clusters in their cone while calo E < absorb_ep * p
     hadron_ecal_radius: float = 100.0  # mm

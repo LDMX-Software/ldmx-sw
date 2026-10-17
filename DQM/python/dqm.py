@@ -2637,6 +2637,9 @@ class ParticleFlowDQM(Processor):
         ]
         self.histogram("pid", "", pid_labels)
         self.histogram("reco_type", "", pf_types)
+        self.histogram(
+            "charged_hadron_mass", "had^{#pm} mass hypothesis", ["#pi", "K", "p"]
+        )
 
         # charged candidates
         self.histogram("charged_track_p", "Charged cand track p [MeV]", 100, 0, 8000)
