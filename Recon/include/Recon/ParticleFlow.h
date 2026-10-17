@@ -39,6 +39,20 @@ class ParticleFlow : public framework::Producer {
   void fillCandHadCalo(ldmx::PFCandidate& cand, const ldmx::CaloCluster& had);
   void identifyCharged(ldmx::PFCandidate& cand) const;
   static double massOf(int pdg);
+  static ldmx::CaloCluster mergeClusters(
+      const std::vector<ldmx::CaloCluster>& clusters, int root,
+      const std::vector<int>& members);
+  std::vector<ldmx::CaloCluster> linkHcalClusters(
+      const std::vector<ldmx::CaloCluster>& clusters) const;
+  double ecalDepth(const ldmx::CaloCluster& cl) const;
+  void absorbHadronShower(ldmx::PFCandidate& cand, const ldmx::Track& tk,
+                          const std::vector<ldmx::CaloCluster>& ecal,
+                          std::vector<bool>& ecal_used,
+                          const std::vector<ldmx::CaloCluster>& hcal,
+                          std::vector<bool>& hcal_used) const;
+  int linkTrackHcal(const ldmx::Track& tk,
+                    const std::vector<ldmx::CaloCluster>& clusters,
+                    const std::vector<bool>& used) const;
   void recoverEcal(ldmx::PFCandidate& cand, const ldmx::Track& tk,
                    const std::vector<ldmx::CaloCluster>& clusters,
                    std::vector<bool>& used) const;
@@ -99,6 +113,21 @@ class ParticleFlow : public framework::Producer {
   // until E/p reaches recovery_stop_ep, 0 disables
   double recovery_radius_{};
   double recovery_stop_ep_{};
+  // Hcal to Hcal linking cone seen from the target [deg], 0 disables
+  double hcal_merge_angle_{};
+  // track to Hcal link cone from the track at the Ecal face [deg], 0 disables
+  double hcal_track_angle_{};
+  // charged hadrons absorb free Ecal clusters within this radius [mm] and
+  // Hcal clusters in their cone while calo E < absorb_ep * p, 0 disables
+  double hadron_ecal_radius_{};
+  double hadron_absorb_ep_{};
+  // neutral candidates below this energy are dropped [MeV]
+  double min_neutral_e_{};
+  // electrons need an energy-weighted Ecal depth [mm] below max_depth at
+  // 1 GeV, growing by depth_slope per doubling of momentum
+  double ecal_front_z_{};
+  double electron_max_depth_{};
+  double electron_depth_slope_{};
   // Ecal to Ecal linking, radius 0 disables [mm]
   double ecal_link_radius_{};
   double ecal_link_ratio_{};

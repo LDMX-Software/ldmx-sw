@@ -120,28 +120,25 @@ class PFProducer(Processor):
     # old Ecal table overcorrected electrons, disabled until rederived
     ecal_corr_energies: list[float] = []
     ecal_corr_factors: list[float] = []
-    hcal_corr_energies: list[float] = [
-        25.0,
-        75.0,
-        125.0,
-        175.0,
-        225.0,
-        275.0,
-        325.0,
-        375.0,
-        425.0,
-    ]
-    hcal_corr_factors: list[float] = [
-        8.44,
-        7.38,
-        7.76,
-        8.535,
-        9.47,
-        10.45,
-        10.47,
-        9.71,
-        8.87,
-    ]
+    # Hcal raw energy is scintillator only; factors from neutron guns
+    # (0.5 to 4 GeV): median KE / raw merged energy, scaled 0.9 to remove
+    # the overshoot seen after merging
+    hcal_corr_energies: list[float] = [7.7, 27.3, 61.7, 168.3]
+    hcal_corr_factors: list[float] = [58.7, 32.9, 29.2, 21.4]
+    # Hcal to Hcal linking cone from the target, 0 disables
+    hcal_merge_angle: float = 40.0  # deg
+    # track to Hcal link cone from the track at the Ecal face, 0 disables
+    hcal_track_angle: float = 25.0  # deg
+    # energy subtraction: charged hadrons absorb free Ecal clusters within the
+    # radius and Hcal clusters in their cone while calo E < absorb_ep * p
+    hadron_ecal_radius: float = 100.0  # mm
+    hadron_absorb_ep: float = 1.5
+    # drop neutral candidates below this energy, mostly soft fragments
+    min_neutral_e: float = 30.0  # MeV
+    # electron shower depth limit: max_depth at 1 GeV, + slope per doubling of p
+    ecal_front_z: float = 248.0  # mm, first Ecal layer
+    electron_max_depth: float = 130.0  # mm
+    electron_depth_slope: float = 12.0  # mm
 
 
 @processor("recon::PFTruthProducer", "Recon")

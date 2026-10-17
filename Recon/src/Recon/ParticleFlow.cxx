@@ -1,9 +1,11 @@
 #include "Recon/ParticleFlow.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <map>
 #include <set>
+#include <tuple>
 #include <vector>
 
 #include "Ecal/Event/EcalCluster.h"
@@ -38,6 +40,14 @@ void ParticleFlow::configure(framework::config::Parameters& ps) {
   proton_max_p_ = ps.get<double>("proton_max_p");
   kaon_max_p_ = ps.get<double>("kaon_max_p");
   recovery_radius_ = ps.get<double>("recovery_radius");
+  hcal_merge_angle_ = ps.get<double>("hcal_merge_angle");
+  hcal_track_angle_ = ps.get<double>("hcal_track_angle");
+  hadron_ecal_radius_ = ps.get<double>("hadron_ecal_radius");
+  hadron_absorb_ep_ = ps.get<double>("hadron_absorb_ep");
+  min_neutral_e_ = ps.get<double>("min_neutral_e");
+  ecal_front_z_ = ps.get<double>("ecal_front_z");
+  electron_max_depth_ = ps.get<double>("electron_max_depth");
+  electron_depth_slope_ = ps.get<double>("electron_depth_slope");
   recovery_stop_ep_ = ps.get<double>("recovery_stop_ep");
   ecal_link_radius_ = ps.get<double>("ecal_link_radius");
   ecal_link_ratio_ = ps.get<double>("ecal_link_ratio");
@@ -134,6 +144,7 @@ void ParticleFlow::fillCandEMCalo(ldmx::PFCandidate& cand,
   cand.setEcalClusterDYDZ(em.getDYDZ());
   cand.setEcalClusterEDXDZ(em.getEDXDZ());
   cand.setEcalClusterEDYDZ(em.getEDYDZ());
+  cand.setEcalDepth(ecalDepth(em));
   cand.setPID(cand.getPID() | 2);  // OR with 010
 }
 // produce candidate HCal info
@@ -230,40 +241,185 @@ std::vector<ldmx::CaloCluster> ParticleFlow::linkEcalClusters(
   for (int i = 0; i < n; i++) groups[root(i)].push_back(i);
   std::vector<ldmx::CaloCluster> merged;
   for (const auto& [r, members] : groups) {
-    if (members.size() == 1) {
-      merged.push_back(clusters[r]);
-      continue;
-    }
-    ldmx::CaloCluster cl = clusters[r];
-    double e = 0, x = 0, y = 0, z = 0;
-    std::vector<unsigned int> ids;
-    std::vector<float> hx, hy, hz, he;
-    for (int m : members) {
-      const auto& c = clusters[m];
-      e += c.getEnergy();
-      x += c.getEnergy() * c.getCentroidX();
-      y += c.getEnergy() * c.getCentroidY();
-      z += c.getEnergy() * c.getCentroidZ();
-      ids.insert(ids.end(), c.getHitIDs().begin(), c.getHitIDs().end());
-      hx.insert(hx.end(), c.getHitX().begin(), c.getHitX().end());
-      hy.insert(hy.end(), c.getHitY().begin(), c.getHitY().end());
-      hz.insert(hz.end(), c.getHitZ().begin(), c.getHitZ().end());
-      he.insert(he.end(), c.getHitE().begin(), c.getHitE().end());
-    }
-    cl.setEnergy(e);
-    if (e > 0) cl.setCentroidXYZ(x / e, y / e, z / e);
-    cl.setNHits(ids.size());
-    cl.setIDs(ids);
-    cl.setHitValsX(hx);
-    cl.setHitValsY(hy);
-    cl.setHitValsZ(hz);
-    cl.setHitValsE(he);
-    merged.push_back(cl);
+    merged.push_back(mergeClusters(clusters, r, members));
   }
   std::sort(merged.begin(), merged.end(), [](const auto& a, const auto& b) {
     return a.getEnergy() > b.getEnergy();
   });
   return merged;
+}
+
+// sum of member clusters: energy, energy-weighted centroid, all hits;
+// shape info is kept from the root cluster
+ldmx::CaloCluster ParticleFlow::mergeClusters(
+    const std::vector<ldmx::CaloCluster>& clusters, int root,
+    const std::vector<int>& members) {
+  if (members.size() == 1) return clusters[root];
+  ldmx::CaloCluster cl = clusters[root];
+  double e = 0, x = 0, y = 0, z = 0;
+  std::vector<unsigned int> ids;
+  std::vector<float> hx, hy, hz, he;
+  for (int m : members) {
+    const auto& c = clusters[m];
+    e += c.getEnergy();
+    x += c.getEnergy() * c.getCentroidX();
+    y += c.getEnergy() * c.getCentroidY();
+    z += c.getEnergy() * c.getCentroidZ();
+    ids.insert(ids.end(), c.getHitIDs().begin(), c.getHitIDs().end());
+    hx.insert(hx.end(), c.getHitX().begin(), c.getHitX().end());
+    hy.insert(hy.end(), c.getHitY().begin(), c.getHitY().end());
+    hz.insert(hz.end(), c.getHitZ().begin(), c.getHitZ().end());
+    he.insert(he.end(), c.getHitE().begin(), c.getHitE().end());
+  }
+  cl.setEnergy(e);
+  if (e > 0) cl.setCentroidXYZ(x / e, y / e, z / e);
+  cl.setNHits(ids.size());
+  cl.setIDs(ids);
+  cl.setHitValsX(hx);
+  cl.setHitValsY(hy);
+  cl.setHitValsZ(hz);
+  cl.setHitValsE(he);
+  return cl;
+}
+
+// Hcal to Hcal linking: hadron showers fragment into many clusters, merge
+// those within a cone seen from the target around the most energetic one
+std::vector<ldmx::CaloCluster> ParticleFlow::linkHcalClusters(
+    const std::vector<ldmx::CaloCluster>& clusters) const {
+  int n = clusters.size();
+  std::vector<int> order(n);
+  for (int i = 0; i < n; i++) order[i] = i;
+  std::sort(order.begin(), order.end(), [&clusters](int a, int b) {
+    return clusters[a].getEnergy() > clusters[b].getEnergy();
+  });
+  auto dir = [&clusters](int i) {
+    const auto& c = clusters[i];
+    double r = std::hypot(c.getCentroidX(), c.getCentroidY(), c.getCentroidZ());
+    return std::array<double, 3>{c.getCentroidX() / r, c.getCentroidY() / r,
+                                 c.getCentroidZ() / r};
+  };
+  double cos_max = std::cos(hcal_merge_angle_ * M_PI / 180.);
+  std::vector<bool> used(n, false);
+  std::vector<ldmx::CaloCluster> merged;
+  for (int s : order) {
+    if (used[s]) continue;
+    auto ds = dir(s);
+    std::vector<int> members;
+    for (int o : order) {
+      if (used[o]) continue;
+      auto d = dir(o);
+      if (ds[0] * d[0] + ds[1] * d[1] + ds[2] * d[2] >= cos_max) {
+        used[o] = true;
+        members.push_back(o);
+      }
+    }
+    merged.push_back(mergeClusters(clusters, s, members));
+  }
+  return merged;
+}
+
+// free Hcal cluster closest in angle to the track direction, seen from the
+// track at the Ecal face; -1 if none within hcal_track_angle
+int ParticleFlow::linkTrackHcal(const ldmx::Track& tk,
+                                const std::vector<ldmx::CaloCluster>& clusters,
+                                const std::vector<bool>& used) const {
+  auto ts = tk.getTrackState(ldmx::AtECAL);
+  if (hcal_track_angle_ <= 0 || !ts || ts->mom_.size() < 3) return -1;
+  const auto& pos = ts->pos_;
+  const auto& mom = ts->mom_;
+  double pm = std::hypot(mom[0], mom[1], mom[2]);
+  int best = -1;
+  double best_cos = std::cos(hcal_track_angle_ * M_PI / 180.);
+  for (int j = 0; j < static_cast<int>(clusters.size()); j++) {
+    if (used[j]) continue;
+    double dx = clusters[j].getCentroidX() - pos[0];
+    double dy = clusters[j].getCentroidY() - pos[1];
+    double dz = clusters[j].getCentroidZ() - pos[2];
+    double c = (dx * mom[0] + dy * mom[1] + dz * mom[2]) /
+               (pm * std::hypot(dx, dy, dz));
+    if (c > best_cos) {
+      best_cos = c;
+      best = j;
+    }
+  }
+  return best;
+}
+
+// energy subtraction: a charged hadron absorbs free Ecal clusters near its
+// track and free Hcal clusters in its cone, closest first, while the
+// calibrated calorimeter energy stays below hadron_absorb_ep * p; what is
+// left stays neutral
+void ParticleFlow::absorbHadronShower(
+    ldmx::PFCandidate& cand, const ldmx::Track& tk,
+    const std::vector<ldmx::CaloCluster>& ecal, std::vector<bool>& ecal_used,
+    const std::vector<ldmx::CaloCluster>& hcal,
+    std::vector<bool>& hcal_used) const {
+  auto ts = tk.getTrackState(ldmx::AtECAL);
+  if (hadron_absorb_ep_ <= 0 || !ts || ts->mom_.size() < 3 || ts->mom_[2] <= 0)
+    return;
+  const auto& pos = ts->pos_;
+  const auto& mom = ts->mom_;
+  double pm = std::hypot(mom[0], mom[1], mom[2]);
+  double budget = hadron_absorb_ep_ * pm;
+  double calo = cand.getEcalEnergy() + cand.getHcalEnergy();
+
+  // (distance key, is_hcal, index), Ecal in mm and Hcal in angle scaled to mm
+  std::vector<std::tuple<double, bool, int>> near;
+  for (int j = 0; j < static_cast<int>(ecal.size()); j++) {
+    if (ecal_used[j]) continue;
+    double z = ecal[j].getCentroidZ();
+    double d = std::hypot(
+        pos[0] + mom[0] / mom[2] * (z - pos[2]) - ecal[j].getCentroidX(),
+        pos[1] + mom[1] / mom[2] * (z - pos[2]) - ecal[j].getCentroidY());
+    if (d < hadron_ecal_radius_) near.emplace_back(d, false, j);
+  }
+  double cos_max = std::cos(hcal_track_angle_ * M_PI / 180.);
+  for (int j = 0; j < static_cast<int>(hcal.size()); j++) {
+    if (hcal_used[j]) continue;
+    double dx = hcal[j].getCentroidX() - pos[0];
+    double dy = hcal[j].getCentroidY() - pos[1];
+    double dz = hcal[j].getCentroidZ() - pos[2];
+    double cs = (dx * mom[0] + dy * mom[1] + dz * mom[2]) /
+                (pm * std::hypot(dx, dy, dz));
+    if (cs > cos_max) {
+      // rank Hcal after nearby Ecal pieces, by angle
+      double ang = std::acos(std::min(1., cs)) * 180. / M_PI;
+      near.emplace_back(hadron_ecal_radius_ + ang, true, j);
+    }
+  }
+  std::sort(near.begin(), near.end());
+  for (const auto& [d, is_hcal, j] : near) {
+    const auto& cl = is_hcal ? hcal[j] : ecal[j];
+    double raw = cl.getEnergy();
+    double e =
+        raw * (is_hcal
+                   ? correction(hcal_corr_energies_, hcal_corr_factors_, raw)
+                   : correction(ecal_corr_energies_, ecal_corr_factors_, raw));
+    if (calo + e > budget) continue;
+    calo += e;
+    if (is_hcal) {
+      cand.setHcalEnergy(cand.getHcalEnergy() + e);
+      cand.setHcalRawEnergy(cand.getHcalRawEnergy() + raw);
+      cand.setPID(cand.getPID() | 4);
+      hcal_used[j] = true;
+    } else {
+      cand.setEcalEnergy(cand.getEcalEnergy() + e);
+      cand.setEcalRawEnergy(cand.getEcalRawEnergy() + raw);
+      ecal_used[j] = true;
+    }
+  }
+}
+
+// energy-weighted mean hit depth behind the Ecal front [mm]
+double ParticleFlow::ecalDepth(const ldmx::CaloCluster& cl) const {
+  const auto& hz = cl.getHitZ();
+  const auto& he = cl.getHitE();
+  double e = 0, ez = 0;
+  for (size_t k = 0; k < hz.size() && k < he.size(); k++) {
+    e += he[k];
+    ez += he[k] * hz[k];
+  }
+  return (e > 0 ? ez / e : cl.getCentroidZ()) - ecal_front_z_;
 }
 
 // a linked track with low E/p absorbs nearby unlinked clusters, closest
@@ -328,7 +484,12 @@ void ParticleFlow::identifyCharged(ldmx::PFCandidate& cand) const {
   } else if (has_dedx && trk_p < kaon_max_p_ && m2 > kaon_min_mass2_ &&
              m2 <= proton_min_mass2_) {
     cand.setPdgId(321 * q);
-  } else if ((cand.getPID() & 2) && ep > electron_ep_min_) {
+  } else if ((cand.getPID() & 2) && ep > electron_ep_min_ &&
+             cand.getEcalDepth() <
+                 electron_max_depth_ +
+                     electron_depth_slope_ *
+                         std::log2(std::max(trk_p, 100.) / 1000.)) {
+    // EM showers stay shallow, hadronic ones start late and go deep
     // no upper E/p, overlapping photons are split off as excess
     cand.setPdgId(-11 * q);
   } else {
@@ -354,8 +515,9 @@ void ParticleFlow::produce(framework::Event& event) {
     return;
   }
   // get the track and clustering info
-  const auto hcal_clusters = event.getCollection<ldmx::CaloCluster>(
+  auto hcal_clusters = event.getCollection<ldmx::CaloCluster>(
       input_hcal_coll_name_, input_hcal_passname_);
+  if (hcal_merge_angle_ > 0) hcal_clusters = linkHcalClusters(hcal_clusters);
   const auto tracks = event.getCollection<ldmx::Track>(input_track_coll_name_,
                                                        input_tracks_passname_);
   // truth info is optional
@@ -441,8 +603,6 @@ void ParticleFlow::produce(framework::Event& event) {
       }
     }
 
-    // TODO: tk-hadcalo linking (Side HCal)
-
     //
     // track / ecal cluster arbitration
     //
@@ -504,6 +664,16 @@ void ParticleFlow::produce(framework::Event& event) {
         }
         recoverEcal(cand, tracks[i], ecal_clusters, em_is_tk_linked);
       }
+      // charged hadron showers in the Hcal belong to the track, not to a
+      // neutral; takes the closest free cluster in angle
+      if (cand.getHcalIndex() < 0) {
+        int h = linkTrackHcal(tracks[i], hcal_clusters, had_is_em_linked);
+        if (h >= 0) {
+          fillCandHadCalo(cand, hcal_clusters[h]);
+          cand.setHcalIndex(h);
+          had_is_em_linked[h] = true;
+        }
+      }
       if (auto it = mass_estimates.find(i); it != mass_estimates.end()) {
         cand.setDeDxMassSquared(it->second.getMassSquared());
         cand.setDeDxIh(it->second.getIh());
@@ -511,6 +681,11 @@ void ParticleFlow::produce(framework::Event& event) {
       }
       cand.setCharge(static_cast<int>(tracks[i].getCharge()));
       identifyCharged(cand);
+      int apdg = std::abs(cand.getPdgId());
+      if (apdg == 211 || apdg == 321 || apdg == 2212) {
+        absorbHadronShower(cand, tracks[i], ecal_clusters, em_is_tk_linked,
+                           hcal_clusters, had_is_em_linked);
+      }
       // charged energy from the track and the ID mass
       auto p = cand.getTrackPxPyPz();
       double trk_p = std::hypot(p[0], p[1], p[2]);
@@ -544,7 +719,7 @@ void ParticleFlow::produce(framework::Event& event) {
       // Hcal energy means a hadronic shower
       cand.setPdgId(em_is_had_linked[i] ? 2112 : 22);
       cand.setEnergy(cand.getEcalEnergy() + cand.getHcalEnergy());
-      pf_cands.push_back(cand);
+      if (cand.getEnergy() >= min_neutral_e_) pf_cands.push_back(cand);
     }
 
     // neutral candidates from unlinked Hcal clusters
@@ -555,7 +730,7 @@ void ParticleFlow::produce(framework::Event& event) {
       cand.setHcalIndex(i);
       cand.setPdgId(2112);
       cand.setEnergy(cand.getHcalEnergy());
-      pf_cands.push_back(cand);
+      if (cand.getEnergy() >= min_neutral_e_) pf_cands.push_back(cand);
     }
 
   } else {
