@@ -29,6 +29,8 @@ class ParticleFlowDQM : public framework::Analyzer {
  private:
   void analyzeTruth(const framework::Event& event,
                     std::vector<ldmx::PFCandidate>& cands);
+  bool reconstructable(int pdg, double px, double py, double pz,
+                       double ke) const;
 
   std::string pf_cand_coll_name_{"PFCandidates"};
   std::string pf_cand_pass_name_{""};
@@ -44,6 +46,13 @@ class ParticleFlowDQM : public framework::Analyzer {
   double neutral_match_max_ratio_{2.};
   // Hcal only candidate to truth match cone from the target [deg]
   double neutral_hcal_match_angle_{30.};
+  // reconstructable truth: max angle to the beam axis [deg], min |p| for
+  // charged pi and for p, K [MeV], min KE for neutral hadrons and pi0 [MeV]
+  double reco_max_theta_{80.};
+  double reco_min_p_pion_{100.};
+  double reco_min_p_heavy_{800.};
+  double reco_min_ke_neutral_{1000.};
+  double reco_min_ke_pi0_{2000.};
 };
 
 }  // namespace dqm

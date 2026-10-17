@@ -127,6 +127,25 @@ std::vector<double> direction(const ldmx::PFCandidate& c) {
 
 }  // namespace
 
+// reconstructable truth: angle to the beam axis and per species momentum or
+// kinetic energy thresholds; e and gamma need only the angle
+bool ParticleFlowDQM::reconstructable(int pdg, double px, double py, double pz,
+                                      double ke) const {
+  double p = std::hypot(px, py, pz);
+  if (p <= 0 || std::acos(pz / p) > reco_max_theta_ * M_PI / 180.) return false;
+  switch (category(pdg)) {
+    case kPi:
+      return p > reco_min_p_pion_;
+    case kK:
+    case kP:
+      return p > reco_min_p_heavy_;
+    case kNHad:
+      return ke > reco_min_ke_neutral_;
+    default:
+      return true;
+  }
+}
+
 void ParticleFlowDQM::configure(framework::config::Parameters& ps) {
   pf_cand_coll_name_ = ps.get<std::string>("pf_cand_coll_name");
   pf_cand_pass_name_ = ps.get<std::string>("pf_cand_pass_name");
@@ -138,6 +157,11 @@ void ParticleFlowDQM::configure(framework::config::Parameters& ps) {
   neutral_match_dist_ = ps.get<double>("neutral_match_dist");
   neutral_match_max_ratio_ = ps.get<double>("neutral_match_max_ratio");
   neutral_hcal_match_angle_ = ps.get<double>("neutral_hcal_match_angle");
+  reco_max_theta_ = ps.get<double>("reco_max_theta");
+  reco_min_p_pion_ = ps.get<double>("reco_min_p_pion");
+  reco_min_p_heavy_ = ps.get<double>("reco_min_p_heavy");
+  reco_min_ke_neutral_ = ps.get<double>("reco_min_ke_neutral");
+  reco_min_ke_pi0_ = ps.get<double>("reco_min_ke_pi0");
 }
 
 void ParticleFlowDQM::analyze(const framework::Event& event) {
@@ -372,12 +396,21 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     const auto& t = truth[j];
     int c = truth_cand[j];
     int r_type = c < 0 ? kPFNotFound : pfType(cands[c].getPdgId());
+    bool reco = reconstructable(t.pdg_, t.px_, t.py_, t.pz_, t.visible_e_);
     histograms_.fill("pf_confusion", truthPFType(t.pdg_), r_type);
+    if (reco) {
+      histograms_.fill("pf_confusion_reconstructable", truthPFType(t.pdg_),
+                       r_type);
+    }
     int sp = category(t.pdg_);
     if (sp == kPi || sp == kK || sp == kP) {
       // columns: h with pi, K, p hypothesis, anything else or not found
       int col = r_type == kPFH ? massColumn(cands[c].getMass()) : 3;
       histograms_.fill("charged_hadron_confusion", sp - kPi, col);
+      if (reco) {
+        histograms_.fill("charged_hadron_confusion_reconstructable", sp - kPi,
+                         col);
+      }
     }
     if (sp == kNHad) {
       // columns: h0, gamma, both gammas of a pi0, anything else or not found
@@ -385,6 +418,10 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
       if (r_type == kPFH0) col = 0;
       if (r_type == kPFGamma) col = 1;
       histograms_.fill("neutral_confusion", neutralRow(t.pdg_), col);
+      if (reco) {
+        histograms_.fill("neutral_confusion_reconstructable",
+                         neutralRow(t.pdg_), col);
+      }
     }
   }
   for (const auto& t : truth) {
@@ -449,6 +486,16 @@ void ParticleFlowDQM::analyzeTruth(const framework::Event& event,
     else if (n_gamma == 1)
       col = 1;
     histograms_.fill("neutral_confusion", 3, col);
+    const auto& pi0 = particles.at(pa);
+    double pi0_ke = pi0.getEnergy() - pi0.getMass();
+    double pi0_theta = std::acos(
+        pi0.getMomentum()[2] /
+        std::max(1e-9, std::hypot(pi0.getMomentum()[0], pi0.getMomentum()[1],
+                                  pi0.getMomentum()[2])));
+    if (pi0_ke > reco_min_ke_pi0_ &&
+        pi0_theta < reco_max_theta_ * M_PI / 180.) {
+      histograms_.fill("neutral_confusion_reconstructable", 3, col);
+    }
   }
 }
 

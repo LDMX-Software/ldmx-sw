@@ -2604,6 +2604,13 @@ class ParticleFlowDQM(Processor):
     neutral_match_dist: float = 30.0  # mm
     neutral_match_max_ratio: float = 2.0  # candidate vs truth E, either way
     neutral_hcal_match_angle: float = 30.0  # deg, Hcal only candidates
+    # reconstructable truth for the *_reconstructable matrices: angle to the
+    # beam axis, |p| for charged pi and for p, K, KE for neutral hadrons, pi0
+    reco_max_theta: float = 80.0  # deg
+    reco_min_p_pion: float = 100.0  # MeV
+    reco_min_p_heavy: float = 800.0  # MeV
+    reco_min_ke_neutral: float = 1000.0  # MeV
+    reco_min_ke_pi0: float = 2000.0  # MeV
 
     def __post_init__(self):
         # truth species, same order as Category in ParticleFlowDQM.cxx
@@ -2751,6 +2758,28 @@ class ParticleFlowDQM(Processor):
         )
         self.histogram(
             "neutral_confusion",
+            "Truth neutral",
+            ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
+            ylabel="PF type",
+            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other or not found"],
+        )
+        # same, for reconstructable truth only
+        self.histogram(
+            "pf_confusion_reconstructable",
+            "Truth type",
+            [*pf_types, "no truth"],
+            ylabel="PF type",
+            ybins=[*pf_types, "not found"],
+        )
+        self.histogram(
+            "charged_hadron_confusion_reconstructable",
+            "Truth charged hadron",
+            ["#pi^{#pm}", "K^{#pm}", "p", "no truth"],
+            ylabel="PF type (mass hypothesis)",
+            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other or not found"],
+        )
+        self.histogram(
+            "neutral_confusion_reconstructable",
             "Truth neutral",
             ["n", "K^{0}", "other n. had.", "#pi^{0} (2#gamma at Ecal)"],
             ylabel="PF type",
