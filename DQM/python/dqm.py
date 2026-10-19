@@ -1791,6 +1791,16 @@ class TrkDeDxMassEstFeatures(Processor):
         self.histogram("mass_estimate", "Mass Estimate [MeV]", 100, 0.0, 2000.0)
         self.histogram("mass_estimate_low_p", "Mass Estimate [MeV]", 100, 0.0, 2000.0)
         self.histogram(
+            "mass_squared", "Mass Squared Estimate [MeV^{2}]", 200, -1.0e6, 3.0e6
+        )
+        self.histogram(
+            "mass_squared_low_p",
+            "Mass Squared Estimate, p < 1 GeV [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
             "mass_estimate_very_low_p", "Mass Estimate [MeV]", 100, 0.0, 2000.0
         )
         self.histogram(
@@ -1820,6 +1830,41 @@ class TrkDeDxMassEstFeatures(Processor):
             40,
             800.0,
             1200.0,
+        )
+        self.histogram(
+            "mass_squared_very_low_p",
+            "Mass Squared Estimate [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_electron",
+            "Mass Squared Estimate for electrons [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_pion",
+            "Mass Squared Estimate for pions [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_kaon",
+            "Mass Squared Estimate for kaons [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_proton",
+            "Mass Squared Estimate for proton [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
         )
         self.histogram("track_type", "Track Type", ["Other", "Tagger", "Recoil"])
 
