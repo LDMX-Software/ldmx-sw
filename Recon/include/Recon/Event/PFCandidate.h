@@ -10,6 +10,8 @@
 // ROOT
 #include <Rtypes.h>  // For ClassDef
 
+#include <vector>
+
 namespace ldmx {
 
 /**
@@ -30,7 +32,17 @@ class PFCandidate {
   /*
      Setters
    */
+  // detector bitmask: 1 track, 2 Ecal, 4 Hcal
   void setPID(int x_) { pid_ = x_; }
+  // PF type as a signed PDG ID, as in CMS: 11 e, 13 mu, 22 gamma,
+  // 211 charged hadron, 130 neutral hadron; see getMass for the hypothesis
+  void setPdgId(int x_) { pdg_id_ = x_; }
+  void setCharge(int x_) { charge_ = x_; }
+  // tracker dE/dx estimate of the charged track
+  void setDeDxMassSquared(float x_) { dedx_mass2_ = x_; }
+  void setDeDxIh(float x_) { dedx_ih_ = x_; }
+  void setDeDxNhits(int x_) { dedx_nhits_ = x_; }
+  // mass hypothesis used for the energy [MeV]
   void setMass(float x_) { mass_ = x_; }
   void setEnergy(float x_) { energy_ = x_; }
 
@@ -60,6 +72,28 @@ class PFCandidate {
   void setHcalIndex(int x) { hcal_idx_ = x; }
 
   void setEcalEnergy(float x_) { ecal_energy_ = x_; }
+  // rec hits behind the candidate with the raw energy it owns of each; a hit
+  // shared by Ecal clusters is listed in each candidate with its share
+  void clearEcalHits() {
+    ecal_hit_ids_.clear();
+    ecal_hit_energies_.clear();
+  }
+  void clearHcalHits() {
+    hcal_hit_ids_.clear();
+    hcal_hit_energies_.clear();
+  }
+  void addEcalHits(const std::vector<unsigned int>& ids,
+                   const std::vector<float>& energies) {
+    addHits(ecal_hit_ids_, ecal_hit_energies_, ids, energies);
+  }
+  void addHcalHits(const std::vector<unsigned int>& ids,
+                   const std::vector<float>& energies) {
+    addHits(hcal_hit_ids_, hcal_hit_energies_, ids, energies);
+  }
+  // energy-weighted mean depth behind the Ecal front [mm]
+  void setEcalDepth(float x_) { ecal_depth_ = x_; }
+  // energy-weighted RMS distance of the hits from the track line [mm]
+  void setEcalWidth(float x_) { ecal_width_ = x_; }
   void setEcalRawEnergy(float x_) { ecal_raw_energy_ = x_; }
   void setEcalClusterXYZ(float x_, float y_, float z_) {
     ecal_cluster_x_ = x_;
@@ -106,11 +140,17 @@ class PFCandidate {
   void setTruthMass(double x_) { truth_mass_ = x_; }
   void setTruthEnergy(double x_) { truth_energy_ = x_; }
   void setTruthPdgId(int x_) { truth_pdg_id_ = x_; }
+  void setTruthTrackId(int x_) { truth_track_id_ = x_; }
 
   /*
      Getters
    */
   int getPID() const { return pid_; }
+  int getPdgId() const { return pdg_id_; }
+  int getCharge() const { return charge_; }
+  float getDeDxMassSquared() const { return dedx_mass2_; }
+  float getDeDxIh() const { return dedx_ih_; }
+  int getDeDxNhits() const { return dedx_nhits_; }
   float getMass() const { return mass_; }
   float getEnergy() const { return energy_; }
 
@@ -133,6 +173,20 @@ class PFCandidate {
   }
 
   float getEcalEnergy() const { return ecal_energy_; }
+  const std::vector<unsigned int>& getEcalHitIds() const {
+    return ecal_hit_ids_;
+  }
+  const std::vector<float>& getEcalHitEnergies() const {
+    return ecal_hit_energies_;
+  }
+  const std::vector<unsigned int>& getHcalHitIds() const {
+    return hcal_hit_ids_;
+  }
+  const std::vector<float>& getHcalHitEnergies() const {
+    return hcal_hit_energies_;
+  }
+  float getEcalDepth() const { return ecal_depth_; }
+  float getEcalWidth() const { return ecal_width_; }
   float getEcalRawEnergy() const { return ecal_raw_energy_; }
   std::vector<float> getEcalClusterXYZ() const {
     return {ecal_cluster_x_, ecal_cluster_y_, ecal_cluster_z_};
@@ -167,10 +221,18 @@ class PFCandidate {
   double getTruthMass() { return truth_mass_; }
   double getTruthEnergy() { return truth_energy_; }
   int getTruthPdgId() { return truth_pdg_id_; }
+  int getTruthTrackId() const { return truth_track_id_; }
 
  private:
   /* Particle ID enum */
   int pid_{0};
+  /* Reconstructed particle type and charge */
+  int pdg_id_{0};
+  int charge_{0};
+  /* Tracker dE/dx, nhits 0 when not available */
+  float dedx_mass2_{0};
+  float dedx_ih_{0};
+  int dedx_nhits_{0};
   float mass_{0};
   float energy_{0};
 
@@ -194,6 +256,18 @@ class PFCandidate {
 
   /* Ecal energy, cluster info */
   float ecal_energy_{0};
+  float ecal_depth_{0};
+  /* Rec hits used and the raw energy owned of each [MeV] */
+  std::vector<unsigned int> ecal_hit_ids_;
+  std::vector<float> ecal_hit_energies_;
+  std::vector<unsigned int> hcal_hit_ids_;
+  std::vector<float> hcal_hit_energies_;
+
+  /* append hits, summing the energy of ids already listed */
+  static void addHits(std::vector<unsigned int>& ids, std::vector<float>& es,
+                      const std::vector<unsigned int>& new_ids,
+                      const std::vector<float>& new_es);
+  float ecal_width_{0};
   float ecal_raw_energy_{0};
   float ecal_cluster_x_{0};
   float ecal_cluster_y_{0};
@@ -230,6 +304,7 @@ class PFCandidate {
   double truth_mass_{0};
   double truth_energy_{0};
   int truth_pdg_id_{0};
+  int truth_track_id_{-1};
 
   /* Indices of the components making up the PFlow object */
   int track_idx_{-1};
@@ -237,7 +312,7 @@ class PFCandidate {
   int hcal_idx_{-1};
 
   /* The ROOT class definition. */
-  ClassDef(PFCandidate, 2);
+  ClassDef(PFCandidate, 4);
 };
 }  // namespace ldmx
 

@@ -183,6 +183,7 @@ pf_comb.truth_sp_passname = this_pass_name
 
 # trigger recasting existing CLUE to caloclusters
 pf_comb.use_existing_ecal_clusters = True
+pf_comb.ecal_link_radius = 0.0
 
 # Load pileup finder
 from LDMX.Recon import pileup_finder

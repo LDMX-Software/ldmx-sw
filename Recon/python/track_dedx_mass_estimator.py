@@ -16,6 +16,8 @@ track_collection : string
     Name of the track collection used as input
 input_pass_name: string
     Pass name of the track collection used as input
+out_collection : string
+    Name of the output TrackDeDxMassEstimate collection
 fit_res_c : float
     The fitted result of the constant term C (unit: MeV/mm)
 fit_res_k : float
@@ -36,6 +38,7 @@ class TrackDeDxMassEstimator(Processor):
 
     track_collection: str = "RecoilTracks"
     input_pass_name: str = ""
+    out_collection: str = "TrackDeDxMassEstimate"
     fit_res_c: float = 3.094
     fit_res_k: float = 1.862
 
