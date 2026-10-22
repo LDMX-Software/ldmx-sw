@@ -45,6 +45,7 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
   fit_fixed_t0_ = ps.get<bool>("fit_fixed_t0", false);
   fit_t0_offset_ = ps.get<double>("fit_t0_offset", 0.);
   phase_resolution_ = ps.get<double>("phase_resolution", 0.);
+  phase_name_ = ps.get<std::string>("phase_name", "ecal_digi_phase");
   if (amplitude_method_ == "fit") {
     auto shape = ps.get<std::vector<double>>("pulse_shape");
     if (shape.size() != 5) {
@@ -101,8 +102,8 @@ void EcalRecProducer::produce(framework::Event& event) {
   // one measured phase per event, shared by all channels
   double t0_fixed{0.};
   if (fit_fixed_t0_) {
-    t0_fixed = event.getEventHeader().getFloatParameter("ecal_digi_phase") +
-               fit_t0_offset_;
+    t0_fixed =
+        event.getEventHeader().getFloatParameter(phase_name_) + fit_t0_offset_;
     if (phase_resolution_ > 0.) {
       t0_fixed += std::normal_distribution<double>(0., phase_resolution_)(rng_);
     }

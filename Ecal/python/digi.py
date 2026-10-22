@@ -204,11 +204,13 @@ class EcalRecProducer(Processor):
         Samples in the fit starting one before the max, 0 for all
     fit_fixed_t0 : bool
         Fit amplitude only with t0 = event phase + fit_t0_offset
-        Needs time_phase_width > 0 in the digi
     fit_t0_offset : float
         Offset [ns] between the event phase and the pulse t0
     phase_resolution : float
         Gaussian smearing [ns] of the event phase, e.g. HCal TOA resolution
+    phase_name : str
+        Event header float parameter with the event phase [ns], the digi
+        truth by default, e.g. from HCal TOA for data
     pulse_shape : list of floats
         Pulse shape for the fit, same order as the emulator
         [rate_up_slope, time_up_slope, rate_dn_slope, time_dn_slope, time_peak]
@@ -233,6 +235,7 @@ class EcalRecProducer(Processor):
     fit_fixed_t0: bool = False
     fit_t0_offset: float = 0.0
     phase_resolution: float = 0.0
+    phase_name: str = "ecal_digi_phase"
     pulse_shape: list[float] = ecal_pulse_shape
 
     @staticmethod

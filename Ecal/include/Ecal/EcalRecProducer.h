@@ -120,6 +120,9 @@ class EcalRecProducer : public framework::Producer {
   /// Gaussian smearing [ns] of the event phase
   double phase_resolution_;
 
+  /// event header float parameter holding the event phase [ns]
+  std::string phase_name_;
+
   std::mt19937 rng_;
 };
 }  // namespace ecal
