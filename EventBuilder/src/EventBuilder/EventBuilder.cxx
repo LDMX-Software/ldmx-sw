@@ -25,12 +25,13 @@ using namespace eventbuilder;
 static bool g_perf_csv_header_written = false;
 
 // Helper function to write performance metrics to CSV
-void writePerformanceMetric(unsigned int event_id, double build_time_ms,
-                            double cum_events_per_sec, double cum_mb_per_sec,
-                            double window_events_per_sec,
+void writePerformanceMetric(const std::string& path, unsigned int event_id,
+                            double build_time_ms, double cum_events_per_sec,
+                            double cum_mb_per_sec, double window_events_per_sec,
                             double window_mb_per_sec, uint64_t total_events,
                             uint64_t total_bytes) {
-  std::ofstream perf_csv("event_performance.csv", std::ios::app);
+  if (path.empty()) return;
+  std::ofstream perf_csv(path, std::ios::app);
   if (!perf_csv) return;
 
   // Write header on first call
@@ -71,6 +72,12 @@ void EventBuilder::configure(framework::config::Parameters& ps) {
   }
   if (ps.exists("min_subsystems")) {
     m_min_subsystems_ = ps.get<int>("min_subsystems");
+  }
+  if (ps.exists("binary_file")) {
+    m_binary_file_ = ps.get<std::string>("binary_file");
+  }
+  if (ps.exists("performance_file")) {
+    m_performance_file_ = ps.get<std::string>("performance_file");
   }
 
   ldmx_log(info) << "configure(): dat_file='" << m_input_file_
@@ -262,7 +269,7 @@ void EventBuilder::produce(framework::Event& event) {
         // Still create PhysicsEventData for binary output file
         PhysicsEventData final_event =
             assemblePayload(assembled_event_fragments);
-        writeEventBinary(final_event, "events.bin");
+        writeEventBinary(final_event, m_binary_file_);
         ldmx_log(info) << "assembled event id=" << m_event_id_
                        << " timestamp=" << final_event.timestamp_
                        << " fragments=" << assembled_event_fragments.size()
@@ -341,10 +348,11 @@ void EventBuilder::produce(framework::Event& event) {
 
         // Write performance metrics to CSV
         long long event_build_time_ms_val = event_build_time_ms.count();
-        writePerformanceMetric(
-            m_event_id_, static_cast<double>(event_build_time_ms_val),
-            events_per_sec, mb_per_sec, window_events_per_sec,
-            window_mb_per_sec, m_total_events_built_, m_total_bytes_read_);
+        writePerformanceMetric(m_performance_file_, m_event_id_,
+                               static_cast<double>(event_build_time_ms_val),
+                               events_per_sec, mb_per_sec,
+                               window_events_per_sec, window_mb_per_sec,
+                               m_total_events_built_, m_total_bytes_read_);
 
         if (m_verbose_parse_ || m_events_since_last_report_ % 100 == 0) {
           ldmx_log(info) << "Performance: "
@@ -404,7 +412,7 @@ void EventBuilder::produce(framework::Event& event) {
     event.getEventHeader().setRealData();
     // Still create PhysicsEventData for binary output file
     PhysicsEventData final_event = assemblePayload(assembled_event_fragments);
-    writeEventBinary(final_event, "events.bin");
+    writeEventBinary(final_event, m_binary_file_);
     ldmx_log(info) << "assembled event id=" << m_event_id_
                    << " timestamp=" << final_event.timestamp_
                    << " fragments=" << assembled_event_fragments.size()
@@ -413,14 +421,17 @@ void EventBuilder::produce(framework::Event& event) {
     ldmx::EventSummary summary;
     summary.setEventNumber(m_event_id_);
     summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp_));
-    std::set<uint64_t> unique_sys;
+    std::set<uint64_t> unique_sys, unique_sources;
     uint64_t total_payload = 0;
     for (const auto& f : assembled_event_fragments) {
       unique_sys.insert(f.header_.subsystem_id_);
+      // ECal and HCal share a subsystem id, contributor tells them apart
+      unique_sources.insert(f.header_.subsystem_id_ << 8 |
+                            f.header_.contributor_id_);
       total_payload += f.payload_.size();
     }
     // Check for duplicate subsystems
-    if (unique_sys.size() != assembled_event_fragments.size()) {
+    if (unique_sources.size() != assembled_event_fragments.size()) {
       current_event_errors |= ldmx::EventSummary::ERROR_DUPLICATE_SUBSYSTEM;
     }
     summary.setNSystems(static_cast<uint32_t>(unique_sys.size()));
@@ -472,10 +483,11 @@ void EventBuilder::produce(framework::Event& event) {
 
     // Write performance metrics to CSV
     long long event_build_time_ms_val = event_build_time_ms.count();
-    writePerformanceMetric(
-        m_event_id_, static_cast<double>(event_build_time_ms_val),
-        events_per_sec, mb_per_sec, window_events_per_sec, window_mb_per_sec,
-        m_total_events_built_, m_total_bytes_read_);
+    writePerformanceMetric(m_performance_file_, m_event_id_,
+                           static_cast<double>(event_build_time_ms_val),
+                           events_per_sec, mb_per_sec, window_events_per_sec,
+                           window_mb_per_sec, m_total_events_built_,
+                           m_total_bytes_read_);
 
     if (m_verbose_parse_ || m_events_since_last_report_ % 100 == 0) {
       ldmx_log(info) << "Performance: "
@@ -548,6 +560,7 @@ void EventBuilder::writeEventBinary(const PhysicsEventData& ev,
                                     const std::string& path) {
   static std::mutex g_out_mutex;
   std::lock_guard<std::mutex> lg(g_out_mutex);
+  if (path.empty()) return;
   std::ofstream ofs(path, std::ios::binary | std::ios::app);
   if (!ofs) return;
   uint64_t event_id_u = static_cast<uint64_t>(ev.event_id_);
