@@ -15,8 +15,8 @@
 #include <memory>
 #include <random>
 
-#include "Ecal/EcalPulseFit.h"
 #include "Framework/EventProcessor.h"
+#include "Tools/PulseShape.h"
 
 namespace ecal {
 
@@ -108,8 +108,8 @@ class EcalRecProducer : public framework::Producer {
   /// number of samples in the fit, starting one before the max, <= 0 for all
   int fit_n_samples_;
 
-  /// pulse template fit, only for amplitude_method fit
-  std::unique_ptr<EcalPulseFit> pulse_fit_;
+  /// HGCROC pulse template, only for amplitude_method fit
+  std::unique_ptr<ldmx::HgcrocShape> pulse_shape_;
 
   /// fit with t0 = event phase + offset, e.g. phase from HCal TOA
   bool fit_fixed_t0_;
