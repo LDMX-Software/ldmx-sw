@@ -42,7 +42,7 @@ class EcalRecProducer : public framework::Producer {
   /**
    * Grabs configure parameters from the python config file.
    */
-  virtual void configure(framework::config::Parameters&);
+  void configure(framework::config::Parameters&) override;
 
   /**
    * Produce EcalHits and put them into the event bus using the
@@ -52,7 +52,7 @@ class EcalRecProducer : public framework::Producer {
    * and reconstructs their energy using knowledge of how
    * the chip operates and the position using EcalGeometry.
    */
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
 
   /// Seed the phase smearing
   void onNewRun(const ldmx::RunHeader&) override;
