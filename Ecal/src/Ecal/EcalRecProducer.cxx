@@ -6,10 +6,13 @@
 
 #include "Ecal/EcalRecProducer.h"
 
+#include <algorithm>
+
 #include "DetDescr/EcalGeometry.h"
 #include "DetDescr/EcalID.h"
 #include "Ecal/EcalReconConditions.h"
 #include "Ecal/Event/EcalHit.h"
+#include "Framework/RandomNumberSeedService.h"
 #include "Recon/Event/HgcrocDigiCollection.h"
 #include "SimCore/Event/SimCalorimeterHit.h"
 
@@ -34,6 +37,28 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
   mip_si_energy_ = ps.get<double>("mip_si_energy");
   clock_cycle_ = ps.get<double>("clock_cycle");
   charge_per_mip_ = ps.get<double>("charge_per_mip");
+
+  amplitude_method_ = ps.get<std::string>("amplitude_method", "soi");
+  fit_n_samples_ = ps.get<int>("fit_n_samples", 0);
+  fit_fixed_t0_ = ps.get<bool>("fit_fixed_t0", false);
+  fit_t0_offset_ = ps.get<double>("fit_t0_offset", 0.);
+  phase_resolution_ = ps.get<double>("phase_resolution", 0.);
+  if (amplitude_method_ == "fit") {
+    pulse_fit_ = std::make_unique<EcalPulseFit>(
+        ps.get<std::vector<double>>("pulse_shape"), clock_cycle_);
+  } else if (amplitude_method_ != "soi" and amplitude_method_ != "max") {
+    EXCEPTION_RAISE("InvalidConfig",
+                    "Unknown amplitude_method '" + amplitude_method_ +
+                        "', use soi, max or fit.");
+  }
+}
+
+void EcalRecProducer::onNewRun(const ldmx::RunHeader&) {
+  if (fit_fixed_t0_) {
+    const auto& rseed = getCondition<framework::RandomNumberSeedService>(
+        framework::RandomNumberSeedService::CONDITIONS_OBJECT_NAME);
+    rng_.seed(rseed.getSeed(getName() + "::phase"));
+  }
 }
 
 void EcalRecProducer::produce(framework::Event& event) {
@@ -66,6 +91,16 @@ void EcalRecProducer::produce(framework::Event& event) {
   auto ecal_digis = event.getObject<ldmx::HgcrocDigiCollection>(
       digi_coll_name_, digi_pass_name_);
   const int i_soi = ecal_digis.getSampleOfInterestIndex();
+
+  // one measured phase per event, shared by all channels
+  double t0_fixed{0.};
+  if (fit_fixed_t0_) {
+    t0_fixed = event.getEventHeader().getFloatParameter("ecal_digi_phase") +
+               fit_t0_offset_;
+    if (phase_resolution_ > 0.) {
+      t0_fixed += std::normal_distribution<double>(0., phase_resolution_)(rng_);
+    }
+  }
   // loop through digis
   for (auto digi : ecal_digis) {
     // ID from first digi sample
@@ -124,8 +159,29 @@ void EcalRecProducer::produce(framework::Event& event) {
       // available. For now, we simply take the measurement of the SOI as the
       // peak amplitude.
 
-      charge = (digi.soi().adcT() - the_conditions.adcPedestal(id)) *
-               the_conditions.adcGain(id);
+      const double pedestal = the_conditions.adcPedestal(id);
+      if (amplitude_method_ == "soi") {
+        charge = (digi.soi().adcT() - pedestal) * the_conditions.adcGain(id);
+      } else {
+        std::vector<double> adc;
+        for (unsigned int i{0}; i < digi.size(); i++)
+          adc.push_back(digi.at(i).adcT());
+        int i_max = std::max_element(adc.begin(), adc.end()) - adc.begin();
+        if (amplitude_method_ == "max") {
+          charge = (adc[i_max] - pedestal) * the_conditions.adcGain(id);
+          hit_time = (i_max - i_soi) * clock_cycle_;
+        } else {
+          // window starts one sample before the max to catch the rise
+          auto r = fit_fixed_t0_
+                       ? pulse_fit_->fitFixed(adc, pedestal, i_soi, t0_fixed,
+                                              fit_n_samples_)
+                       : pulse_fit_->fit(adc, pedestal, i_soi,
+                                         fit_n_samples_ > 0 ? i_max - 1 : 0,
+                                         fit_n_samples_);
+          charge = r.amplitude * the_conditions.adcGain(id);
+          hit_time = r.t0;
+        }
+      }
 
       ldmx_log(trace) << "ADC Mode -> " << charge << " fC";
     }

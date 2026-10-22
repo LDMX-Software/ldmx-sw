@@ -12,6 +12,10 @@
 //----------//
 //   LDMX   //
 //----------//
+#include <memory>
+#include <random>
+
+#include "Ecal/EcalPulseFit.h"
 #include "Framework/EventProcessor.h"
 
 namespace ecal {
@@ -49,6 +53,9 @@ class EcalRecProducer : public framework::Producer {
    * the chip operates and the position using EcalGeometry.
    */
   virtual void produce(framework::Event& event);
+
+  /// Seed the phase smearing
+  void onNewRun(const ldmx::RunHeader&) override;
 
  private:
   /** Digi Collection Name to use as input */
@@ -94,6 +101,26 @@ class EcalRecProducer : public framework::Producer {
    * of a calibration number.
    */
   double second_order_energy_correction_;
+
+  /// ADC mode amplitude: soi, max or fit
+  std::string amplitude_method_;
+
+  /// number of samples in the fit, starting one before the max, <= 0 for all
+  int fit_n_samples_;
+
+  /// pulse template fit, only for amplitude_method fit
+  std::unique_ptr<EcalPulseFit> pulse_fit_;
+
+  /// fit with t0 = event phase + offset, e.g. phase from HCal TOA
+  bool fit_fixed_t0_;
+
+  /// offset [ns] between the event phase and the pulse t0
+  double fit_t0_offset_;
+
+  /// Gaussian smearing [ns] of the event phase
+  double phase_resolution_;
+
+  std::mt19937 rng_;
 };
 }  // namespace ecal
 
