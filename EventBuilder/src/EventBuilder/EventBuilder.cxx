@@ -271,14 +271,17 @@ void EventBuilder::produce(framework::Event& event) {
         ldmx::EventSummary summary;
         summary.setEventNumber(m_event_id_);
         summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp_));
-        std::set<uint64_t> unique_sys;
+        std::set<uint64_t> unique_sys, unique_sources;
         uint64_t total_payload = 0;
         for (const auto& f : assembled_event_fragments) {
           unique_sys.insert(f.header_.subsystem_id_);
+          // ECal and HCal share a subsystem id, contributor tells them apart
+          unique_sources.insert(f.header_.subsystem_id_ << 8 |
+                                f.header_.contributor_id_);
           total_payload += f.payload_.size();
         }
         // Check for duplicate subsystems
-        if (unique_sys.size() != assembled_event_fragments.size()) {
+        if (unique_sources.size() != assembled_event_fragments.size()) {
           current_event_errors |= ldmx::EventSummary::ERROR_DUPLICATE_SUBSYSTEM;
         }
         summary.setNSystems(static_cast<uint32_t>(unique_sys.size()));
