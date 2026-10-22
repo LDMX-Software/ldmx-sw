@@ -24,31 +24,31 @@ my_sim = sim.Simulator(instance_name="sim")
 my_sim.set_detector(det)
 my_sim.generators = [cosmics]
 my_sim.time_shift_primaries = False
-# no EcalGeometry for the cosmic frame yet
-my_sim.sensitive_detectors = [
-    sd for sd in my_sim.sensitive_detectors if "EcalSD" not in sd.class_name
-]
 
 p.sequence = [my_sim]
 
 ##################################################################
 # Below should be the same for all sim scenarios
 
-p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
+# muons are cheap, run twice the default, the input holds 22k
+p.max_events = min(2 * int(os.environ["LDMX_NUM_EVENTS"]), 20000)
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 
 p.histogram_file = "hist.root"
 p.output_files = ["events.root"]
-# roof secondaries make large events, only the histograms are compared
-p.skim_default_is_drop()
 
+import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_geometry
+import LDMX.Ecal.ecal_hardcoded_conditions
 import LDMX.Hcal.hcal_geometry
 from LDMX.DQM import dqm
 
 
 p.sequence.extend(
     [
+        ecal_digi.EcalDigiProducer(),
+        ecal_digi.EcalRecProducer(),
+        dqm.EcalDigiVerify(),
         dqm.SimObjects(),
         *[d for d in dqm.trig_scint_dqm if "Sim" in d.instance_name],
     ]
