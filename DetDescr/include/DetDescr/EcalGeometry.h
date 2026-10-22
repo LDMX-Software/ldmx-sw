@@ -538,6 +538,15 @@ class EcalGeometry : public framework::ConditionsObject {
    */
   bool layer_shift_odd_bilayer_;
 
+  /// World x of the layer centers [mm]
+  double ecal_center_x_;
+
+  /// World y of the layer centers [mm]
+  double ecal_center_y_;
+
+  /// ECal y axis points along world -y, e.g. rotated about x by 180 deg
+  bool flip_y_;
+
   /**
    * Thickness of the Si sensitive layer [mm]
    *

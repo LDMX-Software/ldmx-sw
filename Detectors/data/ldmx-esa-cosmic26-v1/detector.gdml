@@ -9,17 +9,52 @@ Entry point in the STEP coordinate frame (mm): X/Y horizontal, +Z up.
 CAD supports are visualization context only, so this transport geometry contains no unassigned CAD material.
 Alignment, envelopes and HCal readout reconstruction still need review.
 -->
-  <define/>
+  <define>
+    <!--ESA roof concrete, not in the CAD, about 10 m above the stand top-->
+    <!--2 ft thick: Weidner et al., IEEE Trans. Nucl. Sci. NS-14 (1967)-->
+    <constant name="roof_bottom_z" value="13800"/>
+    <constant name="roof_thickness" value="610"/>
+    <constant name="roof_width" value="70000"/>
+  </define>
   <materials>
     &materials;
+    <element Z="12" formula="Mg" name="Mg">
+      <atom type="A" unit="g/mol" value="24.305"/>
+    </element>
+    <element Z="19" formula="K" name="K">
+      <atom type="A" unit="g/mol" value="39.0983"/>
+    </element>
+    <!--G4_CONCRETE composition-->
+    <material name="Concrete" state="solid">
+      <D unit="g/cm3" value="2.3"/>
+      <fraction n="0.01" ref="H"/>
+      <fraction n="0.001" ref="C"/>
+      <fraction n="0.529107" ref="O"/>
+      <fraction n="0.016" ref="Na"/>
+      <fraction n="0.002" ref="Mg"/>
+      <fraction n="0.033872" ref="Al"/>
+      <fraction n="0.337021" ref="Si"/>
+      <fraction n="0.013" ref="K"/>
+      <fraction n="0.044" ref="Ca"/>
+      <fraction n="0.014" ref="Fe"/>
+    </material>
   </materials>
   <solids>
-    <box name="cosmic_world_box" lunit="mm" x="15000" y="6000" z="12000"/>
+    <box name="cosmic_world_box" lunit="mm" x="80000" y="80000" z="34000"/>
+    <box name="roof_box" lunit="mm" x="roof_width" y="roof_width" z="roof_thickness"/>
   </solids>
   <structure>
+    <volume name="roof_volume">
+      <materialref ref="Concrete"/>
+      <solidref ref="roof_box"/>
+    </volume>
     <volume name="World">
       <materialref ref="Air"/>
       <solidref ref="cosmic_world_box"/>
+      <physvol name="roof" copynumber="20">
+        <volumeref ref="roof_volume"/>
+        <position name="roof_pos" unit="mm" x="5000" y="-110" z="roof_bottom_z + roof_thickness/2"/>
+      </physvol>
       <!--ESA target/trigger/tracker/ECal internals, registered to the current STEP frame. The rotation sends ESA +z down CAD -z.-->
       <physvol name="native_target" copynumber="2">
         <file name="target.gdml"/>

@@ -4,8 +4,11 @@
 #include <string>
 
 #include "Framework/Exception/Exception.h"
-#include "HepMC3/ReaderAscii.h"
-#include "HepMC3/ReaderAsciiHepMC2.h"
+#include "HepMC3/ReaderFactory.h"
+#include "HepMC3/ReaderRoot.h"
+#include "HepMC3/ReaderRootTree.h"
+#include "TFile.h"
+#include "TTree.h"
 
 namespace simcore {
 namespace hepmc {
@@ -13,45 +16,25 @@ namespace hepmc {
 HepMCReader::HepMCReader(std::string& filename) {
   ldmx_log(info) << "Opening HepMC file " << filename;
 
-  // Try to detect the file format by reading the first non-empty line
-  std::ifstream test_file(filename);
-  std::string first_line;
-  bool found_line = false;
-
-  if (test_file.is_open()) {
-    // Skip empty lines and find the first non-empty line
-    while (std::getline(test_file, first_line)) {
-      // Trim whitespace
-      first_line.erase(0, first_line.find_first_not_of(" \t\r\n"));
-      first_line.erase(first_line.find_last_not_of(" \t\r\n") + 1);
-
-      if (!first_line.empty()) {
-        found_line = true;
-        break;
-      }
-    }
-    test_file.close();
-  }
-
-  if (found_line) {
-    ldmx_log(debug) << "First non-empty line: " << first_line;
-
-    // Check if it's HepMC2 format
-    if (first_line.find("HepMC::") != std::string::npos ||
-        first_line.find("IO_GenEvent") != std::string::npos) {
-      ldmx_log(info) << "Detected HepMC2 format, using ReaderAsciiHepMC2";
-      reader_ = std::make_shared<HepMC3::ReaderAsciiHepMC2>(filename);
+  // ROOT files start with the "root" magic bytes
+  std::string magic(4, '\0');
+  std::ifstream(filename, std::ios::binary).read(magic.data(), magic.size());
+  if (magic == "root") {
+    // WriterRootTree stores a TTree, WriterRoot one object per event
+    std::unique_ptr<TFile> file{TFile::Open(filename.c_str())};
+    if (file && file->Get<TTree>("hepmc3_tree")) {
+      ldmx_log(info) << "Detected HepMC3 ROOT tree format";
+      reader_ = std::make_shared<HepMC3::ReaderRootTree>(filename);
     } else {
-      ldmx_log(info) << "Assuming HepMC3 format, using ReaderAscii";
-      reader_ = std::make_shared<HepMC3::ReaderAscii>(filename);
+      ldmx_log(info) << "Detected HepMC3 ROOT format";
+      reader_ = std::make_shared<HepMC3::ReaderRoot>(filename);
     }
   } else {
-    ldmx_log(warn)
-        << "Could not find non-empty line, defaulting to HepMC3 format";
-    reader_ = std::make_shared<HepMC3::ReaderAscii>(filename);
+    // HepMC2/3 ascii, LHEF or HEPEVT
+    reader_ = HepMC3::deduce_reader(filename);
   }
 
-  if (reader_->failed()) {
+  if (!reader_ || reader_->failed()) {
     EXCEPTION_RAISE("BadFile", "Failed to open HepMC file: " + filename);
   }
 }
@@ -65,6 +48,9 @@ std::unique_ptr<HepMCEvent> HepMCReader::readNextEvent() {
     ldmx_log(warn) << "No next event was found by the HepMC reader.";
     return nullptr;
   }
+
+  // Geant4 expects GeV and mm
+  gen_event->set_units(HepMC3::Units::GEV, HepMC3::Units::MM);
 
   // Check if the event is empty
   if (gen_event->particles().empty()) {
