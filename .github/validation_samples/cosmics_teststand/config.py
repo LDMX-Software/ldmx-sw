@@ -44,10 +44,19 @@ import LDMX.Hcal.hcal_geometry
 from LDMX.DQM import dqm
 
 
+# ESA bunch clock (185.7 MHz / 5), asynchronous trigger,
+# physical e-h yield (300 um MIP is 3.6 fC)
+esa_clock = 5 / 0.1857
+ecal_digi_cosmic = ecal_digi.EcalDigiProducer(
+    time_phase_width=esa_clock,
+    mev=ecal_digi.calculate_energy_to_voltage_conversion(0.5),
+)
+ecal_digi_cosmic.hgcroc.clock_cycle = esa_clock
+
 p.sequence.extend(
     [
-        ecal_digi.EcalDigiProducer(),
-        ecal_digi.EcalRecProducer(),
+        ecal_digi_cosmic,
+        ecal_digi.EcalRecProducer(clock_cycle=esa_clock),
         dqm.EcalDigiVerify(),
         dqm.SimObjects(),
         *[d for d in dqm.trig_scint_dqm if "Sim" in d.instance_name],
