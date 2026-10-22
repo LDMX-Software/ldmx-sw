@@ -1,15 +1,14 @@
-#include "Tracking/Digitization/StripPulseFitter.h"
+#include "Tools/PulseFitter.h"
 
 #include <cmath>
 #include <limits>
 
-namespace tracking::digitization {
+namespace ldmx {
 
-StripPulseFitter::StripPulseFitter(const PulseShape& shape, double t0_offset_ns,
-                                   double sampling_interval_ns,
-                                   double pedestal_adc, double noise_sigma_adc,
-                                   double t_scan_min_ns, double t_scan_max_ns,
-                                   double t_scan_step_ns)
+PulseFitter::PulseFitter(const PulseShape& shape, double t0_offset_ns,
+                         double sampling_interval_ns, double pedestal_adc,
+                         double noise_sigma_adc, double t_scan_min_ns,
+                         double t_scan_max_ns, double t_scan_step_ns)
     : shape_(&shape),
       t0_offset_ns_(t0_offset_ns),
       sampling_interval_ns_(sampling_interval_ns),
@@ -23,7 +22,7 @@ StripPulseFitter::StripPulseFitter(const PulseShape& shape, double t0_offset_ns,
 // Private helper: chi2 and amplitude for a fixed hit time T
 // ---------------------------------------------------------------------------
 
-std::pair<double, double> StripPulseFitter::evalAtT(
+std::pair<double, double> PulseFitter::evalAtT(
     const std::vector<short>& samples, double T) const {
   const int n = static_cast<int>(samples.size());
 
@@ -64,7 +63,7 @@ std::pair<double, double> StripPulseFitter::evalAtT(
 // Public: fit
 // ---------------------------------------------------------------------------
 
-StripPulseFitter::FitResult StripPulseFitter::fit(
+PulseFitter::FitResult PulseFitter::fit(
     const std::vector<short>& samples) const {
   FitResult result;
   result.ndf = static_cast<int>(samples.size()) - 2;
@@ -150,4 +149,20 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
   return result;
 }
 
-}  // namespace tracking::digitization
+// ---------------------------------------------------------------------------
+// Public: fitFixed
+// ---------------------------------------------------------------------------
+
+PulseFitter::FitResult PulseFitter::fitFixed(const std::vector<short>& samples,
+                                             double T) const {
+  FitResult result;
+  result.ndf = static_cast<int>(samples.size()) - 1;
+  auto [chi2, amp] = evalAtT(samples, T);
+  result.amplitude = amp;
+  result.t0 = T;
+  result.chi2 = chi2;
+  result.converged = chi2 < std::numeric_limits<double>::max();
+  return result;
+}
+
+}  // namespace ldmx
