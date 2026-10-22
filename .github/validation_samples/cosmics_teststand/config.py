@@ -30,7 +30,7 @@ p.sequence = [my_sim]
 ##################################################################
 # Below should be the same for all sim scenarios
 
-# muons are cheap, run twice the default, the input holds 24k
+# muons are cheap, run twice the default, the input holds 30k
 p.max_events = min(2 * int(os.environ["LDMX_NUM_EVENTS"]), 20000)
 p.run = int(os.environ["LDMX_RUN_NUMBER"])
 

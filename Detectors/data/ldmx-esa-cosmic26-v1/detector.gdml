@@ -10,9 +10,10 @@ CAD supports are visualization context only, so this transport geometry contains
 Alignment, envelopes and HCal readout reconstruction still need review.
 -->
   <define>
-    <!--ESA roof concrete, not in the CAD, 10 m above the stand top-->
+    <!--ESA roof concrete, not in the CAD, about 10 m above the stand top-->
+    <!--2 ft thick: Weidner et al., IEEE Trans. Nucl. Sci. NS-14 (1967)-->
     <constant name="roof_bottom_z" value="13800"/>
-    <constant name="roof_thickness" value="2000"/>
+    <constant name="roof_thickness" value="610"/>
     <constant name="roof_width" value="70000"/>
   </define>
   <materials>
