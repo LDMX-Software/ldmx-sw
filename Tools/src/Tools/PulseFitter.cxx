@@ -104,7 +104,10 @@ PulseFitter::FitResult PulseFitter::fit(
       best_chi2 = chi2;
       best_t = t;
       best_amp = amp;
-    } else if (t > best_t && chi2_hi > best_chi2) {
+      // T_hi is the next point, forget one found for an earlier minimum
+      chi2_hi = std::numeric_limits<double>::max();
+      t_hi = t;
+    } else if (t_prev == best_t) {
       // First point to the right of the minimum.
       t_hi = t;
       chi2_hi = chi2;
@@ -123,12 +126,12 @@ PulseFitter::FitResult PulseFitter::fit(
     // chi2_hi).
     const double d1 = best_t - t_lo;
     const double d2 = t_hi - best_t;
-    const double dc1 = best_chi2 - chi2_lo;
+    const double dc1 = chi2_lo - best_chi2;
     const double dc2 = chi2_hi - best_chi2;
-    // Vertex of parabola: ΔT = (d1²·dc2 - d2²·dc1) / (2·(d1·dc2 + d2·dc1))
+    // Vertex of parabola: ΔT = (d2²·dc1 - d1²·dc2) / (2·(d1·dc2 + d2·dc1))
     const double denom = 2.0 * (d1 * dc2 + d2 * dc1);
     if (std::abs(denom) > 1.0e-12) {
-      const double delta = (d1 * d1 * dc2 - d2 * d2 * dc1) / denom;
+      const double delta = (d2 * d2 * dc1 - d1 * d1 * dc2) / denom;
       // Only accept the refinement if it stays within the bracket.
       if (std::abs(delta) < std::max(d1, d2)) {
         const double t_refined = best_t + delta;
