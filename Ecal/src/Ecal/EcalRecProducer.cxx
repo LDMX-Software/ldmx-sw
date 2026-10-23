@@ -176,7 +176,9 @@ void EcalRecProducer::produce(framework::Event& event) {
         int i_max = std::max_element(adc.begin(), adc.end()) - adc.begin();
         if (amplitude_method_ == "max") {
           charge = (adc[i_max] - pedestal) * the_conditions.adcGain(id);
-          hit_time = (i_max - i_soi) * clock_cycle_;
+          // TOA is measured from the start of its own sample
+          hit_time = (i_max - i_soi) * clock_cycle_ +
+                     digi.at(i_max).toa() * (clock_cycle_ / 1024);
         } else {
           // window starts one sample before the peak to catch the rise
           const int n_adc = static_cast<int>(adc.size());
