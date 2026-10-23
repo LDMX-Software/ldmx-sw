@@ -13,6 +13,8 @@ p = ldmxcfg.Process("test")
 dat_file = f"{os.environ['CI_DATA']}/esa_vst/run111.dat"
 ts_data = os.path.realpath("../../../TrigScint/data")
 
+from LDMX.DQM import dqm
+from LDMX.EventBuilder import eventbuilder
 from LDMX.Packing import rawio
 from LDMX.Tracking import dqm as tracking_dqm
 from LDMX.Tracking import rawdecoder, tracking
@@ -78,6 +80,12 @@ ts_measurements = TrigScintMeasurementProducer()
 ts_measurements.input_pass = ""  # clusters are produced in this same process
 ts_measurements.input_collections = ts_cluster_collections
 
+# EventBuilder reads the same file on its own; its events are not aligned with the
+# per-subsystem unpackers above, only its own summary histograms are compared
+evb = eventbuilder.from_dat_file(dat_file, verbose_parse=False, instance_name="evb")
+evb.binary_file = ""
+evb.performance_file = ""
+
 p.sequence = [
     trk_unpack,
     trk_decoder,
@@ -90,7 +98,11 @@ p.sequence = [
     ts_decoder,
     *ts_reco,
     ts_measurements,
+    evb,
+    dqm.EventSummaryDQM(),
 ]
+# one info line per built event otherwise
+p.logger.custom("EventBuilder", level=2)
 
 ##################################################################
 # Below should be the same for all raw data scenarios

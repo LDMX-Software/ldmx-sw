@@ -1980,6 +1980,20 @@ class TrigScintTrackDQM(Processor):
     pass_name: str = ""
 
 
+@processor("dqm::EventSummaryDQM", "DQM")
+class EventSummaryDQM(Processor):
+    """Histograms of the EventBuilder's EventSummary
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.EventSummaryDQM() )
+    """
+
+    summary_name: str = "EventSummary"
+    summary_pass: str = ""
+
+
 @processor("dqm::Trigger", "DQM")
 class Trigger(Processor):
     """Configured Trigger python object
