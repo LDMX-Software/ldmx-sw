@@ -124,6 +124,9 @@ class EcalDigiProducer : public framework::Producer {
 
   /// Generates random numbers for which channels to fill up with noise
   std::mt19937 rng_;
+
+  /// width [ns] of the uniform random event phase, 0 for none
+  double time_phase_width_{0.};
 };
 }  // namespace ecal
 

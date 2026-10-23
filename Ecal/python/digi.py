@@ -37,6 +37,13 @@ ecal_pulse_time_up_slope = 70.6547
 ecal_pulse_rate_dn_slope = 0.140068
 ecal_pulse_time_dn_slope = 87.7649
 ecal_pulse_time_peak = 77.732
+ecal_pulse_shape = [
+    ecal_pulse_rate_up_slope,
+    ecal_pulse_time_up_slope,
+    ecal_pulse_rate_dn_slope,
+    ecal_pulse_time_dn_slope,
+    ecal_pulse_time_peak,
+]
 
 
 def ecal_hgcroc_emulator():
@@ -101,6 +108,9 @@ class EcalDigiProducer(Processor):
     avg_noise_rms: float
         Average noise RMS for all channels [mV], for noise emulation in empty channels
         Default is too optimistic, but need to mimic old noise model
+    time_phase_width : float
+        Width [ns] of a uniform random time shift per event, 0 for none
+        Emulates an asynchronous trigger, e.g. 25 for cosmics
     zero_suppresion : bool
         Should we suppress pure noise "hits" below readout threshold?
     input_coll_name : str
@@ -116,6 +126,7 @@ class EcalDigiProducer(Processor):
     avg_readout_threshold: float = 53.0 * ecal_avg_gain
     avg_pedestal: float = 50 * ecal_avg_gain
     avg_noise_rms: float = 0.6 * ecal_avg_gain
+    time_phase_width: float = 0.0
     zero_suppression: bool = True
     input_coll_name: str = "EcalSimHits"
     input_pass_name: str = ""
@@ -186,6 +197,23 @@ class EcalRecProducer(Processor):
         Name of sim pass
     rec_hit_coll_name : str
         Name of output collection
+    amplitude_method : str
+        ADC mode amplitude: soi (sample of interest), max (largest sample)
+        or fit (pulse template fit, amplitude and time free)
+    fit_n_samples : int
+        Samples in the fit starting one before the max, 0 for all
+    fit_fixed_t0 : bool
+        Fit amplitude only with t0 = event phase + fit_t0_offset
+    fit_t0_offset : float
+        Offset [ns] between the event phase and the pulse t0
+    phase_resolution : float
+        Gaussian smearing [ns] of the event phase, e.g. HCal TOA resolution
+    phase_name : str
+        Event header float parameter with the event phase [ns], the digi
+        truth by default, e.g. from HCal TOA for data
+    pulse_shape : list of floats
+        Pulse shape for the fit, same order as the emulator
+        [rate_up_slope, time_up_slope, rate_dn_slope, time_dn_slope, time_peak]
     second_order_energy_correction : float
         Correction to weighted energy, default to v15 geometry
     layer_weights : list of floats
@@ -202,6 +230,13 @@ class EcalRecProducer(Processor):
     sim_hit_coll_name: str = "EcalSimHits"
     sim_hit_pass_name: str = ""
     rec_hit_coll_name: str = "EcalRecHits"
+    amplitude_method: str = "soi"
+    fit_n_samples: int = 0
+    fit_fixed_t0: bool = False
+    fit_t0_offset: float = 0.0
+    phase_resolution: float = 0.0
+    phase_name: str = "ecal_digi_phase"
+    pulse_shape: list[float] = ecal_pulse_shape
 
     @staticmethod
     def v2(**kwargs):

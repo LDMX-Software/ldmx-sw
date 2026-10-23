@@ -4,16 +4,16 @@
 #include <memory>
 #include <string>
 
-namespace tracking::digitization {
+namespace ldmx {
 
 /**
- * Abstract base class for silicon-strip readout pulse shapes.
+ * Abstract base class for front-end readout pulse shapes.
  *
  * The pulse shape describes the time response of the front-end amplifier/
  * shaper to a delta-function charge injection at t = 0.  All shapes are
  * normalised so that their peak value is 1 (peak-normalised).
  *
- * Two concrete shapes are provided:
+ * Three concrete shapes are provided:
  *
  *   CRRC     — single CR·RC shaper (one differentiation, one integration):
  *                f(t) = (t/tp) · exp(1 − t/tp)    for t ≥ 0
@@ -107,4 +107,28 @@ class FourPoleShape : public PulseShape {
   double peak_amp_;  ///< g(t_peak), used for normalisation.
 };
 
-}  // namespace tracking::digitization
+// ---------------------------------------------------------------------------
+// HGCROC shaper
+// ---------------------------------------------------------------------------
+
+/**
+ * HGCROC pulse, same form as the HgcrocEmulator pulse.
+ *
+ *   f(t) = N / ((1 + exp(ru·(t − tu + tp))) · (1 + exp(rd·(t − td + tp))))
+ *
+ * N normalises f(0) = 1, so t is relative to the emulator hit time.
+ * Not zero for t < 0.
+ */
+class HgcrocShape : public PulseShape {
+ public:
+  HgcrocShape(double rate_up, double time_up, double rate_dn, double time_dn,
+              double time_peak);
+
+  double eval(double t) const override;
+
+ private:
+  double rate_up_, time_up_, rate_dn_, time_dn_, time_peak_;
+  double norm_;  ///< makes eval(0) = 1
+};
+
+}  // namespace ldmx
