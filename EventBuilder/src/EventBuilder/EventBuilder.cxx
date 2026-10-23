@@ -282,7 +282,8 @@ void EventBuilder::produce(framework::Event& event) {
         uint64_t total_payload = 0;
         for (const auto& f : assembled_event_fragments) {
           unique_sys.insert(f.header_.subsystem_id_);
-          // ECal and HCal share a subsystem id, contributor tells them apart
+          // a subsystem may have several contributors, a duplicate is the same
+          // pair twice
           unique_sources.insert(f.header_.subsystem_id_ << 8 |
                                 f.header_.contributor_id_);
           total_payload += f.payload_.size();
@@ -425,7 +426,8 @@ void EventBuilder::produce(framework::Event& event) {
     uint64_t total_payload = 0;
     for (const auto& f : assembled_event_fragments) {
       unique_sys.insert(f.header_.subsystem_id_);
-      // ECal and HCal share a subsystem id, contributor tells them apart
+      // a subsystem may have several contributors, a duplicate is the same pair
+      // twice
       unique_sources.insert(f.header_.subsystem_id_ << 8 |
                             f.header_.contributor_id_);
       total_payload += f.payload_.size();

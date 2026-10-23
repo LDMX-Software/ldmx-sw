@@ -62,9 +62,7 @@ class FragmentBuffer {
     for (auto it = it_begin; it != it_end; ++it) {
       timestamps_in_window.push_back(it->first);
       for (const auto& frag : it->second) {
-        // ECal and HCal share a subsystem id, contributor tells them apart
-        subsystems_found.insert(frag.header_.subsystem_id_ << 8 |
-                                frag.header_.contributor_id_);
+        subsystems_found.insert(frag.header_.subsystem_id_);
       }
     }
 
