@@ -39,16 +39,57 @@ HcalGeometry::HcalGeometry(const framework::config::Parameters& ps)
   zero_strip_ = ps.get<std::vector<std::vector<double>>>("zero_strip");
   scint_length_ = ps.get<std::vector<std::vector<double>>>("scint_length");
 
+  // optional explicit layout, empty for the LDMX and prototype geometries
+  layer_z_ = ps.get<std::vector<std::vector<double>>>("layer_z", {});
+  layer_long_axis_ =
+      ps.get<std::vector<std::vector<int>>>("layer_long_axis", {});
+  layer_bar_center_ =
+      ps.get<std::vector<std::vector<double>>>("layer_bar_center", {});
+  layer_strip_zero_ =
+      ps.get<std::vector<std::vector<double>>>("layer_strip_zero", {});
+  double_ended_ = ps.get<std::vector<int>>("double_ended", {});
+  if (hasExplicitLayout()) {
+    for (int section = 0; section < num_sections_; ++section) {
+      const auto n{static_cast<std::size_t>(num_layers_.at(section))};
+      if (layer_z_.at(section).size() != n ||
+          layer_long_axis_.at(section).size() != n ||
+          layer_bar_center_.at(section).size() != n ||
+          layer_strip_zero_.at(section).size() != n ||
+          double_ended_.size() != static_cast<std::size_t>(num_sections_)) {
+        EXCEPTION_RAISE(
+            "HcalGeometry",
+            "Explicit layout does not match num_layers in section " +
+                std::to_string(section));
+      }
+    }
+  }
+
   buildStripPositionMap();
 
   if (verbose_ > 0) {
     printPositionMap();
   }
 }
+double HcalGeometry::getDistanceAlongBar(ldmx::HcalID id, double x, double y,
+                                         double z) const {
+  const auto center{getStripCenterPosition(id)};
+  switch (getScintillatorOrientation(id)) {
+    case ScintillatorOrientation::horizontal:
+      return x - center.X();
+    case ScintillatorOrientation::vertical:
+      return y - center.Y();
+    default:
+      return z - center.Z();
+  }
+}
+
 std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
     const std::vector<double>& globalPosition, const ldmx::HcalID& id) const {
   const auto orientation{getScintillatorOrientation(id)};
-  switch (id.section()) {
+  // explicit layout bars lie flat in z like the back HCal
+  const auto section{hasExplicitLayout() ? ldmx::HcalID::HcalSection::BACK
+                                         : id.section()};
+  switch (section) {
     case ldmx::HcalID::HcalSection::BACK:
       switch (orientation) {
         case ScintillatorOrientation::horizontal:
@@ -98,6 +139,11 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
 
 HcalGeometry::ScintillatorOrientation HcalGeometry::getScintillatorOrientation(
     const ldmx::HcalID id) const {
+  if (hasExplicitLayout()) {
+    return layer_long_axis_.at(id.section()).at(id.layer() - 1) == 0
+               ? ScintillatorOrientation::horizontal
+               : ScintillatorOrientation::vertical;
+  }
   if (hasSide3DReadout()) {
     // v14 or later detector
     switch (id.section()) {
@@ -190,7 +236,20 @@ void HcalGeometry::buildStripPositionMap() {
         // the center of a strip: (strip + 0.5) * (strip_dx)
         double stripcenter = (strip + 0.5) * scint_width_;
 
-        if (hcalsection == ldmx::HcalID::HcalSection::BACK) {
+        if (hasExplicitLayout()) {
+          const auto i_layer{layer - 1};
+          const double along{layer_bar_center_.at(section).at(i_layer)};
+          const double across{layer_strip_zero_.at(section).at(i_layer) +
+                              strip * scint_width_};
+          if (orientation == ScintillatorOrientation::horizontal) {
+            x = along;
+            y = across;
+          } else {
+            x = across;
+            y = along;
+          }
+          z = layer_z_.at(section).at(i_layer);
+        } else if (hcalsection == ldmx::HcalID::HcalSection::BACK) {
           /**
              For back Hcal:
              - layers in z
