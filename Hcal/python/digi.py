@@ -168,6 +168,8 @@ class HcalDigiProducer(Processor):
         Name of digi collection
     flat_time_shift: float
         flat time shift to apply to all hits
+    time_of_flight_correction: bool
+        subtract z/c from the hit time (beam along +z), off for cosmics
     time_spread_per_hit: DigiTimeSpread
         time spread to apply to each hit within an event
     time_spread_per_spill: DigiTimeSpread
@@ -188,6 +190,7 @@ class HcalDigiProducer(Processor):
     digi_coll_name: str = "HcalDigis"
     pulse_truth_coll_name: str = "HcalPulseTruth"
     flat_time_shift: float = 0.0
+    time_of_flight_correction: bool = True
     time_spread_per_hit: DigiTimeSpread = field(default_factory=DigiTimeSpread.none)
     time_spread_per_spill: DigiTimeSpread = field(default_factory=DigiTimeSpread.none)
 
