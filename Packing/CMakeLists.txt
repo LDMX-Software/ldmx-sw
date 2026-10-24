@@ -20,6 +20,9 @@ setup_library(module Packing
               dependencies Framework::Configure
                            Framework::Framework
                            DetDescr::DetDescr
+                           Recon::Event
+                           Hcal::Hcal
+                           Ecal::Ecal
                            Packing::RawDataFile)
 
 setup_python(package_name LDMX/Packing)
