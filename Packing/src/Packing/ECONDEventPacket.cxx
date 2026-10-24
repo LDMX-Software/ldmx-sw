@@ -275,7 +275,7 @@ bool ECONDEventPacket::from(std::span<const uint32_t> data) {
   uint64_t header_crc_base = (data[0] >> 6);
   header_crc_base <<= 30;
   header_crc_base |= (data[1] >> 8);
-  uint8_t header_crc_val = utility::econd_crc8(header_crc_base);
+  uint8_t header_crc_val = utility::econdCrc8(header_crc_base);
   corruption_[BAD_HEADER_CRC] = (header_crc_val != crc8_);
   if (corruption_[BAD_HEADER_CRC]) {
     ldmx_log(debug) << "Event header 8b CRC does not match transmitted value: "

@@ -2,9 +2,7 @@
 
 #include <algorithm>
 #include <boost/crc.hpp>
-#include <boost/endian/conversion.hpp>
-#include <iomanip>
-#include <iostream>
+#include <boost/endian/conversion.hpp>  // IWYU pragma: keep
 #include <vector>
 
 namespace packing::utility {
@@ -26,7 +24,7 @@ uint32_t crc32(std::span<const uint32_t> data) {
                                                             words.size() * 4);
 }
 
-uint8_t econd_crc8(uint64_t data) {
+uint8_t econdCrc8(uint64_t data) {
   /**
    * Reverse endian-ness so when we cast to an array of bytes,
    * we read the bytes from most-significant to least-significant.

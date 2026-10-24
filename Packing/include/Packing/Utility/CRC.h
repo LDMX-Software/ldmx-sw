@@ -131,7 +131,7 @@ uint32_t crc32(std::span<const uint32_t> data);
  * @param[in] data 64-bit word containing both ECOND event packet headers
  * @return value of CRC
  */
-uint8_t econd_crc8(uint64_t data);
+uint8_t econdCrc8(uint64_t data);
 
 }  // namespace utility
 }  // namespace packing
