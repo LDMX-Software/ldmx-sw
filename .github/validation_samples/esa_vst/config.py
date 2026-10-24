@@ -1,5 +1,7 @@
 """Decode and reconstruct ESA 2025 vertical slice test raw data (run 111)
 
+Tracker, TS and HCal (ECON-D) are decoded.
+
 The raw .dat file is assembled from compressed parts in init.sh.
 """
 
@@ -13,7 +15,9 @@ p = ldmxcfg.Process("test")
 dat_file = f"{os.environ['CI_DATA']}/esa_vst/run111.dat"
 ts_data = os.path.realpath("../../../TrigScint/data")
 
+from LDMX.DQM.dqm import ECONDDigiDQM
 from LDMX.Packing import rawio
+from LDMX.Packing.decoding import ECONDDecoder
 from LDMX.Tracking import dqm as tracking_dqm
 from LDMX.Tracking import rawdecoder, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
@@ -78,6 +82,20 @@ ts_measurements = TrigScintMeasurementProducer()
 ts_measurements.input_pass = ""  # clusters are produced in this same process
 ts_measurements.input_collections = ts_cluster_collections
 
+# HCal: raw frames -> ECON-D decoding -> digi DQM.
+# Last in the sequence so an abort at the end of the HCal frames
+# does not affect the other subsystems.
+hcal_unpack = rawio.SingleSubsystemUnpacker(
+    instance_name="hcal_unpack",
+    dat_file=dat_file,
+    output_name="HcalRawData",
+    subsystem_name="hcal",
+)
+hcal_decoder = ECONDDecoder(
+    raw_data_name="HcalRawData", digi_output_name="HcalDigis", is_ecal=False
+)
+hcal_dqm = ECONDDigiDQM(digi_name="HcalDigis", instance_name="hcal_econd_dqm")
+
 p.sequence = [
     trk_unpack,
     trk_decoder,
@@ -90,6 +108,9 @@ p.sequence = [
     ts_decoder,
     *ts_reco,
     ts_measurements,
+    hcal_unpack,
+    hcal_decoder,
+    hcal_dqm,
 ]
 
 ##################################################################

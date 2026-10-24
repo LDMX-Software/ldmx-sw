@@ -25,21 +25,6 @@ ldmx python3 ldmx-sw/TrigScint/util/decode_2fiber_toRAW_fromBin.py --passThrough
 - The end of this script prints out how many events it grouped which could be used to know how many events to request in the `decode.py` script.
 
 ### 2. Decode raw data from various subsystems into one output ROOT event file and output ntuple file.
-```
-ldmx python3 ldmx-sw/Packing/decode.py \
-  --ts ldmx_captan_out_<run-info>_reformat.dat \
-  --wr WR_out_<run>.bin \
-  --pf0 ldmx_hcal_external_fpga_0_run_<run-info>.raw \
-  --pf1 ldmx_hcal_external_fpga_1_run_<run-info>.raw \
-  --ft41 DipClient_out_run_<run>_41.bin \
-  --ft42 DipClient_out_run_<run>_42.bin \
-  --ft50 DipClient_out_run_<run>_50.bin \
-  --ft51 DipClient_out_run_<run>_51.bin \
-  unaligned_<run>.root
-```
-- None of the subsystems are required
-- The TS decoding chain will abort all events after it is done with its input file, meaning if other subsystems have more events (somehow), the leftovers will be dropped.
-- All other subsystems will just return empty digi collections after they are done with their input files.
-- The default number of events is `100` for testing purposes. You can increase it with `--max_events N`. 
-- No checking that the subsystems are from the same run is done.
-- **No alignment is done** only decoding and merging into the same file.
+The `Packing/decode.py` script that did this step depended on the removed
+`HcalRawDecoder` and has been removed. Use an ldmx-sw release before its
+removal to decode the 2022 test beam data.

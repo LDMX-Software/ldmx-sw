@@ -24,5 +24,10 @@
 #pragma link C++ class ldmx::TrackDeDxMassEstimate + ;
 #pragma link C++ class std::vector < ldmx::TrackDeDxMassEstimate> + ;
 #pragma link C++ class ldmx::FiducialFlag + ;
+#pragma link C++ class ldmx::ECONDLinkInfo + ;
+#pragma link C++ class std::vector < ldmx::ECONDLinkInfo> + ;
+#pragma link C++ class ldmx::ECONDSampleInfo + ;
+#pragma link C++ class std::vector < ldmx::ECONDSampleInfo> + ;
+#pragma link C++ class ldmx::ECONDEventInfo + ;
 
 #endif
