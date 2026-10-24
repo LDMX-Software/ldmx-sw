@@ -87,8 +87,10 @@ std::vector<double> HcalGeometry::rotateGlobalToLocalBarPosition(
     const std::vector<double>& globalPosition, const ldmx::HcalID& id) const {
   const auto orientation{getScintillatorOrientation(id)};
   // explicit layout bars lie flat in z like the back HCal
-  const auto section{hasExplicitLayout() ? ldmx::HcalID::HcalSection::BACK
-                                         : id.section()};
+  const unsigned int section{
+      hasExplicitLayout()
+          ? static_cast<unsigned int>(ldmx::HcalID::HcalSection::BACK)
+          : id.section()};
   switch (section) {
     case ldmx::HcalID::HcalSection::BACK:
       switch (orientation) {
