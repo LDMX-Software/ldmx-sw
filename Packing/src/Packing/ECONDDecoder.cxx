@@ -65,15 +65,24 @@ unsigned int ECONDDecoder::channelID(int i_link, int i_ch) const {
 }
 
 void ECONDDecoder::produce(framework::Event& event) {
-  const auto& raw_binary{
-      event.getCollection<uint8_t>(raw_data_name_, raw_data_pass_)};
-
-  n_frames_++;
   ldmx::ECONDEventInfo info;
   ldmx::HgcrocDigiCollection digis;
   digis.setVersion(roc_version_);
   digis.setNumSamplesPerDigi(0);
   digis.setSampleOfInterestIndex(0);
+
+  // e.g. an EventBuilder event without a fragment from this subsystem
+  if (not event.exists(raw_data_name_, raw_data_pass_)) {
+    n_no_frame_++;
+    info.setFrame(1 << ldmx::ECONDEventInfo::NO_FRAME, -1, 0, 0);
+    event.add(digi_output_name_, digis);
+    event.add(info_output_name_, info);
+    return;
+  }
+
+  const auto& raw_binary{
+      event.getCollection<uint8_t>(raw_data_name_, raw_data_pass_)};
+  n_frames_++;
 
   int frame_corruption{0};
   if (raw_binary.size() % 4 != 0) {
@@ -188,6 +197,9 @@ void ECONDDecoder::onProcessEnd() {
   ldmx_log(info) << "ECON-D decoding summary for " << raw_data_name_;
   ldmx_log(info) << "  frames seen: " << n_frames_
                  << ", digis filled: " << n_frames_filled_;
+  if (n_no_frame_ > 0) {
+    ldmx_log(info) << "  events without a frame: " << n_no_frame_;
+  }
   if (n_bad_frame_size_ > 0) {
     ldmx_log(info) << "  frames with size not a multiple of 4 bytes: "
                    << n_bad_frame_size_;

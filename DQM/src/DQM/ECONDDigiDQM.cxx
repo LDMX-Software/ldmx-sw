@@ -13,10 +13,10 @@ void ECONDDigiDQM::configure(framework::config::Parameters& ps) {
 
 void ECONDDigiDQM::onProcessStart() {
   getHistoDirectory();
-  histograms_.create(
-      "frame_flags", "",
-      {"good", "resync", "lost sync", "no trailer", "trailer count", "ECON ID",
-       "sample index", "truncated", "extra words", "no SOI", "frame size"});
+  histograms_.create("frame_flags", "",
+                     {"good", "resync", "lost sync", "no trailer",
+                      "trailer count", "ECON ID", "sample index", "truncated",
+                      "extra words", "no SOI", "frame size", "no frame"});
   histograms_.create("packet_flags", "",
                      {"good", "empty", "header marker", "length", "header CRC",
                       "CRC-32", "payload", "truncated"});
@@ -45,9 +45,10 @@ void ECONDDigiDQM::analyze(const framework::Event& event) {
   // bin 0 is good, bit i of the mask is bin i+1
   int frame_mask = info.getCorruption();
   if (frame_mask == 0) histograms_.fill("frame_flags", 0);
-  for (int i{0}; i < 10; i++) {
+  for (int i{0}; i < 11; i++) {
     if ((frame_mask >> i) & 1) histograms_.fill("frame_flags", i + 1);
   }
+  if (info.isCorrupt(ldmx::ECONDEventInfo::NO_FRAME)) return;
 
   histograms_.fill("n_samples", info.getSamples().size());
   histograms_.fill("i_soi", info.getSOIIndex());

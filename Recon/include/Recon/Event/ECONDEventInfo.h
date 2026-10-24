@@ -236,7 +236,8 @@ class ECONDEventInfo {
     TRUNCATED_FRAME = 6,
     EXTRA_WORDS = 7,
     NO_SOI = 8,
-    BAD_FRAME_SIZE = 9
+    BAD_FRAME_SIZE = 9,
+    NO_FRAME = 10
   };
 
   ECONDEventInfo() = default;

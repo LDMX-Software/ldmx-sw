@@ -22,6 +22,10 @@ namespace packing {
  * the rest of the packet data into an ldmx::ECONDEventInfo.
  * Corrupted packets are flagged and skipped, the digis are only
  * filled if all samples in the event are good.
+ *
+ * The input can also be the subsystem buffer from the EventBuilder.
+ * Events without the input buffer get empty outputs flagged with
+ * ldmx::ECONDEventInfo::NO_FRAME.
  */
 class ECONDDecoder : public framework::Producer {
  public:
@@ -80,6 +84,8 @@ class ECONDDecoder : public framework::Producer {
 
   /// number of frames seen
   long n_frames_{0};
+  /// number of events without an input frame
+  long n_no_frame_{0};
   /// number of frames whose digis were filled
   long n_frames_filled_{0};
   /// number of frames with a size that is not a multiple of 4 bytes
