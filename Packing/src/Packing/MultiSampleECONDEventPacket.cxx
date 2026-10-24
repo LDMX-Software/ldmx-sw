@@ -1,7 +1,9 @@
 #include "Packing/MultiSampleECONDEventPacket.h"
 
-#include "Packing/DAQSampleHeader.h"
+#include <algorithm>
+
 #include "Packing/Utility/Hex.h"
+
 using packing::utility::Hex;
 
 namespace packing {
@@ -9,139 +11,128 @@ namespace packing {
 MultiSampleECONDEventPacket::MultiSampleECONDEventPacket(int n_links)
     : n_links_{n_links} {}
 
-const std::string MultiSampleECONDEventPacket::to_csv_header =
-    "timestamp,orbit,bx,event,i_link,channel,i_sample,Tp,Tc,adc_tm1,adc,tot,"
-    "toa";
-
-void MultiSampleECONDEventPacket::to_csv(std::ofstream& f) const {
-  /**
-   * The columns of the output CSV are
-   * ```
-   * timestamp,orbit,bx,event,i_link,channel,i_sample,Tp,Tc,adc_tm1,adc,tot,toa
-   * ```
-   */
-  for (std::size_t i_sample{0}; i_sample < samples.size(); i_sample++) {
-    const auto& sample{samples[i_sample]};
-    for (std::size_t i_link{0}; i_link < sample.links.size(); i_link++) {
-      const auto& daq_link{sample.links[i_link]};
-      f << timestamp << ',' << daq_link.orbit << ',' << daq_link.bx << ','
-        << daq_link.event << ',' << i_link << ',' << "calib," << i_sample
-        << ',';
-      daq_link.calib.to_csv(f);
-      f << '\n';
-      for (std::size_t i_ch{0}; i_ch < 36; i_ch++) {
-        f << timestamp << ',' << daq_link.orbit << ',' << daq_link.bx << ','
-          << daq_link.event << ',' << i_link << ',' << i_ch << ',' << i_sample
-          << ',';
-        daq_link.channels[i_ch].to_csv(f);
-        f << '\n';
-      }
-    }
-  }
+const ECONDEventPacket& MultiSampleECONDEventPacket::soi() const {
+  return samples_.at(i_soi_);
 }
 
-void MultiSampleECONDEventPacket::from(std::span<uint32_t> frame,
-                                       bool expect_ldmx_ror_header) {
-  samples.clear();
-  contrib_id = 0;
-  subsys_id = 0;
-  timestamp = 0;
+bool MultiSampleECONDEventPacket::isCorrupt() const {
+  return std::any_of(corruption_.begin(), corruption_.end(),
+                     [](bool c) { return c; });
+}
 
-  std::size_t offset{0};
-  if (expect_ldmx_ror_header) {
-    /**
-     * the ldmx ror header inserts 4 32-bit words (16 bytes) of the form
-     *
-     * 0xA5 | 8b contrib | 8b subsys | 8b VERS = 0
-     * 32b 0
-     * 64b timestamp
-     */
-    uint8_t sentinel = static_cast<uint8_t>((frame[0] >> 24) & 0xff);
-    contrib_id = ((frame[0] >> 16) & 0xff);
-    subsys_id = ((frame[0] >> 8) & 0xff);
-    uint8_t vers = static_cast<uint8_t>(frame[0] & 0xff);
-
-    // frame[1] == 0
-    // timestamp is in frame[2] and frame[3]
-    // combine into uint64_t because timestamp is 64b but each word is 32b
-    timestamp = (static_cast<uint64_t>(frame[3]) << 32) |
-                static_cast<uint64_t>(frame[2]);
-    offset += 4;
+std::size_t MultiSampleECONDEventPacket::resync(std::span<const uint32_t> frame,
+                                                std::size_t start,
+                                                std::size_t i_sample) const {
+  DAQSampleHeader header;
+  for (std::size_t i{start}; i < frame.size(); i++) {
+    header.from(frame[i]);
+    if (header.version_ == DAQSampleHeader::VERSION and
+        header.isEndingTrailer()) {
+      return i;
+    }
+    if (DAQSampleHeader::isValid(frame[i]) and header.i_l1a_ == i_sample and
+        (econd_id_ < 0 or
+         header.econd_id_ == static_cast<uint32_t>(econd_id_))) {
+      return i;
+    }
   }
-  std::size_t i_sample{0};
+  return frame.size();
+}
+
+void MultiSampleECONDEventPacket::from(std::span<const uint32_t> frame) {
+  corruption_.fill(false);
+  i_soi_ = 0;
+  econd_id_ = -1;
+  trailer_n_samples_ = -1;
+  n_skipped_words_ = 0;
+  headers_.clear();
+  samples_.clear();
+
+  bool found_soi{false};
+  std::size_t offset{0};
   DAQSampleHeader header;
   while (offset < frame.size()) {
     header.from(frame[offset]);
-    if (header.is_ending_trailer()) {
-      pflib_log(trace) << "Last sample packet found, leaving loop at offset = "
-                       << offset << " (frame.size() = " << frame.size() << ")";
+    if (header.version_ == DAQSampleHeader::VERSION and
+        header.isEndingTrailer()) {
+      trailer_n_samples_ = DAQSampleHeader::trailerNumSamples(frame[offset]);
+      ldmx_log(trace) << "Last sample packet found at offset = " << offset
+                      << " (frame.size() = " << frame.size() << ")";
+      offset++;
       break;
     }
 
-    if (i_sample > 0 and econd_id != header.econd_id) {
-      pflib_log(warn) << "ECON ID mismatch: Found " << header.econd_id
-                      << " but this stream was " << econd_id << " earlier";
+    bool valid =
+        DAQSampleHeader::isValid(frame[offset]) and
+        (econd_id_ < 0 or header.econd_id_ == static_cast<uint32_t>(econd_id_));
+    if (not valid) {
+      if (DAQSampleHeader::isValid(frame[offset])) {
+        corruption_[ECON_ID_MISMATCH] = true;
+      }
+      auto next = resync(frame, offset + 1, samples_.size());
+      ldmx_log(debug) << Hex(frame[offset])
+                      << " is not a capture header, skipping "
+                      << (next - offset) << " words";
+      corruption_[RESYNC] = true;
+      n_skipped_words_ += next - offset;
+      if (next == frame.size()) {
+        corruption_[LOST_SYNC] = true;
+      }
+      offset = next;
+      continue;
     }
-    econd_id = header.econd_id;
-    pflib_log(trace) << Hex(frame[offset]) << " -> " << header;
+
+    if (econd_id_ < 0) econd_id_ = header.econd_id_;
+    ldmx_log(trace) << Hex(frame[offset]) << " -> " << header;
 
     // header decoded, shift offset
     offset++;
 
-    if (i_sample != header.i_l1a) {
-      pflib_log(warn) << "mismatch between transmitted index " << header.i_l1a
+    std::size_t i_sample{samples_.size()};
+    if (i_sample != header.i_l1a_) {
+      ldmx_log(debug) << "mismatch between transmitted index " << header.i_l1a_
                       << " and unpacking index for sample " << i_sample;
+      corruption_[SAMPLE_INDEX_MISMATCH] = true;
     }
 
-    if (header.is_soi) {
-      i_soi = i_sample;
+    if (header.is_soi_ and not found_soi) {
+      i_soi_ = i_sample;
+      found_soi = true;
     }
 
-    samples.emplace_back(n_links_);
-    samples.back().from(frame.subspan(offset, header.econd_len));
-    offset += header.econd_len;
+    std::size_t len{header.econd_len_};
+    if (offset + len > frame.size()) {
+      ldmx_log(debug) << "capture header length " << len << " goes past the "
+                      << "end of the frame by " << (offset + len - frame.size())
+                      << " words";
+      corruption_[TRUNCATED_FRAME] = true;
+      len = frame.size() - offset;
+    }
 
-    i_sample++;
+    headers_.push_back(header);
+    samples_.emplace_back(n_links_);
+    samples_.back().from(frame.subspan(offset, len));
+    offset += len;
+  }
+
+  if (trailer_n_samples_ < 0) {
+    corruption_[NO_TRAILER] = true;
+  } else if (static_cast<std::size_t>(trailer_n_samples_) != samples_.size()) {
+    ldmx_log(debug) << "trailer says " << trailer_n_samples_
+                    << " samples but found " << samples_.size();
+    corruption_[TRAILER_COUNT_MISMATCH] = true;
+  }
+
+  // only zero padding is expected after the trailer
+  if (std::any_of(frame.begin() + offset, frame.end(),
+                  [](uint32_t w) { return w != 0; })) {
+    ldmx_log(debug) << "non-zero words after the ending trailer";
+    corruption_[EXTRA_WORDS] = true;
+  }
+
+  if (not samples_.empty() and not found_soi) {
+    corruption_[NO_SOI] = true;
   }
 }
 
-Reader& MultiSampleECONDEventPacket::read(Reader& r) {
-  /**
-   * DANGER
-   * Without signal header/trailer words, this assumes that the data
-   * stream is word aligned and we aren't starting on the wrong word.
-   */
-  std::vector<uint32_t> frame;
-  DAQSampleHeader header;
-  while (r) {
-    uint32_t word{0};
-    if (!(r >> word)) {
-      // is this worthy of a warning?
-      pflib_log(trace)
-          << "leaving frame accumulation loop failing to pop next header word";
-      break;
-    }
-    frame.push_back(word);
-    header.from(word);
-    pflib_log(trace) << Hex(word) << " -> " << header;
-    if (header.is_ending_trailer()) {
-      pflib_log(trace) << "found special header marking end of packet"
-                       << ", leaving accumulation loop";
-      break;
-    }
-    if (!r.read(frame, header.econd_len, frame.size())) {
-      pflib_log(warn) << "partially transmitted frame!";
-      return r;
-    }
-    pflib_log(trace) << Hex(*(frame.end() - 1));
-  }
-
-  this->from(frame);
-  return r;
-}
-
-const ECONDEventPacket& MultiSampleECONDEventPacket::soi() const {
-  return samples.at(i_soi);
-}
-
-}  // namespace pflib::packing
+}  // namespace packing

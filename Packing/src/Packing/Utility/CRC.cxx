@@ -1,5 +1,6 @@
 #include "Packing/Utility/CRC.h"
 
+#include <algorithm>
 #include <boost/crc.hpp>
 #include <boost/endian/conversion.hpp>
 #include <iomanip>
@@ -47,4 +48,4 @@ uint8_t econd_crc8(uint64_t data) {
   return boost::crc<8, 0xa7, 0x00, 0x00, false, false>(input_ptr, 8);
 }
 
-}  // namespace pflib::utility
+}  // namespace packing::utility

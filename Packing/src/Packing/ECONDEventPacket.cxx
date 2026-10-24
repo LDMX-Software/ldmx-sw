@@ -1,173 +1,163 @@
 #include "Packing/ECONDEventPacket.h"
 
-#include <boost/crc.hpp>
-#include <iostream>
+#include <algorithm>
+#include <bitset>
+#include <string>
 
+#include "Packing/Utility/CRC.h"
 #include "Packing/Utility/Hex.h"
 #include "Packing/Utility/Mask.h"
-#include "Packing/Utility/CRC.h"
 
 using packing::utility::Hex;
 using packing::utility::MASK;
 
 namespace packing {
 
-std::size_t ECONDEventPacket::unpack_link_subpacket(std::span<uint32_t> data,
-                                                    DAQLinkFrame &link,
-                                                    bool passthrough) {
+namespace {
+
+/**
+ * Construct the HGCROC sample word from the unpacked values
+ *
+ * Negative values were zero-suppressed by the ECON-D and are
+ * represented by a value of zero.
+ */
+uint32_t packSample(bool tc, bool tp, int adc_tm1, int main_sample, int toa) {
+  uint32_t msb_meas = (adc_tm1 < 0) ? 0 : adc_tm1;
+  uint32_t lsb_meas = (toa < 0) ? 0 : toa;
+  return (static_cast<uint32_t>(tc) << 31) + (static_cast<uint32_t>(tp) << 30) +
+         ((msb_meas & MASK<10>) << 20) + ((main_sample & MASK<10>) << 10) +
+         (lsb_meas & MASK<10>);
+}
+
+/// ECON-D Manual: MSB is HT match status, then EBO, then CRC
+const std::array<const char*, 3> LINK_STAT_BIT_NAMES = {"CRC", "EBO", "HT"};
+
+}  // namespace
+
+std::size_t ECONDEventPacket::unpackLinkSubpacket(
+    std::span<const uint32_t> data, ECONDLinkSubpacket& link) const {
+  if (data.empty()) {
+    ldmx_log(debug) << "no words left for link sub-packet";
+    return 0;
+  }
   ldmx_log(trace) << "link header " << Hex(data[0]);
-  // sub-packet start
-  uint32_t stat = ((data[0] >> 29) & MASK<3>);
-  link.corruption[0] = (stat != 0b111);  // all ones is GOOD
-  if (link.corruption[0]) {
-    ldmx_log(warn) << "bad subpacket checks " << std::bitset<3>(stat);
+  link.stat_ = ((data[0] >> 29) & MASK<3>);
+  if (link.badStat()) {
+    std::bitset<3> bits = link.stat_;
+    std::string names;
+    for (std::size_t i{0}; i < 3; i++) {
+      if (!bits.test(i)) names += std::string(" ") + LINK_STAT_BIT_NAMES[i];
+    }
+    ldmx_log(debug) << "bad link Stat bits 0b" << bits << " -> [" << names
+                    << " ] mismatched";
   }
-  uint32_t ham = ((data[0] >> 26) & MASK<3>);
-  bool is_empty = ((data[0] >> 25) & MASK<1>) == 1;
-  link.adc_cm0 = ((data[0] >> 15) & MASK<10>);
-  link.adc_cm1 = ((data[0] >> 5) & MASK<10>);
-  ldmx_log(trace) << "    is_empty=" << is_empty << " CM0=" << link.adc_cm0
-                   << " CM1=" << link.adc_cm1;
+  link.hamming_ = ((data[0] >> 26) & MASK<3>);
+  link.is_empty_ = ((data[0] >> 25) & MASK<1>) == 1;
+  link.adc_cm0_ = ((data[0] >> 15) & MASK<10>);
+  link.adc_cm1_ = ((data[0] >> 5) & MASK<10>);
+  ldmx_log(trace) << "    is_empty=" << link.is_empty_
+                  << " CM0=" << link.adc_cm0_ << " CM1=" << link.adc_cm1_;
 
-  std::size_t length{0};
-  if (is_empty) {
-    // F=1
-    // single-word header, no channel data or channel map, entire link is empty
-    length = 1;
-    bool error_caused_empty = ((data[0] >> 4) & MASK<1>);
-    // E=0 (false) means none of the 37 channels passed zero suppression
-    // E=1 (true) means the unmasked Stat error bits caused the sub-packet to be
-    // suppressed
-    ldmx_log(trace) << "is empty, E=" << error_caused_empty;
-    return length;
+  if (link.is_empty_) {
+    // F=1: single-word header, no channel map or channel data
+    // E=1 means unmasked Stat error bits caused the suppression
+    link.error_caused_empty_ = ((data[0] >> 4) & MASK<1>) == 1;
+    ldmx_log(trace) << "is empty, E=" << link.error_caused_empty_;
+    return 1;
   }
 
+  if (data.size() < 2) {
+    ldmx_log(debug) << "link sub-packet missing channel map";
+    return 0;
+  }
   ldmx_log(trace) << "chan map lower 32 " << Hex(data[1]);
-  // construct channel map
-  std::bitset<37> channel_map = data[1];
-  channel_map |= ((data[0] & MASK<5>) << 32);
-  ldmx_log(trace) << "is not empty, channel_map=" << channel_map;
+  link.channel_map_ =
+      ((data[0] & MASK<5>) << 32) | static_cast<uint64_t>(data[1]);
+  ldmx_log(trace) << "is not empty, channel_map="
+                  << std::bitset<37>(link.channel_map_);
 
-  // start length with two header words (including channel map)
-  length = 2;
+  // two header words (including channel map)
+  std::size_t length{2};
 
   int bits_left_in_current_word{32};
   for (std::size_t i_chan{0}; i_chan < 37; i_chan++) {
-    ldmx_log(trace) << "length=" << length
-                     << " blic=" << bits_left_in_current_word
-                     << " i_ch=" << i_chan;
-
-    // deduce a reference to the channel that we are unpacking
-    Sample *ch = &(link.calib);
+    // calib is the 19th channel in the sub-packet
+    uint32_t* ch = &(link.calib_);
     if (i_chan < 18) {
-      ch = &(link.channels[i_chan]);
+      ch = &(link.channels_[i_chan]);
     } else if (i_chan > 18) {
-      ch = &(link.channels[i_chan - 1]);
+      ch = &(link.channels_[i_chan - 1]);
     }
 
-    if (passthrough) {
+    if (passthrough_) {
       // channels are transparently copied from the link
-      ldmx_log(trace) << "passthrough " << i_chan << " data "
-                       << Hex(data[length]);
-      ch->word = data[length];
+      if (length >= data.size()) {
+        ldmx_log(debug) << "pass through sub-packet ran out of words at ch "
+                        << i_chan;
+        return 0;
+      }
+      *ch = data[length];
       length++;
       continue;
     }
 
     // skip channels that are not passed
-    if (not channel_map[i_chan]) {
-      ldmx_log(trace) << "skipping ch " << i_chan << " because its not in map";
-      ch->word = 0;
+    if (((link.channel_map_ >> i_chan) & 1) == 0) {
+      *ch = 0;
       continue;
     }
 
-    ldmx_log(trace) << Hex(data[length]);
+    if (length >= data.size()) {
+      ldmx_log(debug) << "sub-packet ran out of words at ch " << i_chan;
+      return 0;
+    }
 
-    // The code cannot span multiple words because the format is byte aligned
-    // and we start with a 4 or 2 bit code.
+    // the code cannot span words, the format is byte aligned
     auto code{(data[length] >> (bits_left_in_current_word - 4)) & MASK<4>};
-    ldmx_log(trace) << "ch " << i_chan << " code = " << std::bitset<4>(code)
-                     << " (top two = " << std::bitset<2>(code >> 2) << ")";
     // direct transcription of the table in Fig 20 of the ECOND Spec
-    int nbits{0}, code_len{0}, extra{0};
+    int nbits{32}, extra{0};
     bool has_adctm1{true}, has_toa{true};
-    bool Tc{false}, Tp{false};
+    bool tc{false}, tp{false};
     if (code == 0b0000) {
       // TOA ZS
-      Tc = false;
-      Tp = false;
-      code_len = 4;
-      has_adctm1 = true;
       has_toa = false;
-      extra = 0;
       nbits = 24;
     } else if (code == 0b0001) {
       // ADC(-1) and TOA ZS
-      Tc = false;
-      Tp = false;
-      code_len = 4;
       has_adctm1 = false;
       has_toa = false;
       extra = 2;
       nbits = 16;
     } else if (code == 0b0010) {
       // No ZS or ...
-      Tc = false;
-      Tp = true;
-      code_len = 4;
-      has_adctm1 = true;
+      tp = true;
       has_toa = false;
-      extra = 0;
       nbits = 24;
     } else if (code == 0b0011) {
       // ADC(-1) ZS
-      Tc = false;
-      Tp = false;
-      code_len = 4;
       has_adctm1 = false;
-      has_toa = true;
-      extra = 0;
       nbits = 24;
     } else if ((code >> 2) == 0b01) {
       // full pass ZS in ADC mode
-      Tc = false;
-      Tp = false;
-      code_len = 2;
-      has_adctm1 = true;
-      has_toa = true;
-      extra = 0;
-      nbits = 32;
     } else if ((code >> 2) == 0b11) {
       // pass ZS because in TOT mode
-      Tc = true;
-      Tp = true;
-      code_len = 2;
-      has_adctm1 = true;
-      has_toa = true;
-      extra = 0;
-      nbits = 32;
-    } else if ((code >> 2) == 0b10) {
-      // known invalid
-      ldmx_log(debug) << "ECOND eRx known invalid code "
-                       << std::bitset<2>(code >> 2);
-      Tc = true;
-      Tp = false;
-      code_len = 2;
-      has_adctm1 = true;
-      has_toa = true;
-      extra = 0;
-      nbits = 32;
+      tc = true;
+      tp = true;
     } else {
-      // unknown code probably meaning the unpacking/decoding is going wrong
-      ldmx_log(error) << "unrecognized ECOND eRx code "
-                       << std::bitset<4>(code);
+      // 0b10: known invalid
+      ldmx_log(debug) << "ECOND eRx known invalid code "
+                      << std::bitset<2>(code >> 2);
+      tc = true;
     }
-    ldmx_log(trace) << "    nbits=" << nbits;
 
     // get the channel data from the current and perhaps the next word
-    uint32_t chan_data{0};
+    uint64_t chan_data{0};
     if (bits_left_in_current_word < nbits) {
       int runon_length = nbits - bits_left_in_current_word;
+      if (length + 1 >= data.size()) {
+        ldmx_log(debug) << "sub-packet ran out of words at ch " << i_chan;
+        return 0;
+      }
       chan_data = ((data[length] & ((1ul << bits_left_in_current_word) - 1ul))
                    << runon_length);
       length++;
@@ -182,35 +172,23 @@ std::size_t ECONDEventPacket::unpack_link_subpacket(std::span<uint32_t> data,
       bits_left_in_current_word -= nbits;
     }
 
-    ldmx_log(trace) << "    chan_data=" << Hex(chan_data);
-
-    // unpack the channel data into the measurements that it contains
-    // none of these measurements can be negative, so a negative value
-    // corresponds to an measurement that did not exist
+    // measurements that do not exist are negative
     int adc_tm1{-1}, toa{-1};
-
-    // shift out padding extra bits
     chan_data >>= extra;
-
-    // next lowest 10 bits are TOA if it has it
     if (has_toa) {
       toa = (chan_data & MASK<10>);
       chan_data >>= 10;
     }
-
-    // next lowest 10 bits are the main sample ADC or TOT
-    uint32_t main_sample = (chan_data & MASK<10>);
+    int main_sample = (chan_data & MASK<10>);
     chan_data >>= 10;
-
-    // next lowest 10 bits are the ADCt-1 if it has it
     if (has_adctm1) {
       adc_tm1 = (chan_data & MASK<10>);
     }
+    ldmx_log(trace) << "    ch " << i_chan << " code=" << std::bitset<4>(code)
+                    << " ADC(t-1)=" << adc_tm1 << " ADC/TOT=" << main_sample
+                    << " TOA=" << toa;
 
-    ldmx_log(trace) << "    ADC(t-1)=" << adc_tm1 << " ADC/TOT=" << main_sample
-                     << " TOA=" << toa;
-
-    ch->from_unpacked(Tc, Tp, adc_tm1, main_sample, toa);
+    *ch = packSample(tc, tp, adc_tm1, main_sample, toa);
 
     if (bits_left_in_current_word == 0) {
       length++;
@@ -218,153 +196,136 @@ std::size_t ECONDEventPacket::unpack_link_subpacket(std::span<uint32_t> data,
     }
   }
 
-  // the link sub-packets are 32b-word-aligned, so if we are in the middle
-  // of a word, we increase the length by one to complete the 32b word
+  // sub-packets are 32b-word-aligned
   if (bits_left_in_current_word < 32) {
     length++;
+  }
+
+  if (length > data.size()) {
+    ldmx_log(debug) << "sub-packet length " << length << " exceeds "
+                    << data.size() << " remaining words";
+    return 0;
   }
 
   ldmx_log(trace) << "eRx final length " << length;
   return length;
 }
 
-ECONDEventPacket::ECONDEventPacket(std::size_t n_links) : links(n_links) {}
+ECONDEventPacket::ECONDEventPacket(std::size_t n_links) : links_(n_links) {}
 
-void ECONDEventPacket::from(std::span<uint32_t> data) {
+bool ECONDEventPacket::isCorrupt() const {
+  return std::any_of(corruption_.begin(), corruption_.end(),
+                     [](bool c) { return c; });
+}
+
+bool ECONDEventPacket::from(std::span<const uint32_t> data) {
+  corruption_.fill(false);
+  std::fill(links_.begin(), links_.end(), ECONDLinkSubpacket{});
+  payload_length_ = 0;
+
+  if (data.size() < 2) {
+    ldmx_log(debug) << "packet of " << data.size()
+                    << " words is too short for the two header words";
+    corruption_[BAD_LENGTH] = true;
+    if (data.empty()) return false;
+  }
+
   ldmx_log(trace) << "econd header one: " << Hex(data[0]);
-  uint32_t header_marker = ((data[0] >> 23) & MASK<9>);
-  // two options for header marker: ECOND Spec default and common CMS
-  // configuration
-  corruption[0] =
-      (header_marker != (0xaa << 1)) and (header_marker != (0xf3 << 1));
-  if (corruption[0]) {
-    ldmx_log(warn) << "Bad header marker from ECOND " << "0x" << std::hex
-                    << std::setw(2) << std::setfill('0') << (header_marker >> 1)
-                    << " + 0b" << (header_marker & 0b1);
+  header_marker_ = ((data[0] >> 23) & MASK<9>);
+  corruption_[BAD_HEADER_MARKER] = (header_marker_ != HEADER_MARKER_SPEC) and
+                                   (header_marker_ != HEADER_MARKER_CMS);
+  if (corruption_[BAD_HEADER_MARKER]) {
+    // most likely not an ECON-D header at all
+    ldmx_log(debug) << "Bad header marker from ECOND 0x" << std::hex
+                    << (header_marker_ >> 1) << " + 0b"
+                    << (header_marker_ & 0b1) << std::dec << " in word "
+                    << Hex(data[0]);
+    return false;
   }
+  if (corruption_[BAD_LENGTH]) return false;
 
-  uint32_t length = ((data[0] >> 14) & MASK<9>);
-  ldmx_log(trace) << "    length = " << length;
-  corruption[1] = (data.size() != (length + 2));
-  if (corruption[1]) {
-    if (data.size() < (length + 2)) {
-      ldmx_log(warn) << "Incomplete event packet, stored payload length "
-                      << length << " is larger than the packet length ("
-                      << data.size() << " - 2)";
-    } else {
-      ldmx_log(debug) << "Oversized event packet, stored payload length "
-                       << length << " is smaller than the packet length ("
-                       << data.size() << "-2) so the last (" << data.size()
-                       << "-2-" << length << ") words will be ignored";
-    }
-  }
-
-  // Look at Section 18 of ECON-D_specification_working_doc_v1.4_5jan2023.pdf
-  // Passthrough is on bit 13
-  bool passthrough = ((data[0] >> 13) & MASK<1>) == 1;
-  // Expected is on bit 12
-  // E specifies whether an Event HDR/TRL received from the HGCROCs is expected.
-  bool expected = ((data[0] >> 12) & MASK<1>) == 1;
-  // EBO is on bits 11-8
-  // H/T and E/B/O specifies 2b status of reconstruction of HGCROC Event HDR/TRL
-  // and Event/BX/Orbit numbers across all active eRx.
-  uint32_t ht_ebo = ((data[0] >> 8) & MASK<4>);
-  // M is on bit 7
-  // M specifies whether the transmitted E/B/O (according to mode selected by
-  // user) matches the E/B/O value in the ECON-D L1A FIFO.
-  bool m = ((data[0] >> 7) & MASK<1>) == 1;
-  // T is on bit 6
-  // T specifies whether the packet is truncated for buffer overflow (see
-  // below).
-  bool truncated = ((data[0] >> 6) & MASK<1>) == 1;
-  // Hamming is on bits 5-0
-  //   Hamming(63,57) for Evt Hdr is a non-extended Hamming code that provides
-  //   single error correction (no
-  // double error detection) computed for the entire 2-word Evt Header EXCEPT
-  // the 8b CRC, which is computed last.
-  uint32_t hamming = (data[0] & MASK<6>);
-  ldmx_log(trace) << "    P=" << passthrough << " E=" << expected;
+  payload_length_ = ((data[0] >> 14) & MASK<9>);
+  passthrough_ = ((data[0] >> 13) & MASK<1>) == 1;
+  expected_ = ((data[0] >> 12) & MASK<1>) == 1;
+  ht_ = ((data[0] >> 10) & MASK<2>);
+  ebo_ = ((data[0] >> 8) & MASK<2>);
+  match_ = ((data[0] >> 7) & MASK<1>) == 1;
+  truncated_ = ((data[0] >> 6) & MASK<1>) == 1;
+  hamming_ = (data[0] & MASK<6>);
 
   ldmx_log(trace) << "econd header two: " << Hex(data[1]);
-  // BX on bits 31-20
-  uint32_t bx = ((data[1] >> 20) & MASK<12>);
-  // L1A on bits 19-14
-  uint32_t l1a = ((data[1] >> 14) & MASK<6>);
-  // Orb on bits 13-11
-  uint32_t orb = ((data[1] >> 11) & MASK<3>);
-  bool subpacket_error = ((data[1] >> 10) & MASK<1>) == 1;
-  // RR on bits 9-8
-  // RR is the Reset Request described earlier.
-  uint32_t rr = ((data[1] >> 8) & MASK<2>);
-  // 8-bit CRC on bits 7-0
-  // 8b CRC for Evt Header is the 8b Bluetooth CRC computed for the entire
-  // 2-word Evt Header except the Hamming field.
-  uint8_t crc = (data[1] & MASK<8>);
-  ldmx_log(trace) << "    BX=" << bx << " L1A=" << l1a << " Orb=" << orb;
+  bx_ = ((data[1] >> 20) & MASK<12>);
+  l1a_ = ((data[1] >> 14) & MASK<6>);
+  orbit_ = ((data[1] >> 11) & MASK<3>);
+  subpacket_error_ = ((data[1] >> 10) & MASK<1>) == 1;
+  reset_request_ = ((data[1] >> 8) & MASK<2>);
+  crc8_ = (data[1] & MASK<8>);
+  ldmx_log(trace) << "    length=" << payload_length_ << " P=" << passthrough_
+                  << " BX=" << bx_ << " L1A=" << l1a_ << " Orb=" << orbit_;
 
-  // event header 8-bit CRC
-  // uses 8 leading zeros and zeroed Hamming so it is independent from Hamming
-  // first header word:
-  //   shift out the Hamming
+  corruption_[BAD_LENGTH] = (data.size() != (payload_length_ + 2));
+  if (corruption_[BAD_LENGTH]) {
+    ldmx_log(debug) << "stored payload length " << payload_length_
+                    << " does not match the packet length (" << data.size()
+                    << " - 2)";
+    if (data.size() < (payload_length_ + 2)) return false;
+  }
+
+  // 8b CRC over both header words without the Hamming and the CRC
   uint64_t header_crc_base = (data[0] >> 6);
-  //   move into position
   header_crc_base <<= 30;
-  // second header word, shift out the CRC
   header_crc_base |= (data[1] >> 8);
-
-  ldmx_log(trace) << "Header for Calculating 8b CRC: " << Hex(header_crc_base);
-
   uint8_t header_crc_val = utility::econd_crc8(header_crc_base);
-  corruption[2] = (header_crc_val != crc);
-  if (corruption[2]) {
-    ldmx_log(warn) << "Event header 8b CRC does not match trasmitted value: "
+  corruption_[BAD_HEADER_CRC] = (header_crc_val != crc8_);
+  if (corruption_[BAD_HEADER_CRC]) {
+    ldmx_log(debug) << "Event header 8b CRC does not match transmitted value: "
                     << std::bitset<8>(header_crc_val)
-                    << " != " << std::bitset<8>(crc);
+                    << " != " << std::bitset<8>(crc8_);
   }
 
-  if (truncated) {
-    ldmx_log(warn) << "Buffer control detected insufficient space so it did "
-                       "not transfer link packets.";
-    return;
+  if (isEmpty()) {
+    ldmx_log(trace) << "empty packet, no link sub-packets";
+    return not isCorrupt();
   }
 
-  std::size_t offset{2};
-  for (auto &link : links) {
-    offset += unpack_link_subpacket(data.subspan(offset), link, passthrough);
-    link.bx = bx;
-    link.event = l1a;
-    link.orbit = orb;
-  }
-
-  // offset is now the index of the trailer
-  ldmx_log(trace) << "Index of trailer: " << offset;
-
-  // the next word is the CRC for all link sub-packets, but not the event packet
-  // header
-  uint32_t crc_val = utility::crc32(data.subspan(2, offset - 2));
-  uint32_t target = data[offset];
-  corruption[3] = (crc_val != target);
-  if (corruption[3]) {
-    ldmx_log(warn)
+  // the last payload word is the CRC over all link sub-packets
+  auto payload{data.subspan(2, payload_length_)};
+  auto subpackets{payload.first(payload_length_ - 1)};
+  uint32_t crc_val = utility::crc32(subpackets);
+  uint32_t target = payload.back();
+  corruption_[BAD_CRC32] = (crc_val != target);
+  if (corruption_[BAD_CRC32]) {
+    ldmx_log(debug)
         << "CRC over all link sub-packets does not match transmitted value "
         << Hex(crc_val) << " != " << Hex(target);
   }
-}
 
-int ECONDEventPacket::adc_cm0(int i_link) const {
-  return links.at(i_link).adc_cm0;
-}
+  if (corruption_[BAD_HEADER_CRC]) return false;
 
-int ECONDEventPacket::adc_cm1(int i_link) const {
-  return links.at(i_link).adc_cm1;
-}
+  if (truncated_) {
+    ldmx_log(debug) << "Buffer control detected insufficient space so it did "
+                       "not transfer link packets.";
+    corruption_[TRUNCATED] = true;
+    return false;
+  }
 
-Sample ECONDEventPacket::channel(int i_link, int i_ch) const {
-  return links.at(i_link).channels.at(i_ch);
-}
+  std::size_t offset{0};
+  for (auto& link : links_) {
+    auto length = unpackLinkSubpacket(subpackets.subspan(offset), link);
+    if (length == 0) {
+      corruption_[BAD_PAYLOAD] = true;
+      return false;
+    }
+    offset += length;
+  }
 
-Sample ECONDEventPacket::calib(int i_link) const {
-  return links.at(i_link).calib;
+  if (offset != subpackets.size()) {
+    ldmx_log(debug) << "link sub-packets end at " << offset
+                    << " but the CRC word is at " << subpackets.size();
+    corruption_[BAD_PAYLOAD] = true;
+  }
+
+  return not isCorrupt();
 }
 
 }  // namespace packing
