@@ -15,7 +15,7 @@ from LDMX.SimCore import simulator as sim
 cosmics = gen.HepMC(
     instance_name="cosmics",
     file_path=f"{os.environ['CI_DATA']}/cosmics_teststand/corsika8_muons.hepmc3.root",
-    vertex=[5000.0, -110.0, 16000.0],
+    vertex=[5000.0, -110.0, 23000.0],
     beam_spot_smear=[],
 )
 
