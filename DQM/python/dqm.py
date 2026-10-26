@@ -1001,6 +1001,29 @@ class HCalRawDigi(Processor):
     input_pass: str = ""
 
 
+@processor("dqm::ECONDDigiDQM", "DQM")
+class ECONDDigiDQM(Processor):
+    """Histograms of the ECONDDecoder output
+
+    Parameters
+    ----------
+    digi_name : str
+        name of the HgcrocDigiCollection from ECONDDecoder
+    info_name : str
+        name of the ECONDEventInfo, defaults to digi_name + "ECONDInfo"
+    input_pass : str
+        pass of the decoder
+    """
+
+    digi_name: str = ""
+    info_name: str = ""
+    input_pass: str = ""
+
+    def __post_init__(self):
+        if not self.info_name:
+            self.info_name = f"{self.digi_name}ECONDInfo"
+
+
 @processor("dqm::HgcrocPulseTruth", "DQM", "hgcroc_pulse_truth")
 class HgcrocPulseTruth(Processor):
     input_digi_name: str = ""

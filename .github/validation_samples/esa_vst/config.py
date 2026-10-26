@@ -1,5 +1,7 @@
 """Decode and reconstruct ESA 2025 vertical slice test raw data (run 111)
 
+Tracker, TS and HCal (ECON-D) are decoded.
+
 The raw .dat file is assembled from compressed parts in init.sh.
 """
 
@@ -16,6 +18,7 @@ ts_data = os.path.realpath("../../../TrigScint/data")
 from LDMX.DQM import dqm
 from LDMX.EventBuilder import eventbuilder
 from LDMX.Packing import rawio
+from LDMX.Packing.decoding import ECONDDecoder
 from LDMX.Tracking import dqm as tracking_dqm
 from LDMX.Tracking import rawdecoder, tracking
 from LDMX.Tracking.geo import TrackersTrackingGeometryProvider as TrackGeo
@@ -86,6 +89,20 @@ evb = eventbuilder.from_dat_file(dat_file, verbose_parse=False, instance_name="e
 evb.binary_file = ""
 evb.performance_file = ""
 
+# HCal: raw frames -> ECON-D decoding -> digi DQM.
+# Last in the sequence so an abort at the end of the HCal frames
+# does not affect the other subsystems.
+hcal_unpack = rawio.SingleSubsystemUnpacker(
+    instance_name="hcal_unpack",
+    dat_file=dat_file,
+    output_name="HcalRawData",
+    subsystem_name="hcal",
+)
+hcal_decoder = ECONDDecoder(
+    raw_data_name="HcalRawData", digi_output_name="HcalDigis", is_ecal=False
+)
+hcal_dqm = dqm.ECONDDigiDQM(digi_name="HcalDigis", instance_name="hcal_econd_dqm")
+
 p.sequence = [
     trk_unpack,
     trk_decoder,
@@ -100,6 +117,9 @@ p.sequence = [
     ts_measurements,
     evb,
     dqm.EventSummaryDQM(),
+    hcal_unpack,
+    hcal_decoder,
+    hcal_dqm,
 ]
 # one info line per built event otherwise
 p.logger.custom("EventBuilder", level=2)
