@@ -22,6 +22,10 @@ class EventBuilder(Processor):
         Minimum number of distinct subsystems required within the coherence
         window to assemble an event. Default 2 (e.g. Run 182 has only ts +
         tracker); set higher for runs that read out more subsystems.
+    binary_file : str
+        Binary event output, empty to disable.
+    performance_file : str
+        Performance metrics CSV, empty to disable.
     """
 
     dat_file: str = ""
@@ -29,6 +33,8 @@ class EventBuilder(Processor):
     verbose_parse: bool = True
     coherence_window_ns: float = 5000000.0
     min_subsystems: int = 2
+    binary_file: str = "events.bin"
+    performance_file: str = "event_performance.csv"
 
 
 def from_dat_file(
