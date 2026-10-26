@@ -15,7 +15,8 @@ p = ldmxcfg.Process("test")
 dat_file = f"{os.environ['CI_DATA']}/esa_vst/run111.dat"
 ts_data = os.path.realpath("../../../TrigScint/data")
 
-from LDMX.DQM.dqm import ECONDDigiDQM
+from LDMX.DQM import dqm
+from LDMX.EventBuilder import eventbuilder
 from LDMX.Packing import rawio
 from LDMX.Packing.decoding import ECONDDecoder
 from LDMX.Tracking import dqm as tracking_dqm
@@ -82,6 +83,12 @@ ts_measurements = TrigScintMeasurementProducer()
 ts_measurements.input_pass = ""  # clusters are produced in this same process
 ts_measurements.input_collections = ts_cluster_collections
 
+# EventBuilder reads the same file on its own; its events are not aligned with the
+# per-subsystem unpackers above, only its own summary histograms are compared
+evb = eventbuilder.from_dat_file(dat_file, verbose_parse=False, instance_name="evb")
+evb.binary_file = ""
+evb.performance_file = ""
+
 # HCal: raw frames -> ECON-D decoding -> digi DQM.
 # Last in the sequence so an abort at the end of the HCal frames
 # does not affect the other subsystems.
@@ -94,7 +101,7 @@ hcal_unpack = rawio.SingleSubsystemUnpacker(
 hcal_decoder = ECONDDecoder(
     raw_data_name="HcalRawData", digi_output_name="HcalDigis", is_ecal=False
 )
-hcal_dqm = ECONDDigiDQM(digi_name="HcalDigis", instance_name="hcal_econd_dqm")
+hcal_dqm = dqm.ECONDDigiDQM(digi_name="HcalDigis", instance_name="hcal_econd_dqm")
 
 p.sequence = [
     trk_unpack,
@@ -108,10 +115,14 @@ p.sequence = [
     ts_decoder,
     *ts_reco,
     ts_measurements,
+    evb,
+    dqm.EventSummaryDQM(),
     hcal_unpack,
     hcal_decoder,
     hcal_dqm,
 ]
+# one info line per built event otherwise
+p.logger.custom("EventBuilder", level=2)
 
 ##################################################################
 # Below should be the same for all raw data scenarios
