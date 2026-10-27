@@ -28,9 +28,13 @@
 //------------//
 //   Geant4   //
 //------------//
+#include "G4Electron.hh"
+#include "G4EmParameters.hh"
 #include "G4GDMLParser.hh"
 #include "G4GenericBiasingPhysics.hh"
+#include "G4HadronicParameters.hh"
 #include "G4ParallelWorldPhysics.hh"
+#include "G4UImanager.hh"
 #include "G4VModularPhysicsList.hh"
 #include "SimCore/KaonPhysics.h"
 
@@ -51,6 +55,14 @@ RunManager::RunManager(framework::config::Parameters& parameters,
 void RunManager::setupPhysics() {
   auto p_list{physics_list_factory_.GetReferencePhysList("FTFP_BERT")};
   p_list->SetVerboseLevel(0);
+
+  // Keep gamma processes separate, biasing finds them by name
+  G4EmParameters::Instance()->SetGeneralProcessActive(false);
+  // Same PN cross section as our custom PN models
+  G4UImanager::GetUIpointer()->ApplyCommand(
+      "/physics_lists/em/UseGammaNuclearXS false");
+  // Bertini multi-body angles as in 11.2, 11.5 replaces the 11.3 algorithm
+  G4HadronicParameters::Instance()->SetBertiniAngularEmissionsAs11_2(true);
 
   parallel_world_path_ = parameters_.get<std::string>("scoring_planes");
   is_pw_enabled_ = !parallel_world_path_.empty();
@@ -194,9 +206,12 @@ void RunManager::TerminateOneEvent() {
   G4ProcessManager* pman = G4Electron::Definition()->GetProcessManager();
   for (int i_proc{0}; i_proc < pman->GetProcessList()->size(); i_proc++) {
     G4VProcess* p{(*(pman->GetProcessList()))[i_proc]};
-    if (p->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME) or
-        p->GetProcessName().contains(
-            GenieElectroNuclearProcess::PROCESS_NAME)) {
+    if (G4StrUtil::contains(
+            p->GetProcessName(),
+            std::string_view(G4DarkBremsstrahlung::PROCESS_NAME)) or
+        G4StrUtil::contains(
+            p->GetProcessName(),
+            std::string_view(GenieElectroNuclearProcess::PROCESS_NAME))) {
       pman->SetProcessActivation(p, true);
       break;
     }
