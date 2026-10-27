@@ -40,15 +40,29 @@ p.output_files = ["events.root"]
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
 
+
+# cosmics do not travel along +z
+hcal_digitizer = hcal_digi.HcalDigiProducer()
+hcal_digitizer.time_of_flight_correction = False
+
+hcal_station_dqm = [
+    dqm.HCalDQM(instance_name=f"hcal_dqm_{name}", section=section)
+    for section, name in enumerate(["above_ecal", "top", "below_ecal"])
+]
 
 p.sequence.extend(
     [
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         dqm.EcalDigiVerify(),
+        hcal_digitizer,
+        hcal_digi.HcalRecProducer(),
+        *hcal_station_dqm,
         dqm.SimObjects(),
         *[d for d in dqm.trig_scint_dqm if "Sim" in d.instance_name],
     ]

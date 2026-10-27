@@ -1,5 +1,7 @@
 #include "Hcal/HcalDoubleEndRecProducer.h"
 
+#include <algorithm>
+
 #include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
@@ -80,7 +82,7 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     int orientation_int = static_cast<int>(orientation);
 
     // skip non-double-ended layers
-    if (id.section() != ldmx::HcalID::HcalSection::BACK) continue;
+    if (!hcal_geometry.isDoubleEnded(id.section())) continue;
 
     // skip if we couldn't find both ends of the bar
     auto indices = indices_by_id[id];
@@ -125,13 +127,22 @@ void HcalDoubleEndRecProducer::produce(framework::Event& event) {
     int position_bar_sign = hit_time_diff > 0 ? 1 : -1;
     double position_unchanged = 0;
     double position_bar = position_bar_sign * fabs(hit_time_diff) * v / 2;
+    // keep the hit on the bar
+    if (hcal_geometry.hasExplicitLayout()) {
+      const double half_length{hcal_geometry.getScintillatorLength(id) / 2};
+      position_bar = std::clamp(position_bar, -half_length, half_length);
+    }
     if (orientation ==
         ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
       position_unchanged = position.X();
-      position.SetX(position_bar);
+      position.SetX(hcal_geometry.hasExplicitLayout()
+                        ? position_unchanged + position_bar
+                        : position_bar);
     } else {
       position_unchanged = position.Y();
-      position.SetY(position_bar);
+      position.SetY(hcal_geometry.hasExplicitLayout()
+                        ? position_unchanged + position_bar
+                        : position_bar);
     }
     ldmx_log(trace) << "position unchanged " << position_unchanged
                     << " orientation = " << orientation_int;
