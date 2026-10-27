@@ -171,6 +171,28 @@ class HcalGeometry : public framework::ConditionsObject {
   bool isPrototype() const { return is_prototype_; }
 
   /**
+   * Are the strip positions given layer by layer (e.g. cosmic stand)?
+   */
+  bool hasExplicitLayout() const { return !layer_z_.empty(); }
+
+  /**
+   * Are the bars of this section read out at both ends?
+   */
+  bool isDoubleEnded(int isection) const {
+    if (hasExplicitLayout()) return double_ended_.at(isection) != 0;
+    return isection == ldmx::HcalID::HcalSection::BACK;
+  }
+
+  /**
+   * Signed distance along the bar from the strip center [mm]
+   *
+   * @param id The HcalID of the bar
+   * @param x, y, z Global position
+   */
+  double getDistanceAlongBar(ldmx::HcalID id, double x, double y,
+                             double z) const;
+
+  /**
    * Coordinates that are given by Geant4 are typically global. These can be
    * transformed into corresponding local coordinates of a volume with a
    * TopTransform. However, a TopTransform translates to the local bar but does
@@ -282,6 +304,17 @@ class HcalGeometry : public framework::ConditionsObject {
   std::vector<std::vector<double>> scint_length_;
 
   bool is_prototype_{};
+
+  /// Explicit layout: world z of each layer center [mm]
+  std::vector<std::vector<double>> layer_z_;
+  /// Explicit layout: 0 = bar long along x, 1 = along y
+  std::vector<std::vector<int>> layer_long_axis_;
+  /// Explicit layout: world along-bar coordinate of the bar centers [mm]
+  std::vector<std::vector<double>> layer_bar_center_;
+  /// Explicit layout: world transverse coordinate of strip 0 [mm]
+  std::vector<std::vector<double>> layer_strip_zero_;
+  /// Explicit layout: section read out at both ends
+  std::vector<int> double_ended_;
 
   /**
    Map of the HcalID position of strip centers relative to world geometry.

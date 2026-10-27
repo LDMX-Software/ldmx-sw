@@ -43,6 +43,10 @@ class EventBuilder : public framework::Producer {
   // Minimum number of distinct subsystems required to assemble an event.
   // Configurable (was a hardcoded 3); Run 182 only has ts + tracker, so 2.
   int m_min_subsystems_{2};
+  /// binary event output, empty to disable
+  std::string m_binary_file_{"events.bin"};
+  /// performance metrics CSV, empty to disable
+  std::string m_performance_file_{"event_performance.csv"};
 
   // Performance metrics
   std::chrono::steady_clock::time_point m_start_time_;

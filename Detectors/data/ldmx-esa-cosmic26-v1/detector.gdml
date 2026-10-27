@@ -10,11 +10,14 @@ CAD supports are visualization context only, so this transport geometry contains
 Alignment, envelopes and HCal readout reconstruction still need review.
 -->
   <define>
-    <!--ESA roof concrete, not in the CAD, about 10 m above the stand top-->
+    <!--ESA roof concrete, not in the CAD, assumes z = 0 is the ESA floor-->
     <!--2 ft thick: Weidner et al., IEEE Trans. Nucl. Sci. NS-14 (1967)-->
-    <constant name="roof_bottom_z" value="13800"/>
+    <!--building height floor to roof top 73 ft 4 in-->
+    <constant name="esa_height" value="22352"/>
     <constant name="roof_thickness" value="610"/>
-    <constant name="roof_width" value="70000"/>
+    <constant name="roof_bottom_z" value="esa_height - roof_thickness"/>
+    <!--wide enough for muons up to 70 deg zenith aimed at the stand-->
+    <constant name="roof_width" value="120000"/>
   </define>
   <materials>
     &materials;
@@ -40,7 +43,7 @@ Alignment, envelopes and HCal readout reconstruction still need review.
     </material>
   </materials>
   <solids>
-    <box name="cosmic_world_box" lunit="mm" x="80000" y="80000" z="34000"/>
+    <box name="cosmic_world_box" lunit="mm" x="130000" y="130000" z="50000"/>
     <box name="roof_box" lunit="mm" x="roof_width" y="roof_width" z="roof_thickness"/>
   </solids>
   <structure>
@@ -76,7 +79,7 @@ Alignment, envelopes and HCal readout reconstruction still need review.
         <position name="ecal_pos" unit="mm" x="4978.55243868" y="-128.723940966" z="2352.03243963"/>
         <rotation name="ecal_rot" unit="deg" x="180" y="0" z="0"/>
       </physvol>
-      <!--Three independent HCal station volumes keep each bar at geometry depth 2. Section IDs: top=1, above ECal=0, below ECal=2; the HCal readout geometry does not describe this layout yet.-->
+      <!--Three independent HCal station volumes keep each bar at geometry depth 2. Section IDs: top=1, above ECal=0, below ECal=2, described by HcalReadoutGeometry.make_cosmic26_v1.-->
       <physvol name="hcal_top" copynumber="11">
         <file name="hcal_top.gdml"/>
         <position name="hcal_top_pos" unit="mm" x="5000.00595703" y="-108.422841688" z="3747.27520142"/>

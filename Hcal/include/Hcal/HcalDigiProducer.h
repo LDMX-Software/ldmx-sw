@@ -128,6 +128,9 @@ class HcalDigiProducer : public framework::Producer {
 
   double flat_time_shift_{0.};
 
+  /// Subtract z/c from the hit time
+  bool time_of_flight_correction_{true};
+
   /// Read out threshold
   double readout_threshold_;
   /// Read out pedestal

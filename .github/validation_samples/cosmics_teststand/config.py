@@ -15,7 +15,7 @@ from LDMX.SimCore import simulator as sim
 cosmics = gen.HepMC(
     instance_name="cosmics",
     file_path=f"{os.environ['CI_DATA']}/cosmics_teststand/corsika8_muons.hepmc3.root",
-    vertex=[5000.0, -110.0, 16000.0],
+    vertex=[5000.0, -110.0, 23000.0],
     beam_spot_smear=[],
 )
 
@@ -40,9 +40,10 @@ p.output_files = ["events.root"]
 import LDMX.Ecal.digi as ecal_digi
 import LDMX.Ecal.ecal_geometry
 import LDMX.Ecal.ecal_hardcoded_conditions
+import LDMX.Hcal.digi as hcal_digi
 import LDMX.Hcal.hcal_geometry
+import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
-
 
 # ESA bunch clock (185.7 MHz / 5), asynchronous trigger,
 # physical e-h yield (300 um MIP is 3.6 fC)
@@ -53,11 +54,23 @@ ecal_digi_cosmic = ecal_digi.EcalDigiProducer(
 )
 ecal_digi_cosmic.hgcroc.clock_cycle = esa_clock
 
+# cosmics do not travel along +z
+hcal_digitizer = hcal_digi.HcalDigiProducer()
+hcal_digitizer.time_of_flight_correction = False
+
+hcal_station_dqm = [
+    dqm.HCalDQM(instance_name=f"hcal_dqm_{name}", section=section)
+    for section, name in enumerate(["above_ecal", "top", "below_ecal"])
+]
+
 p.sequence.extend(
     [
         ecal_digi_cosmic,
         ecal_digi.EcalRecProducer(clock_cycle=esa_clock),
         dqm.EcalDigiVerify(),
+        hcal_digitizer,
+        hcal_digi.HcalRecProducer(),
+        *hcal_station_dqm,
         dqm.SimObjects(),
         *[d for d in dqm.trig_scint_dqm if "Sim" in d.instance_name],
     ]

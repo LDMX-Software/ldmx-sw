@@ -84,6 +84,7 @@ void HcalDigiProducer::configure(framework::config::Parameters& ps) {
   noise_rms_ = ps.get<double>("avg_noise_rms");
 
   flat_time_shift_ = ps.get<double>("flat_time_shift");
+  time_of_flight_correction_ = ps.get<bool>("time_of_flight_correction");
   // Time spread parameters
   // Per hit
   const auto& time_spread_per_hit{
@@ -175,6 +176,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     time_delta += makeTimeDelta(time_spread_per_spill_type_,
                                 time_spread_per_spill_parameters_);
   }
+  const bool explicit_layout{hcal_geometry.hasExplicitLayout()};
   for (auto const& sim_bar : hits_by_id) {
     ldmx::HcalID det_id(sim_bar.first);
     int section = det_id.section();
@@ -227,7 +229,14 @@ void HcalDigiProducer::produce(framework::Event& event) {
       float distance_close, distance_far;
       int end_close;
       const auto orientation{hcal_geometry.getScintillatorOrientation(det_id)};
-      if (section == ldmx::HcalID::HcalSection::BACK) {
+      if (explicit_layout) {
+        // relative to the strip center, end 0 on the positive side
+        distance_along_bar = hcal_geometry.getDistanceAlongBar(
+            det_id, position[0], position[1], position[2]);
+        end_close = (distance_along_bar > 0) ? 0 : 1;
+        distance_close = hcal_geometry.getScintillatorLength(det_id) / 2;
+        distance_far = distance_close;
+      } else if (section == ldmx::HcalID::HcalSection::BACK) {
         distance_along_bar =
             (orientation ==
              ldmx::HcalGeometry::ScintillatorOrientation::horizontal)
@@ -282,7 +291,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         // global time (t=0ns at target)
         double time = sim_hit.getContrib(i_contrib).time_;
         // shift light-speed particle traveling along z_
-        time -= position.at(2) / 299.702547;
+        if (time_of_flight_correction_) time -= position.at(2) / 299.702547;
         if (do_time_spread_per_hit_) {
           time += makeTimeDelta(time_spread_per_hit_type_,
                                 time_spread_per_hit_parameters_);
@@ -308,7 +317,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
      * For Top and Left we read the positive end digi.
      * For Bottom and Right we read the negative end digi.
      **/
-    if (section == ldmx::HcalID::HcalSection::BACK) {
+    if (hcal_geometry.isDoubleEnded(section)) {
       std::vector<ldmx::HgcrocDigiCollection::Sample> digi_to_add_posend,
           digi_to_add_negend;
       ldmx::HcalDigiID posend_id(section, layer, strip, 0);
@@ -345,7 +354,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
     } else {
       bool is_posend = false;
       std::vector<ldmx::HgcrocDigiCollection::Sample> digi_to_add;
-      if ((section == ldmx::HcalID::HcalSection::TOP) ||
+      if (explicit_layout || (section == ldmx::HcalID::HcalSection::TOP) ||
           (section == ldmx::HcalID::HcalSection::LEFT)) {
         is_posend = true;
       } else if ((section == ldmx::HcalID::HcalSection::BOTTOM) ||
@@ -386,7 +395,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
         // Note zero-indexed strip numbering...
         for (int strip = 0; strip < hcal_geometry.getNumStrips(section, layer);
              strip++) {
-          if (section == ldmx::HcalID::HcalSection::BACK) {
+          if (hcal_geometry.isDoubleEnded(section)) {
             auto digi_i_dend0 = ldmx::HcalDigiID(section, layer, strip, 0);
             auto digi_i_dend1 = ldmx::HcalDigiID(section, layer, strip, 1);
             channel_map.push_back(digi_i_dend0);
@@ -406,6 +415,15 @@ void HcalDigiProducer::produce(framework::Event& event) {
         0, hcal_geometry.getNumSections() - 1);
     std::uniform_int_distribution<int> end_dist(0, 1);
     std::uniform_int_distribution<int> clock_dist(0, clock_cycle_);
+    // explicit layout: draw only sections that have layers
+    std::vector<int> live_sections;
+    for (int section = 0; section < hcal_geometry.getNumSections(); section++) {
+      if (hcal_geometry.getNumLayers(section) > 0) {
+        live_sections.push_back(section);
+      }
+    }
+    std::uniform_int_distribution<int> live_section_dist(
+        0, static_cast<int>(live_sections.size()) - 1);
 
     // Fast noise sim
     if (zero_suppression_) {
@@ -422,6 +440,18 @@ void HcalDigiProducer::produce(framework::Event& event) {
         unsigned int noise_id;
         int section_id, layer_id, strip_id, end_id;
         do {
+          if (explicit_layout) {
+            section_id = live_sections[live_section_dist(rng_)];
+            layer_id = std::uniform_int_distribution<int>(
+                1, hcal_geometry.getNumLayers(section_id))(rng_);
+            strip_id = std::uniform_int_distribution<int>(
+                0, hcal_geometry.getNumStrips(section_id, layer_id) - 1)(rng_);
+            end_id =
+                hcal_geometry.isDoubleEnded(section_id) ? end_dist(rng_) : 0;
+            noise_id =
+                ldmx::HcalDigiID(section_id, layer_id, strip_id, end_id).raw();
+            continue;
+          }
           // Get a random section value
           section_id = section_dist(rng_);
 
@@ -465,7 +495,7 @@ void HcalDigiProducer::produce(framework::Event& event) {
                               gain * hgcroc_->readoutThreshold(noise_id) -
                               gain * hgcroc_->pedestal(noise_id);
 
-        if (section_id == ldmx::HcalID::HcalSection::BACK) {
+        if (hcal_geometry.isDoubleEnded(section_id)) {
           std::vector<ldmx::HgcrocDigiCollection::Sample> digi_to_add_posend,
               digi_to_add_negend;
           ldmx::HcalDigiID posend_id(section_id, layer_id, strip_id, 0);
