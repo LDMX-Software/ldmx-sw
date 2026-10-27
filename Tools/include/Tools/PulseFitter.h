@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "Tracking/Digitization/PulseShape.h"
+#include "Tools/PulseShape.h"
 
-namespace tracking::digitization {
+namespace ldmx {
 
 /**
- * Fits a pulse shape to the ADC samples of a single silicon-strip readout
- * channel to extract hit amplitude and time.
+ * Fits a pulse shape to the ADC samples of a single readout channel to
+ * extract hit amplitude and time.
  *
  * Algorithm
  * ---------
@@ -37,7 +37,7 @@ namespace tracking::digitization {
  *   arrival time in the same frame.  The output t0 = T is stored directly so
  *   the caller can subtract their own reference as needed.
  */
-class StripPulseFitter {
+class PulseFitter {
  public:
   // I like not having underscores for struct members,
   // but that's not settable until a later version of clang-tidy
@@ -62,10 +62,10 @@ class StripPulseFitter {
    * @param t_scan_max_ns       Upper bound of the T scan range [ns].
    * @param t_scan_step_ns      Step size of the coarse T scan [ns].
    */
-  StripPulseFitter(const PulseShape& shape, double t0_offset_ns,
-                   double sampling_interval_ns, double pedestal_adc,
-                   double noise_sigma_adc, double t_scan_min_ns = -50.0,
-                   double t_scan_max_ns = 150.0, double t_scan_step_ns = 1.0);
+  PulseFitter(const PulseShape& shape, double t0_offset_ns,
+              double sampling_interval_ns, double pedestal_adc,
+              double noise_sigma_adc, double t_scan_min_ns = -50.0,
+              double t_scan_max_ns = 150.0, double t_scan_step_ns = 1.0);
 
   /**
    * Fit the pulse to the given ADC sample vector.
@@ -74,6 +74,14 @@ class StripPulseFitter {
    * short).
    */
   FitResult fit(const std::vector<short>& samples) const;
+
+  /**
+   * Amplitude only fit with the hit time T known, e.g. from another detector.
+   *
+   * @param samples  ADC values (one per sample).
+   * @param T        Hit time in the same frame as t0_offset [ns].
+   */
+  FitResult fitFixed(const std::vector<short>& samples, double T) const;
 
  private:
   /// Evaluate χ²(T) and the corresponding best-fit amplitude.
@@ -90,4 +98,4 @@ class StripPulseFitter {
   double t_scan_step_ns_;
 };
 
-}  // namespace tracking::digitization
+}  // namespace ldmx

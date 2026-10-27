@@ -46,6 +46,7 @@ void EcalDigiProducer::configure(framework::config::Parameters& ps) {
   readout_threshold_ = ps.get<double>("avg_readout_threshold");
   pedestal_ = ps.get<double>("avg_pedestal");
   noise_rms_ = ps.get<double>("avg_noise_rms");
+  time_phase_width_ = ps.get<double>("time_phase_width", 0.);
 }
 
 void EcalDigiProducer::onNewRun(const ldmx::RunHeader&) {
@@ -101,6 +102,13 @@ void EcalDigiProducer::produce(framework::Event& event) {
   std::endl;
    */
 
+  // event time relative to the clock, random for asynchronous triggers
+  double phase{0.};
+  if (time_phase_width_ > 0.) {
+    phase = std::uniform_real_distribution<double>(0., time_phase_width_)(rng_);
+    event.getEventHeader().setFloatParameter("ecal_digi_phase", phase);
+  }
+
   for (auto const& sim_hit : ecal_sim_hits) {
     std::vector<std::pair<double, double>> pulses_at_chip;
     for (int i_contrib = 0; i_contrib < sim_hit.getNumberOfContribs();
@@ -119,7 +127,7 @@ void EcalDigiProducer::produce(framework::Event& event) {
           sim_hit.getContrib(i_contrib).time_  // global time (t=0ns at target)
               - sim_hit.getPosition().at(2) /
                     299.702547  // shift light-speed particle traveling along z_
-      );
+              + phase);
     }
 
     unsigned int hit_id = sim_hit.getID();

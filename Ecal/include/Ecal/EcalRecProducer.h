@@ -12,7 +12,11 @@
 //----------//
 //   LDMX   //
 //----------//
+#include <memory>
+#include <random>
+
 #include "Framework/EventProcessor.h"
+#include "Tools/PulseShape.h"
 
 namespace ecal {
 
@@ -38,7 +42,7 @@ class EcalRecProducer : public framework::Producer {
   /**
    * Grabs configure parameters from the python config file.
    */
-  virtual void configure(framework::config::Parameters&);
+  void configure(framework::config::Parameters&) override;
 
   /**
    * Produce EcalHits and put them into the event bus using the
@@ -48,7 +52,10 @@ class EcalRecProducer : public framework::Producer {
    * and reconstructs their energy using knowledge of how
    * the chip operates and the position using EcalGeometry.
    */
-  virtual void produce(framework::Event& event);
+  void produce(framework::Event& event) override;
+
+  /// Seed the phase smearing
+  void onNewRun(const ldmx::RunHeader&) override;
 
  private:
   /** Digi Collection Name to use as input */
@@ -94,6 +101,29 @@ class EcalRecProducer : public framework::Producer {
    * of a calibration number.
    */
   double second_order_energy_correction_;
+
+  /// ADC mode amplitude: soi, max or fit
+  std::string amplitude_method_;
+
+  /// number of samples in the fit, starting one before the max, <= 0 for all
+  int fit_n_samples_;
+
+  /// HGCROC pulse template, only for amplitude_method fit
+  std::unique_ptr<ldmx::HgcrocShape> pulse_shape_;
+
+  /// fit with t0 = event phase + offset, e.g. phase from HCal TOA
+  bool fit_fixed_t0_;
+
+  /// offset [ns] between the event phase and the pulse t0
+  double fit_t0_offset_;
+
+  /// Gaussian smearing [ns] of the event phase
+  double phase_resolution_;
+
+  /// event header float parameter holding the event phase [ns]
+  std::string phase_name_;
+
+  std::mt19937 rng_;
 };
 }  // namespace ecal
 

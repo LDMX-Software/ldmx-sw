@@ -6,7 +6,7 @@
 #include <string>
 
 #include "Framework/EventProcessor.h"
-#include "Tracking/Digitization/PulseShape.h"
+#include "Tools/PulseShape.h"
 #include "Tracking/Reco/TrackerDaqMap.h"
 
 namespace tracking::reco {
@@ -62,7 +62,7 @@ class SiStripWaveformFitProcessor : public framework::Producer {
   TrackerDaqMap daq_map_;
 
   /// Pulse shape shared by every per-channel fitter (built in onProcessStart).
-  std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
+  std::unique_ptr<ldmx::PulseShape> pulse_shape_;
 
   // Diagnostics accumulated over the job.
   long n_waveforms_{0};      ///< waveforms seen

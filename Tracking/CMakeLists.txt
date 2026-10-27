@@ -26,10 +26,8 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS
 # Add individual Digitization sources.
 list(APPEND SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/ChargeCarrier.cxx
-  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/PulseShape.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/SiStripDigitizer.cxx
   ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/StripClusterer.cxx
-  ${PROJECT_SOURCE_DIR}/src/Tracking/Digitization/StripPulseFitter.cxx
 )
 
 setup_library(module Tracking
@@ -42,6 +40,7 @@ setup_library(module Tracking
                            Ecal::Event
                            TrigScint::Event
                            DetDescr::DetDescr
+                           Tools::Tools
               sources ${SRC_FILES})
 
 setup_python(package_name LDMX/Tracking)
