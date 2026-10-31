@@ -40,6 +40,50 @@ class FragmentBuffer {
     return m_event_reference_time_;
   }
 
+  bool empty() const {
+    std::lock_guard<std::mutex> lock(m_mutex_);
+    return m_fragments_.empty();
+  }
+
+  /// whether the window around the reference time has enough subsystems
+  bool isReferenceWindowComplete(long long coherence_window_ns,
+                                 int min_subsystems) const {
+    std::lock_guard<std::mutex> lock(m_mutex_);
+    std::set<uint64_t> subsystems_found;
+    for (auto it = m_fragments_.lower_bound(m_event_reference_time_ -
+                                            coherence_window_ns);
+         it != m_fragments_.upper_bound(m_event_reference_time_ +
+                                        coherence_window_ns);
+         ++it) {
+      for (const auto& frag : it->second) {
+        subsystems_found.insert(frag.header_.subsystem_id_);
+      }
+    }
+    return subsystems_found.size() >= static_cast<std::size_t>(min_subsystems);
+  }
+
+  /**
+   * Drop the fragments in the window around the reference time, for a
+   * window that can not be completed any more, and move the reference
+   * time to the oldest remaining fragment.
+   *
+   * @return number of fragments dropped
+   */
+  std::size_t dropReferenceWindow(long long coherence_window_ns) {
+    std::lock_guard<std::mutex> lock(m_mutex_);
+    auto it_begin =
+        m_fragments_.lower_bound(m_event_reference_time_ - coherence_window_ns);
+    auto it_end =
+        m_fragments_.upper_bound(m_event_reference_time_ + coherence_window_ns);
+    std::size_t n_dropped{0};
+    for (auto it = it_begin; it != it_end; ++it) n_dropped += it->second.size();
+    m_fragments_.erase(it_begin, it_end);
+    if (!m_fragments_.empty()) {
+      m_event_reference_time_ = m_fragments_.begin()->first;
+    }
+    return n_dropped;
+  }
+
   bool tryBuildEvent(long long coherence_window_ns, int min_subsystems,
                      std::vector<DataFragment>& built_fragments) {
     std::lock_guard<std::mutex> lock(m_mutex_);

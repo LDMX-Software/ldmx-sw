@@ -232,17 +232,25 @@ void EventBuilder::produce(framework::Event& event) {
                       << " ts=" << fragment.header_.timestamp_
                       << " bytes=" << fragment.payload_.size();
 
-    // Check if this fragment is outside the coherence window of the current
-    // event batch If so, it means we should finalize the previous event before
-    // adding this one
     long long fragment_ts = fragment.header_.timestamp_;
-    long long buffer_ref_time = m_event_buffer_.getReferenceTime();
 
-    if (buffer_ref_time > 0 &&
-        (fragment_ts < buffer_ref_time - m_coherence_window_ns_ ||
-         fragment_ts > buffer_ref_time + m_coherence_window_ns_)) {
-      // This fragment is outside the current window - try to build the previous
-      // event
+    // A fragment older than the current window belongs to an event that was
+    // already built or dropped, keeping it would stall the buffer
+    if (!m_event_buffer_.empty() &&
+        fragment_ts <
+            m_event_buffer_.getReferenceTime() - m_coherence_window_ns_) {
+      m_n_late_fragments_++;
+      ldmx_log(debug) << "dropping late fragment subsys="
+                      << fragment.header_.subsystem_id_ << " ts=" << fragment_ts
+                      << ", window at " << m_event_buffer_.getReferenceTime();
+      continue;
+    }
+
+    // A fragment after the current window closes it: build the previous event,
+    // or drop the window if it can not be completed any more
+    while (!m_event_buffer_.empty() &&
+           fragment_ts >
+               m_event_buffer_.getReferenceTime() + m_coherence_window_ns_) {
       std::vector<DataFragment> assembled_event_fragments;
       if (m_event_buffer_.tryBuildEvent(m_coherence_window_ns_,
                                         m_min_subsystems_,
@@ -373,6 +381,11 @@ void EventBuilder::produce(framework::Event& event) {
         m_event_buffer_.addFragment(std::move(fragment));
         return;  // Return the event to framework
       }
+      std::size_t n_dropped{
+          m_event_buffer_.dropReferenceWindow(m_coherence_window_ns_)};
+      m_n_dropped_fragments_ += n_dropped;
+      ldmx_log(debug) << "dropping " << n_dropped
+                      << " fragments of an incomplete window";
     }
 
     // Add fragment to buffer (may start a new event batch if buffer was empty)
@@ -385,6 +398,14 @@ void EventBuilder::produce(framework::Event& event) {
   // Reached EOF - flush any remaining events in the buffer
   if (m_verbose_parse_)
     ldmx_log(debug) << "reached EOF, flushing remaining events";
+
+  // incomplete windows would hide the complete ones after them
+  while (!m_event_buffer_.empty() &&
+         !m_event_buffer_.isReferenceWindowComplete(m_coherence_window_ns_,
+                                                    m_min_subsystems_)) {
+    m_n_dropped_fragments_ +=
+        m_event_buffer_.dropReferenceWindow(m_coherence_window_ns_);
+  }
 
   std::vector<DataFragment> assembled_event_fragments;
   while (m_event_buffer_.tryBuildEvent(
@@ -523,6 +544,8 @@ void EventBuilder::produce(framework::Event& event) {
 
   ldmx_log(info) << "\n===== FINAL STATISTICS =====";
   ldmx_log(info) << "Total events built: " << m_total_events_built_;
+  ldmx_log(info) << "Fragments dropped: " << m_n_late_fragments_ << " late, "
+                 << m_n_dropped_fragments_ << " in incomplete windows";
   ldmx_log(info) << "Total bytes read: "
                  << m_total_bytes_read_ / (1024.0 * 1024.0) << " MB";
   ldmx_log(info) << "Total time: " << total_time_s.count() << " seconds";

@@ -53,6 +53,10 @@ class EventBuilder : public framework::Producer {
   std::chrono::steady_clock::time_point m_event_start_time_;
   uint64_t m_total_bytes_read_{0};
   uint64_t m_total_events_built_{0};
+  /// fragments older than the current window, dropped
+  uint64_t m_n_late_fragments_{0};
+  /// fragments of windows that could not be completed, dropped
+  uint64_t m_n_dropped_fragments_{0};
   unsigned long m_events_since_last_report_{0};
 
   // Windowed metrics for real-time monitoring (DAQ use)
