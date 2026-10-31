@@ -44,20 +44,23 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   virtual void releaseConditionsObject(const framework::ConditionsObject* co) {}
 
   virtual void onNewRun(ldmx::RunHeader& rh) {
+    // the configured detector wins (real data RunHeaders carry no detector)
+    const std::string rh_det = rh.getDetectorName();
     if (detector_geometry_.empty())
-      detector_geometry_ = rh.getDetectorName();
-    else if (ecal_geometry_ != nullptr &&
-             detector_geometry_ != rh.getDetectorName()) {
+      detector_geometry_ = rh_det;
+    else if (ecal_geometry_ != nullptr && !rh_det.empty() &&
+             detector_geometry_ != rh_det) {
       EXCEPTION_RAISE(
           "GeometryException",
           "Attempting to run a single job with multiple geometries " +
-              detector_geometry_ + " and '" + rh.getDetectorName() + "'");
+              detector_geometry_ + " and '" + rh_det + "'");
     }
     // make sure detector name has been set
     if (detector_geometry_.empty())
       EXCEPTION_RAISE("GeometryException",
                       "EcalGeometryProvider unable to get the name of the "
-                      "detector from the RunHeader.");
+                      "detector from the RunHeader; set the 'detector' "
+                      "parameter.");
   }
 
  private:
@@ -77,6 +80,8 @@ EcalGeometryProvider::EcalGeometryProvider(
           process} {
   geometries_ =
       parameters.get<std::vector<framework::config::Parameters>>("geometries");
+  // optional explicit detector name (real data), empty: use the RunHeader
+  detector_geometry_ = parameters.get<std::string>("detector", "");
   ecal_geometry_ = 0;
 }
 
