@@ -1,6 +1,8 @@
 #include "Packing/LDMXRoRHeader.h"
 
 #include <cassert>
+#include <map>
+#include <utility>
 
 namespace packing {
 
@@ -47,6 +49,12 @@ std::string LDMXRoRHeader::getSubsystemName(uint8_t subsystem_id,
     // Found a match
     return name;
   }
+
+  // IDs that changed between test beams, the maps above hold the ESA25 ones
+  static const std::map<std::pair<int, int>, std::string> other_ids = {
+      {{7, 20}, "hcal"}};  // ESA26 HCal backplane
+  auto other_it{other_ids.find({subsystem_id, contributor_id})};
+  if (other_it != other_ids.end()) return other_it->second;
 
   // No match found, return generic name
   return "subsystem" + std::to_string(subsystem_id) + "c" +

@@ -50,11 +50,10 @@ ecal_l3_decoder = ECONDDecoder(
 ecal_l2_dqm = ECONDDigiDQM(digi_name="EcalL2Digis", instance_name="ecal_l2_dqm")
 ecal_l3_dqm = ECONDDigiDQM(digi_name="EcalL3Digis", instance_name="ecal_l3_dqm")
 
-# HCal: ROCs 0, 2, 3 (6 eRx). At ESA26 it is subsystem 7 (5 at ESA25), which
-# has no name yet, so the EventBuilder names it subsystem7c20
+# HCal (subsystem 7 at ESA26, 5 at ESA25): ROCs 0, 2, 3 (6 eRx)
 hcal_decoder = ECONDDecoder(
     instance_name="hcal_decoder",
-    raw_data_name="subsystem7c20",
+    raw_data_name="hcal",
     digi_output_name="HcalDigis",
     is_ecal=False,
     n_links=6,
