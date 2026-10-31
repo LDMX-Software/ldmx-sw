@@ -8,8 +8,9 @@ using packing::utility::Hex;
 
 namespace packing {
 
-MultiSampleECONDEventPacket::MultiSampleECONDEventPacket(int n_links)
-    : n_links_{n_links} {}
+MultiSampleECONDEventPacket::MultiSampleECONDEventPacket(int n_links,
+                                                         int select_econd_id)
+    : n_links_{n_links}, select_econd_id_{select_econd_id} {}
 
 const ECONDEventPacket& MultiSampleECONDEventPacket::soi() const {
   return samples_.at(i_soi_);
@@ -42,9 +43,10 @@ std::size_t MultiSampleECONDEventPacket::resync(std::span<const uint32_t> frame,
 void MultiSampleECONDEventPacket::from(std::span<const uint32_t> frame) {
   corruption_.fill(false);
   i_soi_ = 0;
-  econd_id_ = -1;
+  econd_id_ = select_econd_id_;
   trailer_n_samples_ = -1;
   n_skipped_words_ = 0;
+  n_other_samples_ = 0;
   headers_.clear();
   samples_.clear();
 
@@ -60,6 +62,14 @@ void MultiSampleECONDEventPacket::from(std::span<const uint32_t> frame) {
                       << " (frame.size() = " << frame.size() << ")";
       offset++;
       break;
+    }
+
+    // merged frame: skip the samples of the other ECONDs by their length
+    if (select_econd_id_ >= 0 and DAQSampleHeader::isValid(frame[offset]) and
+        header.econd_id_ != static_cast<uint32_t>(select_econd_id_)) {
+      n_other_samples_++;
+      offset += 1 + header.econd_len_;
+      continue;
     }
 
     bool valid =
@@ -117,9 +127,12 @@ void MultiSampleECONDEventPacket::from(std::span<const uint32_t> frame) {
 
   if (trailer_n_samples_ < 0) {
     corruption_[NO_TRAILER] = true;
-  } else if (static_cast<std::size_t>(trailer_n_samples_) != samples_.size()) {
+  } else if (static_cast<std::size_t>(trailer_n_samples_) !=
+             samples_.size() + n_other_samples_) {
+    // the trailer of a merged frame counts the samples of all ECONDs
     ldmx_log(debug) << "trailer says " << trailer_n_samples_
-                    << " samples but found " << samples_.size();
+                    << " samples but found " << samples_.size() << " + "
+                    << n_other_samples_ << " from other ECONDs";
     corruption_[TRAILER_COUNT_MISMATCH] = true;
   }
 

@@ -74,6 +74,8 @@ class ECONDDecoder : public framework::Producer {
   int n_links_{2};
   /// optical fiber index used in the electronics ID
   int fiber_{0};
+  /// ECON-D ID to decode from a merged frame (-1: the first one)
+  int econd_id_{-1};
   /// translate electronics IDs into detector IDs
   bool translate_eid_{false};
   /// ROC version for the digi collection

@@ -54,7 +54,8 @@ void ECONDDecoder::configure(framework::config::Parameters& ps) {
   fiber_ = ps.get<int>("fiber");
   translate_eid_ = ps.get<bool>("translate_eid");
   roc_version_ = ps.get<int>("roc_version");
-  packet_ = std::make_unique<MultiSampleECONDEventPacket>(n_links_);
+  econd_id_ = ps.get<int>("econd_id");
+  packet_ = std::make_unique<MultiSampleECONDEventPacket>(n_links_, econd_id_);
 }
 
 unsigned int ECONDDecoder::channelID(int i_link, int i_ch) const {
