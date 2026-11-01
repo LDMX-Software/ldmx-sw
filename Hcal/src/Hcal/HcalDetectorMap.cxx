@@ -1,5 +1,6 @@
 #include "Hcal/HcalDetectorMap.h"
 
+#include <algorithm>
 #include <sstream>
 
 #include "Conditions/GeneralCSVLoader.h"
@@ -52,6 +53,22 @@ HcalDetectorMap::HcalDetectorMap(const std::string& connections_table,
   this->clear();
   conditions::StreamCSVLoader csv(connections_table);
   while (csv.nextRow()) {
+    // explicit table (e.g. ESA26): elink and detector ID fields given directly
+    const auto& cols{csv.columnNames()};
+    if (std::find(cols.begin(), cols.end(), "Section") != cols.end()) {
+      ldmx::HcalElectronicsID eid(csv.getInteger("Polarfire"),
+                                  csv.getInteger("Elink"),
+                                  csv.getInteger("Channel"));
+      ldmx::HcalDigiID did(csv.getInteger("Section"), csv.getInteger("Layer"),
+                           csv.getInteger("Strip"), csv.getInteger("End"));
+      if (this->exists(eid)) {
+        std::stringstream ss;
+        ss << "Two different mappings for electronics channel " << eid;
+        EXCEPTION_RAISE("DuplicateMapping", ss.str());
+      }
+      this->addEntry(eid, did);
+      continue;
+    }
     /** Column Names
      * "Polarfire" "HGCROC" "Channel" "CMB" "Quadbar" "Bar" "Plane" "Cable"
      *
