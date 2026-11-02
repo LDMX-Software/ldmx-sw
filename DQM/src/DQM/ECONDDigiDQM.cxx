@@ -75,9 +75,10 @@ void ECONDDigiDQM::analyze(const framework::Event& event) {
   for (unsigned int i_digi{0}; i_digi < digis.getNumDigis(); i_digi++) {
     auto digi{digis.getDigi(i_digi)};
     for (unsigned int i_sample{0}; i_sample < digi.size(); i_sample++) {
-      uint32_t w = digi.at(i_sample).raw();
-      bool tc = (w >> 31) & 1;
-      bool tp = (w >> 30) & 1;
+      const auto& sample{digi.at(i_sample)};
+      uint32_t w = sample.raw();
+      bool tc = sample.isTOTComplete();
+      bool tp = sample.isTOTinProgress();
       histograms_.fill("flags", 2 * tc + tp);
       histograms_.fill("toa", w & 0x3ff);
       if (tc) {
@@ -88,7 +89,7 @@ void ECONDDigiDQM::analyze(const framework::Event& event) {
       }
     }
     uint32_t soi = digi.soi().raw();
-    if (((soi >> 31) & 1) == 0) {
+    if (!digi.soi().isTOTComplete()) {
       histograms_.fill("soi_adc_by_channel", i_digi, (soi >> 10) & 0x3ff);
     }
   }
