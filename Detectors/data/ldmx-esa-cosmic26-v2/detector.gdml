@@ -6,6 +6,7 @@
 <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
   <!--
 Entry point in the STEP coordinate frame (mm): X/Y horizontal, +Z up.
+v2: HCal and ECal from CosmicTestStandScienceOnly.stp (2026-11-02); target, trigger and recoil as in v1 (sensors within 1 mm of the CAD).
 CAD supports are visualization context only, so this transport geometry contains no unassigned CAD material.
 Alignment, envelopes and HCal readout reconstruction still need review.
 -->
@@ -74,31 +75,32 @@ Alignment, envelopes and HCal readout reconstruction still need review.
         <position name="recoil_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3206.8880545"/>
         <rotation name="recoil_rot" unit="deg" x="180" y="0" z="0"/>
       </physvol>
+      <!--ECal origin at the support box center, box registered to the CAD box (rails, sheets). The rotation about y sends the ECal +z down and its +x to CAD -x, which puts the box panels and the 22.6 mm box-to-layer offset where the CAD has them.-->
       <physvol name="native_ecal" copynumber="6">
         <file name="ecal.gdml"/>
-        <position name="ecal_pos" unit="mm" x="4978.55243868" y="-128.723940966" z="2352.03243963"/>
-        <rotation name="ecal_rot" unit="deg" x="180" y="0" z="0"/>
+        <position name="ecal_pos" unit="mm" x="4999.132" y="-104.346" z="2537.497"/>
+        <rotation name="ecal_rot" unit="deg" x="0" y="180" z="0"/>
       </physvol>
-      <!--Three independent HCal station volumes keep each bar at geometry depth 2. Section IDs: top=1, above ECal=0, below ECal=2, described by HcalReadoutGeometry.make_cosmic26_v1.-->
+      <!--Three independent HCal station volumes keep each bar at geometry depth 2. Section IDs: top=1, above ECal=0, below ECal=2, described by HcalReadoutGeometry.make_cosmic26_v2. The top station holds the short pair (layers 1, 2) above the long pair (layers 3, 4).-->
       <physvol name="hcal_top" copynumber="11">
         <file name="hcal_top.gdml"/>
-        <position name="hcal_top_pos" unit="mm" x="5000.00595703" y="-108.422841688" z="3747.27520142"/>
+        <position name="hcal_top_pos" unit="mm" x="5005.2875" y="-104.8665" z="3768.789215"/>
       </physvol>
       <physvol name="hcal_above_ecal" copynumber="10">
         <file name="hcal_above_ecal.gdml"/>
-        <position name="hcal_above_ecal_pos" unit="mm" x="5006.55461069" y="-84.571585909" z="2758.49584962"/>
+        <position name="hcal_above_ecal_pos" unit="mm" x="5004.5975" y="-104.5145" z="2790.268634"/>
       </physvol>
       <physvol name="hcal_below_ecal" copynumber="12">
         <file name="hcal_below_ecal.gdml"/>
-        <position name="hcal_below_ecal_pos" unit="mm" x="5004.76652231" y="-109.673940913" z="2256.46764755"/>
+        <position name="hcal_below_ecal_pos" unit="mm" x="5005.2875" y="-104.8665" z="2257.356513"/>
       </physvol>
     </volume>
   </structure>
   <userinfo>
-    <auxiliary auxtype="DetectorVersion" auxvalue="1">
-      <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa-cosmic26-v1"/>
-      <auxiliary auxtype="Author" auxvalue="Emrys Peets, Wilde Hedin"/>
-      <auxiliary auxtype="Description" auxvalue="CAD-registered ESA geometry with segmented cosmic HCal; candidate alignment"/>
+    <auxiliary auxtype="DetectorVersion" auxvalue="2">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa-cosmic26-v2"/>
+      <auxiliary auxtype="Author" auxvalue="Emrys Peets, Wilde Hedin, Tamas Almos Vami"/>
+      <auxiliary auxtype="Description" auxvalue="ESA cosmic stand registered to CosmicTestStandScienceOnly.stp (2026-11-02): short top HCal pair, moved above-ECal station, ECal box on the CAD box"/>
     </auxiliary>
     <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
       <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>

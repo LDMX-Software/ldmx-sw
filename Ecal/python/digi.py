@@ -496,7 +496,7 @@ class EcalRecProducer(Processor):
 
     @staticmethod
     def esa_cosmic_stand(**kwargs):
-        """ESA 2026 cosmic stand (ldmx-esa-cosmic26-v1): ESA clock, pulse fit
+        """ESA 2026 cosmic stand (ldmx-esa-cosmic26-v2): ESA clock, pulse fit
 
         fit_t0_offset is the median of (fitted time - event phase) for
         simulated cosmic muons with 5 samples (SOI 2) and a free-time fit; the

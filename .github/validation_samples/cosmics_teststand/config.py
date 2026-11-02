@@ -19,7 +19,7 @@ cosmics = gen.HepMC(
     beam_spot_smear=[],
 )
 
-det = "ldmx-esa-cosmic26-v1"
+det = "ldmx-esa-cosmic26-v2"
 my_sim = sim.Simulator(instance_name="sim")
 my_sim.set_detector(det)
 my_sim.generators = [cosmics]

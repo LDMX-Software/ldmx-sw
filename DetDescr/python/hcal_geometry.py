@@ -550,32 +550,35 @@ class HcalReadoutGeometry:
             detectors_valid=detectors_valid,
         )
 
-    # The ESA cosmic stand: three HCal stations of crossed 2 m bars, no absorber.
+    # The ESA cosmic stand: three HCal stations of crossed bars, no absorber.
     # Sections follow the GDML copy numbers: 0 above ECal, 1 top, 2 below ECal.
-    # Layout from Detectors/data/ldmx-esa-cosmic26-v1/hcal_*.gdml, layers count
-    # from the top.
-    def make_cosmic26_v1():
+    # Layout from Detectors/data/ldmx-esa-cosmic26-v2/hcal_*.gdml, layers count
+    # from the top. The top station holds the short pair (the ESA25 quads,
+    # 1 m bars) above a long pair (2 m bars).
+    def make_cosmic26_v2():
         scint_thickness = 20.0
         scint_width = 50.0
-        scint_bar_length = 2000.0
+        long_bar, short_bar = 2000.0, 1000.0
 
-        # per section, per layer: (z, long axis, bar center, strip 0 center)
+        # per section, per layer: (z, long axis, bar center, strip 0 center, length)
         layers = [
             [
-                (2796.345850, 0, 5006.554611, -291.521590),
-                (2770.945850, 1, -84.571586, 4828.570232),
-                (2745.545850, 0, 5006.554611, -291.521590),
-                (2720.145850, 1, -84.571586, 4828.570232),
+                (2824.467242, 0, 5004.942, -279.046837, long_bar),
+                (2800.942584, 1, -104.170, 4829.467280, long_bar),
+                (2777.417926, 0, 5004.942, -279.046837, long_bar),
+                (2753.893268, 1, -104.170, 4829.467280, long_bar),
             ],
             [
-                (3758.710992, 1, -108.422842, 4728.477621),
-                (3735.339410, 0, 5000.005957, -384.774727),
+                (3802.239020, 1, -116.855174, 4730.287770, short_bar),
+                (3782.239020, 0, 5005.287770, -391.855174, short_bar),
+                (3758.710992, 1, -104.522, 4732.430963, long_bar),
+                (3735.339410, 0, 5004.943, -384.774727, long_bar),
             ],
             [
-                (2291.504269, 0, 5004.766522, -384.774724),
-                (2267.979855, 1, -109.673941, 4729.665737),
-                (2244.455441, 0, 5004.766522, -384.774724),
-                (2220.931026, 1, -109.673941, 4729.665739),
+                (2291.504269, 0, 5004.943, -379.446828, long_bar),
+                (2267.979855, 1, -104.522, 4729.665734, long_bar),
+                (2244.455441, 0, 5004.943, -379.446828, long_bar),
+                (2220.931026, 1, -104.522, 4729.665734, long_bar),
             ],
         ]
         num_bars = [8, 12, 12]
@@ -587,12 +590,12 @@ class HcalReadoutGeometry:
             num_layers=num_layers,
             scint_thickness=scint_thickness,
             scint_width=scint_width,
-            scint_length=[[scint_bar_length] * n for n in num_layers],
+            scint_length=[[ly[4] for ly in sec] for sec in layers],
             zero_layer=[0.0] * num_sections,
             zero_strip=[[0.0] * n for n in num_layers],
             layer_thickness=[0.0] * num_sections,
             num_strips=[[nb] * n for nb, n in zip(num_bars, num_layers, strict=True)],
-            half_total_width=[[scint_bar_length / 2] * n for n in num_layers],
+            half_total_width=[[ly[4] / 2 for ly in sec] for sec in layers],
             ecal_dx=0.0,
             ecal_dy=0.0,
             layer_z=[[ly[0] for ly in sec] for sec in layers],
@@ -600,7 +603,7 @@ class HcalReadoutGeometry:
             layer_bar_center=[[ly[2] for ly in sec] for sec in layers],
             layer_strip_zero=[[ly[3] for ly in sec] for sec in layers],
             double_ended=[1] * num_sections,
-            detectors_valid=["ldmx-esa-cosmic26-v1"],
+            detectors_valid=["ldmx-esa-cosmic26-v2"],
         )
 
 
@@ -619,6 +622,6 @@ class HcalGeometry:
     v2_prototype: HcalReadoutGeometry = field(
         default_factory=HcalReadoutGeometry.make_v2_prototype
     )
-    cosmic26_v1: HcalReadoutGeometry = field(
-        default_factory=HcalReadoutGeometry.make_cosmic26_v1
+    cosmic26_v2: HcalReadoutGeometry = field(
+        default_factory=HcalReadoutGeometry.make_cosmic26_v2
     )

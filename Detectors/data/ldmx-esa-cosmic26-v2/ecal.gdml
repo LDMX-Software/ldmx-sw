@@ -4,11 +4,13 @@
 Numeric ecal module compiled from ldmx-reduced-v3/ecal.gdml.
 Source comments and physical definitions live in that ESA file; scalar expressions and loops are expanded here.
 Sensitive-volume names, copy numbers and material definitions are preserved. Placement is in detector.gdml.
+cosmic26-v2: daughters shifted by (22.6, 19.05, 183.485) mm so the origin is the support box center,
+envelope shrunk from 880.7 x 600 x 600 mm to the box.
 -->
   <define>
     <position name="ecal_center" x="0" y="0" z="0" unit="mm"/>
     <rotation name="ecal_identity" x="0" y="0" z="0" unit="radian"/>
-    <position name="ecal_support_box_pos" unit="mm" x="-22.6" y="-19.05" z="-183.485"/>
+    <position name="ecal_support_box_pos" unit="mm" x="0" y="0" z="0"/>
     <rotation name="ecal_motherboard5_rotation" unit="deg" x="90" y="0" z="0"/>
     <position name="ecal_motherboard5_position_rel_to_layer" unit="mm" x="-334.3682" y="-204.10325" z="0.45"/>
     <rotation name="ecal_motherboard6_rotation" unit="deg" x="90" y="180" z="0"/>
@@ -34,7 +36,7 @@ Sensitive-volume names, copy numbers and material definitions are preserved. Pla
       <zplane rmax="85" rmin="0" z="0"/>
       <zplane rmax="85" rmin="0" z="0.2"/>
     </polyhedra>
-    <box lunit="mm" name="ECal_box" x="880.6815" y="600" z="600"/>
+    <box lunit="mm" name="ECal_box" x="462" y="462" z="234"/>
     <box lunit="mm" name="front_0_box" x="457.2" y="457.2" z="0.8"/>
     <box lunit="mm" name="front_1_box" x="457.2" y="457.2" z="0.8"/>
     <box lunit="mm" name="side_0_box" x="0.8" y="457.2" z="228.6"/>
@@ -337,92 +339,92 @@ Sensitive-volume names, copy numbers and material definitions are preserved. Pla
       </physvol>
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
-        <position name="ecal_position_24" unit="mm" x="0" y="-19.05" z="-220.632"/>
+        <position name="ecal_position_24" unit="mm" x="22.6" y="0" z="-37.147"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_volume"/>
-        <position name="ecal_position_25" x="0" y="-19.05" z="-215.916" unit="mm"/>
+        <position name="ecal_position_25" x="22.6" y="0" z="-32.431" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
-        <position name="ecal_position_26" x="0" y="-19.05" z="-214.25" unit="mm"/>
+        <position name="ecal_position_26" x="22.6" y="0" z="-30.765" unit="mm"/>
       </physvol>
       <physvol copynumber="0">
         <volumeref ref="Si_volume"/>
-        <position name="ecal_position_27" x="0" y="-19.05" z="-214.15" unit="mm"/>
+        <position name="ecal_position_27" x="22.6" y="0" z="-30.665" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
-        <position name="ecal_position_28" x="0" y="-19.05" z="-213.85" unit="mm"/>
+        <position name="ecal_position_28" x="22.6" y="0" z="-30.365" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
-        <position name="ecal_position_29" unit="mm" x="0" y="-19.05" z="-209.7"/>
+        <position name="ecal_position_29" unit="mm" x="22.6" y="0" z="-26.215"/>
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
-        <position name="ecal_position_30" x="4.81586402266289" y="-19.05" z="-208.1" unit="mm"/>
+        <position name="ecal_position_30" x="27.415864" y="0" z="-24.615" unit="mm"/>
       </physvol>
       <physvol copynumber="7">
         <volumeref ref="Si_volume"/>
-        <position name="ecal_position_31" x="4.81586402266289" y="-19.05" z="-207.9" unit="mm"/>
+        <position name="ecal_position_31" x="27.415864" y="0" z="-24.415" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
-        <position name="ecal_position_32" x="4.81586402266289" y="-19.05" z="-207.6" unit="mm"/>
+        <position name="ecal_position_32" x="27.415864" y="0" z="-24.115" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_volume"/>
-        <position name="ecal_position_33" x="4.81586402266289" y="-19.05" z="-207.5" unit="mm"/>
+        <position name="ecal_position_33" x="27.415864" y="0" z="-24.015" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
-        <position name="ecal_position_34" unit="mm" x="0" y="-19.05" z="-200.618"/>
+        <position name="ecal_position_34" unit="mm" x="22.6" y="0" z="-17.133"/>
         <rotationref ref="ecal_flip"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
-        <position name="ecal_position_35" unit="mm" x="0" y="-19.05" z="-169.812"/>
+        <position name="ecal_position_35" unit="mm" x="22.6" y="0" z="13.673"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_volume"/>
-        <position name="ecal_position_36" x="0" y="-19.05" z="-165.096" unit="mm"/>
+        <position name="ecal_position_36" x="22.6" y="0" z="18.389" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
-        <position name="ecal_position_37" x="0" y="-19.05" z="-163.43" unit="mm"/>
+        <position name="ecal_position_37" x="22.6" y="0" z="20.055" unit="mm"/>
       </physvol>
       <physvol copynumber="14">
         <volumeref ref="Si_volume"/>
-        <position name="ecal_position_38" x="0" y="-19.05" z="-163.33" unit="mm"/>
+        <position name="ecal_position_38" x="22.6" y="0" z="20.155" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
-        <position name="ecal_position_39" x="0" y="-19.05" z="-163.03" unit="mm"/>
+        <position name="ecal_position_39" x="22.6" y="0" z="20.455" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="C_volume_CarbonCoolingPlane"/>
-        <position name="ecal_position_40" unit="mm" x="0" y="-19.05" z="-158.88"/>
+        <position name="ecal_position_40" unit="mm" x="22.6" y="0" z="24.605"/>
       </physvol>
       <physvol>
         <volumeref ref="GlueThick_volume"/>
-        <position name="ecal_position_41" x="4.81586402266289" y="-19.05" z="-157.28" unit="mm"/>
+        <position name="ecal_position_41" x="27.415864" y="0" z="26.205" unit="mm"/>
       </physvol>
       <physvol copynumber="21">
         <volumeref ref="Si_volume"/>
-        <position name="ecal_position_42" x="4.81586402266289" y="-19.05" z="-157.08" unit="mm"/>
+        <position name="ecal_position_42" x="27.415864" y="0" z="26.405" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="Glue_volume"/>
-        <position name="ecal_position_43" x="4.81586402266289" y="-19.05" z="-156.78" unit="mm"/>
+        <position name="ecal_position_43" x="27.415864" y="0" z="26.705" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_volume"/>
-        <position name="ecal_position_44" x="4.81586402266289" y="-19.05" z="-156.68" unit="mm"/>
+        <position name="ecal_position_44" x="27.415864" y="0" z="26.805" unit="mm"/>
       </physvol>
       <physvol>
         <volumeref ref="PCB_motherboard_volume"/>
-        <position name="ecal_position_45" unit="mm" x="4.81586402266289" y="-19.05" z="-150.298"/>
+        <position name="ecal_position_45" unit="mm" x="27.415864" y="0" z="33.187"/>
         <rotationref ref="ecal_flip"/>
       </physvol>
       <auxiliary auxtype="VisAttributes" auxvalue="InvisibleShowDau"/>
