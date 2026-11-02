@@ -59,7 +59,7 @@ class TrackingSequence:
     Individual processors are also accessible as attributes, e.g.
     ``trk.digi_recoil``, ``trk.seeder_tagger``, ``trk.gsf_recoil``.
     Charge-digitization processors (``fit_tagger``, ``cluster_recoil``, etc.)
-    are only present when ``use_truth_smearing=False``.
+    are only present when ``use_truth_smearing=False`` (the default).
     """
 
     def __init__(self, sequence, dqm_sequence, **processors):
@@ -112,7 +112,7 @@ class TrackingSequence:
 
 
 def full_tracking_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
     use_target_constraint=True,
@@ -122,8 +122,8 @@ def full_tracking_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True (default), use simple Gaussian smearing (Mode 0).
-        If False, use full charge digitization (Mode 1).
+        If True, use simple Gaussian smearing (Mode 0).
+        If False (default), use full charge digitization (Mode 1).
     detector : str
         Detector geometry tag.
     tag : str
@@ -573,7 +573,7 @@ def full_tracking_sequence(
 
 
 def recoil_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
 ):
@@ -587,8 +587,8 @@ def recoil_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True (default), use simple Gaussian smearing.
-        If False, use full charge digitization.
+        If True, use simple Gaussian smearing.
+        If False (default), use full charge digitization.
     detector : str
         Detector geometry tag.
     tag : str
@@ -635,7 +635,7 @@ def recoil_sequence(
 
 
 def tagger_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
 ):
@@ -648,8 +648,8 @@ def tagger_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True (default), use simple Gaussian smearing.
-        If False, use full charge digitization.
+        If True, use simple Gaussian smearing.
+        If False (default), use full charge digitization.
     detector : str
         Detector geometry tag.
     tag : str
