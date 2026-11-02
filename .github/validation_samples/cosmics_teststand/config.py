@@ -45,6 +45,7 @@ import LDMX.Hcal.hcal_geometry
 import LDMX.Hcal.hcal_hardcoded_conditions
 from LDMX.DQM import dqm
 
+
 # ESA bunch clock (185.7 MHz / 5), asynchronous trigger,
 # physical e-h yield (300 um MIP is 3.6 fC)
 esa_clock = 5 / 0.1857
