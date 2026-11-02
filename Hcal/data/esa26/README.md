@@ -29,6 +29,17 @@ the top):
 top pair that is not in the geometry, 24 are the unconnected every-ninth
 channels.
 
+Strip order corrected with cosmic tracks (run 227, zero suppression, 4.8 h):
+in the stations above and below the ECal one end of each bar had its strip
+order reversed within each group of 4 bars, so the two ends landed on
+mirrored bars. Tracks anchored in the top station (where the ends agree)
+vote for the end on the straight line: the reversed end is end 0 on planes
+5, 9 and 11 (cables J4, J1-J3, J5-J7) and end 1 on plane 7 (J16). After the
+correction the two ends agree in all but 3 of about 4000 two-end hits.
+Planes 6 and 8 (above the ECal, bars along y, half read) show the same
+mirror, but too few tracks pass both their bars and the top station's bars
+along y to tell which end; they are unchanged.
+
 **Provisional:** the drawings fix left/right only relative to the front.
 Front is taken at -y (right at +x). If the front is at +y, the strip order
 and the two ends flip in every layer.
