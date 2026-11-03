@@ -169,6 +169,8 @@ p.logger.custom("GenieElectroNuclearProcess", level=-1)
 # digi, seeds, CKF, ambiguity resolution, GSF, DQM
 tagger_tracking = [
     full_tracking_sequence.digi_tagger,
+    full_tracking_sequence.fit_tagger,
+    full_tracking_sequence.cluster_tagger,
     full_tracking_sequence.seeder_tagger,
     full_tracking_sequence.tracking_tagger,
     full_tracking_sequence.greedy_solver_tagger,
@@ -177,6 +179,8 @@ tagger_tracking = [
 
 recoil_tracking = [
     full_tracking_sequence.digi_recoil,
+    full_tracking_sequence.fit_recoil,
+    full_tracking_sequence.cluster_recoil,
     full_tracking_sequence.truth_tracking,
     full_tracking_sequence.seeder_recoil,
     full_tracking_sequence.tracking_recoil,
