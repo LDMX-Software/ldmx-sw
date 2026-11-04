@@ -14,10 +14,10 @@ Sources:
   ROC half each): eRx 0-5 = ROC3 upper, ROC3 lower, ROC0 upper, ROC0 lower,
   ROC2 lower, ROC2 upper.
 
-Placement (sections and layers as in the cosmic26_v1 geometry, layers from
+Placement (sections and layers as in the cosmic26_v2 geometry, layers from
 the top):
-- Planes 1-4: top station (section 1). Planes 1, 2 are the short top pair,
-  not in the GDML, so not mapped; planes 3, 4 are layers 1, 2.
+- Planes 1-4: top station (section 1), layers 1-4. Planes 1, 2 are the short
+  pair (the ESA25 quads, 1 m bars), planes 3, 4 the long pair.
 - Planes 5-8: above the ECal (section 0), layers 1-4.
 - Planes 9-12: below the ECal (section 2), layers 1-4. ROC1 (planes 10, 12)
   is not installed.
@@ -25,9 +25,8 @@ the top):
   ROC3) along x. With plane numbers increasing downwards this matches the
   alternation of all three stations in the GDML.
 
-144 of 216 channels are mapped: 64 belong to uninstalled cables, 48 to the
-top pair that is not in the geometry, 24 are the unconnected every-ninth
-channels.
+192 of 216 channels are mapped: 64 belong to uninstalled cables, 24 are the
+unconnected every-ninth channels.
 
 Strip order corrected with cosmic tracks (run 227, zero suppression, 4.8 h):
 in the stations above and below the ECal one end of each bar had its strip

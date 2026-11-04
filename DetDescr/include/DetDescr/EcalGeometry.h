@@ -547,6 +547,9 @@ class EcalGeometry : public framework::ConditionsObject {
   /// ECal y axis points along world -y, e.g. rotated about x by 180 deg
   bool flip_y_;
 
+  /// ECal x axis points along world -x, e.g. rotated about y by 180 deg
+  bool flip_x_;
+
   /**
    * Thickness of the Si sensitive layer [mm]
    *
