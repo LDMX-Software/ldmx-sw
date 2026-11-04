@@ -13,6 +13,15 @@ namespace packing {
 
 namespace {
 
+/**
+ * HGCROC words carry Tc in bit 31 and Tp in bit 30, HgcrocDigiCollection reads
+ * bit 31 as TOT in progress and bit 30 as TOT complete: swap the two flags
+ */
+uint32_t toDigiWord(uint32_t hgcroc_word) {
+  const uint32_t tc{(hgcroc_word >> 31) & 1u}, tp{(hgcroc_word >> 30) & 1u};
+  return (hgcroc_word & 0x3FFFFFFFu) | (tp << 31) | (tc << 30);
+}
+
 const std::array<const char*, MultiSampleECONDEventPacket::N_CORRUPTION>
     FRAME_FLAG_NAMES = {"resync (missing capture header)",
                         "lost sync",
@@ -54,7 +63,8 @@ void ECONDDecoder::configure(framework::config::Parameters& ps) {
   fiber_ = ps.get<int>("fiber");
   translate_eid_ = ps.get<bool>("translate_eid");
   roc_version_ = ps.get<int>("roc_version");
-  packet_ = std::make_unique<MultiSampleECONDEventPacket>(n_links_);
+  econd_id_ = ps.get<int>("econd_id");
+  packet_ = std::make_unique<MultiSampleECONDEventPacket>(n_links_, econd_id_);
 }
 
 unsigned int ECONDDecoder::channelID(int i_link, int i_ch) const {
@@ -164,7 +174,7 @@ void ECONDDecoder::produce(framework::Event& event) {
       for (int i_ch{0}; i_ch < 36; i_ch++) {
         for (std::size_t i_sample{0}; i_sample < n_samples; i_sample++) {
           digi[i_sample] =
-              pkt.samples_[i_sample].links_[i_link].channels_[i_ch];
+              toDigiWord(pkt.samples_[i_sample].links_[i_link].channels_[i_ch]);
         }
         unsigned int id{channelID(i_link, i_ch)};
         if (translate_eid_) {

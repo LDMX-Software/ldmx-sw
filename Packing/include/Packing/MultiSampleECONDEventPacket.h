@@ -62,13 +62,21 @@ class MultiSampleECONDEventPacket {
   int trailer_n_samples_{-1};
   /// number of words skipped while searching for capture headers
   std::size_t n_skipped_words_{0};
+  /// samples from other ECONDs skipped in a merged frame
+  std::size_t n_other_samples_{0};
   /// capture headers stored in order of transmission
   std::vector<DAQSampleHeader> headers_;
   /// samples from ECOND stored in order of transmission
   std::vector<ECONDEventPacket> samples_;
 
-  /// constructor defining how many links are connected to this ECOND
-  explicit MultiSampleECONDEventPacket(int n_links);
+  /**
+   * constructor defining how many links are connected to this ECOND
+   *
+   * @param[in] n_links number of links connected to the ECOND
+   * @param[in] select_econd_id only unpack this ECOND from a frame merging
+   * several (e.g. one ECal layer), -1 takes the ID of the first capture header
+   */
+  explicit MultiSampleECONDEventPacket(int n_links, int select_econd_id = -1);
 
   /// get the sample of interest
   const ECONDEventPacket& soi() const;
@@ -86,6 +94,8 @@ class MultiSampleECONDEventPacket {
 
   /// number of links connected to the ECOND
   int n_links_;
+  /// ECOND to unpack from a merged frame (-1 if not selecting)
+  int select_econd_id_;
   /// handle to logging source
   enableLogging("MultiSampleECONDEventPacket");
 };

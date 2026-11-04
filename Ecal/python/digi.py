@@ -493,3 +493,21 @@ class EcalRecProducer(Processor):
             layer_weights=[2.312, 5.417, 9.837, 11.910, 11.910, 11.910],
             **kwargs,
         )
+
+    @staticmethod
+    def esa_cosmic_stand(**kwargs):
+        """ESA 2026 cosmic stand (ldmx-esa-cosmic26-v1): ESA clock, pulse fit
+
+        fit_t0_offset is the median of (fitted time - event phase) for
+        simulated cosmic muons with 5 samples (SOI 2) and a free-time fit; the
+        fixed-time fit (fit_fixed_t0=True) needs it to place the pulse. The
+        layer weights are not calibrated for this stack, unity is used.
+        """
+        args = {
+            "clock_cycle": 5 / 0.1857,  # ESA bunch clock, 185.7 MHz / 5
+            "amplitude_method": "fit",
+            "fit_t0_offset": -8.8,
+            "second_order_energy_correction": 1.0,
+            "layer_weights": [1.0] * 4,
+        }
+        return EcalRecProducer(**(args | kwargs))

@@ -68,7 +68,8 @@ class LDMXRoRHeader {
    * (configured into firmware) to uniquely identify the subsystem.
    * This is necessary because some subsystems share the same subsystem ID
    * but have different contributor IDs (e.g., ecal and hcal both use
-   * subsystem ID 5 but have different contributor IDs).
+   * subsystem ID 5 but have different contributor IDs at ESA25).
+   * The ESA26 HCal (subsystem 7, contributor 20) is named hcal as well.
    *
    * @param[in] subsystem_id the subsystem ID from the RoR header
    * @param[in] contributor_id the contributor ID from the RoR header

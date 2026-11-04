@@ -39,6 +39,9 @@ class ECONDDecoder(Processor):
         detector map conditions object
     roc_version : int
         HGCROC version stored in the HgcrocDigiCollection
+    econd_id : int
+        only decode this ECON-D from a frame that merges several (e.g. one
+        ECal layer of a multi-layer frame), -1 decodes the first ECON-D found
     """
 
     raw_data_name: str = None
@@ -50,6 +53,7 @@ class ECONDDecoder(Processor):
     fiber: int = 0
     translate_eid: bool = False
     roc_version: int = 3
+    econd_id: int = -1
 
     def __post_init__(self):
         if self.raw_data_name is None:
