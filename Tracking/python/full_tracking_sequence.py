@@ -59,7 +59,7 @@ class TrackingSequence:
     Individual processors are also accessible as attributes, e.g.
     ``trk.digi_recoil``, ``trk.seeder_tagger``, ``trk.gsf_recoil``.
     Charge-digitization processors (``fit_tagger``, ``cluster_recoil``, etc.)
-    are only present when ``use_truth_smearing=False``.
+    are only present when ``use_truth_smearing=False`` (the default).
     """
 
     def __init__(self, sequence, dqm_sequence, **processors):
@@ -112,7 +112,7 @@ class TrackingSequence:
 
 
 def full_tracking_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
     use_target_constraint=True,
@@ -122,8 +122,8 @@ def full_tracking_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True (default), use simple Gaussian smearing (Mode 0).
-        If False, use full charge digitization (Mode 1).
+        If True, use simple Gaussian smearing (Mode 0).
+        If False (default), use full charge digitization (Mode 1).
     detector : str
         Detector geometry tag.
     tag : str
@@ -298,13 +298,13 @@ def full_tracking_sequence(
         # Perigee upstream of all tagger sensors.
         # World boundary is at ACTS x = -650 mm.
         perigee_location=[tagger_start_x, 0.0, 0.0],
-        pmin=0.03,
-        pmax=63.0,
-        d0min=-36.9,
-        d0max=31.5,
-        z0max=54.6,
-        thetacut=0.26,
-        phicut=0.84,
+        pmin=1.968,
+        pmax=536.4,
+        d0min=-39.53,
+        d0max=28.50,
+        z0max=53.14,
+        thetacut=0.04114,
+        phicut=1.213,
     )
 
     seeder_recoil = tracking.SeedFinderProcessor(
@@ -324,13 +324,13 @@ def full_tracking_sequence(
         use_target_constraint=use_target_constraint,
         prefilter_unconstrained=use_target_constraint,
         bfield=1.5,
-        pmin=0.04,
-        pmax=819.0,
-        d0min=-40.2,
-        d0max=36.5,
-        z0max=40.5,
-        thetacut=1.5,
-        phicut=1.6,
+        pmin=0.04298,
+        pmax=680.8,
+        d0min=-41.51,
+        d0max=45.82,
+        z0max=45.14,
+        thetacut=2.145,
+        phicut=1.469,
     )
 
     # ------------------------------------------------------------------
@@ -342,8 +342,8 @@ def full_tracking_sequence(
         seed_coll_name=seeder_tagger.out_seed_collection,
         out_trk_collection=tagged("TaggerTracks"),
         measurement_collection=tagger_meas_collection,
-        min_hits=5,
-        outlier_pval_=16.5,
+        min_hits=7,
+        outlier_pval_=28.76,
     )
 
     tracking_recoil = tracking.CKFProcessor(
@@ -354,7 +354,7 @@ def full_tracking_sequence(
         measurement_collection=recoil_meas_collection,
         # >= 5 hits; 5 hit tracks get ndf from the target point
         min_hits=4 if use_target_constraint else 5,
-        outlier_pval_=22.1,
+        outlier_pval_=29.26,
         # the recoil leaves the field map (|y| < 70 mm) on ~40% of seeds
         field_zero_outside=True,
         use_target_constraint=use_target_constraint,
@@ -371,6 +371,7 @@ def full_tracking_sequence(
         out_trk_collection=tagged("TaggerTracksClean"),
         track_collection=tracking_tagger.out_trk_collection,
         meas_collection=tagger_meas_collection,
+        maximum_shared_hits=5,
     )
 
     greedy_solver_recoil = tracking.GreedyAmbiguitySolver(
@@ -380,6 +381,7 @@ def full_tracking_sequence(
         meas_collection=recoil_meas_collection,
         # same strict ">" cut as the recoil CKF
         n_measurements_min=tracking_recoil.min_hits,
+        maximum_shared_hits=4,
     )
 
     # ------------------------------------------------------------------
@@ -573,7 +575,7 @@ def full_tracking_sequence(
 
 
 def recoil_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
 ):
@@ -587,8 +589,8 @@ def recoil_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True (default), use simple Gaussian smearing.
-        If False, use full charge digitization.
+        If True, use simple Gaussian smearing.
+        If False (default), use full charge digitization.
     detector : str
         Detector geometry tag.
     tag : str
@@ -635,7 +637,7 @@ def recoil_sequence(
 
 
 def tagger_sequence(
-    use_truth_smearing=True,
+    use_truth_smearing=False,
     detector="ldmx-det-v15-8gev",
     tag="",
 ):
@@ -648,8 +650,8 @@ def tagger_sequence(
     Parameters
     ----------
     use_truth_smearing : bool
-        If True (default), use simple Gaussian smearing.
-        If False, use full charge digitization.
+        If True, use simple Gaussian smearing.
+        If False (default), use full charge digitization.
     detector : str
         Detector geometry tag.
     tag : str
