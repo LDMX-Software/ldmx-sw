@@ -17,7 +17,7 @@ setup_library(
 setup_library(module Trigger
               dependencies Framework::Framework Recon::Event DetDescr::DetDescr
                            Tools::Tools SimCore::Event Ecal::Ecal Hcal::Hcal
-                           Trigger::Event
+                           TrigScint::Event Trigger::Event
 )
 target_include_directories(Trigger PUBLIC ../HLS_arbitrary_Precision_Types/include)
 

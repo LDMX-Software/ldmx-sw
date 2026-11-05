@@ -87,14 +87,15 @@ class TrigEcalClusterProducer(Processor):
 class TrigElectronProducer(Processor):
     """Configuration for TrigElectronProducer"""
 
-    scoring_plane_coll_name: str = "TargetScoringPlaneHits"
     cluster_coll_name: str = "ecalTrigClusters"
     ele_coll_name: str = "trigElectrons"
     prop_map_name: str = "./propagationMap.root"
-    target_sp_passname: str = ""
     cluster_coll_passname: str = ""
     cluster_collname_events_passname: str = ""
-    sp_collname_events_passname_: str = ""
+    ts_track_coll_name: str = "TriggerPadTracks"
+    ts_passname: str = ""
+    ts_y0: float = -37.95
+    ts_channel_pitch: float = 1.65
 
 
 @processor("trigger::NtupleWriter", "Trigger")
