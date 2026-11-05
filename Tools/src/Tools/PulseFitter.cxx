@@ -64,7 +64,15 @@ std::pair<double, double> PulseFitter::evalAtT(
   // Compute chi2 for this (T, amplitude) pair.
   double chi2 = 0.0;
   for (int i = 0; i < n; ++i) {
-    if (!isUsed(used, i)) continue;
+    if (!isUsed(used, i)) {
+      // suppressed sample: penalize a model above the ZS threshold
+      if (zs_threshold_adc_ > 0.) {
+        const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
+        const double over = amplitude * shape_->eval(t_arg) - zs_threshold_adc_;
+        if (over > 0.) chi2 += over * over * inv_sigma2_;
+      }
+      continue;
+    }
     const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
     const double fi = shape_->eval(t_arg);
     const double si = static_cast<double>(samples[i]) - pedestal_adc_;

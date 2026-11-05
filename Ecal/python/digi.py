@@ -206,6 +206,9 @@ class EcalRecProducer(Processor):
         Fit amplitude only with t0 = event phase + fit_t0_offset
     fit_t0_offset : float
         Offset [ns] between the event phase and the pulse t0
+    fit_zs_threshold : float
+        Zero-suppression threshold [ADC over pedestal]: suppressed samples
+        (raw 0) are left out of the fit and penalize a pulse above it, 0 = off
     phase_resolution : float
         Gaussian smearing [ns] of the event phase, e.g. HCal TOA resolution
     phase_name : str
@@ -234,6 +237,7 @@ class EcalRecProducer(Processor):
     fit_n_samples: int = 0
     fit_fixed_t0: bool = False
     fit_t0_offset: float = 0.0
+    fit_zs_threshold: float = 0.0
     phase_resolution: float = 0.0
     phase_name: str = "ecal_digi_phase"
     pulse_shape: list[float] = ecal_pulse_shape
@@ -502,11 +506,15 @@ class EcalRecProducer(Processor):
         simulated cosmic muons with 5 samples (SOI 2) and a free-time fit; the
         fixed-time fit (fit_fixed_t0=True) needs it to place the pulse. The
         layer weights are not calibrated for this stack, unity is used.
+        The ECON-D keeps a sample when ADC > pedestal + 5, the suppressed
+        samples bound the fit (fit_zs_threshold 5.5); on MIPs this gives
+        the narrowest amplitude (relative width 0.25, max sample 0.30).
         """
         args = {
             "clock_cycle": 5 / 0.1857,  # ESA bunch clock, 185.7 MHz / 5
             "amplitude_method": "fit",
             "fit_t0_offset": -8.8,
+            "fit_zs_threshold": 5.5,
             "second_order_energy_correction": 1.0,
             "layer_weights": [1.0] * 4,
         }

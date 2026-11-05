@@ -117,6 +117,9 @@ class EcalRecProducer : public framework::Producer {
   /// offset [ns] between the event phase and the pulse t0
   double fit_t0_offset_;
 
+  /// ZS threshold [ADC over pedestal] for suppressed samples in the fit
+  double fit_zs_threshold_;
+
   /// Gaussian smearing [ns] of the event phase
   double phase_resolution_;
 

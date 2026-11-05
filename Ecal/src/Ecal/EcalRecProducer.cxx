@@ -44,6 +44,7 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
   fit_n_samples_ = ps.get<int>("fit_n_samples", 0);
   fit_fixed_t0_ = ps.get<bool>("fit_fixed_t0", false);
   fit_t0_offset_ = ps.get<double>("fit_t0_offset", 0.);
+  fit_zs_threshold_ = ps.get<double>("fit_zs_threshold", 0.);
   phase_resolution_ = ps.get<double>("phase_resolution", 0.);
   phase_name_ = ps.get<std::string>("phase_name", "ecal_digi_phase");
   if (amplitude_method_ == "fit") {
@@ -204,6 +205,7 @@ void EcalRecProducer::produce(framework::Event& event) {
               *pulse_shape_, (first - i_soi) * clock_cycle_, clock_cycle_,
               pedestal, 1., (first - i_soi - 0.5) * clock_cycle_,
               (first + n - 1 - i_soi + 0.5) * clock_cycle_, 0.25);
+          fitter.setZSThreshold(fit_zs_threshold_);
           auto r = fit_fixed_t0_
                        ? fitter.fitFixed(window, t0_fixed, window_kept)
                        : fitter.fit(window, window_kept);

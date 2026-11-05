@@ -87,6 +87,13 @@ class PulseFitter {
   FitResult fitFixed(const std::vector<short>& samples, double T,
                      const std::vector<bool>& used = {}) const;
 
+  /**
+   * Zero-suppression threshold [ADC over pedestal] for the samples left out
+   * by the mask: a model above it adds ((model − thr)/σ)² to χ², so the fit
+   * cannot hide the pulse in suppressed samples. ≤ 0 (default) turns it off.
+   */
+  void setZSThreshold(double thr_adc) { zs_threshold_adc_ = thr_adc; }
+
  private:
   /// Evaluate χ²(T) and the corresponding best-fit amplitude.
   std::pair<double, double> evalAtT(const std::vector<short>& samples, double T,
@@ -100,6 +107,7 @@ class PulseFitter {
   double t_scan_min_ns_;
   double t_scan_max_ns_;
   double t_scan_step_ns_;
+  double zs_threshold_adc_{0.};
 };
 
 }  // namespace ldmx
