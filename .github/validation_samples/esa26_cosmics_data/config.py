@@ -1,9 +1,10 @@
-"""Decode ESA 2026 calorimeter raw data (run 212)
+"""Decode ESA 2026 calorimeter raw data (run 271)
 
-The EventBuilder groups the TDAQ, ECal and HCal frames of each trigger by
-RoR timestamp. ECal layers 2 and 3 share one merged ECON-D frame and are
-split by ECON-D ID, the HCal backplane comes in its own frame.
-Five samples per readout, sample of interest 2.
+The EventBuilder groups the TDAQ, ECal, HCal and HCal trigger frames of each
+trigger by RoR timestamp. ECal layers 2 and 3 share one merged ECON-D frame
+and are split by ECON-D ID, the HCal backplane comes in its own frame.
+Five samples per readout, sample of interest 2, zero suppression on.
+HCal-triggered cosmics at ~400 Hz.
 
 The raw .dat file is decompressed in init.sh, the EventBuilder takes
 whichever run sits in the ci-data directory.
@@ -23,7 +24,15 @@ p = ldmxcfg.Process("test")
 
 (dat_file,) = glob.glob(f"{os.environ['CI_DATA']}/esa26_cosmics_data/*.dat")
 
-evb = eventbuilder.from_dat_file(dat_file, verbose_parse=False, instance_name="evb")
+# frames of one trigger share a timestamp, triggers can be 21 ticks apart and
+# contributors arrive up to ~0.5M ticks (2 ms) out of order
+evb = eventbuilder.from_dat_file(
+    dat_file,
+    verbose_parse=False,
+    instance_name="evb",
+    coherence_window_ns=10.0,
+    reorder_window_ns=5e6,
+)
 evb.binary_file = ""
 evb.performance_file = ""
 
