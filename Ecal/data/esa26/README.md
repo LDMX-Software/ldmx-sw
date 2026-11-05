@@ -19,8 +19,11 @@ cosmic stand (one HD module per layer, module 0).
   - L3 is mirrored relative to L2 (pad y to -y);
   - module orientation from HCal tracks: pads rotated by 330 degrees after a
     mirror (x to -x) in the global frame, then `flip_x` to the module cell
-    frame, nearest cell (largest offset 1.3 mm). L3 pads land on the odd-layer
-    grid (`layer_shift_x`).
+    frame, nearest cell (largest offset 1.3 mm). L3 cells are taken
+    relative to the L3 layer center of `ldmx-esa-cosmic26-v2`, which sits
+    +8.79 mm (x) and +0.29 mm (y) from L2: the stand has no designed odd-layer
+    shift, the geometry's layer shift carries the L3 position from muons
+    (13.6 mm board displacement minus the half cell the flip moves the grid).
 
   With this map 71% of the L2-L3 muon pairs are in the same or a neighboring
   cell (provisional map: 3%). Generator and validation: `work/ecal-map26`
@@ -31,5 +34,5 @@ cosmic stand (one HD module per layer, module 0).
   reconstructs rec hits with it.
 
 Open: the module center from the tracks differs from the v2 geometry by about
--99 mm in x and +65 mm in y, and L3 sits about 14 mm from L2 along x; both
-depend on the provisional HCal conventions (front at -y, planes 6 and 8).
+-99 mm in x and +65 mm in y; it depends on the provisional HCal conventions
+(front at -y, planes 6 and 8).

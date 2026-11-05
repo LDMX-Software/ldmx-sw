@@ -361,7 +361,11 @@ class EcalGeometry:
             ecal_center_y=-104.346,
             flip_x=True,
         )
-        eg.layer_shift_x = 2 * eg.module_min_r / eg.n_cell_r_height
+        # no designed odd-layer shift in the stand: the shift places L3 (the
+        # only odd layer read out) where cosmic muons put it relative to L2,
+        # +8.79 mm in global x (sign flipped by flip_x), +0.29 mm in y
+        eg.layer_shift_x = -8.79
+        eg.layer_shift_y = 0.29
         return eg
 
     def geometries():
