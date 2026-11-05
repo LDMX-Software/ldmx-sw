@@ -8,12 +8,24 @@ cosmic stand (one HD module per layer, module 0).
 - `motherboard_map.csv`: ECON-D eRx (POLARFIRE_ELINK) to HGCROC and half.
   Measured on run 209: the mean SOI ADC of each eRx matches exactly one ROC
   half of the pflib decoding. L2 (type 2) reads 12 eRx, L3 (type 3) reads
-  ROC0, 2, 3 in 6 eRx.
-- `cell_map.csv`: HGCROC channel to module cell. Channel to pad from the CMS
-  HD hexaboard map (`hd_pad_to_channel_mapping_V2p1`), pad to cell by
-  position: pads rotated by +30 degrees, scaled to the cell pitch, nearest
-  cell. All 432 pads land in distinct cells (largest offset 1.2 mm).
+  ROC0, 2, 3 in 6 eRx. L3 uses logical ROC IDs 10 + ROC, so its channels can
+  map to other cells than the same L2 channels (the IDs only join the two
+  tables).
+- `cell_map.csv`: HGCROC channel to module cell, from cosmic muons (runs 255,
+  271-273, HCal trigger):
+  - channel to pad: CMS HD hexaboard map `hd_pad_to_channel_mapping_V2p1`,
+    with pflib ROC 0, 1, 2, 3, 4, 5 on hexaboard ASIC 0, 2, 4, 1, 3, 5
+    (same in both layers);
+  - L3 is mirrored relative to L2 (pad y to -y);
+  - module orientation from HCal tracks: pads rotated by 330 degrees after a
+    mirror (x to -x) in the global frame, then `flip_x` to the module cell
+    frame, nearest cell (largest offset 1.3 mm). L3 pads land on the odd-layer
+    grid (`layer_shift_x`).
 
-**Provisional:** six orientations (3-fold rotation, with or without a
-mirror) fit equally well; the one used here is an assumption until it is
-checked with tracks or a reference map.
+  With this map 71% of the L2-L3 muon pairs are in the same or a neighboring
+  cell (provisional map: 3%). Generator and validation: `work/ecal-map26`
+  (`make_map26.py`, README there).
+
+Open: the module center from the tracks differs from the v2 geometry by about
+-99 mm in x and +65 mm in y, and L3 sits about 14 mm from L2 along x; both
+depend on the provisional HCal conventions (front at -y, planes 6 and 8).
