@@ -14,13 +14,20 @@ import glob
 import os
 
 from LDMX.DQM import dqm
-from LDMX.DQM.dqm import ECONDDigiDQM
+from LDMX.DQM.dqm import ECONDDigiDQM, EcalRecHitDQM
+from LDMX.Ecal.digi import EcalRecProducer
+from LDMX.Ecal.ecal_detector_map import EcalDetectorMap
+from LDMX.Ecal.ecal_geometry import EcalGeometryProvider
+from LDMX.Ecal.esa26_conditions import esa26_recon_conditions
 from LDMX.EventBuilder import eventbuilder
 from LDMX.Framework import ldmxcfg
 from LDMX.Packing.decoding import ECONDDecoder
 
 
 p = ldmxcfg.Process("test")
+EcalDetectorMap.esa26()
+EcalGeometryProvider.get_instance().set_detector("ldmx-esa-cosmic26-v2")
+esa26_recon_conditions()
 
 (dat_file,) = glob.glob(f"{os.environ['CI_DATA']}/esa26_cosmics_data/*.dat")
 
@@ -56,6 +63,33 @@ ecal_l3_decoder = ECONDDecoder(
     fiber=3,
     econd_id=3,
 )
+# same frames with detector IDs, then rec hits
+ecal_det = [
+    ECONDDecoder(
+        instance_name=f"ecal_l{L}_det",
+        raw_data_name="ecal",
+        digi_output_name=f"EcalL{L}DetDigis",
+        is_ecal=True,
+        n_links=n,
+        fiber=L,
+        econd_id=L,
+        translate_eid=True,
+    )
+    for L, n in ((2, 12), (3, 6))
+]
+ecal_rec = [
+    EcalRecProducer.esa_cosmic_stand(
+        instance_name=f"ecal_l{L}_rec",
+        digi_coll_name=f"EcalL{L}DetDigis",
+        digi_pass_name="test",
+        rec_hit_coll_name=f"EcalL{L}RecHits",
+    )
+    for L in (2, 3)
+]
+ecal_rec_dqm = [
+    EcalRecHitDQM(instance_name=f"ecal_l{L}_rec_dqm", rec_hit_coll=f"EcalL{L}RecHits")
+    for L in (2, 3)
+]
 ecal_l2_dqm = ECONDDigiDQM(digi_name="EcalL2Digis", instance_name="ecal_l2_dqm")
 ecal_l3_dqm = ECONDDigiDQM(digi_name="EcalL3Digis", instance_name="ecal_l3_dqm")
 
@@ -76,6 +110,9 @@ p.sequence = [
     ecal_l3_decoder,
     ecal_l2_dqm,
     ecal_l3_dqm,
+    *ecal_det,
+    *ecal_rec,
+    *ecal_rec_dqm,
     hcal_decoder,
     hcal_dqm,
 ]

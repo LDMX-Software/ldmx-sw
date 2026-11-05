@@ -25,6 +25,10 @@ cosmic stand (one HD module per layer, module 0).
   With this map 71% of the L2-L3 muon pairs are in the same or a neighboring
   cell (provisional map: 3%). Generator and validation: `work/ecal-map26`
   (`make_map26.py`, README there).
+- `pedestals.csv`: EcalReconConditions (ADC pedestal per cell from the
+  03-Nov-26 100 V calibration sets, default gains), loaded by
+  `LDMX.Ecal.esa26_conditions.esa26_recon_conditions()`; the ESA26 CI sample
+  reconstructs rec hits with it.
 
 Open: the module center from the tracks differs from the v2 geometry by about
 -99 mm in x and +65 mm in y, and L3 sits about 14 mm from L2 along x; both

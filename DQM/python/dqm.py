@@ -1024,6 +1024,25 @@ class ECONDDigiDQM(Processor):
             self.info_name = f"{self.digi_name}ECONDInfo"
 
 
+@processor("dqm::EcalRecHitDQM", "DQM")
+class EcalRecHitDQM(Processor):
+    """Histograms of ECal rec hits without simulation truth (raw data)
+
+    Parameters
+    ----------
+    rec_hit_coll : str
+        name of the EcalHit collection
+    rec_hit_pass : str
+        pass of the rec hits
+    mip_si_energy : float
+        Si energy of one MIP [MeV], the amplitude histogram is in MIPs
+    """
+
+    rec_hit_coll: str = "EcalRecHits"
+    rec_hit_pass: str = ""
+    mip_si_energy: float = 0.130
+
+
 @processor("dqm::HgcrocPulseTruth", "DQM", "hgcroc_pulse_truth")
 class HgcrocPulseTruth(Processor):
     input_digi_name: str = ""
