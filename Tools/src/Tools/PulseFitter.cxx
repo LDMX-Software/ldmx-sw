@@ -5,6 +5,19 @@
 
 namespace ldmx {
 
+namespace {
+// empty mask: every sample is used
+bool isUsed(const std::vector<bool>& used, std::size_t i) {
+  return used.empty() || used.at(i);
+}
+
+int nUsed(const std::vector<short>& samples, const std::vector<bool>& used) {
+  int n = 0;
+  for (std::size_t i = 0; i < samples.size(); ++i) n += isUsed(used, i);
+  return n;
+}
+}  // namespace
+
 PulseFitter::PulseFitter(const PulseShape& shape, double t0_offset_ns,
                          double sampling_interval_ns, double pedestal_adc,
                          double noise_sigma_adc, double t_scan_min_ns,
@@ -23,7 +36,8 @@ PulseFitter::PulseFitter(const PulseShape& shape, double t0_offset_ns,
 // ---------------------------------------------------------------------------
 
 std::pair<double, double> PulseFitter::evalAtT(
-    const std::vector<short>& samples, double T) const {
+    const std::vector<short>& samples, double T,
+    const std::vector<bool>& used) const {
   const int n = static_cast<int>(samples.size());
 
   // Evaluate pulse shape at each sample time.
@@ -32,6 +46,7 @@ std::pair<double, double> PulseFitter::evalAtT(
   double sum_f2 = 0.0;  // Σ f_i²
 
   for (int i = 0; i < n; ++i) {
+    if (!isUsed(used, i)) continue;
     const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
     const double fi = shape_->eval(t_arg);
     const double si = static_cast<double>(samples[i]) - pedestal_adc_;
@@ -49,6 +64,7 @@ std::pair<double, double> PulseFitter::evalAtT(
   // Compute chi2 for this (T, amplitude) pair.
   double chi2 = 0.0;
   for (int i = 0; i < n; ++i) {
+    if (!isUsed(used, i)) continue;
     const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
     const double fi = shape_->eval(t_arg);
     const double si = static_cast<double>(samples[i]) - pedestal_adc_;
@@ -63,15 +79,15 @@ std::pair<double, double> PulseFitter::evalAtT(
 // Public: fit
 // ---------------------------------------------------------------------------
 
-PulseFitter::FitResult PulseFitter::fit(
-    const std::vector<short>& samples) const {
+PulseFitter::FitResult PulseFitter::fit(const std::vector<short>& samples,
+                                        const std::vector<bool>& used) const {
   FitResult result;
-  result.ndf = static_cast<int>(samples.size()) - 2;
+  result.ndf = nUsed(samples, used) - 2;
 
   // Quick sanity: check that at least one sample is above pedestal.
   bool any_signal = false;
-  for (auto s : samples) {
-    if (static_cast<double>(s) > pedestal_adc_) {
+  for (std::size_t i = 0; i < samples.size(); ++i) {
+    if (isUsed(used, i) && static_cast<double>(samples[i]) > pedestal_adc_) {
       any_signal = true;
       break;
     }
@@ -95,7 +111,7 @@ PulseFitter::FitResult PulseFitter::fit(
   double chi2_prev = std::numeric_limits<double>::max();
 
   for (double t = t_scan_min_ns_; t <= t_scan_max_ns_; t += t_scan_step_ns_) {
-    auto [chi2, amp] = evalAtT(samples, t);
+    auto [chi2, amp] = evalAtT(samples, t, used);
 
     if (chi2 < best_chi2) {
       // Update neighbourhood: the previous point becomes T_lo.
@@ -135,7 +151,7 @@ PulseFitter::FitResult PulseFitter::fit(
       // Only accept the refinement if it stays within the bracket.
       if (std::abs(delta) < std::max(d1, d2)) {
         const double t_refined = best_t + delta;
-        auto [chi2_ref, amp_ref] = evalAtT(samples, t_refined);
+        auto [chi2_ref, amp_ref] = evalAtT(samples, t_refined, used);
         if (chi2_ref < best_chi2) {
           best_t = t_refined;
           best_amp = amp_ref;
@@ -156,11 +172,12 @@ PulseFitter::FitResult PulseFitter::fit(
 // Public: fitFixed
 // ---------------------------------------------------------------------------
 
-PulseFitter::FitResult PulseFitter::fitFixed(const std::vector<short>& samples,
-                                             double T) const {
+PulseFitter::FitResult PulseFitter::fitFixed(
+    const std::vector<short>& samples, double T,
+    const std::vector<bool>& used) const {
   FitResult result;
-  result.ndf = static_cast<int>(samples.size()) - 1;
-  auto [chi2, amp] = evalAtT(samples, T);
+  result.ndf = nUsed(samples, used) - 1;
+  auto [chi2, amp] = evalAtT(samples, T, used);
   result.amplitude = amp;
   result.t0 = T;
   result.chi2 = chi2;

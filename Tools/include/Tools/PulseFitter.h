@@ -47,7 +47,7 @@ class PulseFitter {
         0};          ///< Fitted peak amplitude [ADC counts], ped-subtracted.
     double t0{0};    ///< Fitted hit arrival time T [ns].
     double chi2{0};  ///< Chi-squared value at the minimum.
-    int ndf{0};      ///< Degrees of freedom = n_samples − 2.
+    int ndf{0};      ///< Degrees of freedom = n_used_samples − 2.
     bool converged{false};  ///< False if no above-pedestal samples found.
   };
   // NOLINTEND(readability-identifier-naming)
@@ -72,21 +72,25 @@ class PulseFitter {
    *
    * @param samples  ADC values (one per sample, any integer type cast to
    * short).
+   * @param used     Samples to fit, e.g. not zero suppressed; empty = all.
    */
-  FitResult fit(const std::vector<short>& samples) const;
+  FitResult fit(const std::vector<short>& samples,
+                const std::vector<bool>& used = {}) const;
 
   /**
    * Amplitude only fit with the hit time T known, e.g. from another detector.
    *
    * @param samples  ADC values (one per sample).
    * @param T        Hit time in the same frame as t0_offset [ns].
+   * @param used     Samples to fit, e.g. not zero suppressed; empty = all.
    */
-  FitResult fitFixed(const std::vector<short>& samples, double T) const;
+  FitResult fitFixed(const std::vector<short>& samples, double T,
+                     const std::vector<bool>& used = {}) const;
 
  private:
   /// Evaluate χ²(T) and the corresponding best-fit amplitude.
-  std::pair<double, double> evalAtT(const std::vector<short>& samples,
-                                    double T) const;
+  std::pair<double, double> evalAtT(const std::vector<short>& samples, double T,
+                                    const std::vector<bool>& used) const;
 
   const PulseShape* shape_;
   double t0_offset_ns_;
