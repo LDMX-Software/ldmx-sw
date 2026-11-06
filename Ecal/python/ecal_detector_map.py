@@ -30,8 +30,8 @@ class EcalDetectorMap(ConditionsObjectProvider):
         """ESA 2026 cosmic stand, ECal layers 2 and 3
 
         Electronics IDs as written by ECONDDecoder with fiber 2 (L2, 6 ROCs)
-        and fiber 3 (L3, ROC0, 2, 3). The pad to cell orientation is
-        provisional, see data/esa26/README.md.
+        and fiber 3 (L3, ROC0, 2, 3). Channel to cell from cosmic muons
+        (L2 x L3 pairs, HCal tracks), see data/esa26/README.md.
         """
         d = "@CMAKE_INSTALL_PREFIX@/data/Ecal/esa26"
         return EcalDetectorMap(

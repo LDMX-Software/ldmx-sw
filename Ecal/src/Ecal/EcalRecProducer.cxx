@@ -44,6 +44,7 @@ void EcalRecProducer::configure(framework::config::Parameters& ps) {
   fit_n_samples_ = ps.get<int>("fit_n_samples", 0);
   fit_fixed_t0_ = ps.get<bool>("fit_fixed_t0", false);
   fit_t0_offset_ = ps.get<double>("fit_t0_offset", 0.);
+  fit_zs_threshold_ = ps.get<double>("fit_zs_threshold", 0.);
   phase_resolution_ = ps.get<double>("phase_resolution", 0.);
   phase_name_ = ps.get<std::string>("phase_name", "ecal_digi_phase");
   if (amplitude_method_ == "fit") {
@@ -171,8 +172,12 @@ void EcalRecProducer::produce(framework::Event& event) {
         charge = (digi.soi().adcT() - pedestal) * the_conditions.adcGain(id);
       } else {
         std::vector<short> adc;
-        for (unsigned int i{0}; i < digi.size(); i++)
+        // zero-suppressed samples come as raw 0, leave them out of the fit
+        std::vector<bool> kept;
+        for (unsigned int i{0}; i < digi.size(); i++) {
           adc.push_back(static_cast<short>(digi.at(i).adcT()));
+          kept.push_back(digi.at(i).raw() != 0);
+        }
         int i_max = std::max_element(adc.begin(), adc.end()) - adc.begin();
         if (amplitude_method_ == "max") {
           charge = (adc[i_max] - pedestal) * the_conditions.adcGain(id);
@@ -192,14 +197,18 @@ void EcalRecProducer::produce(framework::Event& event) {
           const int first = std::clamp(i_peak - 1, 0, n_adc - n);
           std::vector<short> window(adc.begin() + first,
                                     adc.begin() + first + n);
+          std::vector<bool> window_kept(kept.begin() + first,
+                                        kept.begin() + first + n);
           // peak within half a clock of the window, else noise tails fake
           // pulses
           ldmx::PulseFitter fitter(
               *pulse_shape_, (first - i_soi) * clock_cycle_, clock_cycle_,
               pedestal, 1., (first - i_soi - 0.5) * clock_cycle_,
               (first + n - 1 - i_soi + 0.5) * clock_cycle_, 0.25);
-          auto r = fit_fixed_t0_ ? fitter.fitFixed(window, t0_fixed)
-                                 : fitter.fit(window);
+          fitter.setZSThreshold(fit_zs_threshold_);
+          auto r = fit_fixed_t0_
+                       ? fitter.fitFixed(window, t0_fixed, window_kept)
+                       : fitter.fit(window, window_kept);
           charge = r.converged ? r.amplitude * the_conditions.adcGain(id) : 0.;
           hit_time = r.t0;
         }

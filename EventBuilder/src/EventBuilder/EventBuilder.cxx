@@ -70,6 +70,9 @@ void EventBuilder::configure(framework::config::Parameters& ps) {
   if (ps.exists("coherence_window_ns")) {
     m_coherence_window_ns_ = ps.get<double>("coherence_window_ns");
   }
+  if (ps.exists("reorder_window_ns")) {
+    m_reorder_window_ns_ = ps.get<double>("reorder_window_ns");
+  }
   if (ps.exists("min_subsystems")) {
     m_min_subsystems_ = ps.get<int>("min_subsystems");
   }
@@ -84,6 +87,7 @@ void EventBuilder::configure(framework::config::Parameters& ps) {
                  << "' output_name='" << m_output_name_
                  << "' verbose_parse=" << (m_verbose_parse_ ? "true" : "false")
                  << " coherence_window_ns=" << m_coherence_window_ns_
+                 << " reorder_window_ns=" << m_reorder_window_ns_
                  << " min_subsystems=" << m_min_subsystems_;
 
   if (!m_input_file_.empty()) {
@@ -240,7 +244,8 @@ void EventBuilder::produce(framework::Event& event) {
 
     if (buffer_ref_time > 0 &&
         (fragment_ts < buffer_ref_time - m_coherence_window_ns_ ||
-         fragment_ts > buffer_ref_time + m_coherence_window_ns_)) {
+         fragment_ts >
+             buffer_ref_time + m_coherence_window_ns_ + m_reorder_window_ns_)) {
       // This fragment is outside the current window - try to build the previous
       // event
       std::vector<DataFragment> assembled_event_fragments;
@@ -366,10 +371,10 @@ void EventBuilder::produce(framework::Event& event) {
 
         current_event_errors = 0;  // Reset for next event
         // The fragment that tripped the window-close belongs to the NEXT
-        // event, not the one we just emitted. Buffer it here (the buffer is
-        // empty post-build, so this also resets the reference time) instead
-        // of dropping it -- otherwise every event after the first loses its
-        // triggering subsystem.
+        // event, not the one we just emitted. Buffer it here (the reference
+        // time moves to the oldest buffered fragment) instead of dropping
+        // it -- otherwise every event after the first loses its triggering
+        // subsystem.
         m_event_buffer_.addFragment(std::move(fragment));
         return;  // Return the event to framework
       }
