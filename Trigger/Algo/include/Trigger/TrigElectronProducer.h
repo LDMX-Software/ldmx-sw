@@ -7,6 +7,8 @@
 #ifndef TRIGECALCLUSTERPRODUCER_H
 #define TRIGECALCLUSTERPRODUCER_H
 
+#include <optional>
+
 // LDMX Framework
 /* #include "Ecal/EcalTriggerGeometry.h" */
 #include "Framework/Configure/Parameters.h"  // Needed to import parameters from configuration file
@@ -42,17 +44,24 @@ class TrigElectronProducer : public framework::Producer {
   float getPy(float e, float d) { return getP(false, e, d); }
 
  private:
-  // name of collection for target scoring plane inputs
-  std::string sp_coll_name_;
+  // y [mm] of the target point from the lowest-residual TS track
+  std::optional<float> tsTargetY(const framework::Event& event);
+
+  // TrigScint tracks giving the target y
+  std::string ts_track_coll_name_;
+  std::string ts_passname_;
+  // y [mm] = ts_y0_ + ts_channel_pitch_ * centroid [channel]
+  float ts_y0_{0};
+  float ts_channel_pitch_{0};
+  bool warned_missing_ts_{false};
+
   // name of collection for calo cluster inputs
   std::string cluster_coll_name_;
   // name of collection for electron outputs
   std::string ele_coll_name_;
 
-  std::string target_sp_passname_;
   std::string cluster_coll_passname_;
   std::string cluster_collname_events_passname_;
-  std::string sp_collname_events_passname_;
 
   std::string prop_map_name_;
   TProfile2D* prop_mapx_{nullptr};

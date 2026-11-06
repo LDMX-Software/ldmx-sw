@@ -2,6 +2,12 @@ from LDMX.Ecal.make_path import make_ci_data_path
 from LDMX.Framework import Processor, field, processor
 
 
+# (Detectors/data/ldmx-det-v15-8gev/constants.gdml)
+TS_BAR_COUNT = 24  # number_of_bars
+TS_BAR_WIDTH = 3.0  # trigger_bar_dy [mm]
+TS_BAR_GAP = 0.3  # trigger_pad_bar_gap [mm]
+
+
 @processor("trigger::EcalTPSelector", "Trigger")
 class EcalTPSelector(Processor):
     """Configuration for EcalTPSelector"""
@@ -87,14 +93,24 @@ class TrigEcalClusterProducer(Processor):
 class TrigElectronProducer(Processor):
     """Configuration for TrigElectronProducer"""
 
-    scoring_plane_coll_name: str = "TargetScoringPlaneHits"
     cluster_coll_name: str = "ecalTrigClusters"
     ele_coll_name: str = "trigElectrons"
     prop_map_name: str = "./propagationMap.root"
-    target_sp_passname: str = ""
     cluster_coll_passname: str = ""
     cluster_collname_events_passname: str = ""
-    sp_collname_events_passname_: str = ""
+    ts_track_coll_name: str = "TriggerPadTracks"
+    ts_passname: str = ""
+    # TS channel -> y [mm] = ts_y0 + ts_channel_pitch * centroid:
+    # two layers per pad staggered by half a bar, (channel
+    # c = 2*bar + layer). ts_y0 (-37.95) is the center of channel 0 and
+    # ts_channel_pitch (1.65) is half the bar-to-bar pitch. The real stagger is
+    # 1.5 mm, so odd channels sit 0.15 mm below this line
+    # (difference <= 2.5 MeV in py).
+    ts_y0: float = (
+        -(TS_BAR_COUNT * TS_BAR_WIDTH + (TS_BAR_COUNT - 1) * TS_BAR_GAP) / 2
+        + TS_BAR_WIDTH / 2
+    )
+    ts_channel_pitch: float = (TS_BAR_WIDTH + TS_BAR_GAP) / 2
 
 
 @processor("trigger::NtupleWriter", "Trigger")
