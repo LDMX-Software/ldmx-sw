@@ -17,7 +17,7 @@ void TrigElectronProducer::configure(framework::config::Parameters& ps) {
   cluster_coll_passname_ = ps.get<std::string>("cluster_coll_passname");
   cluster_collname_events_passname_ =
       ps.get<std::string>("cluster_collname_events_passname");
-  ts_track_coll_name_ = ps.get<std::string>("ts_track_co  ll_name");
+  ts_track_coll_name_ = ps.get<std::string>("ts_track_coll_name");
   ts_passname_ = ps.get<std::string>("ts_passname");
   ts_y0_ = static_cast<float>(ps.get<double>("ts_y0"));
   ts_channel_pitch_ = static_cast<float>(ps.get<double>("ts_channel_pitch"));
