@@ -44,8 +44,8 @@ class TrigElectronProducer : public framework::Producer {
   float getPy(float e, float d) { return getP(false, e, d); }
 
  private:
-  // y of the target point measured by the trigger scintillator
-  std::optional<float> tsTargetY(framework::Event& event);
+  // y [mm] of the target point from the lowest-residual TS track
+  std::optional<float> tsTargetY(const framework::Event& event);
 
   // TrigScint tracks giving the target y
   std::string ts_track_coll_name_;

@@ -17,36 +17,10 @@ void TrigElectronProducer::configure(framework::config::Parameters& ps) {
   cluster_coll_passname_ = ps.get<std::string>("cluster_coll_passname");
   cluster_collname_events_passname_ =
       ps.get<std::string>("cluster_collname_events_passname");
-  ts_track_coll_name_ = ps.get<std::string>("ts_track_coll_name");
+  ts_track_coll_name_ = ps.get<std::string>("ts_track_co  ll_name");
   ts_passname_ = ps.get<std::string>("ts_passname");
-  ts_y0_ = ps.get<double>("ts_y0");
-  ts_channel_pitch_ = ps.get<double>("ts_channel_pitch");
-}
-
-std::optional<float> TrigElectronProducer::tsTargetY(framework::Event& event) {
-  const auto& coll{ts_track_coll_name_};
-  if (!event.exists(coll, ts_passname_)) {
-    if (!warned_missing_ts_) {
-      ldmx_log(warn) << "No " << coll << " (pass '" << ts_passname_
-                     << "') in the event: trigger electrons get py = 0. ";
-      warned_missing_ts_ = true;
-    }
-    return std::nullopt;
-  }
-  // lowest residual with ties going to the highest PE
-  std::optional<float> centroid;
-  float residual{0}, pe{0};
-  for (const auto& tr :
-       event.getCollection<ldmx::TrigScintTrack>(coll, ts_passname_)) {
-    if (centroid && (tr.getResidual() > residual ||
-                     (tr.getResidual() == residual && tr.getPE() <= pe)))
-      continue;
-    centroid = tr.getCentroid();
-    residual = tr.getResidual();
-    pe = tr.getPE();
-  }
-  if (!centroid) return std::nullopt;
-  return ts_y0_ + ts_channel_pitch_ * (*centroid);
+  ts_y0_ = static_cast<float>(ps.get<double>("ts_y0"));
+  ts_channel_pitch_ = static_cast<float>(ps.get<double>("ts_channel_pitch"));
 }
 
 void TrigElectronProducer::produce(framework::Event& event) {
@@ -87,10 +61,13 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // Events->Draw("TruthEcal_y-Truth_y -
     // Electron_dy*240/Electron_zClus","TruthEcal_e>1e3")
 
+    // the TS measures only y, so px is not predicted
     const float pred_px = 0;
-    float pred_py = y_t && clus.z() > 0
-                        ? getPy(calib_e, (240. / clus.z()) * (clus.y() - *y_t))
-                        : 0;  //
+    // y deflection, tracing back to the ECal face
+    const float pred_py =
+        y_t && clus.z() > 0
+            ? getPy(calib_e, (240. / clus.z()) * (clus.y() - *y_t))
+            : 0;
 
     // std::cout << "expectX " << pred_px << " versus " << fit_px << std::endl;
     // std::cout << "expectY " << pred_py << " versus " << fit_py << std::endl;
@@ -202,6 +179,36 @@ void TrigElectronProducer::onProcessEnd() {
   for (int i = 0; i < fits_y_.size(); i++) delete fits_y_[i];
 
   return;
+}
+
+std::optional<float> TrigElectronProducer::tsTargetY(
+    const framework::Event& event) {
+  const auto& coll{ts_track_coll_name_};
+  if (!event.exists(coll, ts_passname_)) {
+    if (!warned_missing_ts_) {
+      ldmx_log(warn) << "No " << coll << " (pass '" << ts_passname_
+                     << "') in the event: trigger electrons get py = 0.";
+      warned_missing_ts_ = true;
+    }
+    return std::nullopt;
+  }
+  // lowest residual with ties going to the highest PE
+  std::optional<float> centroid;
+  float residual{0};
+  float pe{0};
+  for (const auto& track :
+       event.getCollection<ldmx::TrigScintTrack>(coll, ts_passname_)) {
+    if (centroid &&
+        (track.getResidual() > residual ||
+         (track.getResidual() == residual && track.getPE() <= pe))) {
+      continue;
+    }
+    centroid = track.getCentroid();
+    residual = track.getResidual();
+    pe = track.getPE();
+  }
+  if (!centroid) return std::nullopt;
+  return ts_y0_ + ts_channel_pitch_ * (*centroid);
 }
 
 }  // namespace trigger
