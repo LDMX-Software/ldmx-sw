@@ -94,6 +94,12 @@ class TrigElectronProducer(Processor):
     cluster_collname_events_passname: str = ""
     ts_track_coll_name: str = "TriggerPadTracks"
     ts_passname: str = ""
+    # TS channel -> y [mm] = ts_y0 + ts_channel_pitch * centroid,
+    # from the v15/v16 GDML, 24 bars of 3.0 mm with 0.3 mm gaps
+    # per layer, two layers staggered by half a bar (channel c = 2*bar + layer).
+    # ts_y0 = center of channel 0 = -(24*3.0 + 23*0.3)/2 + 3.0/2
+    # ts_channel_pitch = (3.0 + 0.3)/2. The real stagger is 1.5 mm, so odd channels
+    # sit 0.15 mm below this line (<= 2.5 MeV in py).
     ts_y0: float = -37.95
     ts_channel_pitch: float = 1.65
 
