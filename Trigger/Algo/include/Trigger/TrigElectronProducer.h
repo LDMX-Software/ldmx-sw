@@ -64,6 +64,8 @@ class TrigElectronProducer : public framework::Producer {
   std::string cluster_collname_events_passname_;
 
   std::string prop_map_name_;
+  // z [mm] of the ECal face
+  double ecal_front_z_{0};
   TProfile2D* prop_mapx_{nullptr};
   TProfile2D* prop_mapy_{nullptr};
   std::vector<TF1*> fits_x_{};

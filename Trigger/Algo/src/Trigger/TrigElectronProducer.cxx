@@ -14,6 +14,7 @@ void TrigElectronProducer::configure(framework::config::Parameters& ps) {
   cluster_coll_name_ = ps.get<std::string>("cluster_coll_name");
   ele_coll_name_ = ps.get<std::string>("ele_coll_name");
   prop_map_name_ = ps.get<std::string>("prop_map_name");
+  ecal_front_z_ = ps.get<double>("ecal_front_z");
   cluster_coll_passname_ = ps.get<std::string>("cluster_coll_passname");
   cluster_collname_events_passname_ =
       ps.get<std::string>("cluster_collname_events_passname");
@@ -66,7 +67,7 @@ void TrigElectronProducer::produce(framework::Event& event) {
     // y deflection, tracing back to the ECal face
     const float pred_py =
         y_t && clus.z() > 0
-            ? getPy(calib_e, (240. / clus.z()) * (clus.y() - *y_t))
+            ? getPy(calib_e, (ecal_front_z_ / clus.z()) * (clus.y() - *y_t))
             : 0;
 
     // std::cout << "expectX " << pred_px << " versus " << fit_px << std::endl;

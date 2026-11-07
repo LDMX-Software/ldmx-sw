@@ -96,6 +96,8 @@ class TrigElectronProducer(Processor):
     cluster_coll_name: str = "ecalTrigClusters"
     ele_coll_name: str = "trigElectrons"
     prop_map_name: str = "./propagationMap.root"
+    # z [mm] of the ECal front face (ecal_front_z in constants.gdml, v14-v16).
+    ecal_front_z: float = 240.0
     cluster_coll_passname: str = ""
     cluster_collname_events_passname: str = ""
     ts_track_coll_name: str = "TriggerPadTracks"
