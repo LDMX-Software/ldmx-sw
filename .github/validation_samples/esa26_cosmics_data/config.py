@@ -14,7 +14,7 @@ import glob
 import os
 
 from LDMX.DQM import dqm
-from LDMX.DQM.dqm import ECONDDigiDQM, EcalRecHitDQM
+from LDMX.DQM.dqm import EcalRecHitDQM, ECONDDigiDQM
 from LDMX.Ecal.digi import EcalRecProducer
 from LDMX.Ecal.ecal_detector_map import EcalDetectorMap
 from LDMX.Ecal.ecal_geometry import EcalGeometryProvider
