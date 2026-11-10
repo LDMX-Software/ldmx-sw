@@ -123,7 +123,8 @@ p.logger.custom("EventBuilder", level=2)
 # Below should be the same for all raw data scenarios
 
 p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
-p.run = int(os.environ["LDMX_RUN_NUMBER"])
+# data run number, selects the conditions-data IOV
+p.run = 271
 
 p.histogram_file = "hist.root"
 p.output_files = ["events.root"]
