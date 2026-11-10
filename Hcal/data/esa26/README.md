@@ -36,8 +36,10 @@ vote for the end on the straight line: the reversed end is end 0 on planes
 5, 9 and 11 (cables J4, J1-J3, J5-J7) and end 1 on plane 7 (J16). After the
 correction the two ends agree in all but 3 of about 4000 two-end hits.
 Planes 6 and 8 (above the ECal, bars along y, half read) show the same
-mirror, but too few tracks pass both their bars and the top station's bars
-along y to tell which end; they are unchanged.
+mirror. Resolved with runs 294-296 (11 h, ZS): referenced to the ECal L2
+pads, end 1 of plane 6 and end 0 of plane 8 are the reversed ends. After the
+correction planes 6 and 8 count their strips the same way (before: strip
+correlation -0.87), and as plane 3 of the top station.
 
 **Provisional:** the drawings fix left/right only relative to the front.
 Front is taken at -y (right at +x). If the front is at +y, the strip order
