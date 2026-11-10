@@ -80,6 +80,8 @@ class ECONDDecoder : public framework::Producer {
   bool translate_eid_{false};
   /// ROC version for the digi collection
   int roc_version_{3};
+  /// skip channels suppressed in every sample
+  bool drop_suppressed_{false};
 
   /// decoding buffer
   std::unique_ptr<MultiSampleECONDEventPacket> packet_;

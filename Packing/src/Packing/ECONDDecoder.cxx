@@ -64,6 +64,7 @@ void ECONDDecoder::configure(framework::config::Parameters& ps) {
   translate_eid_ = ps.get<bool>("translate_eid");
   roc_version_ = ps.get<int>("roc_version");
   econd_id_ = ps.get<int>("econd_id");
+  drop_suppressed_ = ps.get<bool>("drop_suppressed");
   packet_ = std::make_unique<MultiSampleECONDEventPacket>(n_links_, econd_id_);
 }
 
@@ -172,10 +173,13 @@ void ECONDDecoder::produce(framework::Event& event) {
     std::vector<uint32_t> digi(n_samples);
     for (int i_link{0}; i_link < n_links_; i_link++) {
       for (int i_ch{0}; i_ch < 36; i_ch++) {
+        bool suppressed{true};
         for (std::size_t i_sample{0}; i_sample < n_samples; i_sample++) {
           digi[i_sample] =
               toDigiWord(pkt.samples_[i_sample].links_[i_link].channels_[i_ch]);
+          if (digi[i_sample] != 0) suppressed = false;
         }
+        if (drop_suppressed_ and suppressed) continue;
         unsigned int id{channelID(i_link, i_ch)};
         if (translate_eid_) {
           if (is_ecal_) {

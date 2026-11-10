@@ -42,6 +42,8 @@ class ECONDDecoder(Processor):
     econd_id : int
         only decode this ECON-D from a frame that merges several (e.g. one
         ECal layer of a multi-layer frame), -1 decodes the first ECON-D found
+    drop_suppressed : bool
+        skip channels that were zero suppressed in every sample
     """
 
     raw_data_name: str = None
@@ -54,6 +56,7 @@ class ECONDDecoder(Processor):
     translate_eid: bool = False
     roc_version: int = 3
     econd_id: int = -1
+    drop_suppressed: bool = False
 
     def __post_init__(self):
         if self.raw_data_name is None:
