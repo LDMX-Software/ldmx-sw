@@ -35,7 +35,7 @@ struct FragmentHeader {
   uint64_t contributor_id_ : 8;
   uint64_t subsystem_id_ : 8;
   uint64_t version_ : 8;
-  uint64_t padding_ : 32;  // Unused bits
+  uint64_t flags_ : 32;  // DAQ formatter flags, see LDMXRoRHeader::flags()
 
   // Header Word 1
   uint64_t timestamp_;

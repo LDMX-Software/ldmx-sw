@@ -39,7 +39,9 @@ class EventSummary : public TObject {
         (1 << 4),  ///< Event lacks expected number of fragments
     ERROR_TRUNCATED_EVENT = (1 << 5),  ///< Event was truncated (EOF reached)
     ERROR_DUPLICATE_SUBSYSTEM =
-        (1 << 6)  ///< Duplicate subsystem in single event
+        (1 << 6),  ///< Duplicate subsystem in single event
+    ERROR_DATA_DROPPED =
+        (1 << 7)  ///< A fragment is header only, its data dropped (DAQ busy)
   };
 
   /**

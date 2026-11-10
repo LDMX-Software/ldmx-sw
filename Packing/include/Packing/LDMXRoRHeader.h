@@ -81,9 +81,25 @@ class LDMXRoRHeader {
 
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);
-  /// true if the header was parsed successfully (sentinel and reserved word
-  /// matched)
+  /// true if the header was parsed successfully (sentinel matched and the
+  /// unused flag bits are zero)
   bool valid() const { return valid_; }
+  /**
+   * flags set by the DAQ event formatter
+   *
+   * bit 0: data dropped (busy), header-only fragment
+   * bit 1: raw data buffer overflow
+   * bit 2: bookkeeping error
+   * bits 8-15: readout requests lost before this one (no fragment at all),
+   *            saturates at 255
+   */
+  uint32_t flags() const { return flags_; }
+  /// header-only fragment, see flags()
+  static constexpr uint32_t FLAG_DATA_DROPPED{0x1};
+  /// true if the formatter dropped this fragment's data (header only)
+  bool dataDropped() const { return flags_ & FLAG_DATA_DROPPED; }
+  /// number of readout requests lost before this one, saturates at 255
+  uint8_t lostBefore() const { return (flags_ >> 8) & 0xff; }
   /// version of LDMX data (should be zero)
   uint8_t version() const { return version_; }
   /// ID number for subsystem originating data (compiled into firmware)
@@ -102,6 +118,10 @@ class LDMXRoRHeader {
   uint8_t subsystem_;
   /// ID number for contributor within subsystem (configured into firmware)
   uint8_t contributor_;
+  /// formatter flags, see flags()
+  uint32_t flags_{0};
+  /// flag bits in use, the others must be zero
+  static constexpr uint32_t FLAG_MASK{0xff07};
   /**
    * timestamp of this Readout-Request (RoR)
    *

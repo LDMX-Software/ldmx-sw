@@ -65,7 +65,6 @@ utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   valid_ = false;
 
   uint8_t sentinel;
-  uint32_t zero;
 
   if (!(r >> version_ >> subsystem_ >> contributor_ >> sentinel)) {
     return r;
@@ -74,10 +73,10 @@ utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   // sentinel should be 0xa5; if not, this is not a valid LDMX data frame
   if (sentinel != 0xa5) return r;
 
-  if (!(r >> zero)) return r;
+  if (!(r >> flags_)) return r;
 
-  // next 32b should be zero since they are unused
-  if (zero != 0) return r;
+  // only the low flag bits are used, the rest should be zero
+  if ((flags_ & ~FLAG_MASK) != 0) return r;
 
   if (!(r >> timestamp_)) return r;
 
