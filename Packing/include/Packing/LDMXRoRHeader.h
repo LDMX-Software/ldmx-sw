@@ -81,9 +81,17 @@ class LDMXRoRHeader {
 
   /// read the next LDMX RoR header into memory
   utility::Reader& read(utility::Reader& r);
-  /// true if the header was parsed successfully (sentinel and reserved word
-  /// matched)
+  /// true if the header was parsed successfully (sentinel matched and the
+  /// unused flag bits are zero)
   bool valid() const { return valid_; }
+  /**
+   * flags set by the DAQ event formatter
+   *
+   * bit 0: events were dropped before this one (busy)
+   * bit 1: raw data buffer overflow
+   * bit 2: bookkeeping error
+   */
+  uint32_t flags() const { return flags_; }
   /// version of LDMX data (should be zero)
   uint8_t version() const { return version_; }
   /// ID number for subsystem originating data (compiled into firmware)
@@ -102,6 +110,10 @@ class LDMXRoRHeader {
   uint8_t subsystem_;
   /// ID number for contributor within subsystem (configured into firmware)
   uint8_t contributor_;
+  /// formatter flags, see flags()
+  uint32_t flags_{0};
+  /// flag bits in use, the others must be zero
+  static constexpr uint32_t FLAG_MASK{0x7};
   /**
    * timestamp of this Readout-Request (RoR)
    *

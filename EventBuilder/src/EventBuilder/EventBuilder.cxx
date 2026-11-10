@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <set>
+#include <stdexcept>
 #include <vector>
 
 #include "EventBuilder/Event/GenericDataBlock.h"
@@ -159,6 +160,7 @@ void EventBuilder::produce(framework::Event& event) {
     // Attempt to read as RoR header
     try {
       ror_header.read(m_reader_);
+      if (!ror_header.valid()) throw std::runtime_error("invalid RoR header");
       // Successfully parsed RoR header
       fragment.header_.subsystem_id_ =
           static_cast<uint64_t>(ror_header.subsystem());
