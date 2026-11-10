@@ -167,6 +167,7 @@ void EventBuilder::produce(framework::Event& event) {
       fragment.header_.contributor_id_ =
           static_cast<uint64_t>(ror_header.contributor());
       fragment.header_.timestamp_ = ror_header.timestamp();
+      fragment.header_.flags_ = ror_header.flags();
 
       if (m_verbose_parse_) {
         ldmx_log(debug) << "parsed RoR header subsys="
@@ -294,6 +295,9 @@ void EventBuilder::produce(framework::Event& event) {
           unique_sources.insert(f.header_.subsystem_id_ << 8 |
                                 f.header_.contributor_id_);
           total_payload += f.payload_.size();
+          if (f.header_.flags_ & packing::LDMXRoRHeader::FLAG_DATA_DROPPED) {
+            current_event_errors |= ldmx::EventSummary::ERROR_DATA_DROPPED;
+          }
         }
         // Check for duplicate subsystems
         if (unique_sources.size() != assembled_event_fragments.size()) {
@@ -438,6 +442,9 @@ void EventBuilder::produce(framework::Event& event) {
       unique_sources.insert(f.header_.subsystem_id_ << 8 |
                             f.header_.contributor_id_);
       total_payload += f.payload_.size();
+      if (f.header_.flags_ & packing::LDMXRoRHeader::FLAG_DATA_DROPPED) {
+        current_event_errors |= ldmx::EventSummary::ERROR_DATA_DROPPED;
+      }
     }
     // Check for duplicate subsystems
     if (unique_sources.size() != assembled_event_fragments.size()) {
