@@ -204,6 +204,7 @@ p.sequence.extend(
         *recoil_tracking,
         *ts_digis,
         *ts_clusters,
+        trig_scint_track,
         ecal_digi.EcalDigiProducer(),
         ecal_digi.EcalRecProducer(),
         ecal_cluster.EcalClusterProducer(),
