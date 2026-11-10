@@ -22,12 +22,16 @@ namespace volumechecks {
  */
 inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
   const G4String& volume_name = vol->GetName();
-  return ((volume_name.contains("Si") || volume_name.contains("W") ||
-           volume_name.contains("PCB") || volume_name.contains("strongback") ||
-           volume_name.contains("Glue") || volume_name.contains("CFMix") ||
-           volume_name.contains("Al") || volume_name.contains("C")) &&
-          volume_name.contains("volume")) ||
-         (volume_name.contains("nohole_motherboard"));
+  return ((G4StrUtil::contains(volume_name, "Si") ||
+           G4StrUtil::contains(volume_name, "W") ||
+           G4StrUtil::contains(volume_name, "PCB") ||
+           G4StrUtil::contains(volume_name, "strongback") ||
+           G4StrUtil::contains(volume_name, "Glue") ||
+           G4StrUtil::contains(volume_name, "CFMix") ||
+           G4StrUtil::contains(volume_name, "Al") ||
+           G4StrUtil::contains(volume_name, "C")) &&
+          G4StrUtil::contains(volume_name, "volume")) ||
+         (G4StrUtil::contains(volume_name, "nohole_motherboard"));
 }
 
 /**
@@ -40,9 +44,11 @@ inline bool isInEcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  */
 inline bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
   const G4String& volume_name = vol->GetName();
-  return ((volume_name.contains("abso") || volume_name.contains("ScintBox") ||
-           volume_name.contains("scint")) &&
-          volume_name.contains("hcal") && volume_name.contains("olume"));
+  return ((G4StrUtil::contains(volume_name, "abso") ||
+           G4StrUtil::contains(volume_name, "ScintBox") ||
+           G4StrUtil::contains(volume_name, "scint")) &&
+          G4StrUtil::contains(volume_name, "hcal") &&
+          G4StrUtil::contains(volume_name, "olume"));
 }
 
 /**
@@ -58,8 +64,9 @@ inline bool isInHcal(G4LogicalVolume* vol, const std::string& vol_to_bias) {
  */
 inline bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
   const G4String& volume_name = vol->GetName();
-  return ((volume_name.contains("Si") || volume_name.contains("W")) &&
-          volume_name.contains("volume"));
+  return ((G4StrUtil::contains(volume_name, "Si") ||
+           G4StrUtil::contains(volume_name, "W")) &&
+          G4StrUtil::contains(volume_name, "volume"));
 }
 
 /**
@@ -73,7 +80,7 @@ inline bool isInEcalOld(G4LogicalVolume* vol, const std::string& vol_to_bias) {
 inline bool isInTargetRegion(G4LogicalVolume* vol,
                              const std::string& vol_to_bias) {
   auto region = vol->GetRegion();
-  return (region and region->GetName().contains("target"));
+  return (region and G4StrUtil::contains(region->GetName(), "target"));
 }
 
 /**
@@ -88,7 +95,7 @@ inline bool isInTargetRegion(G4LogicalVolume* vol,
  */
 inline bool isInTargetOnly(G4LogicalVolume* vol,
                            const std::string& vol_to_bias) {
-  return vol->GetName().contains("target");
+  return G4StrUtil::contains(vol->GetName(), "target");
 }
 
 /**
@@ -104,7 +111,7 @@ inline bool isInTargetOnly(G4LogicalVolume* vol,
  * @param[in] vol_to_bias name of volume to bias
  */
 inline bool nameContains(G4LogicalVolume* vol, const std::string& vol_to_bias) {
-  return vol->GetName().contains(vol_to_bias);
+  return G4StrUtil::contains(vol->GetName(), std::string_view(vol_to_bias));
 }
 
 }  // namespace volumechecks

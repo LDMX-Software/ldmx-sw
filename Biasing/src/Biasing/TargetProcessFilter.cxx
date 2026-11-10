@@ -135,7 +135,7 @@ void TargetProcessFilter::stepping(const G4Step* step) {
         secondaries->at(0)->GetCreatorProcess()->GetProcessName();
 
     // Only record the process that is being biased
-    if (!process_name.contains(process_)) {
+    if (!G4StrUtil::contains(process_name, std::string_view(process_))) {
       if (getEventInfo()->bremCandidateCount() == 1) {
         track->SetTrackStatus(fKillTrackAndSecondaries);
         G4RunManager::GetRunManager()->AbortEvent();

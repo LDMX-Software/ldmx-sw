@@ -251,7 +251,9 @@ void AuxInfoReader::createRegion(const G4String& name,
   // within the region
   //
   // NOLINTBEGIN
-  auto region = new G4Region(name);
+  // G4GDMLParser may have created it already, with zero cuts
+  auto region = G4RegionStore::GetInstance()->GetRegion(name, false);
+  if (region == nullptr) region = new G4Region(name);
   region->SetUserInformation(region_info);
   // To get rid of those pesky G4 warnings
   region->SetProductionCuts(G4ProductionCutsTable::GetProductionCutsTable()

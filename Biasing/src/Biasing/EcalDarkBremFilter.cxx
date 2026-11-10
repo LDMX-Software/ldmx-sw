@@ -29,10 +29,12 @@ EcalDarkBremFilter::EcalDarkBremFilter(
   for (G4LogicalVolume* volume : *G4LogicalVolumeStore::GetInstance()) {
     G4String volume_name = volume->GetName();
     // looking for ecal volumes
-    if (volume_name.contains("volume") and
-        (volume_name.contains("Si") or volume_name.contains("W") or
-         volume_name.contains("CFMix") or volume_name.contains("PCB") or
-         volume_name.contains("Al"))) {
+    if (G4StrUtil::contains(volume_name, "volume") and
+        (G4StrUtil::contains(volume_name, "Si") or
+         G4StrUtil::contains(volume_name, "W") or
+         G4StrUtil::contains(volume_name, "CFMix") or
+         G4StrUtil::contains(volume_name, "PCB") or
+         G4StrUtil::contains(volume_name, "Al"))) {
       volumes_.push_back(volume);
     }
   }
@@ -81,8 +83,9 @@ void EcalDarkBremFilter::postUserTrackingAction(const G4Track* track) {
                   << track->GetParticleDefinition()->GetPDGEncoding();
 
   const G4VProcess* creator = track->GetCreatorProcess();
-  if (creator and
-      creator->GetProcessName().contains(G4DarkBremsstrahlung::PROCESS_NAME)) {
+  if (creator and G4StrUtil::contains(
+                      creator->GetProcessName(),
+                      std::string_view(G4DarkBremsstrahlung::PROCESS_NAME))) {
     // make sure all secondaries of dark brem process are saved
     simcore::UserTrackInformation* user_info =
         simcore::UserTrackInformation::get(track);
