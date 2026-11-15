@@ -1,10 +1,11 @@
-"""Decode ESA 2026 calorimeter raw data (run 271)
+"""Decode ESA 2026 calorimeter raw data with the TS in the readout (run 408)
 
-The EventBuilder groups the TDAQ, ECal, HCal and HCal trigger frames of each
-trigger by RoR timestamp. ECal layers 2 and 3 share one merged ECON-D frame
-and are split by ECON-D ID, the HCal backplane comes in its own frame.
-Five samples per readout, sample of interest 2, zero suppression on.
-HCal-triggered cosmics at ~400 Hz.
+Skim of run 408 (TS + ECal L1-L3 + HCal, HCal-triggered cosmics at ~400 Hz):
+whole events with a TS pulse >= 35 ADC codes and zero-suppressed ECal and HCal
+data, all streams kept in file order. The TS raw stream is built but not
+decoded. ECal layers 1-3 share one merged ECON-D frame and are split by ECON-D
+ID, the HCal backplane comes in its own frame. Five samples per readout,
+sample of interest 2, zero suppression on.
 
 The raw .dat file is decompressed in init.sh, the EventBuilder takes
 whichever run sits in the ci-data directory.
@@ -31,39 +32,39 @@ esa26_recon_conditions()
 
 (dat_file,) = glob.glob(f"{os.environ['CI_DATA']}/esa26_cosmics_data/*.dat")
 
-# frames of one trigger share a timestamp, triggers can be 21 ticks apart and
-# contributors arrive up to ~0.5M ticks (2 ms) out of order
+# frames of one trigger share a timestamp; with the TS in the readout, streams
+# reach the file up to ~0.3 s late around readout stalls, so the reorder
+# window spans that (a 5e6 window builds only the first ~400 events)
 evb = eventbuilder.from_dat_file(
     dat_file,
     verbose_parse=False,
     instance_name="evb",
     coherence_window_ns=10.0,
-    reorder_window_ns=5e6,
+    reorder_window_ns=1e9,
 )
 evb.binary_file = ""
 evb.performance_file = ""
 
-# ECal (subsystem 5, contributor 40): ECON-D ID 2 = layer 2 (6 ROCs, 12 eRx),
-# ID 3 = layer 3 (ROCs 0, 2, 3, 6 eRx)
-ecal_l2_decoder = ECONDDecoder(
-    instance_name="ecal_l2_decoder",
-    raw_data_name="ecal",
-    digi_output_name="EcalL2Digis",
-    is_ecal=True,
-    n_links=12,
-    fiber=2,
-    econd_id=2,
-)
-ecal_l3_decoder = ECONDDecoder(
-    instance_name="ecal_l3_decoder",
-    raw_data_name="ecal",
-    digi_output_name="EcalL3Digis",
-    is_ecal=True,
-    n_links=6,
-    fiber=3,
-    econd_id=3,
-)
-# same frames with detector IDs, then rec hits
+# ECal (subsystem 5, contributor 40): ECON-D ID 1 = layer 1 (ROCs 0, 1, 3, 4,
+# 8 eRx), ID 2 = layer 2 (6 ROCs, 12 eRx), ID 3 = layer 3 (ROCs 0, 2, 3, 6 eRx)
+ecal_links = ((1, 8), (2, 12), (3, 6))
+ecal_decoders = [
+    ECONDDecoder(
+        instance_name=f"ecal_l{L}_decoder",
+        raw_data_name="ecal",
+        digi_output_name=f"EcalL{L}Digis",
+        is_ecal=True,
+        n_links=n,
+        fiber=L,
+        econd_id=L,
+    )
+    for L, n in ecal_links
+]
+ecal_dqm = [
+    ECONDDigiDQM(digi_name=f"EcalL{L}Digis", instance_name=f"ecal_l{L}_dqm")
+    for L, _ in ecal_links
+]
+# layers 2 and 3 again with detector IDs, then rec hits
 ecal_det = [
     ECONDDecoder(
         instance_name=f"ecal_l{L}_det",
@@ -90,8 +91,6 @@ ecal_rec_dqm = [
     EcalRecHitDQM(instance_name=f"ecal_l{L}_rec_dqm", rec_hit_coll=f"EcalL{L}RecHits")
     for L in (2, 3)
 ]
-ecal_l2_dqm = ECONDDigiDQM(digi_name="EcalL2Digis", instance_name="ecal_l2_dqm")
-ecal_l3_dqm = ECONDDigiDQM(digi_name="EcalL3Digis", instance_name="ecal_l3_dqm")
 
 # HCal (subsystem 7 at ESA26, 5 at ESA25): ROCs 0, 2, 3 (6 eRx)
 hcal_decoder = ECONDDecoder(
@@ -106,10 +105,8 @@ hcal_dqm = ECONDDigiDQM(digi_name="HcalDigis", instance_name="hcal_econd_dqm")
 p.sequence = [
     evb,
     dqm.EventSummaryDQM(),
-    ecal_l2_decoder,
-    ecal_l3_decoder,
-    ecal_l2_dqm,
-    ecal_l3_dqm,
+    *ecal_decoders,
+    *ecal_dqm,
     *ecal_det,
     *ecal_rec,
     *ecal_rec_dqm,
@@ -124,7 +121,7 @@ p.logger.custom("EventBuilder", level=2)
 
 p.max_events = int(os.environ["LDMX_NUM_EVENTS"])
 # data run number, selects the conditions-data IOV
-p.run = 271
+p.run = 408
 
 p.histogram_file = "hist.root"
 p.output_files = ["events.root"]
