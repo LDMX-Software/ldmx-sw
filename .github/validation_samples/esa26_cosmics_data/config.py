@@ -2,8 +2,8 @@
 
 Skim of run 408 (TS + ECal L1-L3 + HCal, HCal-triggered cosmics at ~400 Hz):
 whole events with a TS pulse >= 35 ADC codes and zero-suppressed ECal and HCal
-data, all streams kept in file order. The TS raw stream is built but not
-decoded. ECal layers 1-3 share one merged ECON-D frame and are split by ECON-D
+data, all streams kept in file order. The TS raw stream is decoded (15
+samples) and pads 1-3 are reconstructed to rec hits. ECal layers 1-3 share one merged ECON-D frame and are split by ECON-D
 ID, the HCal backplane comes in its own frame. Five samples per readout,
 sample of interest 2, zero suppression on.
 
@@ -15,7 +15,7 @@ import glob
 import os
 
 from LDMX.DQM import dqm
-from LDMX.DQM.dqm import EcalRecHitDQM, ECONDDigiDQM
+from LDMX.DQM.dqm import EcalRecHitDQM, ECONDDigiDQM, TrigScintDigiDQM
 from LDMX.Ecal.digi import EcalRecProducer
 from LDMX.Ecal.ecal_detector_map import EcalDetectorMap
 from LDMX.Ecal.ecal_geometry import EcalGeometryProvider
@@ -23,6 +23,9 @@ from LDMX.Ecal.esa26_conditions import esa26_recon_conditions
 from LDMX.EventBuilder import eventbuilder
 from LDMX.Framework import ldmxcfg
 from LDMX.Packing.decoding import ECONDDecoder
+from LDMX.TrigScint.trig_scint import TrigScintRecHitProducer
+from LDMX.TrigScint.ts_daq_map import ts_calib_file_path, ts_data_path
+from LDMX.TrigScint.zccm_format import ZCCMDecoder
 
 
 p = ldmxcfg.Process("test")
@@ -102,6 +105,42 @@ hcal_decoder = ECONDDecoder(
 )
 hcal_dqm = ECONDDigiDQM(digi_name="HcalDigis", instance_name="hcal_econd_dqm")
 
+# TS (subsystem 2, contributor 1 -> "ts"): 14 lanes x 6 channels, 15 samples,
+# lanes 4(p-1)..4p-1 = pad p, lanes 12-13 = LYSO (decodedZCCMPad4, no rec hits)
+ts_decoder = ZCCMDecoder(
+    instance_name="ts_decoder",
+    channel_map_file=ts_data_path("channelMap_4modules_14lanes.txt"),
+    module_map_file=ts_data_path("moduleMap_4modules_14lanes.txt"),
+    input_collection="ts",
+    output_collection="decodedZCCMPad",
+    number_channels=14 * 6,
+    number_time_samples=15,
+)
+# sample_of_interest per pad from the Run 408 pulse timing (pad 1 lanes 0-1
+# run 3 samples ahead of lanes 2-3), 10-sample window for all pads,
+# Run 319 gains and pedestals
+ts_soi = {1: 2, 2: 4, 3: 4}
+ts_rec = [
+    TrigScintRecHitProducer(
+        instance_name=f"ts_pad{pad}_rec",
+        input_collection=f"decodedZCCMPad{pad}",
+        output_collection=f"trigScintRecHitsPad{pad}",
+        sample_of_interest=soi,
+        integration_window=10,
+        use_calib_file=True,
+        calib_file=ts_calib_file_path(pad, period="esa26"),
+    )
+    for pad, soi in ts_soi.items()
+]
+ts_rec_dqm = [
+    TrigScintDigiDQM(
+        instance_name=f"ts_pad{pad}_rec_dqm",
+        hit_collection=f"trigScintRecHitsPad{pad}",
+        pad=f"pad{pad}",
+    )
+    for pad in ts_soi
+]
+
 p.sequence = [
     evb,
     dqm.EventSummaryDQM(),
@@ -112,6 +151,9 @@ p.sequence = [
     *ecal_rec_dqm,
     hcal_decoder,
     hcal_dqm,
+    ts_decoder,
+    *ts_rec,
+    *ts_rec_dqm,
 ]
 # one info line per built event otherwise
 p.logger.custom("EventBuilder", level=2)
