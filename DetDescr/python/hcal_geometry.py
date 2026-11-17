@@ -45,6 +45,20 @@ class HcalReadoutGeometry:
         Layers with odd parity (1) are horizontal on the x-axis in the back HCal
     y_offset
         Offset of the entire Hcal geometry to be taken into account
+    layer_z:
+        Optional explicit layout, per section and layer: world z of the layer
+        center. If empty, layers are placed from zero_layer and layer_thickness.
+    layer_long_axis:
+        Explicit layout, per section and layer: 0 if the bars are long along x,
+        1 if long along y.
+    layer_bar_center:
+        Explicit layout, per section and layer: world coordinate of the bar
+        centers along the bar.
+    layer_strip_zero:
+        Explicit layout, per section and layer: world coordinate of the strip 0
+        center across the bar.
+    double_ended:
+        Explicit layout, per section: 1 if the bars are read out at both ends.
     """
 
     detectors_valid: list[str]
@@ -64,6 +78,11 @@ class HcalReadoutGeometry:
     back_horizontal_parity: int = 1
     side_3d_readout: int = 0
     y_offset: float = 0.0
+    layer_z: list[float, float] = []
+    layer_long_axis: list[int, int] = []
+    layer_bar_center: list[float, float] = []
+    layer_strip_zero: list[float, float] = []
+    double_ended: list[int] = []
 
     def __str__(self):
         """Stringify this configuration class"""
@@ -531,95 +550,60 @@ class HcalReadoutGeometry:
             detectors_valid=detectors_valid,
         )
 
-    # The HCal prototype that will be used to measure cosmic muons.
-    # The HCal prototype has been assumed to be the top and bottom section of
-    # the side HCal since they share the same scintillator orientation.
-    # More changes are required in the software to sucessfully digitize and
-    # reconstruct the data obtained when using this geometry.
-    def make_cosmic26_v1():
-
+    # The ESA cosmic stand: three HCal stations of crossed bars, no absorber.
+    # Sections follow the GDML copy numbers: 0 above ECal, 1 top, 2 below ECal.
+    # Layout from Detectors/data/ldmx-esa-cosmic26-v2/hcal_*.gdml, layers count
+    # from the top. The top station holds the short pair (the ESA25 quads,
+    # 1 m bars) above a long pair (2 m bars).
+    def make_cosmic26_v2():
         scint_thickness = 20.0
-        scint_bar_width = 50.0
-        scint_bar_length = 2000.0
-        layer_thickness = 21.5
-        space_between_sections = 1000
+        scint_width = 50.0
+        long_bar, short_bar = 2000.0, 1000.0
 
-        # Number of sections is hard-coded, therfore the layers in
-        # the back HCal is defined.
-        # Zero in this case since it doesn't actually exist.
-        num_layers_back = 0
-
-        num_layers_alongx_top = 4
-        num_layers_alongz_top = 4
-
-        num_layers_alongx_bottom = 4
-        num_layers_alongz_bottom = 4
-
-        num_layers_top = num_layers_alongx_top + num_layers_alongz_top
-        num_layers_bottom = num_layers_alongx_bottom + num_layers_alongz_bottom
-        num_bars = 8
-        dy = (
-            num_layers_top + num_layers_bottom
-        ) * layer_thickness + space_between_sections
-
-        scint_thickness = scint_thickness
-        scint_width = scint_bar_width
-        # Number of sections are hard-coded, each list index represents one section:
-        # [back, top, bottom, right, left].
-        scint_length = [
-            [0.0],
-            [scint_bar_length for layer in range(num_layers_top)],
-            [scint_bar_length for layer in range(num_layers_bottom)],
+        # per section, per layer: (z, long axis, bar center, strip 0 center, length)
+        layers = [
+            [
+                (2824.467242, 0, 5004.942, -279.046837, long_bar),
+                (2800.942584, 1, -104.170, 4829.467280, long_bar),
+                (2777.417926, 0, 5004.942, -279.046837, long_bar),
+                (2753.893268, 1, -104.170, 4829.467280, long_bar),
+            ],
+            [
+                (3802.239020, 1, -116.855174, 4730.287770, short_bar),
+                (3782.239020, 0, 5005.287770, -391.855174, short_bar),
+                (3758.710992, 1, -104.522, 4732.430963, long_bar),
+                (3735.339410, 0, 5004.943, -384.774727, long_bar),
+            ],
+            [
+                (2291.504269, 0, 5004.943, -379.446828, long_bar),
+                (2267.979855, 1, -104.522, 4729.665734, long_bar),
+                (2244.455441, 0, 5004.943, -379.446828, long_bar),
+                (2220.931026, 1, -104.522, 4729.665734, long_bar),
+            ],
         ]
+        num_bars = [8, 12, 12]
 
-        num_strips = [
-            [0],
-            [num_bars for i in range(num_layers_top)],
-            [num_bars for i in range(num_layers_bottom)],
-        ]
-
-        zero_strip = [
-            [0.0],
-            [-scint_bar_width * num_bars / 2] * num_layers_top,
-            [-scint_bar_width * num_bars / 2] * num_layers_bottom,
-        ]
-
-        half_total_width = zero_strip
-        zero_layer = [0.0, dy / 2.0 - layer_thickness * num_layers_top, -dy / 2.0]
-        layer_thickness = [0.0, layer_thickness, layer_thickness]
-        # 3 due to hard-coding.
-        num_sections = 3
-        num_layers = [num_layers_back, num_layers_top, num_layers_bottom]
-
-        ecal_dx = 0.0
-        ecal_dy = 0.0
-        detectors_valid = [
-            "ldmx-esa-cosmic26-v1",
-        ]
-
-        back_horizontal_parity = 0
-        # Side_3d_readout should probably not be 1. A new variable maybe needs to be
-        # defined and used throughout the software.
-        side_3d_readout = 1
-        y_offset = 0.0
-
+        num_sections = len(layers)
+        num_layers = [len(sec) for sec in layers]
         return HcalReadoutGeometry(
             num_sections=num_sections,
             num_layers=num_layers,
             scint_thickness=scint_thickness,
             scint_width=scint_width,
-            back_horizontal_parity=back_horizontal_parity,
-            side_3d_readout=side_3d_readout,
-            y_offset=y_offset,
-            scint_length=scint_length,
-            zero_layer=zero_layer,
-            zero_strip=zero_strip,
-            layer_thickness=layer_thickness,
-            num_strips=num_strips,
-            half_total_width=half_total_width,
-            ecal_dx=ecal_dx,
-            ecal_dy=ecal_dy,
-            detectors_valid=detectors_valid,
+            scint_length=[[ly[4] for ly in sec] for sec in layers],
+            zero_layer=[0.0] * num_sections,
+            zero_strip=[[0.0] * n for n in num_layers],
+            layer_thickness=[0.0] * num_sections,
+            num_strips=[[nb] * n for nb, n in zip(num_bars, num_layers, strict=True)],
+            half_total_width=[[ly[4] / 2 for ly in sec] for sec in layers],
+            ecal_dx=0.0,
+            ecal_dy=0.0,
+            layer_z=[[ly[0] for ly in sec] for sec in layers],
+            layer_long_axis=[[ly[1] for ly in sec] for sec in layers],
+            layer_bar_center=[[ly[2] for ly in sec] for sec in layers],
+            layer_strip_zero=[[ly[3] for ly in sec] for sec in layers],
+            double_ended=[1] * num_sections,
+            detectors_valid=["ldmx-esa-cosmic26-v2"],
         )
 
 
@@ -638,6 +622,6 @@ class HcalGeometry:
     v2_prototype: HcalReadoutGeometry = field(
         default_factory=HcalReadoutGeometry.make_v2_prototype
     )
-    cosmic26_v1: HcalReadoutGeometry = field(
-        default_factory=HcalReadoutGeometry.make_cosmic26_v1
+    cosmic26_v2: HcalReadoutGeometry = field(
+        default_factory=HcalReadoutGeometry.make_cosmic26_v2
     )

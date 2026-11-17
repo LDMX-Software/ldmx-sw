@@ -23,6 +23,9 @@ class EcalGeometryProvider(ConditionsObjectProvider):
 
     __instance = None
     geometries: list[EcalGeometry] = []
+    # explicit detector name for real data, whose RunHeader carries none;
+    # empty: use the RunHeader (sim)
+    detector: str = ""
 
     def get_instance():
         """Get the single instance of the EcalGeometryProvider
@@ -37,6 +40,10 @@ class EcalGeometryProvider(ConditionsObjectProvider):
             EcalGeometryProvider()
 
         return EcalGeometryProvider.__instance
+
+    def set_detector(self, det_name):
+        """Set the detector name used to select the geometry parameters."""
+        self.detector = det_name
 
     def __post_init__(self):
         if EcalGeometryProvider.__instance is not None:

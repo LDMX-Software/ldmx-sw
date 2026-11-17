@@ -1,8 +1,8 @@
-#include "Tracking/Digitization/PulseShape.h"
+#include "Tools/PulseShape.h"
 
 #include "Framework/Exception/Exception.h"
 
-namespace tracking::digitization {
+namespace ldmx {
 
 // ---------------------------------------------------------------------------
 // FourPoleShape
@@ -48,4 +48,24 @@ std::unique_ptr<PulseShape> PulseShape::make(const std::string& name, double tp,
                                          name + "'. Use 'CRRC' or 'FourPole'.");
 }
 
-}  // namespace tracking::digitization
+// ---------------------------------------------------------------------------
+// HgcrocShape
+// ---------------------------------------------------------------------------
+
+HgcrocShape::HgcrocShape(double rate_up, double time_up, double rate_dn,
+                         double time_dn, double time_peak)
+    : rate_up_(rate_up),
+      time_up_(time_up),
+      rate_dn_(rate_dn),
+      time_dn_(time_dn),
+      time_peak_(time_peak) {
+  norm_ = (1.0 + std::exp(rate_up_ * (time_peak_ - time_up_))) *
+          (1.0 + std::exp(rate_dn_ * (time_peak_ - time_dn_)));
+}
+
+double HgcrocShape::eval(double t) const {
+  return norm_ / ((1.0 + std::exp(rate_up_ * (t - time_up_ + time_peak_))) *
+                  (1.0 + std::exp(rate_dn_ * (t - time_dn_ + time_peak_))));
+}
+
+}  // namespace ldmx

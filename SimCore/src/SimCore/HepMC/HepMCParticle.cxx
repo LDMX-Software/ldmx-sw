@@ -4,6 +4,8 @@
 
 #include "Framework/Exception/Exception.h"
 #include "HepMC3/FourVector.h"
+#include "HepMC3/GenEvent.h"
+#include "HepMC3/GenVertex.h"
 
 namespace simcore {
 namespace hepmc {
@@ -39,6 +41,18 @@ double HepMCParticle::getMomentum(int index) const {
 }
 
 double HepMCParticle::getMass() const { return particle_->generated_mass(); }
+
+int HepMCParticle::getProductionVertexId() const {
+  auto vertex = particle_->production_vertex();
+  return vertex ? vertex->id() : 0;
+}
+
+HepMC3::FourVector HepMCParticle::getProductionPosition() const {
+  // GenVertex::position falls back to ancestors and then the event position
+  if (auto vertex = particle_->production_vertex()) return vertex->position();
+  if (auto event = particle_->parent_event()) return event->event_pos();
+  return HepMC3::FourVector::ZERO_VECTOR();
+}
 
 std::shared_ptr<HepMC3::GenParticle> HepMCParticle::getGenParticle() const {
   return particle_;

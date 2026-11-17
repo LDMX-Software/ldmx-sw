@@ -41,6 +41,7 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
   // Start with tagger tracks
   int tagger_n{0};
   for (const auto& trk : tagger_track_collection) {
+    if (trk.getNdf() <= 0) continue;
     if ((std::abs(trk.getD0()) < max_d0_) &&
         (std::abs(trk.getZ0()) < max_z0_)) {
       auto charge_over_momentum = trk.getQoP();
@@ -60,6 +61,8 @@ void TrackerVetoProcessor::produce(framework::Event& event) {
   // Recoil tracks now
   int recoil_n{0};
   for (const auto& trk : recoil_track_collection) {
+    // no fit quality without a positive ndf
+    if (trk.getNdf() <= 0) continue;
     float chi2_per_ndf = trk.getChi2() / trk.getNdf();
     if ((std::abs(trk.getD0()) < max_d0_) &&
         (std::abs(trk.getZ0()) < max_z0_) &&

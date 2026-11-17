@@ -6,8 +6,8 @@
 #include "Framework/Configure/Parameters.h"
 #include "Framework/Event.h"
 #include "Framework/EventProcessor.h"
-#include "Tracking/Digitization/PulseShape.h"
-#include "Tracking/Digitization/StripPulseFitter.h"
+#include "Tools/PulseFitter.h"
+#include "Tools/PulseShape.h"
 
 namespace tracking::reco {
 
@@ -64,8 +64,8 @@ class StripFitProcessor : public framework::Producer {
   double max_chi2_ndf_{-1.0};
 
   // Owned objects constructed in onProcessStart
-  std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
-  std::unique_ptr<tracking::digitization::StripPulseFitter> fitter_;
+  std::unique_ptr<ldmx::PulseShape> pulse_shape_;
+  std::unique_ptr<ldmx::PulseFitter> fitter_;
 };
 
 }  // namespace tracking::reco

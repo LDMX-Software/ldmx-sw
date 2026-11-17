@@ -44,7 +44,7 @@ void DigitizationProcessor::onProcessStart() {
                    << "  n_segments_min=" << sensor_params_.n_segments_min
                    << "  granularity=" << sensor_params_.deposition_granularity;
 
-    pulse_shape_ = tracking::digitization::PulseShape::make(
+    pulse_shape_ = ldmx::PulseShape::make(
         std::string(tracking::digitization::PULSE_SHAPE_NAME),
         tracking::digitization::PEAKING_TIME_NS,
         tracking::digitization::SECOND_TIME_CONST_NS);

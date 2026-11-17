@@ -85,10 +85,12 @@ void HcalSimpleDigiAndRecProducer::produce(framework::Event& event) {
     double scint_bar_length{hcal_geometry.getScintillatorLength(hit_id)};
 
     auto strip_center{hcal_geometry.getStripCenterPosition(hit_id)};
-    if (hit_id.section() == ldmx::HcalID::HcalSection::BACK) {
+    if (hcal_geometry.isDoubleEnded(hit_id.section())) {
       double distance_along_bar =
-          (orientation ==
-           ldmx::HcalGeometry::ScintillatorOrientation::horizontal)
+          hcal_geometry.hasExplicitLayout()
+              ? hcal_geometry.getDistanceAlongBar(hit_id, xpos, ypos, zpos)
+          : (orientation ==
+             ldmx::HcalGeometry::ScintillatorOrientation::horizontal)
               ? xpos
               : ypos;
       if (orientation ==

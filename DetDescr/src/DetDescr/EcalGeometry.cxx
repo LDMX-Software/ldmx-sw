@@ -58,6 +58,10 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   layer_shift_y_ = ps.get<double>("layer_shift_y");
   layer_shift_odd_ = ps.get<bool>("layer_shift_odd");
   layer_shift_odd_bilayer_ = ps.get<bool>("layer_shift_odd_bilayer");
+  ecal_center_x_ = ps.get<double>("ecal_center_x", 0.);
+  ecal_center_y_ = ps.get<double>("ecal_center_y", 0.);
+  flip_y_ = ps.get<bool>("flip_y", false);
+  flip_x_ = ps.get<bool>("flip_x", false);
   si_thickness_ = ps.get<double>("si_thickness");
 
   if (layer_shift_odd_ and layer_shift_odd_bilayer_) {
@@ -112,6 +116,8 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id,
   // and convert to flower coordinates
   double p{x - std::get<0>(layer_pos_xy_.at(layer_id))},
       q{y - std::get<1>(layer_pos_xy_.at(layer_id))};
+  if (flip_x_) p = -p;
+  if (flip_y_) q = -q;
 
   // deduce module ID
   //    there are only 7 modules so we just loop through them
@@ -149,9 +155,10 @@ EcalID EcalGeometry::getID(double x, double y, int layer_id, int module_id,
                            bool fallible) const {
   // now assume we know the layer and module
   // shift to center of layer and then center of module
-  double p{x - std::get<0>(layer_pos_xy_.at(layer_id)) -
+  double p{(flip_x_ ? -1. : 1.) *
+               (x - std::get<0>(layer_pos_xy_.at(layer_id))) -
            module_pos_xy_.at(module_id).first},
-      q{y - std::get<1>(layer_pos_xy_.at(layer_id)) -
+      q{(flip_y_ ? -1. : 1.) * (y - std::get<1>(layer_pos_xy_.at(layer_id))) -
         module_pos_xy_.at(module_id).second};
 
   // need to rotate
@@ -206,13 +213,16 @@ void EcalGeometry::buildLayerMap() {
 
   for (std::size_t i_layer{0}; i_layer < layer_z_positions_.size(); ++i_layer) {
     // default is centered on z-axis
-    double x{0}, y{0}, z{ecal_front_z_ + layer_z_positions_.at(i_layer)};
+    double x{ecal_center_x_}, y{ecal_center_y_},
+        z{ecal_front_z_ + layer_z_positions_.at(i_layer)};
+    const double shift_x{flip_x_ ? -layer_shift_x_ : layer_shift_x_};
+    const double shift_y{flip_y_ ? -layer_shift_y_ : layer_shift_y_};
     if (layer_shift_odd_ and (i_layer % 2 == 1)) {
-      x += layer_shift_x_;
-      y += layer_shift_y_;
+      x += shift_x;
+      y += shift_y;
     } else if (layer_shift_odd_bilayer_ and ((i_layer / 2) % 2 == 1)) {
-      x += layer_shift_x_;
-      y += layer_shift_y_;
+      x += shift_x;
+      y += shift_y;
     }
     ldmx_log(trace) << "    Layer " << i_layer << " has center at (" << x
                     << ", " << y << ", " << z << ") mm";
@@ -488,8 +498,10 @@ void EcalGeometry::buildCellModuleMap() {
       // now add the layer-center values to get the global position
       // of the cell
       cell_global_pos_[EcalID(layer_id, flat_id.module(), flat_id.cell())] =
-          std::make_tuple(rel_to_layer.first + std::get<0>(layer_xyz),
-                          rel_to_layer.second + std::get<1>(layer_xyz),
+          std::make_tuple((flip_x_ ? -1. : 1.) * rel_to_layer.first +
+                              std::get<0>(layer_xyz),
+                          (flip_y_ ? -1. : 1.) * rel_to_layer.second +
+                              std::get<1>(layer_xyz),
                           std::get<2>(layer_xyz));
     }
   }

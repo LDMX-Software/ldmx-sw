@@ -1,8 +1,8 @@
 #include "Tracking/Reco/SiStripWaveformFitProcessor.h"
 
 #include "Framework/Exception/Exception.h"
+#include "Tools/PulseFitter.h"
 #include "Tracking/Digitization/SiStripConstants.h"
-#include "Tracking/Digitization/StripPulseFitter.h"
 #include "Tracking/Event/FittedSiStripHit.h"
 #include "Tracking/Event/SiStripWaveform.h"
 #include "Tracking/Reco/SiStripChannelMap.h"
@@ -35,8 +35,8 @@ void SiStripWaveformFitProcessor::onProcessStart() {
   // path in the message -- never as a silently empty event stream.
   daq_map_ = TrackerDaqMap::fromJsonFile(daq_map_file_);
 
-  pulse_shape_ = PulseShape::make(std::string(PULSE_SHAPE_NAME),
-                                  PEAKING_TIME_NS, SECOND_TIME_CONST_NS);
+  pulse_shape_ = ldmx::PulseShape::make(std::string(PULSE_SHAPE_NAME),
+                                        PEAKING_TIME_NS, SECOND_TIME_CONST_NS);
 
   ldmx_log(info) << "SiStripWaveformFitProcessor configured:"
                  << "  daq_map='" << daq_map_file_ << "' (" << daq_map_.size()
@@ -111,11 +111,11 @@ void SiStripWaveformFitProcessor::produce(framework::Event& event) {
                                   ? t_scan_max_ns_
                                   : n_samples * SAMPLING_INTERVAL_NS;
 
-    StripPulseFitter fitter(*pulse_shape_,
-                            /*t0_offset_ns=*/0.0, SAMPLING_INTERVAL_NS,
-                            /*pedestal_adc=*/0.0,
-                            /*noise_sigma_adc=*/noise, t_scan_min_ns_,
-                            t_scan_max, t_scan_step_ns_);
+    ldmx::PulseFitter fitter(*pulse_shape_,
+                             /*t0_offset_ns=*/0.0, SAMPLING_INTERVAL_NS,
+                             /*pedestal_adc=*/0.0,
+                             /*noise_sigma_adc=*/noise, t_scan_min_ns_,
+                             t_scan_max, t_scan_step_ns_);
     const auto fit = fitter.fit(samples);
     ++n_fit_attempted_;
 

@@ -125,7 +125,8 @@ class HepMC(PrimaryGenerator):
     Parameters
     ----------
     file_path : str
-        path to HepMC file containing the primary vertices
+        path to HepMC file (HepMC2/3 ascii or HepMC3 ROOT); each final state
+        particle starts at its own production vertex
     vertex : list of float, optional
         Vertex position offset to apply [mm]. Defaults to [0.0, 0.0, 0.0]
     """

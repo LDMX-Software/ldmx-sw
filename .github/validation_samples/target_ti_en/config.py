@@ -50,6 +50,21 @@ from LDMX.Tracking import full_tracking_sequence
 hcal_digi = hcal_digi_and_reco.HcalDigiProducer()
 hcal_reco = hcal_digi_and_reco.HcalRecProducer()
 
+# Load the trigger emulation and the ECal NN trigger
+from LDMX.Ecal import ecal_trig_digi
+from LDMX.Hcal import hcal_trig_digi
+from LDMX.Trigger import trigger_energy_sums
+
+
+nn_trigger = [
+    ecal_trig_digi.EcalTrigPrimDigiProducer(),
+    hcal_trig_digi.HcalTrigPrimDigiProducer(),
+    trigger_energy_sums.EcalTPSelector(),
+    trigger_energy_sums.TrigHcalEnergySum(),
+    trigger_energy_sums.TrigEcalClusterProducer(),
+    trigger_energy_sums.TrigClusterNNProducer(),
+]
+
 # Load the TS modules
 from LDMX.TrigScint.trig_scint import (
     TrigScintClusterProducer,
@@ -133,8 +148,10 @@ from LDMX.Recon.ecal_preselection_skimmer import EcalPreselectionSkimmer
 
 ecal_pres_skimmer = EcalPreselectionSkimmer()
 
-ecal_pf = pf_reco.PFEcalClusterProducer()
 hcal_pf = pf_reco.PFHcalClusterProducer()
+# PF inputs: CLUE3D Ecal clusters and dE/dx on the PF tracks
+pf_ecal_clue3d = pf_reco.pf_ecal_clusters()
+pf_dedx = pf_reco.pf_track_dedx()
 track_pf = pf_reco.PFTrackProducer()
 pf_comb = pf_reco.PFProducer()
 
@@ -160,6 +177,7 @@ p.sequence.extend(
         hcal_digi,
         hcal_reco,
         hcal_veto,
+        *nn_trigger,
         *ts_digis,
         *ts_clusters,
         trig_scint_track,
@@ -167,10 +185,12 @@ p.sequence.extend(
         target_clusters,
         count,
         trigger,
-        ecal_pf,
         hcal_pf,
         track_pf,
+        pf_dedx,
+        pf_ecal_clue3d,
         pf_comb,
+        dqm.ParticleFlowDQM(),
         *target_dqm,
         dqm.ElectroNuclearDQM(),
         dqm.EcalClusterAnalyzer(),

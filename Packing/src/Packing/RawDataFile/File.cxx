@@ -111,6 +111,7 @@ bool File::nextEvent() {
     }
 
     event_->getEventHeader().setEventNumber(read_event.id());
+    event_->getEventHeader().setRealData();
 
     for (auto& subsys : read_event.data()) {
       // construct name if not provided by default EID mappings

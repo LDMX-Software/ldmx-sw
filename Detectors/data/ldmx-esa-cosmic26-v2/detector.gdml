@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE gdml [
+<!ENTITY materials SYSTEM "shared_gdml_files/materials.gdml">
+<!ENTITY visattributes SYSTEM "shared_gdml_files/visattributes.gdml">
+]>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="gdml.xsd">
+  <!--
+Entry point in the STEP coordinate frame (mm): X/Y horizontal, +Z up.
+v2: HCal and ECal from CosmicTestStandScienceOnly.stp (2026-11-02); target, trigger and recoil as in v1 (sensors within 1 mm of the CAD).
+CAD supports are visualization context only, so this transport geometry contains no unassigned CAD material.
+Alignment, envelopes and HCal readout reconstruction still need review.
+-->
+  <define>
+    <!--ESA roof concrete, not in the CAD, assumes z = 0 is the ESA floor-->
+    <!--2 ft thick: Weidner et al., IEEE Trans. Nucl. Sci. NS-14 (1967)-->
+    <!--building height floor to roof top 73 ft 4 in-->
+    <constant name="esa_height" value="22352"/>
+    <constant name="roof_thickness" value="610"/>
+    <constant name="roof_bottom_z" value="esa_height - roof_thickness"/>
+    <!--wide enough for muons up to 70 deg zenith aimed at the stand-->
+    <constant name="roof_width" value="120000"/>
+  </define>
+  <materials>
+    &materials;
+    <element Z="12" formula="Mg" name="Mg">
+      <atom type="A" unit="g/mol" value="24.305"/>
+    </element>
+    <element Z="19" formula="K" name="K">
+      <atom type="A" unit="g/mol" value="39.0983"/>
+    </element>
+    <!--G4_CONCRETE composition-->
+    <material name="Concrete" state="solid">
+      <D unit="g/cm3" value="2.3"/>
+      <fraction n="0.01" ref="H"/>
+      <fraction n="0.001" ref="C"/>
+      <fraction n="0.529107" ref="O"/>
+      <fraction n="0.016" ref="Na"/>
+      <fraction n="0.002" ref="Mg"/>
+      <fraction n="0.033872" ref="Al"/>
+      <fraction n="0.337021" ref="Si"/>
+      <fraction n="0.013" ref="K"/>
+      <fraction n="0.044" ref="Ca"/>
+      <fraction n="0.014" ref="Fe"/>
+    </material>
+  </materials>
+  <solids>
+    <box name="cosmic_world_box" lunit="mm" x="130000" y="130000" z="50000"/>
+    <box name="roof_box" lunit="mm" x="roof_width" y="roof_width" z="roof_thickness"/>
+  </solids>
+  <structure>
+    <volume name="roof_volume">
+      <materialref ref="Concrete"/>
+      <solidref ref="roof_box"/>
+    </volume>
+    <volume name="World">
+      <materialref ref="Air"/>
+      <solidref ref="cosmic_world_box"/>
+      <physvol name="roof" copynumber="20">
+        <volumeref ref="roof_volume"/>
+        <position name="roof_pos" unit="mm" x="5000" y="-110" z="roof_bottom_z + roof_thickness/2"/>
+      </physvol>
+      <!--ESA target/trigger/tracker/ECal internals, registered to the current STEP frame. The rotation sends ESA +z down CAD -z.-->
+      <physvol name="native_target" copynumber="2">
+        <file name="target.gdml"/>
+        <position name="target_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3066.3880545"/>
+        <rotation name="target_rot" unit="deg" x="180" y="0" z="0"/>
+      </physvol>
+      <physvol name="native_trig_scint" copynumber="3">
+        <file name="trig_scint.gdml"/>
+        <position name="trig_scint_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3410.4135545"/>
+        <rotation name="trig_scint_rot" unit="deg" x="180" y="0" z="0"/>
+      </physvol>
+      <physvol name="native_recoil" copynumber="5">
+        <file name="recoil.gdml"/>
+        <position name="recoil_pos" unit="mm" x="5027.51999312" y="-155.750230102" z="3206.8880545"/>
+        <rotation name="recoil_rot" unit="deg" x="180" y="0" z="0"/>
+      </physvol>
+      <!--ECal origin at the support box center, box registered to the CAD box (rails, sheets). The rotation about y sends the ECal +z down and its +x to CAD -x, which puts the box panels and the 22.6 mm box-to-layer offset where the CAD has them.-->
+      <physvol name="native_ecal" copynumber="6">
+        <file name="ecal.gdml"/>
+        <position name="ecal_pos" unit="mm" x="4999.132" y="-104.346" z="2537.497"/>
+        <rotation name="ecal_rot" unit="deg" x="0" y="180" z="0"/>
+      </physvol>
+      <!--Three independent HCal station volumes keep each bar at geometry depth 2. Section IDs: top=1, above ECal=0, below ECal=2, described by HcalReadoutGeometry.make_cosmic26_v2. The top station holds the short pair (layers 1, 2) above the long pair (layers 3, 4).-->
+      <physvol name="hcal_top" copynumber="11">
+        <file name="hcal_top.gdml"/>
+        <position name="hcal_top_pos" unit="mm" x="5005.2875" y="-104.8665" z="3768.789215"/>
+      </physvol>
+      <physvol name="hcal_above_ecal" copynumber="10">
+        <file name="hcal_above_ecal.gdml"/>
+        <position name="hcal_above_ecal_pos" unit="mm" x="5004.5975" y="-104.5145" z="2790.268634"/>
+      </physvol>
+      <physvol name="hcal_below_ecal" copynumber="12">
+        <file name="hcal_below_ecal.gdml"/>
+        <position name="hcal_below_ecal_pos" unit="mm" x="5005.2875" y="-104.8665" z="2257.356513"/>
+      </physvol>
+    </volume>
+  </structure>
+  <userinfo>
+    <auxiliary auxtype="DetectorVersion" auxvalue="2">
+      <auxiliary auxtype="DetectorName" auxvalue="ldmx-esa-cosmic26-v2"/>
+      <auxiliary auxtype="Author" auxvalue="Emrys Peets, Wilde Hedin, Tamas Almos Vami"/>
+      <auxiliary auxtype="Description" auxvalue="ESA cosmic stand registered to CosmicTestStandScienceOnly.stp (2026-11-02): short top HCal pair, moved above-ECal station, ECal box on the CAD box"/>
+    </auxiliary>
+    <auxiliary auxtype="Region" auxvalue="CalorimeterRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>
+    <auxiliary auxtype="Region" auxvalue="MagnetRegion">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="false"/>
+    </auxiliary>
+    <auxiliary auxtype="Region" auxvalue="trig_scint">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
+    </auxiliary>
+    <auxiliary auxtype="Region" auxvalue="target">
+      <auxiliary auxtype="StoreTrajectories" auxvalue="true"/>
+    </auxiliary>
+    <auxiliary auxtype="ColorMode" auxvalue="Material"/>
+    &visattributes;
+  </userinfo>
+  <setup name="Default" version="1.0">
+    <world ref="World"/>
+  </setup>
+</gdml>

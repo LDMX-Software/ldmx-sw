@@ -74,6 +74,12 @@ class TrackDeDxMassEstimate {
   void setMass(float mass) { mass_ = mass; }
 
   /**
+   * Set the estimated mass squared of the particle/track.
+   * @param mass_squared The estimated mass squared of the particle/track.
+   */
+  void setMassSquared(float mass_squared) { mass_squared_ = mass_squared; }
+
+  /**
    * Set the index of the track.
    * @param track_index The index of the track.
    */
@@ -113,6 +119,12 @@ class TrackDeDxMassEstimate {
   float getMass() const { return mass_; }
 
   /**
+   * Get the estimated mass squared of the particle/track.
+   * @return The estimated mass squared of the particle/track.
+   */
+  float getMassSquared() const { return mass_squared_; }
+
+  /**
    * Get the index of the track.
    * @return The index of the track.
    */
@@ -149,6 +161,9 @@ class TrackDeDxMassEstimate {
   /* The estimated mass of the particle/track */
   float mass_{0.};
 
+  /* The estimated mass squared of the particle/track */
+  float mass_squared_{0.};
+
   /* The index of the track */
   int track_index_{-1};
 
@@ -161,7 +176,7 @@ class TrackDeDxMassEstimate {
   /**
    * The ROOT class definition.
    */
-  ClassDef(TrackDeDxMassEstimate, 6);
+  ClassDef(TrackDeDxMassEstimate, 7);
 };
 }  // namespace ldmx
 

@@ -10,6 +10,7 @@
 //----------//
 //   LDMX   //
 //----------//
+#include "Ecal/CLUE3D.h"
 #include "Framework/Configure/Parameters.h"
 #include "Framework/EventProcessor.h"
 
@@ -52,6 +53,10 @@ class EcalClusterProducer : public framework::Producer {
   bool clue_;
   int nbr_of_layers_;
   bool reclustering_;
+
+  // clue (default), clue3d
+  std::string algorithm_;
+  CLUE3D::Params clue3d_;
 
   /** The name of the cluster algorithm used. */
   TString algo_name_;

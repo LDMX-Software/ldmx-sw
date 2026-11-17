@@ -56,7 +56,7 @@ std::tuple<std::size_t, double, double> categoryBins(
     const std::vector<std::string>& categories, int offset = 0) {
   std::size_t n_categories = categories.size();
   double min = offset - 0.5;
-  double max = offset + n_categories + 0.5;
+  double max = offset + n_categories - 0.5;
   return std::make_tuple(n_categories, min, max);
 }
 

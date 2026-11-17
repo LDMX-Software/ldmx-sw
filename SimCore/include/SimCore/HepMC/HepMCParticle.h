@@ -59,6 +59,19 @@ class HepMCParticle {
   double getMass() const;
 
   /**
+   * Get the production vertex id, 0 if the particle has none.
+   * @return The HepMC3 production vertex id.
+   */
+  int getProductionVertexId() const;
+
+  /**
+   * Get the production position (x, y, z in mm, t in mm/c).
+   * Falls back to the event position if there is no production vertex.
+   * @return The production four-position.
+   */
+  HepMC3::FourVector getProductionPosition() const;
+
+  /**
    * Get the underlying HepMC3 GenParticle
    * @return Shared pointer to the HepMC3 GenParticle
    */

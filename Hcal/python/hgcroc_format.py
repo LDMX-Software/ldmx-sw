@@ -1,45 +1,6 @@
-"""Decoding and Encoding HCal Digis out of and into raw buffers"""
+"""Processors for HCal test beam raw data"""
 
-from LDMX.Framework import Processor, field, processor
-
-
-@processor("hcal::HcalRawDecoder", "Hcal")
-class HcalRawDecoder(Processor):
-    output_name: str
-    roc_version: int = 2
-    input_pass: str = ""
-    detector_name: str = "ldmx-hcal-prototype-v1.0"
-    input_names: list[str] | None = None
-    input_file: str | None = None
-    read_from_file: bool = field(init=False)
-    connections_table: str | None = None
-
-    def __post_init__(self):
-        if self.input_names is not None:
-            self.read_from_file = False
-            self.input_file = ""
-        elif self.input_file is not None:
-            self.read_from_file = True
-            self.input_names = [""]
-        else:
-            raise Exception("Must read from event bus or input file.")
-
-        from LDMX.Framework import ldmxcfg
-
-        from .detector_map import HcalDetectorMap
-
-        if self.connections_table is None:
-            # attempt to deduce if using eid based on presence of
-            # HcalDetectorMap in conditions system
-            self.translate_eid = False
-            for cop in ldmxcfg.Process.last_process.conditions_object_providers:
-                if isinstance(cop, HcalDetectorMap):
-                    self.translate_eid = True
-                    break
-        else:
-            # load connections table into conditions system
-            HcalDetectorMap(self.connections_table)
-            self.translate_eid = True
+from LDMX.Framework import Processor, processor
 
 
 @processor("hcal::HcalAlignPolarfires", "Hcal")

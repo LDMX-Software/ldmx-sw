@@ -1001,6 +1001,48 @@ class HCalRawDigi(Processor):
     input_pass: str = ""
 
 
+@processor("dqm::ECONDDigiDQM", "DQM")
+class ECONDDigiDQM(Processor):
+    """Histograms of the ECONDDecoder output
+
+    Parameters
+    ----------
+    digi_name : str
+        name of the HgcrocDigiCollection from ECONDDecoder
+    info_name : str
+        name of the ECONDEventInfo, defaults to digi_name + "ECONDInfo"
+    input_pass : str
+        pass of the decoder
+    """
+
+    digi_name: str = ""
+    info_name: str = ""
+    input_pass: str = ""
+
+    def __post_init__(self):
+        if not self.info_name:
+            self.info_name = f"{self.digi_name}ECONDInfo"
+
+
+@processor("dqm::EcalRecHitDQM", "DQM")
+class EcalRecHitDQM(Processor):
+    """Histograms of ECal rec hits without simulation truth (raw data)
+
+    Parameters
+    ----------
+    rec_hit_coll : str
+        name of the EcalHit collection
+    rec_hit_pass : str
+        pass of the rec hits
+    mip_si_energy : float
+        Si energy of one MIP [MeV], the amplitude histogram is in MIPs
+    """
+
+    rec_hit_coll: str = "EcalRecHits"
+    rec_hit_pass: str = ""
+    mip_si_energy: float = 0.130
+
+
 @processor("dqm::HgcrocPulseTruth", "DQM", "hgcroc_pulse_truth")
 class HgcrocPulseTruth(Processor):
     input_digi_name: str = ""
@@ -1791,6 +1833,16 @@ class TrkDeDxMassEstFeatures(Processor):
         self.histogram("mass_estimate", "Mass Estimate [MeV]", 100, 0.0, 2000.0)
         self.histogram("mass_estimate_low_p", "Mass Estimate [MeV]", 100, 0.0, 2000.0)
         self.histogram(
+            "mass_squared", "Mass Squared Estimate [MeV^{2}]", 200, -1.0e6, 3.0e6
+        )
+        self.histogram(
+            "mass_squared_low_p",
+            "Mass Squared Estimate, p < 1 GeV [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
             "mass_estimate_very_low_p", "Mass Estimate [MeV]", 100, 0.0, 2000.0
         )
         self.histogram(
@@ -1820,6 +1872,41 @@ class TrkDeDxMassEstFeatures(Processor):
             40,
             800.0,
             1200.0,
+        )
+        self.histogram(
+            "mass_squared_very_low_p",
+            "Mass Squared Estimate [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_electron",
+            "Mass Squared Estimate for electrons [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_pion",
+            "Mass Squared Estimate for pions [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_kaon",
+            "Mass Squared Estimate for kaons [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "mass_squared_very_low_p_proton",
+            "Mass Squared Estimate for proton [MeV^{2}]",
+            200,
+            -1.0e6,
+            3.0e6,
         )
         self.histogram("track_type", "Track Type", ["Other", "Tagger", "Recoil"])
 
@@ -1933,6 +2020,20 @@ class TrigScintTrackDQM(Processor):
 
     track_collection: str = "TriggerPadTracks"
     pass_name: str = ""
+
+
+@processor("dqm::EventSummaryDQM", "DQM")
+class EventSummaryDQM(Processor):
+    """Histograms of the EventBuilder's EventSummary
+
+    Examples
+    --------
+        from LDMX.DQM import dqm
+        p.sequence.append( dqm.EventSummaryDQM() )
+    """
+
+    summary_name: str = "EventSummary"
+    summary_pass: str = ""
 
 
 @processor("dqm::Trigger", "DQM")
@@ -2535,6 +2636,275 @@ class EcalTrackAnalyzer(Processor):
             40,
             0,
             40,
+        )
+
+
+@processor("dqm::ParticleFlowDQM", "DQM")
+class ParticleFlowDQM(Processor):
+    """Monitor PF candidates, their ID, and the match to truth.
+
+    Truth is every particle entering the Ecal front face above
+    truth_min_energy. Charged candidates match by track ID, neutral ones
+    by position within neutral_match_dist (Hcal only candidates by angle from
+    the target within neutral_hcal_match_angle) and energy within a factor
+    neutral_match_max_ratio.
+    """
+
+    pf_cand_coll_name: str = "PFCandidates"
+    pf_cand_pass_name: str = ""
+    ecal_sp_coll_name: str = "EcalScoringPlaneHits"
+    ecal_sp_pass_name: str = ""
+    sim_particles_coll_name: str = "SimParticles"
+    sim_particles_pass_name: str = ""
+    truth_min_energy: float = 50.0  # MeV, kinetic for hadrons
+    neutral_match_dist: float = 30.0  # mm
+    neutral_match_max_ratio: float = 2.0  # candidate vs truth E, either way
+    neutral_hcal_match_angle: float = 30.0  # deg, Hcal only candidates
+    # reconstructable truth for the *_reconstructable matrices: angle to the
+    # beam axis, |p| for charged pi and for p, K, KE for neutral hadrons, pi0
+    reco_max_theta: float = 80.0  # deg
+    reco_min_p_pion: float = 100.0  # MeV
+    reco_min_p_heavy: float = 800.0  # MeV
+    reco_min_ke_neutral: float = 1000.0  # MeV
+    reco_min_ke_pi0: float = 2000.0  # MeV
+    # where neutral hadrons interact, from the sim end point [mm]
+    ecal_back_z: float = 760.0
+    ecal_half_xy: float = 300.0
+    hcal_max_z: float = 4000.0
+    hcal_max_xy: float = 1600.0
+
+    def __post_init__(self):
+        # truth species, same order as Category in ParticleFlowDQM.cxx
+        species = [
+            "e",
+            "#mu",
+            "#pi^{#pm}",
+            "K^{#pm}",
+            "p",
+            "#gamma",
+            "n. had.",
+            "other",
+        ]
+        # PF types as in CMS, same order as PFType in ParticleFlowDQM.cxx
+        pf_types = ["e", "#mu", "had^{#pm}", "#gamma", "had^{0}", "other"]
+
+        # multiplicities
+        self.histogram("n_cands", "Number of PF candidates", 20, -0.5, 19.5)
+        self.histogram("n_charged", "Number of charged PF candidates", 20, -0.5, 19.5)
+        self.histogram("n_neutral", "Number of neutral PF candidates", 20, -0.5, 19.5)
+        # PID bitmask: 1 track, 2 Ecal, 4 Hcal
+        pid_labels = [
+            "None",  # 0
+            "Tk",  # 1
+            "ECal",  # 2
+            "Tk+ECal",  # 3
+            "HCal",  # 4
+            "Tk+HCal",  # 5
+            "ECal+HCal",  # 6
+            "Tk+ECal+HCal",  # 7
+        ]
+        self.histogram("pid", "", pid_labels)
+        self.histogram("reco_type", "", pf_types)
+        self.histogram(
+            "charged_hadron_mass", "had^{#pm} mass hypothesis", ["#pi", "K", "p"]
+        )
+
+        # charged candidates
+        self.histogram("charged_track_p", "Charged cand track p [MeV]", 100, 0, 8000)
+        self.histogram(
+            "charged_is_ecal_linked", "Track linked to Ecal cluster", 2, -0.5, 1.5
+        )
+        self.histogram("charged_ecal_e_over_p", "Linked Ecal E / track p", 100, 0, 2.5)
+        self.histogram(
+            "charged_ecal_raw_e_over_p", "Linked raw Ecal E / track p", 100, 0, 2.5
+        )
+        self.histogram(
+            "charged_cluster_dx", "Ecal cluster x - track x [mm]", 100, -50, 50
+        )
+        self.histogram(
+            "charged_cluster_dy", "Ecal cluster y - track y [mm]", 100, -50, 50
+        )
+
+        # charged truth residuals
+        self.histogram("charged_truth_pdg", "Charged cand truth PDG ID", 60, -30, 30)
+        self.histogram(
+            "charged_dp_over_p", "(track p - true p) / true p", 100, -0.5, 0.5
+        )
+        self.histogram(
+            "charged_dx_truth", "Track x - true x at Ecal [mm]", 100, -10, 10
+        )
+        self.histogram(
+            "charged_dy_truth", "Track y - true y at Ecal [mm]", 100, -10, 10
+        )
+        self.histogram(
+            "charged_p_vs_truth_p",
+            "True p [MeV]",
+            80,
+            0,
+            8000,
+            "Track p [MeV]",
+            80,
+            0,
+            8000,
+        )
+
+        # charged ID inputs
+        self.histogram(
+            "charged_dedx_mass2_vs_p",
+            "Track p [MeV]",
+            40,
+            0,
+            4000,
+            "dE/dx m^{2} [MeV^{2}]",
+            100,
+            -1.0e6,
+            3.0e6,
+        )
+        self.histogram(
+            "charged_dedx_mass2_vs_truth",
+            "",
+            species,
+            ylabel="dE/dx m^{2} [MeV^{2}]",
+            ybins=100,
+            ymin=-1.0e6,
+            ymax=3.0e6,
+        )
+        self.histogram(
+            "charged_e_over_p_vs_truth",
+            "",
+            species,
+            ylabel="Linked Ecal E / track p",
+            ybins=100,
+            ymin=0,
+            ymax=2.5,
+        )
+
+        # neutral candidates
+        self.histogram("neutral_ecal_only_e", "Ecal only neutral E [MeV]", 100, 0, 8000)
+        self.histogram(
+            "neutral_ecal_hcal_ecal_e", "Ecal+Hcal neutral, Ecal E [MeV]", 100, 0, 8000
+        )
+        self.histogram(
+            "neutral_ecal_hcal_hcal_e", "Ecal+Hcal neutral, Hcal E [MeV]", 100, 0, 8000
+        )
+        self.histogram("neutral_hcal_only_e", "Hcal only neutral E [MeV]", 100, 0, 8000)
+
+        # event sums
+        self.histogram("sum_charged_p", "Sum charged track p [MeV]", 100, 0, 10000)
+        self.histogram("sum_neutral_e", "Sum neutral E [MeV]", 100, 0, 10000)
+        self.histogram("sum_pf_e", "Sum PF energy [MeV]", 100, 0, 10000)
+
+        # full PF vs truth
+        self.histogram(
+            "sum_truth_e", "Sum truth visible E at Ecal face [MeV]", 100, 0, 10000
+        )
+        self.histogram(
+            "sum_pf_e_over_truth", "Sum PF E / sum truth visible E", 100, 0, 2
+        )
+        # confusion per truth particle at the Ecal face; "other": a candidate
+        # at its position but wrong energy or merged, "not found": nothing
+        # there; last truth bin of pf_confusion counts unmatched candidates
+        self.histogram(
+            "pf_confusion",
+            "Truth type",
+            [*pf_types, "no truth"],
+            ylabel="PF type",
+            ybins=[*pf_types[:5], "other", "not found"],
+        )
+        self.histogram(
+            "charged_hadron_confusion",
+            "Truth charged hadron",
+            ["#pi^{#pm}", "K^{#pm}", "p", "no truth"],
+            ylabel="PF type (mass hypothesis)",
+            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other", "not found"],
+        )
+        self.histogram(
+            "neutral_confusion",
+            "Truth neutral",
+            [
+                "n Ecal",
+                "n side Hcal",
+                "n back Hcal",
+                "n no interaction",
+                "K^{0}",
+                "other n. had.",
+                "#pi^{0} (2#gamma at Ecal)",
+            ],
+            ylabel="PF type",
+            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other", "not found"],
+        )
+        # same, for reconstructable truth only
+        self.histogram(
+            "pf_confusion_reconstructable",
+            "Truth type",
+            [*pf_types, "no truth"],
+            ylabel="PF type",
+            ybins=[*pf_types[:5], "other", "not found"],
+        )
+        self.histogram(
+            "charged_hadron_confusion_reconstructable",
+            "Truth charged hadron",
+            ["#pi^{#pm}", "K^{#pm}", "p", "no truth"],
+            ylabel="PF type (mass hypothesis)",
+            ybins=["had^{#pm} #pi", "had^{#pm} K", "had^{#pm} p", "other", "not found"],
+        )
+        self.histogram(
+            "neutral_confusion_reconstructable",
+            "Truth neutral",
+            [
+                "n Ecal",
+                "n side Hcal",
+                "n back Hcal",
+                "n no interaction",
+                "K^{0}",
+                "other n. had.",
+                "#pi^{0} (2#gamma at Ecal)",
+            ],
+            ylabel="PF type",
+            ybins=["had^{0}", "#gamma", "#gamma#gamma (#pi^{0})", "other", "not found"],
+        )
+        self.histogram("truth_type", "", species)
+        self.histogram("truth_type_matched", "", species)
+        self.histogram(
+            "response_vs_type",
+            "",
+            pf_types,
+            ylabel="Candidate E / truth visible E",
+            ybins=100,
+            ymin=0,
+            ymax=2.5,
+        )
+
+        # neutral efficiency and fakes
+        self.histogram(
+            "truth_gamma_e", "Truth #gamma E at Ecal face [MeV]", 80, 0, 4000
+        )
+        self.histogram(
+            "truth_gamma_e_matched",
+            "Matched truth #gamma E at Ecal face [MeV]",
+            80,
+            0,
+            4000,
+        )
+        self.histogram(
+            "unmatched_neutral_e", "Unmatched neutral candidate E [MeV]", 80, 0, 4000
+        )
+
+        # pi0
+        self.histogram("mgg", "All photon pairs m_{#gamma#gamma} [MeV]", 100, 0, 500)
+        self.histogram(
+            "mgg_pi0_matched",
+            "Matched #pi^{0} photon pairs m_{#gamma#gamma} [MeV]",
+            100,
+            0,
+            500,
+        )
+        self.histogram(
+            "truth_pi0_photons_in_ecal",
+            "Photons per #pi^{0} entering the Ecal",
+            3,
+            -0.5,
+            2.5,
         )
 
 

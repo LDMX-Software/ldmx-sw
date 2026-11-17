@@ -36,7 +36,10 @@ setup_library(module SimCore
               name HepMC
               dependencies Framework::Exception
                            Geant4::Interface
-                           HepMC3)
+                           HepMC3
+                           HepMC3rootIO
+                           ROOT::RIO
+                           ROOT::Tree)
 
 # Setup the biasing operators library
 setup_library(module SimCore

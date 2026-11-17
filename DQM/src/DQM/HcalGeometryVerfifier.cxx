@@ -14,7 +14,7 @@ void HcalGeometryVerifier::configure(
   hcal_sim_hits_pass_name_ = parameters.get<std::string>("sim_pass_name");
   hcal_rec_hits_pass_name_ = parameters.get<std::string>("rec_pass_name");
   stop_on_error_ = parameters.get<bool>("stop_on_error");
-  tolerance_ = parameters.get<double>("tolerance_");
+  tolerance_ = parameters.get<double>("tolerance");
 }
 void HcalGeometryVerifier::analyze(const framework::Event& event) {
   const auto hcal_sim_hits = event.getCollection<ldmx::SimCalorimeterHit>(
@@ -139,7 +139,9 @@ std::array<int, 3> HcalGeometryVerifier::determineIndices(
   int index_along{};
   int index_across{};
   int index_through{};
-  if (id.section() == ldmx::HcalID::HcalSection::BACK) {
+  // explicit layout bars lie flat in z like the back HCal
+  if (id.section() == ldmx::HcalID::HcalSection::BACK ||
+      geometry.hasExplicitLayout()) {
     index_through = 2;  // z
     if (orientation ==
         ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {

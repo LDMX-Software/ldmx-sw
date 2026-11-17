@@ -14,5 +14,7 @@
 #pragma link C++ class std::vector < trigger::TrigMip> + ;
 #pragma link C++ class trigger::TrigParticle + ;
 #pragma link C++ class std::vector < trigger::TrigParticle> + ;
+#pragma link C++ class trigger::TrigClusterNNScore + ;
+#pragma link C++ class std::vector < trigger::TrigClusterNNScore> + ;
 
 #endif

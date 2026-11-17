@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <set>
+#include <stdexcept>
 #include <vector>
 
 #include "EventBuilder/Event/GenericDataBlock.h"
@@ -25,12 +26,13 @@ using namespace eventbuilder;
 static bool g_perf_csv_header_written = false;
 
 // Helper function to write performance metrics to CSV
-void writePerformanceMetric(unsigned int event_id, double build_time_ms,
-                            double cum_events_per_sec, double cum_mb_per_sec,
-                            double window_events_per_sec,
+void writePerformanceMetric(const std::string& path, unsigned int event_id,
+                            double build_time_ms, double cum_events_per_sec,
+                            double cum_mb_per_sec, double window_events_per_sec,
                             double window_mb_per_sec, uint64_t total_events,
                             uint64_t total_bytes) {
-  std::ofstream perf_csv("event_performance.csv", std::ios::app);
+  if (path.empty()) return;
+  std::ofstream perf_csv(path, std::ios::app);
   if (!perf_csv) return;
 
   // Write header on first call
@@ -69,14 +71,24 @@ void EventBuilder::configure(framework::config::Parameters& ps) {
   if (ps.exists("coherence_window_ns")) {
     m_coherence_window_ns_ = ps.get<double>("coherence_window_ns");
   }
+  if (ps.exists("reorder_window_ns")) {
+    m_reorder_window_ns_ = ps.get<double>("reorder_window_ns");
+  }
   if (ps.exists("min_subsystems")) {
     m_min_subsystems_ = ps.get<int>("min_subsystems");
+  }
+  if (ps.exists("binary_file")) {
+    m_binary_file_ = ps.get<std::string>("binary_file");
+  }
+  if (ps.exists("performance_file")) {
+    m_performance_file_ = ps.get<std::string>("performance_file");
   }
 
   ldmx_log(info) << "configure(): dat_file='" << m_input_file_
                  << "' output_name='" << m_output_name_
                  << "' verbose_parse=" << (m_verbose_parse_ ? "true" : "false")
                  << " coherence_window_ns=" << m_coherence_window_ns_
+                 << " reorder_window_ns=" << m_reorder_window_ns_
                  << " min_subsystems=" << m_min_subsystems_;
 
   if (!m_input_file_.empty()) {
@@ -148,12 +160,14 @@ void EventBuilder::produce(framework::Event& event) {
     // Attempt to read as RoR header
     try {
       ror_header.read(m_reader_);
+      if (!ror_header.valid()) throw std::runtime_error("invalid RoR header");
       // Successfully parsed RoR header
       fragment.header_.subsystem_id_ =
           static_cast<uint64_t>(ror_header.subsystem());
       fragment.header_.contributor_id_ =
           static_cast<uint64_t>(ror_header.contributor());
       fragment.header_.timestamp_ = ror_header.timestamp();
+      fragment.header_.flags_ = ror_header.flags();
 
       if (m_verbose_parse_) {
         ldmx_log(debug) << "parsed RoR header subsys="
@@ -233,7 +247,8 @@ void EventBuilder::produce(framework::Event& event) {
 
     if (buffer_ref_time > 0 &&
         (fragment_ts < buffer_ref_time - m_coherence_window_ns_ ||
-         fragment_ts > buffer_ref_time + m_coherence_window_ns_)) {
+         fragment_ts >
+             buffer_ref_time + m_coherence_window_ns_ + m_reorder_window_ns_)) {
       // This fragment is outside the current window - try to build the previous
       // event
       std::vector<DataFragment> assembled_event_fragments;
@@ -258,10 +273,11 @@ void EventBuilder::produce(framework::Event& event) {
         }
         event.getEventHeader().setIntParameter(
             "RoR Timestamp", static_cast<long long>(event_timestamp));
+        event.getEventHeader().setRealData();
         // Still create PhysicsEventData for binary output file
         PhysicsEventData final_event =
             assemblePayload(assembled_event_fragments);
-        writeEventBinary(final_event, "events.bin");
+        writeEventBinary(final_event, m_binary_file_);
         ldmx_log(info) << "assembled event id=" << m_event_id_
                        << " timestamp=" << final_event.timestamp_
                        << " fragments=" << assembled_event_fragments.size()
@@ -270,14 +286,21 @@ void EventBuilder::produce(framework::Event& event) {
         ldmx::EventSummary summary;
         summary.setEventNumber(m_event_id_);
         summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp_));
-        std::set<uint64_t> unique_sys;
+        std::set<uint64_t> unique_sys, unique_sources;
         uint64_t total_payload = 0;
         for (const auto& f : assembled_event_fragments) {
           unique_sys.insert(f.header_.subsystem_id_);
+          // a subsystem may have several contributors, a duplicate is the same
+          // pair twice
+          unique_sources.insert(f.header_.subsystem_id_ << 8 |
+                                f.header_.contributor_id_);
           total_payload += f.payload_.size();
+          if (f.header_.flags_ & packing::LDMXRoRHeader::FLAG_DATA_DROPPED) {
+            current_event_errors |= ldmx::EventSummary::ERROR_DATA_DROPPED;
+          }
         }
         // Check for duplicate subsystems
-        if (unique_sys.size() != assembled_event_fragments.size()) {
+        if (unique_sources.size() != assembled_event_fragments.size()) {
           current_event_errors |= ldmx::EventSummary::ERROR_DUPLICATE_SUBSYSTEM;
         }
         summary.setNSystems(static_cast<uint32_t>(unique_sys.size()));
@@ -337,10 +360,11 @@ void EventBuilder::produce(framework::Event& event) {
 
         // Write performance metrics to CSV
         long long event_build_time_ms_val = event_build_time_ms.count();
-        writePerformanceMetric(
-            m_event_id_, static_cast<double>(event_build_time_ms_val),
-            events_per_sec, mb_per_sec, window_events_per_sec,
-            window_mb_per_sec, m_total_events_built_, m_total_bytes_read_);
+        writePerformanceMetric(m_performance_file_, m_event_id_,
+                               static_cast<double>(event_build_time_ms_val),
+                               events_per_sec, mb_per_sec,
+                               window_events_per_sec, window_mb_per_sec,
+                               m_total_events_built_, m_total_bytes_read_);
 
         if (m_verbose_parse_ || m_events_since_last_report_ % 100 == 0) {
           ldmx_log(info) << "Performance: "
@@ -353,10 +377,10 @@ void EventBuilder::produce(framework::Event& event) {
 
         current_event_errors = 0;  // Reset for next event
         // The fragment that tripped the window-close belongs to the NEXT
-        // event, not the one we just emitted. Buffer it here (the buffer is
-        // empty post-build, so this also resets the reference time) instead
-        // of dropping it -- otherwise every event after the first loses its
-        // triggering subsystem.
+        // event, not the one we just emitted. Buffer it here (the reference
+        // time moves to the oldest buffered fragment) instead of dropping
+        // it -- otherwise every event after the first loses its triggering
+        // subsystem.
         m_event_buffer_.addFragment(std::move(fragment));
         return;  // Return the event to framework
       }
@@ -397,9 +421,10 @@ void EventBuilder::produce(framework::Event& event) {
     }
     event.getEventHeader().setIntParameter(
         "RoR Timestamp", static_cast<long long>(event_timestamp));
+    event.getEventHeader().setRealData();
     // Still create PhysicsEventData for binary output file
     PhysicsEventData final_event = assemblePayload(assembled_event_fragments);
-    writeEventBinary(final_event, "events.bin");
+    writeEventBinary(final_event, m_binary_file_);
     ldmx_log(info) << "assembled event id=" << m_event_id_
                    << " timestamp=" << final_event.timestamp_
                    << " fragments=" << assembled_event_fragments.size()
@@ -408,14 +433,21 @@ void EventBuilder::produce(framework::Event& event) {
     ldmx::EventSummary summary;
     summary.setEventNumber(m_event_id_);
     summary.setTimestampNs(static_cast<uint64_t>(final_event.timestamp_));
-    std::set<uint64_t> unique_sys;
+    std::set<uint64_t> unique_sys, unique_sources;
     uint64_t total_payload = 0;
     for (const auto& f : assembled_event_fragments) {
       unique_sys.insert(f.header_.subsystem_id_);
+      // a subsystem may have several contributors, a duplicate is the same pair
+      // twice
+      unique_sources.insert(f.header_.subsystem_id_ << 8 |
+                            f.header_.contributor_id_);
       total_payload += f.payload_.size();
+      if (f.header_.flags_ & packing::LDMXRoRHeader::FLAG_DATA_DROPPED) {
+        current_event_errors |= ldmx::EventSummary::ERROR_DATA_DROPPED;
+      }
     }
     // Check for duplicate subsystems
-    if (unique_sys.size() != assembled_event_fragments.size()) {
+    if (unique_sources.size() != assembled_event_fragments.size()) {
       current_event_errors |= ldmx::EventSummary::ERROR_DUPLICATE_SUBSYSTEM;
     }
     summary.setNSystems(static_cast<uint32_t>(unique_sys.size()));
@@ -467,10 +499,11 @@ void EventBuilder::produce(framework::Event& event) {
 
     // Write performance metrics to CSV
     long long event_build_time_ms_val = event_build_time_ms.count();
-    writePerformanceMetric(
-        m_event_id_, static_cast<double>(event_build_time_ms_val),
-        events_per_sec, mb_per_sec, window_events_per_sec, window_mb_per_sec,
-        m_total_events_built_, m_total_bytes_read_);
+    writePerformanceMetric(m_performance_file_, m_event_id_,
+                           static_cast<double>(event_build_time_ms_val),
+                           events_per_sec, mb_per_sec, window_events_per_sec,
+                           window_mb_per_sec, m_total_events_built_,
+                           m_total_bytes_read_);
 
     if (m_verbose_parse_ || m_events_since_last_report_ % 100 == 0) {
       ldmx_log(info) << "Performance: "
@@ -543,6 +576,7 @@ void EventBuilder::writeEventBinary(const PhysicsEventData& ev,
                                     const std::string& path) {
   static std::mutex g_out_mutex;
   std::lock_guard<std::mutex> lg(g_out_mutex);
+  if (path.empty()) return;
   std::ofstream ofs(path, std::ios::binary | std::ios::app);
   if (!ofs) return;
   uint64_t event_id_u = static_cast<uint64_t>(ev.event_id_);

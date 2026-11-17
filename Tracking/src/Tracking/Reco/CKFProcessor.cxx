@@ -24,6 +24,7 @@
 #include "Acts/Utilities/Logger.hpp"
 #include "Tracking/Sim/MeasurementCalibrator.h"
 #include "Tracking/Sim/TrackingUtils.h"
+#include "Tracking/Sim/ZeroOutsideBField.h"
 
 namespace tracking {
 namespace reco {
@@ -84,7 +85,12 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   if (debug_acts_) acts_logging_level = Acts::Logging::VERBOSE;
 
   // Setup the steppers
-  const auto stepper = Acts::EigenStepper<>{map};
+  // optionally zero field outside the map instead of failing the track
+  std::shared_ptr<const Acts::MagneticFieldProvider> field = map;
+  if (field_zero_outside_) {
+    field = std::make_shared<tracking::sim::ZeroOutsideBField>(map);
+  }
+  const auto stepper = Acts::EigenStepper<>{field};
   const auto const_stepper = Acts::EigenStepper<>{const_b_field};
   const auto multi_stepper = Acts::MultiEigenStepperLoop{map};
 
@@ -106,7 +112,7 @@ void CKFProcessor::onNewRun(const ldmx::RunHeader& rh) {
   // tracking geometry (e.g. ECAL scoring plane) without being stopped at
   // volume boundaries.
   propagator_extrap_ = std::make_unique<ExtrapPropagator>(
-      Acts::EigenStepper<>{map}, Acts::VoidNavigator{});
+      Acts::EigenStepper<>{field}, Acts::VoidNavigator{});
   trk_extrap_ = std::make_shared<std::decay_t<decltype(*trk_extrap_)>>(
       *propagator_extrap_, geometryContext(), magneticFieldContext());
 
@@ -210,6 +216,12 @@ void CKFProcessor::produce(framework::Event& event) {
         sim_particles_coll_name_, sim_particles_event_passname_);
     truth_matching_tool = std::make_shared<tracking::sim::TruthMatchingTool>(
         particle_map, measurements);
+  }
+
+  // target points for the recoil fit; none when the constraint is off
+  std::vector<TargetPoint> target_points;
+  if (!tagger_tracking_ && use_target_constraint_) {
+    target_points = targetPoints(event);
   }
 
   // The mapping between the geometry identifier
@@ -401,6 +413,7 @@ void CKFProcessor::produce(framework::Event& event) {
 
     // If field-map CKF fails, try appropriate fallback based on tracking system
     if (!results.ok()) {
+      ckf_errors_[results.error().message()]++;
       if (!tagger_tracking_) {
         // Recoil tracking: try zero-B CKF as fallback
         n_fieldmap_ckf_failed_recoil_++;
@@ -499,6 +512,69 @@ void CKFProcessor::produce(framework::Event& event) {
 
       ldmx_log(debug) << "    Successfully obtained TrackState at target";
 
+      // Kalman update with the target point: the state comes from the
+      // smoothed first hit, so this equals a fit with one more 2D point.
+      // The point is not a hit: nhits stays strips only, ndf gets +2.
+      double chi2_tgt{0.};
+      int ndf_tgt{0};
+      // only short tracks when target_constraint_max_hits >= 0
+      const bool short_enough = target_constraint_max_hits_ < 0 ||
+                                static_cast<int>(track.nMeasurements()) <=
+                                    target_constraint_max_hits_;
+      if (!target_points.empty() && short_enough) {
+        if (opt_target->covariance()) {
+          const Acts::BoundVector x = opt_target->parameters();
+          const Acts::BoundMatrix c = *opt_target->covariance();
+          Acts::Matrix<2, 6> h = Acts::Matrix<2, 6>::Zero();
+          h(0, Acts::eBoundLoc0) = 1.;
+          h(1, Acts::eBoundLoc1) = 1.;
+          // closest point in chi2 when there are several tagger tracks
+          double best_chi2{std::numeric_limits<double>::infinity()};
+          Acts::Vector2 best_r{Acts::Vector2::Zero()};
+          Acts::Matrix<2, 2> best_s_inv{Acts::Matrix<2, 2>::Identity()};
+          Acts::Matrix<2, 2> best_v{Acts::Matrix<2, 2>::Zero()};
+          // extra error: vertex depth, scattering and no material in the
+          // back extrapolation, a (+) depth (+) b/p per direction
+          const double p_gev = 1. / std::abs(x[Acts::eBoundQOverP]);
+          // vertex depth: uniform over the thickness, times the track slope
+          const double phi = x[Acts::eBoundPhi];
+          const double slope[2] = {
+              std::tan(phi),
+              1. / std::tan(x[Acts::eBoundTheta]) / std::cos(phi)};
+          Acts::Matrix<2, 2> extra = Acts::Matrix<2, 2>::Zero();
+          for (int d = 0; d < 2; ++d) {
+            extra(d, d) = target_sigma_extra_[d] * target_sigma_extra_[d] +
+                          std::pow(target_thickness_ * slope[d], 2) / 12. +
+                          std::pow(target_sigma_extra_ms_[d] / p_gev, 2);
+          }
+          for (const auto& tp : target_points) {
+            const Acts::Vector2 r = tp.loc_ - h * x;
+            const Acts::Matrix<2, 2> s_inv =
+                (h * c * h.transpose() + tp.cov_ + extra).inverse();
+            const double chi2 = r.transpose() * s_inv * r;
+            if (chi2 < best_chi2) {
+              best_chi2 = chi2;
+              best_r = r;
+              best_s_inv = s_inv;
+              best_v = tp.cov_ + extra;
+            }
+          }
+          const Acts::Matrix<6, 2> k = c * h.transpose() * best_s_inv;
+          const Acts::BoundVector x_new = x + k * best_r;
+          // Joseph form, stays positive semi-definite
+          const Acts::BoundMatrix i_kh = Acts::BoundMatrix::Identity() - k * h;
+          const Acts::BoundMatrix c_new =
+              i_kh * c * i_kh.transpose() + k * best_v * k.transpose();
+          opt_target = Acts::BoundTrackParameters(
+              target_surface_, x_new, c_new, opt_target->particleHypothesis());
+          chi2_tgt = best_chi2;
+          ndf_tgt = 2;
+          n_tgt_tagger_++;
+        } else {
+          n_tgt_nocov_++;
+        }
+      }
+
       // Build TrackState in LDMX coordinates and add to track
       auto ts_at_target = tracking::sim::utils::makeTrackState(
           geometryContext(), *opt_target, ldmx::AtTarget);
@@ -530,9 +606,9 @@ void CKFProcessor::produce(framework::Event& event) {
       trk.setPerigeeLocation(target_loc_ldmx[0], target_loc_ldmx[1],
                              target_loc_ldmx[2]);
 
-      trk.setChi2(track.chi2());
+      trk.setChi2(track.chi2() + chi2_tgt);
       trk.setNhits(track.nMeasurements());
-      trk.setNdf(track.nMeasurements() - 5);
+      trk.setNdf(track.nMeasurements() - 5 + ndf_tgt);
       trk.setNsharedHits(track.nSharedHits());
       trk.setCharge(opt_target->parameters()[Acts::eBoundQOverP] > 0 ? 1 : -1);
 
@@ -800,6 +876,9 @@ void CKFProcessor::onProcessEnd() {
 
   // CKF fallback statistics
   ldmx_log(info) << "CKF Fallback Statistics::";
+  for (const auto& [msg, n] : ckf_errors_) {
+    ldmx_log(info) << "  field-map CKF error '" << msg << "': " << n;
+  }
   if (tagger_tracking_) {
     ldmx_log(info) << "  Tagger: Field-map CKF failed "
                    << n_fieldmap_ckf_failed_tagger_
@@ -846,6 +925,10 @@ void CKFProcessor::onProcessEnd() {
                                  n_fieldmap_target_extrap_failed_recoil_
                            : 0.0)
                    << "%)";
+    if (use_target_constraint_) {
+      ldmx_log(info) << "Target constraint:: tagger " << n_tgt_tagger_
+                     << ", no covariance " << n_tgt_nocov_;
+    }
     ldmx_log(info) << "  Recoil ECAL: Field-map extrap failed "
                    << n_fieldmap_ecal_extrap_failed_recoil_
                    << " times, zero-B extrap recovered "
@@ -903,7 +986,68 @@ void CKFProcessor::configure(framework::config::Parameters& parameters) {
   bfield_distortion_ = bFieldDistortion(parameters);
 
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
+
+  use_target_constraint_ = parameters.get<bool>("use_target_constraint", false);
+  field_zero_outside_ = parameters.get<bool>("field_zero_outside", false);
+  target_constraint_max_hits_ =
+      parameters.get<int>("target_constraint_max_hits", -1);
+  target_sigma_extra_ =
+      parameters.get<std::vector<double>>("target_sigma_extra", {0., 0.});
+  target_sigma_extra_ms_ =
+      parameters.get<std::vector<double>>("target_sigma_extra_ms", {0., 0.});
+  target_thickness_ = parameters.get<double>("target_thickness", 0.);
+  tagger_trks_collection_ =
+      parameters.get<std::string>("tagger_trks_collection", "");
+  tagger_trks_event_collection_passname_ =
+      parameters.get<std::string>("tagger_trks_event_collection_passname", "");
+  if (use_target_constraint_ && tagger_trks_collection_.empty()) {
+    EXCEPTION_RAISE("BadConf",
+                    "use_target_constraint needs a tagger_trks_collection");
+  }
+  if (tagger_tracking_ && use_target_constraint_) {
+    EXCEPTION_RAISE("BadConf", "target constraint is for recoil tracking");
+  }
 }  // end of configure()
+
+auto CKFProcessor::targetPoints(framework::Event& event)
+    -> std::vector<TargetPoint> {
+  std::vector<TargetPoint> points;
+
+  if (use_target_constraint_) {
+    // prefer this pass so a re-reco does not see two copies
+    std::string pass = tagger_trks_event_collection_passname_;
+    if (pass.empty() &&
+        event.exists(tagger_trks_collection_, event.getPassName())) {
+      pass = event.getPassName();
+    }
+    if (event.exists(tagger_trks_collection_, pass)) {
+      for (const auto& tagtrk :
+           event.getCollection<ldmx::Track>(tagger_trks_collection_, pass)) {
+        // perigee parameters are at the target surface
+        const auto& perigee_cov = tagtrk.getPerigeeCov();
+        if (perigee_cov.empty()) continue;
+        Acts::BoundMatrix cov = tracking::sim::utils::unpackCov(perigee_cov);
+        TargetPoint tp;
+        tp.loc_ = {tagtrk.getD0(), tagtrk.getZ0()};
+        tp.cov_ = cov.topLeftCorner<2, 2>();
+        points.push_back(tp);
+      }
+    } else {
+      // the target constraint needs the tagger tracker
+      if (event.exists(tagger_trks_collection_, pass, false)) {
+        EXCEPTION_RAISE("BadConf",
+                        "Several '" + tagger_trks_collection_ +
+                            "' collections found, set "
+                            "tagger_trks_event_collection_passname to pick "
+                            "one");
+      }
+      EXCEPTION_RAISE("NoTaggerTracks", "No '" + tagger_trks_collection_ +
+                                            "' collection for the target "
+                                            "constraint, run tagger tracking");
+    }
+  }
+  return points;
+}
 
 auto CKFProcessor::makeGeoIdSourceLinkMap(
     const geo::TrackersTrackingGeometry& tg,

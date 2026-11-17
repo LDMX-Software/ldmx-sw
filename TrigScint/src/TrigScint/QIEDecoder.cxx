@@ -19,7 +19,6 @@ void QIEDecoder::configure(framework::config::Parameters& ps) {
   channel_map_file_name_ = ps.get<std::string>("channel_map_file");
   n_channels_ = ps.get<int>("number_channels");
   n_samples_ = ps.get<int>("number_time_samples");
-  is_real_data_ = ps.get<bool>("is_real_data");
 
   ldmx_log(debug) << "In configure, got parameters:" << "\noutput_collection = "
                   << output_collection_
@@ -27,8 +26,7 @@ void QIEDecoder::configure(framework::config::Parameters& ps) {
                   << "\ninput_pass_name  = " << input_pass_name_
                   << "\nchannel_map_file = " << channel_map_file_name_
                   << "\nnumber_channels  = " << n_channels_
-                  << "\nnumber_time_samples  = " << n_samples_
-                  << "\nis_real_data  = " << is_real_data_;
+                  << "\nnumber_time_samples  = " << n_samples_;
 
   channel_map_file_.open(channel_map_file_name_, std::ios::in);
   if (!channel_map_file_.is_open()) {

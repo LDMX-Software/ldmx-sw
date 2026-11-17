@@ -29,10 +29,10 @@ void StripFitProcessor::configure(framework::config::Parameters& parameters) {
 void StripFitProcessor::onProcessStart() {
   using namespace tracking::digitization;
 
-  pulse_shape_ = PulseShape::make(std::string(PULSE_SHAPE_NAME),
-                                  PEAKING_TIME_NS, SECOND_TIME_CONST_NS);
+  pulse_shape_ = ldmx::PulseShape::make(std::string(PULSE_SHAPE_NAME),
+                                        PEAKING_TIME_NS, SECOND_TIME_CONST_NS);
 
-  fitter_ = std::make_unique<tracking::digitization::StripPulseFitter>(
+  fitter_ = std::make_unique<ldmx::PulseFitter>(
       *pulse_shape_, T0_OFFSET_NS, SAMPLING_INTERVAL_NS,
       static_cast<double>(ADC_PEDESTAL), NOISE_SIGMA_ADC, t_scan_min_ns_,
       t_scan_max_ns_, t_scan_step_ns_);

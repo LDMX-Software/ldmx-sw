@@ -40,7 +40,6 @@ dec.output_collection = dec.output_collection + "Pad"
 # dec.verbose = True
 dec.number_channels = n_chan
 dec.number_time_samples = n_samp
-dec.is_real_data = True  # default in class is True anyway
 
 p.sequence = [dec]
 

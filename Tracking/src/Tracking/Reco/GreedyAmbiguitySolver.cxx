@@ -179,6 +179,7 @@ void GreedyAmbiguitySolver::configure(
   input_pass_name_ = parameters.get<std::string>("input_pass_name");
   n_meas_min_ = parameters.get<int>("n_measurements_min", 5);
   maximum_shared_hits_ = parameters.get<int>("maximum_shared_hits", 1);
+  maximum_iterations_ = parameters.get<int>("maximum_iterations", 100000);
 }
 
 void GreedyAmbiguitySolver::produce(framework::Event& event) {

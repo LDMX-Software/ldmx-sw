@@ -40,9 +40,15 @@ class EventBuilder : public framework::Producer {
   std::string m_output_name_{"BuilderOutput"};
   long long m_coherence_window_ns_{
       5000000};  // 5 ms window for collecting fragments
+  /// extra wait past the window for out-of-order fragments, 0 = none
+  long long m_reorder_window_ns_{0};
   // Minimum number of distinct subsystems required to assemble an event.
   // Configurable (was a hardcoded 3); Run 182 only has ts + tracker, so 2.
   int m_min_subsystems_{2};
+  /// binary event output, empty to disable
+  std::string m_binary_file_{"events.bin"};
+  /// performance metrics CSV, empty to disable
+  std::string m_performance_file_{"event_performance.csv"};
 
   // Performance metrics
   std::chrono::steady_clock::time_point m_start_time_;

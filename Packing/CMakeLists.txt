@@ -6,7 +6,7 @@ project(
   DESCRIPTION "Classes needed to interface with raw binary data."
   LANGUAGES CXX)
 
-setup_library(module Packing name Utility interface)
+setup_library(module Packing name Utility)
 
 # RawDataFile submodule
 setup_library(module Packing name RawDataFile 
@@ -20,6 +20,9 @@ setup_library(module Packing
               dependencies Framework::Configure
                            Framework::Framework
                            DetDescr::DetDescr
+                           Recon::Event
+                           Hcal::Hcal
+                           Ecal::Ecal
                            Packing::RawDataFile)
 
 setup_python(package_name LDMX/Packing)

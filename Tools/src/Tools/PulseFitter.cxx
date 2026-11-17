@@ -1,15 +1,27 @@
-#include "Tracking/Digitization/StripPulseFitter.h"
+#include "Tools/PulseFitter.h"
 
 #include <cmath>
 #include <limits>
 
-namespace tracking::digitization {
+namespace ldmx {
 
-StripPulseFitter::StripPulseFitter(const PulseShape& shape, double t0_offset_ns,
-                                   double sampling_interval_ns,
-                                   double pedestal_adc, double noise_sigma_adc,
-                                   double t_scan_min_ns, double t_scan_max_ns,
-                                   double t_scan_step_ns)
+namespace {
+// empty mask: every sample is used
+bool isUsed(const std::vector<bool>& used, std::size_t i) {
+  return used.empty() || used.at(i);
+}
+
+int nUsed(const std::vector<short>& samples, const std::vector<bool>& used) {
+  int n = 0;
+  for (std::size_t i = 0; i < samples.size(); ++i) n += isUsed(used, i);
+  return n;
+}
+}  // namespace
+
+PulseFitter::PulseFitter(const PulseShape& shape, double t0_offset_ns,
+                         double sampling_interval_ns, double pedestal_adc,
+                         double noise_sigma_adc, double t_scan_min_ns,
+                         double t_scan_max_ns, double t_scan_step_ns)
     : shape_(&shape),
       t0_offset_ns_(t0_offset_ns),
       sampling_interval_ns_(sampling_interval_ns),
@@ -23,8 +35,9 @@ StripPulseFitter::StripPulseFitter(const PulseShape& shape, double t0_offset_ns,
 // Private helper: chi2 and amplitude for a fixed hit time T
 // ---------------------------------------------------------------------------
 
-std::pair<double, double> StripPulseFitter::evalAtT(
-    const std::vector<short>& samples, double T) const {
+std::pair<double, double> PulseFitter::evalAtT(
+    const std::vector<short>& samples, double T,
+    const std::vector<bool>& used) const {
   const int n = static_cast<int>(samples.size());
 
   // Evaluate pulse shape at each sample time.
@@ -33,6 +46,7 @@ std::pair<double, double> StripPulseFitter::evalAtT(
   double sum_f2 = 0.0;  // Σ f_i²
 
   for (int i = 0; i < n; ++i) {
+    if (!isUsed(used, i)) continue;
     const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
     const double fi = shape_->eval(t_arg);
     const double si = static_cast<double>(samples[i]) - pedestal_adc_;
@@ -50,6 +64,15 @@ std::pair<double, double> StripPulseFitter::evalAtT(
   // Compute chi2 for this (T, amplitude) pair.
   double chi2 = 0.0;
   for (int i = 0; i < n; ++i) {
+    if (!isUsed(used, i)) {
+      // suppressed sample: penalize a model above the ZS threshold
+      if (zs_threshold_adc_ > 0.) {
+        const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
+        const double over = amplitude * shape_->eval(t_arg) - zs_threshold_adc_;
+        if (over > 0.) chi2 += over * over * inv_sigma2_;
+      }
+      continue;
+    }
     const double t_arg = t0_offset_ns_ + i * sampling_interval_ns_ - T;
     const double fi = shape_->eval(t_arg);
     const double si = static_cast<double>(samples[i]) - pedestal_adc_;
@@ -64,15 +87,15 @@ std::pair<double, double> StripPulseFitter::evalAtT(
 // Public: fit
 // ---------------------------------------------------------------------------
 
-StripPulseFitter::FitResult StripPulseFitter::fit(
-    const std::vector<short>& samples) const {
+PulseFitter::FitResult PulseFitter::fit(const std::vector<short>& samples,
+                                        const std::vector<bool>& used) const {
   FitResult result;
-  result.ndf = static_cast<int>(samples.size()) - 2;
+  result.ndf = nUsed(samples, used) - 2;
 
   // Quick sanity: check that at least one sample is above pedestal.
   bool any_signal = false;
-  for (auto s : samples) {
-    if (static_cast<double>(s) > pedestal_adc_) {
+  for (std::size_t i = 0; i < samples.size(); ++i) {
+    if (isUsed(used, i) && static_cast<double>(samples[i]) > pedestal_adc_) {
       any_signal = true;
       break;
     }
@@ -96,7 +119,7 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
   double chi2_prev = std::numeric_limits<double>::max();
 
   for (double t = t_scan_min_ns_; t <= t_scan_max_ns_; t += t_scan_step_ns_) {
-    auto [chi2, amp] = evalAtT(samples, t);
+    auto [chi2, amp] = evalAtT(samples, t, used);
 
     if (chi2 < best_chi2) {
       // Update neighbourhood: the previous point becomes T_lo.
@@ -105,7 +128,10 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
       best_chi2 = chi2;
       best_t = t;
       best_amp = amp;
-    } else if (t > best_t && chi2_hi > best_chi2) {
+      // T_hi is the next point, forget one found for an earlier minimum
+      chi2_hi = std::numeric_limits<double>::max();
+      t_hi = t;
+    } else if (t_prev == best_t) {
       // First point to the right of the minimum.
       t_hi = t;
       chi2_hi = chi2;
@@ -124,16 +150,16 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
     // chi2_hi).
     const double d1 = best_t - t_lo;
     const double d2 = t_hi - best_t;
-    const double dc1 = best_chi2 - chi2_lo;
+    const double dc1 = chi2_lo - best_chi2;
     const double dc2 = chi2_hi - best_chi2;
-    // Vertex of parabola: ΔT = (d1²·dc2 - d2²·dc1) / (2·(d1·dc2 + d2·dc1))
+    // Vertex of parabola: ΔT = (d2²·dc1 - d1²·dc2) / (2·(d1·dc2 + d2·dc1))
     const double denom = 2.0 * (d1 * dc2 + d2 * dc1);
     if (std::abs(denom) > 1.0e-12) {
-      const double delta = (d1 * d1 * dc2 - d2 * d2 * dc1) / denom;
+      const double delta = (d2 * d2 * dc1 - d1 * d1 * dc2) / denom;
       // Only accept the refinement if it stays within the bracket.
       if (std::abs(delta) < std::max(d1, d2)) {
         const double t_refined = best_t + delta;
-        auto [chi2_ref, amp_ref] = evalAtT(samples, t_refined);
+        auto [chi2_ref, amp_ref] = evalAtT(samples, t_refined, used);
         if (chi2_ref < best_chi2) {
           best_t = t_refined;
           best_amp = amp_ref;
@@ -150,4 +176,21 @@ StripPulseFitter::FitResult StripPulseFitter::fit(
   return result;
 }
 
-}  // namespace tracking::digitization
+// ---------------------------------------------------------------------------
+// Public: fitFixed
+// ---------------------------------------------------------------------------
+
+PulseFitter::FitResult PulseFitter::fitFixed(
+    const std::vector<short>& samples, double T,
+    const std::vector<bool>& used) const {
+  FitResult result;
+  result.ndf = nUsed(samples, used) - 1;
+  auto [chi2, amp] = evalAtT(samples, T, used);
+  result.amplitude = amp;
+  result.t0 = T;
+  result.chi2 = chi2;
+  result.converged = chi2 < std::numeric_limits<double>::max();
+  return result;
+}
+
+}  // namespace ldmx

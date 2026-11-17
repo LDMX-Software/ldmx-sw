@@ -27,6 +27,14 @@ class EcalGeometry:
         Shift the odd-numbered bi-layers
     si_thickness : float
         Thickness of the silicon sensor [mm]
+    ecal_center_x : float
+        World x of the layer centers [mm]
+    ecal_center_y : float
+        World y of the layer centers [mm]
+    flip_y : bool
+        ECal y axis points along world -y (rotated about x by 180 deg)
+    flip_x : bool
+        ECal x axis points along world -x (rotated about y by 180 deg)
     detectors_valid : array of strings
         Regular expressions identifying which detectors are valid for this geometry
     module_min_r : float
@@ -49,6 +57,10 @@ class EcalGeometry:
     layer_shift_odd: bool = False
     layer_shift_odd_bilayer: bool = False
     si_thickness: float = 0.3
+    ecal_center_x: float = 0.0
+    ecal_center_y: float = 0.0
+    flip_y: bool = False
+    flip_x: bool = False
     n_cell_r_height: float = 35.3
     module_min_r: float = 85.0
 
@@ -335,6 +347,27 @@ class EcalGeometry:
         eg.layer_shift_x = 2 * eg.module_min_r / eg.n_cell_r_height
         return eg
 
+    def cosmic26_v2():
+        # reduced_v3 ECal rotated about y by 180 deg in the CAD frame, +z up,
+        # support box on the CAD box
+        eg = EcalGeometry(
+            detectors_valid=["ldmx-esa-cosmic26-v2"],
+            gap=1.5,
+            layer_z_positions=[214.15, 207.9, 163.33, 157.08],
+            ecal_front_z=2354.012,
+            corners_side_up=True,
+            layer_shift_odd=True,
+            ecal_center_x=4976.532,
+            ecal_center_y=-104.346,
+            flip_x=True,
+        )
+        # no designed odd-layer shift in the stand: the shift places L3 (the
+        # only odd layer read out) where cosmic muons put it relative to L2,
+        # +8.79 mm in global x (sign flipped by flip_x), +0.29 mm in y
+        eg.layer_shift_x = -8.79
+        eg.layer_shift_y = 0.29
+        return eg
+
     def geometries():
         return [
             EcalGeometry.v9(),
@@ -345,4 +378,5 @@ class EcalGeometry:
             EcalGeometry.reduced(),
             EcalGeometry.reduced_v2(),
             EcalGeometry.reduced_v3(),
+            EcalGeometry.cosmic26_v2(),
         ]

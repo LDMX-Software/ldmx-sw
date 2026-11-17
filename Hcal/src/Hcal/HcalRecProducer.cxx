@@ -7,6 +7,8 @@
 
 #include "Hcal/HcalRecProducer.h"
 
+#include <algorithm>
+
 #include "DetDescr/HcalDigiID.h"
 #include "DetDescr/HcalGeometry.h"
 #include "DetDescr/HcalID.h"
@@ -155,7 +157,11 @@ void HcalRecProducer::produce(framework::Event& event) {
     // for side Hcal, we take the length of the bar (2*half-width)-Ecal_dxy as
     // an approximation
     float distance_posend, distance_negend, distance_ecal;
-    if (id.section() == ldmx::HcalID::HcalSection::BACK) {
+    const bool explicit_layout{hcal_geometry.hasExplicitLayout()};
+    if (explicit_layout) {
+      distance_posend = hcal_geometry.getScintillatorLength(id) / 2;
+      distance_negend = distance_posend;
+    } else if (id.section() == ldmx::HcalID::HcalSection::BACK) {
       distance_posend = half_total_width;
       distance_negend = half_total_width;
     } else {
@@ -183,7 +189,7 @@ void HcalRecProducer::produce(framework::Event& event) {
     int orientation_int = static_cast<int>(orientation);
 
     // double readout
-    if (id.section() == ldmx::HcalID::HcalSection::BACK) {
+    if (hcal_geometry.isDoubleEnded(id.section())) {
       auto digi_negend = hcal_digis.getDigi(i_digi + 1);
       ldmx::HcalDigiID id_negend(digi_negend.id());
 
@@ -248,6 +254,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       double v = 299.792 / 1.6;
       double position_bar =
           position_bar_sign * fabs(toa_posend - toa_negend) * v / 2;
+      // keep the hit on the bar
+      if (explicit_layout) {
+        const double half_length{distance_posend};
+        position_bar = std::clamp(position_bar, -half_length, half_length);
+      }
 
       // reverse voltage attenuation
       // if position along the bar is positive, then the positive end will have
@@ -266,12 +277,14 @@ void HcalRecProducer::produce(framework::Event& event) {
       // set amplitude as the average of both bars (reverse attenuated)
       ampl_t = (ampl_t_posend / att_posend + ampl_t_negend / att_negend) / 2;
 
-      // set position along the bar
+      // set position along the bar, offset from the strip center if explicit
       if (orientation ==
           ldmx::HcalGeometry::ScintillatorOrientation::horizontal) {
-        position.SetX(position_bar);
+        position.SetX(explicit_layout ? position.X() + position_bar
+                                      : position_bar);
       } else {
-        position.SetY(position_bar);
+        position.SetY(explicit_layout ? position.Y() + position_bar
+                                      : position_bar);
       }
 
       // set hit time
@@ -313,8 +326,11 @@ void HcalRecProducer::produce(framework::Event& event) {
       // for now, assume that position along the bar is the half_total_width
       double distance_end =
           id_posend.isNegativeEnd() ? distance_negend : distance_posend;
-      double att = exp(-1. * ((distance_end - fabs(half_total_width)) / 1000.) /
-                       attlength_);
+      double att = exp(
+          -1. *
+          ((distance_end - (explicit_layout ? 0. : fabs(half_total_width))) /
+           1000.) /
+          attlength_);
 
       // set voltage
       voltage = voltage_i;

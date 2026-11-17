@@ -5,7 +5,7 @@
 //--- ACTS ---//
 
 //--- LDMX ---//
-#include "Tracking/Digitization/PulseShape.h"
+#include "Tools/PulseShape.h"
 #include "Tracking/Digitization/SiStripDigitizer.h"
 #include "Tracking/Event/Measurement.h"
 #include "Tracking/Event/SimSiStripHit.h"
@@ -115,7 +115,7 @@ class DigitizationProcessor : public TrackingGeometryUser {
   /// Output raw hit collection name (empty = don't save raw hits).
   std::string out_raw_collection_{""};
   /// The constructed pulse shape (created in onProcessStart).
-  std::unique_ptr<tracking::digitization::PulseShape> pulse_shape_;
+  std::unique_ptr<ldmx::PulseShape> pulse_shape_;
 
   // -------------------------------------------------------------------------
   // Lorentz angle computation (Mode 1, optional)

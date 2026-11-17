@@ -1,6 +1,8 @@
 #include "Packing/LDMXRoRHeader.h"
 
 #include <cassert>
+#include <map>
+#include <utility>
 
 namespace packing {
 
@@ -48,6 +50,12 @@ std::string LDMXRoRHeader::getSubsystemName(uint8_t subsystem_id,
     return name;
   }
 
+  // IDs that changed between test beams, the maps above hold the ESA25 ones
+  static const std::map<std::pair<int, int>, std::string> other_ids = {
+      {{7, 20}, "hcal"}};  // ESA26 HCal backplane
+  auto other_it{other_ids.find({subsystem_id, contributor_id})};
+  if (other_it != other_ids.end()) return other_it->second;
+
   // No match found, return generic name
   return "subsystem" + std::to_string(subsystem_id) + "c" +
          std::to_string(contributor_id);
@@ -57,7 +65,6 @@ utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   valid_ = false;
 
   uint8_t sentinel;
-  uint32_t zero;
 
   if (!(r >> version_ >> subsystem_ >> contributor_ >> sentinel)) {
     return r;
@@ -66,10 +73,10 @@ utility::Reader& LDMXRoRHeader::read(utility::Reader& r) {
   // sentinel should be 0xa5; if not, this is not a valid LDMX data frame
   if (sentinel != 0xa5) return r;
 
-  if (!(r >> zero)) return r;
+  if (!(r >> flags_)) return r;
 
-  // next 32b should be zero since they are unused
-  if (zero != 0) return r;
+  // only the low flag bits are used, the rest should be zero
+  if ((flags_ & ~FLAG_MASK) != 0) return r;
 
   if (!(r >> timestamp_)) return r;
 

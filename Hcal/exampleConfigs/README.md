@@ -66,7 +66,6 @@ The following is the table of contents of this folder:
     |-- decoded/  : decoded into HgcrocDigiCollection objects
     |-- decoded-ntuples/ : HgcrocDigiCollection objects ntuplized for easier analysis
 |-- reformat_cfg.py : configuration script for `ldmx reformat ` used for unpacking and alignment
-|-- decode_cfg.py   : configuration script for `ldmx fire ` used for decoding and ntuplization
 ````
 
 #### Re-doing data reformatting and decoding
@@ -87,6 +86,5 @@ A copy of raw April-2022 TB data is available on the SLAC cluster:
   --output_filename hcal_run_XXX_reformat.root
   ```
 - Decode:
-  - One can use the decoding producer in ldmx-sw. 
-  - A common example is available in [decode_cfg.py](https://github.com/LDMX-Software/Hcal/blob/trunk/exampleConfigs/decode_cfg.py)
-  `ldmx-sw fire decode_cfg.py hcal_run_XXX_reformat.root`. By default this decoding does not pedestal subtraction. 
+  - The test beam decoder (`HcalRawDecoder`) has been removed from ldmx-sw.
+  Use an ldmx-sw release before its removal to decode the reformatted files.
