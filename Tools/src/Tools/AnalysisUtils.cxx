@@ -24,7 +24,7 @@
 #include <vector>
 
 namespace analysis {
-
+// #Hans It feels fishy
 std::tuple<int, const ldmx::SimParticle*> getRecoil(
     const std::map<int, ldmx::SimParticle>& particleMap) {
   // The recoil electron is "produced" in the dark brem geneartion
