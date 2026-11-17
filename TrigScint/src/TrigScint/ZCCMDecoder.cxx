@@ -103,8 +103,8 @@ void ZCCMDecoder::produce(framework::Event& event) {
 
   // events built without a TS fragment write empty
   // digi collections so downstream processors see zero hits
-  if (event_output.size() <
-      std::size_t(ZCCMOutput::TIMESTAMP_POS + ZCCMOutput::TIMESTAMP_LEN_BYTES)) {
+  if (event_output.size() < std::size_t(ZCCMOutput::TIMESTAMP_POS +
+                                        ZCCMOutput::TIMESTAMP_LEN_BYTES)) {
     ldmx_log(debug) << "No " << input_collection_
                     << " frame in this event, writing empty digis";
     std::vector<trigscint::TrigScintQIEDigis> no_digis;
