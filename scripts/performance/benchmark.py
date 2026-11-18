@@ -1,4 +1,4 @@
-""" Run ecal_pn sequence to gather performance metrics in a specified mode. """
+"""Run ecal_pn sequence to gather performance metrics in a specified mode."""
 
 from LDMX.Framework import ldmxcfg
 
@@ -29,11 +29,11 @@ max_events = int(os.environ["LDMX_NUM_EVENTS"])
 
 # Fixed log level
 log_level = 100
- 
+
 p.run = run
 p.max_events = max_events
 p.logger.term_level = log_level
-p.log_performance= True
+p.log_performance = True
 
 out_dir = f"scripts/performance/root/run_{run}"
 os.makedirs(out_dir, exist_ok=True)
@@ -165,5 +165,3 @@ if mode in ["recon", "full"]:
     )
 
     p.sequence.extend(dqm.all_dqm)
-
-
