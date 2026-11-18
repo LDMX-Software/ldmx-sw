@@ -607,6 +607,28 @@ compile-quick ncpu=num_cpus() *CONFIG='': (configure-quick) (build ncpu)
 # re-build ldmx-sw and then run a config
 recompFire config_py *ARGS: compile (fire config_py ARGS)
 
+# run performance metrics
+perf mode="full" n_seeds="10" max_events="1000":
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    just setenv LDMX_MODE={{ mode }} LDMX_NUM_EVENTS={{ max_events }} GIT_COMMIT_SHA=$(git rev-parse HEAD)
+
+    denv python3 scripts/performance/gen_seeds.py {{ n_seeds }}
+    read -ra seeds <<< "$(python3 -c "import json; print(*json.load(open('scripts/performance/seeds.json'))['seeds'][:{{ n_seeds }}])")"
+
+    for seed in "${seeds[@]}"; do
+      echo "-- seed ${seed} ({{ mode }}) --"
+      just setenv LDMX_RUN_NUMBER="${seed}"
+        just fire scripts/performance/benchmark.py
+
+      hist="scripts/performance/root/run_${seed}/hist_{{ mode }}_{{ max_events }}.root"
+      denv python3 scripts/performance/parse.py "${hist}"
+    done      
+
+    denv python3 scripts/performance/plot_summary.py {{ mode }} \
+      --runs "${seeds[@]}" --max-events {{ max_events }}
+
 # print out the environment configuration
 print-config:
     denv config print
