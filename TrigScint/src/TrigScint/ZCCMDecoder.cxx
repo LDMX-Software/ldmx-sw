@@ -97,6 +97,22 @@ void ZCCMDecoder::produce(framework::Event& event) {
   ldmx_log(debug) << "Got input collection " << input_collection_ << "_"
                   << input_pass_name_;
 
+  // one output digi collection per module (pad) in the module map
+  std::size_t n_modules =
+      std::ranges::count_if(modules_used_, [](int x) { return x != 0; });
+
+  // events built without a TS fragment write empty
+  // digi collections so downstream processors see zero hits
+  if (event_output.size() < std::size_t(ZCCMOutput::TIMESTAMP_POS +
+                                        ZCCMOutput::TIMESTAMP_LEN_BYTES)) {
+    ldmx_log(debug) << "No " << input_collection_
+                    << " frame in this event, writing empty digis";
+    std::vector<trigscint::TrigScintQIEDigis> no_digis;
+    for (uint i = 0; i < n_modules; i++)
+      event.add(output_collection_ + Form("%i", i + 1), no_digis);
+    return;
+  }
+
   /* -- PROCESS THE EVENT INFORMATION -- */
   uint32_t time_stamp = 0;
   for (int i_w = 0; i_w < ZCCMOutput::TIMESTAMP_LEN_BYTES; i_w++) {
@@ -132,8 +148,6 @@ void ZCCMDecoder::produce(framework::Event& event) {
   std::map<int, std::vector<int>> ce_map;
   // we need one output digi collection per pad
   std::vector<std::vector<trigscint::TrigScintQIEDigis>> out_digis;
-  std::size_t n_modules =
-      std::ranges::count_if(modules_used_, [](int x) { return x != 0; });
   // default construct (empty) vectors of digis separated into modules
   out_digis.resize(n_modules);
 
