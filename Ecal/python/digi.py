@@ -507,8 +507,7 @@ class EcalRecProducer(Processor):
         fixed-time fit (fit_fixed_t0=True) needs it to place the pulse. The
         layer weights are not calibrated for this stack, unity is used.
         The ECON-D keeps a sample when ADC > pedestal + 5, the suppressed
-        samples bound the fit (fit_zs_threshold 5.5); on MIPs this gives
-        the narrowest amplitude (relative width 0.25, max sample 0.30).
+        samples bound the fit (fit_zs_threshold 5.5).
         """
         args = {
             "clock_cycle": 5 / 0.1857,  # ESA bunch clock, 185.7 MHz / 5
