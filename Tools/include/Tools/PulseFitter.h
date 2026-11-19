@@ -24,7 +24,8 @@ namespace ldmx {
  *
  * A 1-D scan over T followed by a parabolic refinement near the minimum
  * gives the fitted values. This is O(n_scan × N_samples) per strip and
- * runs in < 1 µs.
+ * runs in < 1 µs. In a masked fit (zero suppression) with a flat χ² minimum,
+ * e.g. one kept sample, T is the middle of the flat range.
  *
  * The fit result t0 is defined as T − t0_offset, i.e. the hit arrival time
  * relative to sample 0.  A value of t0 = tp (peaking time) means the pulse

@@ -21,5 +21,5 @@ def esa26_recon_conditions(
     )
     peds.conditions_base_url = base_url
     # relative URLs get the base URL prepended
-    peds.entries_url = "Ecal/esa26/pedestals/index_v1_1_0.csv"
+    peds.entries_url = "Ecal/esa26/pedestals/index_v1_2_0.csv"
     return peds

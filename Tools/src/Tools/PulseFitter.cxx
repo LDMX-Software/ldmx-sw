@@ -1,7 +1,10 @@
 #include "Tools/PulseFitter.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
+#include <tuple>
+#include <vector>
 
 namespace ldmx {
 
@@ -107,45 +110,46 @@ PulseFitter::FitResult PulseFitter::fit(const std::vector<short>& samples,
   // -------------------------------------------------------------------
   // Coarse scan over T to find the approximate minimum.
   // -------------------------------------------------------------------
-  double best_chi2 = std::numeric_limits<double>::max();
-  double best_t = t_scan_min_ns_;
-  double best_amp = 0.0;
-
-  // Keep track of the three-point neighbourhood for parabolic refinement.
-  double t_lo = t_scan_min_ns_, chi2_lo = std::numeric_limits<double>::max();
-  double t_hi = t_scan_min_ns_, chi2_hi = std::numeric_limits<double>::max();
-
-  double t_prev = t_scan_min_ns_;
-  double chi2_prev = std::numeric_limits<double>::max();
-
+  std::vector<double> scan_t, scan_chi2, scan_amp;
   for (double t = t_scan_min_ns_; t <= t_scan_max_ns_; t += t_scan_step_ns_) {
     auto [chi2, amp] = evalAtT(samples, t, used);
-
-    if (chi2 < best_chi2) {
-      // Update neighbourhood: the previous point becomes T_lo.
-      t_lo = t_prev;
-      chi2_lo = chi2_prev;
-      best_chi2 = chi2;
-      best_t = t;
-      best_amp = amp;
-      // T_hi is the next point, forget one found for an earlier minimum
-      chi2_hi = std::numeric_limits<double>::max();
-      t_hi = t;
-    } else if (t_prev == best_t) {
-      // First point to the right of the minimum.
-      t_hi = t;
-      chi2_hi = chi2;
-    }
-
-    t_prev = t;
-    chi2_prev = chi2;
+    scan_t.push_back(t);
+    scan_chi2.push_back(chi2);
+    scan_amp.push_back(amp);
+  }
+  if (scan_t.empty()) {
+    return result;  // converged = false
   }
 
-  // -------------------------------------------------------------------
-  // Parabolic refinement around the minimum if neighbours are available.
-  // -------------------------------------------------------------------
-  if (t_lo < best_t && t_hi > best_t && chi2_lo > best_chi2 &&
-      chi2_hi > best_chi2) {
+  const std::size_t i_best = static_cast<std::size_t>(
+      std::min_element(scan_chi2.begin(), scan_chi2.end()) - scan_chi2.begin());
+  double best_chi2 = scan_chi2[i_best];
+  double best_t = scan_t[i_best];
+  double best_amp = scan_amp[i_best];
+
+  // Masked fit with a flat minimum: T is not constrained, e.g. a single kept
+  // sample fits exactly for any T where the suppressed samples stay below
+  // threshold. Take the middle of the flat range; its first point would
+  // give the largest amplitude the threshold allows. Full-sample fits keep
+  // the first minimum.
+  std::size_t i_lo = i_best, i_hi = i_best;
+  const bool masked = nUsed(samples, used) < static_cast<int>(samples.size());
+  if (masked && best_chi2 < std::numeric_limits<double>::max()) {
+    const double flat = best_chi2 + 1.0e-6 * (1.0 + best_chi2);
+    while (i_lo > 0 && scan_chi2[i_lo - 1] <= flat) --i_lo;
+    while (i_hi + 1 < scan_t.size() && scan_chi2[i_hi + 1] <= flat) ++i_hi;
+  }
+  if (i_hi > i_lo) {
+    best_t = 0.5 * (scan_t[i_lo] + scan_t[i_hi]);
+    std::tie(best_chi2, best_amp) = evalAtT(samples, best_t, used);
+  } else if (i_best > 0 && i_best + 1 < scan_t.size() &&
+             scan_chi2[i_best - 1] > best_chi2 &&
+             scan_chi2[i_best + 1] > best_chi2) {
+    // -----------------------------------------------------------------
+    // Parabolic refinement around the minimum.
+    // -----------------------------------------------------------------
+    const double t_lo = scan_t[i_best - 1], chi2_lo = scan_chi2[i_best - 1];
+    const double t_hi = scan_t[i_best + 1], chi2_hi = scan_chi2[i_best + 1];
     // Fit a parabola through (T_lo, chi2_lo), (best_T, best_chi2), (T_hi,
     // chi2_hi).
     const double d1 = best_t - t_lo;
