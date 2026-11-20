@@ -1,0 +1,67 @@
+
+name: Performance Benchmark
+
+on:
+  pull_request:
+  push:
+    branches: 
+    - trunk
+    tags: 
+    - 'v*.*.*' #all version tags
+
+env:
+  LDMX_DOCKER_TAG: ldmx/dev:latest
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout ldmx-sw
+      uses: actions/checkout@v7
+      with:
+        submodules: 'recursive'
+        fetch-depth: 0
+
+    - name: Install just
+      uses: extractions/setup-just@v4
+
+    - name: Cache ccache
+      uses: actions/cache@v6
+      with:
+        path: .cache/ccache
+        key: ccache-basic-${{ github.sha }}
+        restore-keys: |
+          ccache-basic-
+
+    - name: Compile and Install ldmx-sw
+      run: | 
+        just install-denv init configure-force-error
+        just build
+      shell: bash
+
+    - name: Run full performance
+      run: just perf full 1 1000
+      shell: bash
+
+    - name: Run sim performance
+      run: just perf sim 1 1000
+      shell: bash
+
+    - name: Run recon performance
+      run: just perf recon 1 1000
+      shell: bash
+
+    - name: List output paths
+      run: |
+        find scripts/performance -type f
+
+    # always upload the last test log unless the
+    # workflow was cancelled by a user on github
+    - name: Upload performance results
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: performance-benchmark-${{ github.sha }}
+        path: |
+          scripts/performance/data/run_*/*
+          scripts/performance/plots/*.png
