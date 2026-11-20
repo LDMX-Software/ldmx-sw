@@ -138,8 +138,8 @@ with uproot.open(hist_path) as f:
     ]:
         for name, timer in f[f"performance/{callback}"].items(cycle=False):
             print(
-                f"| {callback:<15} | {name:32s} | {timer.members['duration_']:<14.3e} "
-                "| "
+                f"| {callback:<15} | {name:32s} | {timer.members['duration_']:<14.3e}"
+                " | "
             )
             callback_rows.append(
                 {
@@ -157,8 +157,8 @@ with uproot.open(hist_path) as f:
     print("-" * 132)
     print(
         f"| {'Processor':<29} | {'Total (s)':<15} | {'Mean (s)':<15} |"
-        f"{'Median (s)':<15} | {'90th Percentile (s)':<19} |"
-        f"{'Fraction of __ALL__':<20} |"
+        f" {'Median (s)':<15} | {'90th Percentile (s)':<19} |"
+        f" {'Fraction of __ALL__':<20} |"
     )
     print("-" * 132)
 
