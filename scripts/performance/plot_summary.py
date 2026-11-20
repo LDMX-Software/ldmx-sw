@@ -1,10 +1,12 @@
 """Plot performance data from summary and by_event csv files across runs"""
 
 import argparse
-import matplotlib.pyplot as plt
-import pandas as pd
 import os
 import textwrap
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
 
 DATA_DIR = "scripts/performance/data"
 OUT_DIR = "scripts/performance/plots"
@@ -40,7 +42,8 @@ def plot_stacked_bar(
     ax.set_xlabel(f"Max Events = {max_events}")
     ax.set_ylabel("Mean Time Fraction of __ALL__ Duration")
     ax.set_title(
-        f"Mean Time Fraction per Processor for {mode}, for {len(runs)} runs, {max_events} events"
+        f"Mean Time Fraction per Processor for {mode}, for {len(runs)} runs, "
+        f"{max_events} events"
     )
 
     plt.tight_layout()
@@ -51,9 +54,10 @@ def plot_stacked_bar(
 
 
 def load_runs_dist(runs, max_events, mode):
-    """Load the run data from each by_event CSV file and return DataFrame for per-event duration,
-    excluding the first event. The DataFrame is organized by event_id, processor, and duration.
-    Also returns DataFrame of the mean duration of the first event per processor"""
+    """Load the run data from each by_event CSV file and return DataFrame for per-event
+    duration, excluding the first event. The DataFrame is organized by event_id,
+    processor, and duration. Also returns DataFrame of the mean duration of the
+    first event per processor"""
 
     run_data = []
     first_durs = []
@@ -69,11 +73,12 @@ def load_runs_dist(runs, max_events, mode):
 
 
 def plot_dist(runs, max_events, mode, num_top, sorted_processors, sum_others=True):
-    """Plot the distribution of event duration per processor across multiple runs, including a
-    point to indicate the mean duration of the first event per processor. The whiskers
-    show data from the 1st to the 99th percentile, so 98% of the events lie within the whiskers.
-    The maximum duration of an event, excluding first event, for each processor is plotted
-    to indicate the highest duration outlier since showfliers is set to False."""
+    """Plot the distribution of event duration per processor across multiple runs,
+    including a point to indicate the mean duration of the first event per processor.
+    The whiskers show data from the 1st to the 99th percentile, so 98% of the events
+    lie within the whiskers. The maximum duration of an event, excluding first event,
+    for each processor is plotted to indicate the highest duration outlier since
+    showfliers is set to False."""
 
     run_durations, first_durs = load_runs_dist(runs, max_events, mode)
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -114,8 +119,9 @@ def plot_dist(runs, max_events, mode, num_top, sorted_processors, sum_others=Tru
     )
 
     caption = (
-        "Boxes show quartiles of event durations for each run, excluding the first duration. Whiskers indicate 1st-99th percentile. "
-        "Processors are ordered by their mean fraction of total duration."
+        "Boxes show quartiles of event durations for each run, excluding the first"
+        " duration. Whiskers indicate 1st-99th percentile. Processors are ordered"
+        " by their mean fraction of total duration."
     )
 
     ax.text(
@@ -133,7 +139,8 @@ def plot_dist(runs, max_events, mode, num_top, sorted_processors, sum_others=Tru
     ax.set_ylabel("Processor")
     ax.invert_yaxis()
     ax.set_title(
-        f"Per-Event Duration Distribution for {mode} across {len(runs)} runs, {max_events} events"
+        f"Per-Event Duration Distribution for {mode} across {len(runs)} runs, "
+        f"{max_events} events"
     )
     plt.tight_layout()
 
@@ -213,7 +220,8 @@ def plot_cumulative(
     ax.set_xlabel("Number of Completed Events")
     ax.set_ylabel("Cumulative duration (s)")
     ax.set_title(
-        f"Mean Cumulative Duration per Processor for {mode} across {len(runs)} runs, {max_events} events"
+        f"Mean Cumulative Duration per Processor for {mode} across {len(runs)} runs, "
+        f"{max_events} events"
     )
     ax.legend()
     plt.tight_layout()
@@ -246,21 +254,23 @@ def main():
         min_events = 0.95 * max_events
 
     def filter_runs(runs, min_events, max_events, mode):
-        """Filter runs by completed events compared to min_events, check if csv files are
-        valid, return list of kept runs"""
+        """Filter runs by completed events compared to min_events, check if csv
+        files are valid, return list of kept runs"""
         kept_runs = []
         for run in runs:
             summary = f"{DATA_DIR}/run_{run}/summary_{mode}_{max_events}.csv"
             by_event = f"{DATA_DIR}/run_{run}/by_event_{mode}_{max_events}.csv"
             if not os.path.exists(summary) or not os.path.exists(by_event):
                 raise SystemExit(
-                    f"Cannot find data for run {run}, expected to be found in {summary} and {by_event}."
+                    f"Cannot find data for run {run}, expected to be found in "
+                    f"{summary} and {by_event}."
                 )
             f = pd.read_csv(summary)
             completed = f["completed_event_count"].iloc[0]
             if completed < min_events:
                 print(
-                    f"Run {run} dropped for completing {completed} events, below the minimum ({min_events})."
+                    f"Run {run} dropped for completing {completed} events, below the "
+                    f"minimum ({min_events})."
                 )
             else:
                 kept_runs.append(run)
@@ -269,7 +279,8 @@ def main():
         return kept_runs
 
     def sort_processors(runs, max_events, mode):
-        """Sort processors from highest to lowest duration, return sorted processors list"""
+        """Sort processors from highest to lowest duration, return sorted processors
+        list"""
         time_fractions = []
         for run in runs:
             f = pd.read_csv(f"{DATA_DIR}/run_{run}/summary_{mode}_{max_events}.csv")
@@ -288,10 +299,7 @@ def main():
     # Set number of processors to be on plot depending on mode
     num_highest_processors_dist = 12
 
-    if mode == "full":
-        num_highest_processors_frac = 7
-        num_highest_processors_cumul = 4
-    elif mode == "recon":
+    if mode == "full" or mode == "recon":
         num_highest_processors_frac = 7
         num_highest_processors_cumul = 4
     else:

@@ -1,8 +1,10 @@
 """Generates random run seeds and saves to seeds.json."""
 
 import json
-import numpy as np
 import sys
+
+import numpy as np
+
 
 MASTER_SEED = 12345
 MAX_SEED = 2**31 - 1

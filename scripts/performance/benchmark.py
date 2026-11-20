@@ -1,12 +1,12 @@
 """Run ecal_pn sequence to gather performance metrics in a specified mode."""
 
-from LDMX.Framework import ldmxcfg
+import os
 
 from LDMX.Biasing import ecal
+from LDMX.Framework import ldmxcfg
 from LDMX.SimCore import generators as gen
 from LDMX.SimCore.user_actions import PhotonuclearTracker
 
-import os
 
 # Configurable sim-only / recon-only / full modes
 mode = os.environ.get("LDMX_MODE", "full").strip().lower()

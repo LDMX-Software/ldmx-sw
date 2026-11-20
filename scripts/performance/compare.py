@@ -1,8 +1,10 @@
-"""Print change of processor performance between two versions of ldmx from summary.json files"""
+"""Print change of processor performance between two versions of ldmx from summary.json
+files"""
 
+import json
 import os
 import sys
-import json
+
 
 THRESHOLD = 30.0
 
@@ -46,7 +48,8 @@ for key in ["benchmark_mode", "max_event_count", "CPU_model"]:
 
 print("-" * 86)
 print(
-    f"| {'Processor':<30} | {'Old (s)':>10} | {'New (s)':>10} | {'Change (s)':>11} | {'Change %':>9} |"
+    f"| {'Processor':<30} | {'Old (s)':>10} | {'New (s)':>10} | {'Change (s)':>11} | "
+    "{'Change %':>9} |"
 )
 print("-" * 86)
 
@@ -68,7 +71,8 @@ for proc in sorted(set(old) | set(new)):
     else:
         flag = ""
     print(
-        f"| {proc:<30} | {old[proc]:>10.4g} | {new[proc]:>10.4g} | {change:>+11.3g} | {change_pct:>+8.1f}% | {flag:<10}"
+        f"| {proc:<30} | {old[proc]:>10.4g} | {new[proc]:>10.4g} | {change:>+11.3g} | "
+        f"{change_pct:>+8.1f}% | {flag:<10}"
     )
 
 if regressions:

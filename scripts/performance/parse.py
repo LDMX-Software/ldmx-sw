@@ -1,13 +1,15 @@
 """Print and save performance data from hist.root file using uproot"""
 
-import uproot
-import sys
-import json
 import csv
-import subprocess
-import socket
+import json
 import os
+import socket
+import subprocess
+import sys
+
 import numpy as np
+import uproot
+
 
 USAGE_PATH = ".../run_<run>/hist_<mode>_<max_events>.root"
 
@@ -28,8 +30,9 @@ try:
     RUN = int(run_dir.split("_")[1])
 except (IndexError, ValueError):
     raise SystemExit(
-        f"Unable to access mode, max_events, and run number from path. Usage: {sys.argv[0]} {USAGE_PATH}"
-    )
+        "Unable to access mode, max_events, and run number from path. Usage: "
+        f"{sys.argv[0]} {USAGE_PATH}"
+    ) from None
 
 # just perf recipe runs git rev-parse HEAD and passes it in to program
 SHA = os.environ.get("GIT_COMMIT_SHA")
@@ -135,7 +138,8 @@ with uproot.open(hist_path) as f:
     ]:
         for name, timer in f[f"performance/{callback}"].items(cycle=False):
             print(
-                f"| {callback:<15} | {name:32s} | {timer.members['duration_']:<14.3e} | "
+                f"| {callback:<15} | {name:32s} | {timer.members['duration_']:<14.3e} "
+                "| "
             )
             callback_rows.append(
                 {
@@ -152,7 +156,9 @@ with uproot.open(hist_path) as f:
     print(" Per-Processor Duration Summary:")
     print("-" * 132)
     print(
-        f"| {'Processor':<29} | {'Total (s)':<15} | {'Mean (s)':<15} | {'Median (s)':<15} | {'90th Percentile (s)':<19} | {'Fraction of __ALL__':<20} |"
+        f"| {'Processor':<29} | {'Total (s)':<15} | {'Mean (s)':<15} |"
+        f"{'Median (s)':<15} | {'90th Percentile (s)':<19} |"
+        f"{'Fraction of __ALL__':<20} |"
     )
     print("-" * 132)
 
@@ -167,7 +173,7 @@ with uproot.open(hist_path) as f:
         durations = branches[f"{process}.duration_"][bool_completed].tolist()
         by_event_rows.extend(
             {"event_id": event_id, "processor": process, "duration": dur}
-            for event_id, dur in zip(by_event_ids, durations)
+            for event_id, dur in zip(by_event_ids, durations, strict=True)
         )
 
         total = np.sum(durations)
@@ -175,13 +181,11 @@ with uproot.open(hist_path) as f:
         median = np.median(durations)
         percentile_90 = np.percentile(durations, 90)
 
-        if all_total > 0:
-            all_fraction = total / all_total
-        else:
-            all_fraction = 0
+        all_fraction = total / all_total if all_total > 0 else 0
 
         print(
-            f"| {process:<29} | {total:<15.3e} | {mean:<15.3e} | {median:<15.3e} | {percentile_90:<19.3e} | {all_fraction:<20.3e} |"
+            f"| {process:<29} | {total:<15.3e} | {mean:<15.3e} | {median:<15.3e} | "
+            f"{percentile_90:<19.3e} | {all_fraction:<20.3e} |"
         )
         processor_rows.append(
             {
