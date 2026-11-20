@@ -46,10 +46,11 @@ static void unrotate(double& p, double& q) {
   q = -tmp;
 }
 
-EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
+EcalGeometry::EcalGeometry(const framework::config::Parameters& ps,
+                           const std::array<double, 3>& offset)
     : framework::ConditionsObject(EcalGeometry::CONDITIONS_OBJECT_NAME) {
   layer_z_positions_ = ps.get<std::vector<double>>("layer_z_positions");
-  ecal_front_z_ = ps.get<double>("ecal_front_z");
+  ecal_front_z_ = ps.get<double>("ecal_front_z") + offset[2];
   module_r_min_ = ps.get<double>("module_min_r");
   gap_ = ps.get<double>("gap");
   n_cell_r_height_ = ps.get<double>("n_cell_r_height");
@@ -58,8 +59,8 @@ EcalGeometry::EcalGeometry(const framework::config::Parameters& ps)
   layer_shift_y_ = ps.get<double>("layer_shift_y");
   layer_shift_odd_ = ps.get<bool>("layer_shift_odd");
   layer_shift_odd_bilayer_ = ps.get<bool>("layer_shift_odd_bilayer");
-  ecal_center_x_ = ps.get<double>("ecal_center_x", 0.);
-  ecal_center_y_ = ps.get<double>("ecal_center_y", 0.);
+  ecal_center_x_ = ps.get<double>("ecal_center_x", 0.) + offset[0];
+  ecal_center_y_ = ps.get<double>("ecal_center_y", 0.) + offset[1];
   flip_y_ = ps.get<bool>("flip_y", false);
   flip_x_ = ps.get<bool>("flip_x", false);
   si_thickness_ = ps.get<double>("si_thickness");
