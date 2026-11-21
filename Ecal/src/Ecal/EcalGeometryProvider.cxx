@@ -1,5 +1,10 @@
 #include <regex.h>
 
+#include <array>
+#include <map>
+#include <memory>
+
+#include "Conditions/SimpleTableCondition.h"
 #include "DetDescr/EcalGeometry.h"
 #include "Framework/ConditionsObjectProvider.h"
 #include "Framework/EventHeader.h"
@@ -29,9 +34,10 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
 
   /**
    * Provides access to the EcalGeometry or EcalTriggerGeometry
-   * @note Currently, these are assumed to be valid for all time, but this
-   * behavior could be changed.  Users should not cache the pointer between
-   * events
+   * @note Without an alignment table the geometry is valid for all time.
+   * With one, the ECal is shifted by the table's offset and the geometry is
+   * valid for the table's interval of validity. Users should not cache the
+   * pointer between events
    */
   virtual std::pair<const framework::ConditionsObject*,
                     framework::ConditionsIOV>
@@ -48,8 +54,8 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
     const std::string rh_det = rh.getDetectorName();
     if (detector_geometry_.empty())
       detector_geometry_ = rh_det;
-    else if (ecal_geometry_ != nullptr && !rh_det.empty() &&
-             detector_geometry_ != rh_det) {
+    else if ((ecal_geometry_ != nullptr || !aligned_.empty()) &&
+             !rh_det.empty() && detector_geometry_ != rh_det) {
       EXCEPTION_RAISE(
           "GeometryException",
           "Attempting to run a single job with multiple geometries " +
@@ -64,8 +70,16 @@ class EcalGeometryProvider : public framework::ConditionsObjectProvider {
   }
 
  private:
+  /** Geometry parameters matching the detector name */
+  const framework::config::Parameters& findParameters();
+
   /** parameters for the various geometry versions we can support */
   std::vector<framework::config::Parameters> geometries_;
+  /** Alignment table (DX, DY, DZ [mm] in the EcalID(0, 0, 0) row), empty: none
+   */
+  std::string alignment_;
+  /** Aligned geometries, one per offset */
+  std::map<std::array<double, 3>, std::unique_ptr<ldmx::EcalGeometry>> aligned_;
   /** Geometry as last used */
   std::string detector_geometry_;
   ldmx::EcalGeometry* ecal_geometry_;
@@ -82,6 +96,7 @@ EcalGeometryProvider::EcalGeometryProvider(
       parameters.get<std::vector<framework::config::Parameters>>("geometries");
   // optional explicit detector name (real data), empty: use the RunHeader
   detector_geometry_ = parameters.get<std::string>("detector", "");
+  alignment_ = parameters.get<std::string>("alignment", "");
   ecal_geometry_ = 0;
 }
 
@@ -90,55 +105,71 @@ EcalGeometryProvider::~EcalGeometryProvider() {
   ecal_geometry_ = 0;
 }
 
-std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
-EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
+const framework::config::Parameters& EcalGeometryProvider::findParameters() {
   static const std::string keyname("detectors_valid");
-
-  if (!ecal_geometry_) {
-    // search through the subtrees
-    for (auto pver : geometries_) {
-      if (!pver.exists(keyname)) {
-        ldmx_log(warn) << "No parameter " << keyname
-                       << " found one of the detector vesrsions.";
-        // log strange situation and continue
-        continue;
-      }
-
-      std::vector<std::string> dets_valid =
-          pver.get<std::vector<std::string>>(keyname);
-      for (auto detregex : dets_valid) {
-        std::string regex(detregex);
-        if (regex.empty()) continue;  // no empty regex allowed
-        if (regex[0] != '^') regex.insert(0, 1, '^');
-        if (regex.back() != '$') regex += '$';
-        regex_t reg;
-
-        int rv =
-            regcomp(&reg, regex.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB);
-        if (rv) {
-          char err[1024];
-          regerror(rv, &reg, err, 1024);
-          EXCEPTION_RAISE(
-              "GeometryException",
-              "Invalid detector regular expression : '" + regex + "' " + err);
-        }
-        int nmatch = regexec(&reg, detector_geometry_.c_str(), 0, 0, 0);
-        regfree(&reg);
-        if (!nmatch) {
-          ecal_geometry_ = new ldmx::EcalGeometry(pver);
-          break;
-        }
-      }
-      if (ecal_geometry_) break;
+  // search through the subtrees
+  for (const auto& pver : geometries_) {
+    if (!pver.exists(keyname)) {
+      ldmx_log(warn) << "No parameter " << keyname
+                     << " found one of the detector vesrsions.";
+      // log strange situation and continue
+      continue;
     }
-    if (!ecal_geometry_) {
-      EXCEPTION_RAISE("GeometryException", "Unable to create EcalGeometry");
+
+    std::vector<std::string> dets_valid =
+        pver.get<std::vector<std::string>>(keyname);
+    for (auto detregex : dets_valid) {
+      std::string regex(detregex);
+      if (regex.empty()) continue;  // no empty regex allowed
+      if (regex[0] != '^') regex.insert(0, 1, '^');
+      if (regex.back() != '$') regex += '$';
+      regex_t reg;
+
+      int rv =
+          regcomp(&reg, regex.c_str(), REG_EXTENDED | REG_ICASE | REG_NOSUB);
+      if (rv) {
+        char err[1024];
+        regerror(rv, &reg, err, 1024);
+        EXCEPTION_RAISE(
+            "GeometryException",
+            "Invalid detector regular expression : '" + regex + "' " + err);
+      }
+      int nmatch = regexec(&reg, detector_geometry_.c_str(), 0, 0, 0);
+      regfree(&reg);
+      if (!nmatch) return pver;
     }
   }
+  EXCEPTION_RAISE("GeometryException", "Unable to create EcalGeometry");
+}
 
-  return std::make_pair(
-      ecal_geometry_,
-      framework::ConditionsIOV(context.getRun(), context.getRun(), true, true));
+std::pair<const framework::ConditionsObject*, framework::ConditionsIOV>
+EcalGeometryProvider::getCondition(const ldmx::EventHeader& context) {
+  if (alignment_.empty()) {
+    if (!ecal_geometry_)
+      ecal_geometry_ = new ldmx::EcalGeometry(findParameters());
+    return std::make_pair(
+        ecal_geometry_, framework::ConditionsIOV(context.getRun(),
+                                                 context.getRun(), true, true));
+  }
+
+  // whole-ECal shift from the alignment table, valid as long as the table
+  auto [obj, iov] = requestParentCondition(alignment_, context);
+  auto table = dynamic_cast<const conditions::DoubleTableCondition*>(obj);
+  if (!table) {
+    EXCEPTION_RAISE("GeometryException", "ECal alignment '" + alignment_ +
+                                             "' is not a table of doubles");
+  }
+  const unsigned int id{ldmx::EcalID(0, 0, 0).raw()};
+  const std::array<double, 3> offset{table->getByName(id, "DX"),
+                                     table->getByName(id, "DY"),
+                                     table->getByName(id, "DZ")};
+  auto& geo = aligned_[offset];
+  if (!geo) {
+    ldmx_log(info) << "ECal shifted by (" << offset[0] << ", " << offset[1]
+                   << ", " << offset[2] << ") mm for run " << context.getRun();
+    geo.reset(new ldmx::EcalGeometry(findParameters(), offset));
+  }
+  return std::make_pair(geo.get(), iov);
 }
 
 }  // namespace ecal

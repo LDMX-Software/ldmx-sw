@@ -26,6 +26,9 @@ class EcalGeometryProvider(ConditionsObjectProvider):
     # explicit detector name for real data, whose RunHeader carries none;
     # empty: use the RunHeader (sim)
     detector: str = ""
+    # name of a table condition with the whole-ECal shift (columns DX, DY, DZ
+    # in mm, row EcalID(0, 0, 0)) per run range; empty: no shift
+    alignment: str = ""
 
     def get_instance():
         """Get the single instance of the EcalGeometryProvider
@@ -44,6 +47,10 @@ class EcalGeometryProvider(ConditionsObjectProvider):
     def set_detector(self, det_name):
         """Set the detector name used to select the geometry parameters."""
         self.detector = det_name
+
+    def set_alignment(self, cond_name):
+        """Shift the ECal by the table condition cond_name (see alignment)."""
+        self.alignment = cond_name
 
     def __post_init__(self):
         if EcalGeometryProvider.__instance is not None:
