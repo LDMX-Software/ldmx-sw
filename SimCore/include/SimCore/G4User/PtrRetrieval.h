@@ -83,7 +83,8 @@ inline G4Region* getRegion(const std::string& name) {
  * @return Pointer to the physical volume if found, nullptr otherwise.
  */
 inline G4VPhysicalVolume* getPhysicalVolume(const std::string& name) {
-  auto* volume = G4PhysicalVolumeStore::GetInstance()->GetVolume(name);
+  // Quiet, names repeat when the GDML is parsed more than once
+  auto* volume = G4PhysicalVolumeStore::GetInstance()->GetVolume(name, false);
   if (!volume) {
     return nullptr;
   }
@@ -96,7 +97,7 @@ inline G4VPhysicalVolume* getPhysicalVolume(const std::string& name) {
  * @return Pointer to the logical volume if found, nullptr otherwise.
  */
 inline G4LogicalVolume* getLogicalVolume(const std::string& name) {
-  auto* volume = G4LogicalVolumeStore::GetInstance()->GetVolume(name);
+  auto* volume = G4LogicalVolumeStore::GetInstance()->GetVolume(name, false);
   if (!volume) {
     return nullptr;
   }

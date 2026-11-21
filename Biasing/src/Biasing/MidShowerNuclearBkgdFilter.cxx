@@ -92,7 +92,7 @@ bool MidShowerNuclearBkgdFilter::isNuclearProcess(
   if (proc) {
     const G4String& proc_name{proc->GetProcessName()};
     for (auto const& option : nuclear_processes_) {
-      if (proc_name.contains(option)) return true;
+      if (G4StrUtil::contains(proc_name, std::string_view(option))) return true;
     }  // loop over nuclear processes
   }  // pointer exists
   return false;
