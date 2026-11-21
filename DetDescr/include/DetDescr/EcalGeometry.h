@@ -17,6 +17,7 @@
 
 #include <assert.h>
 
+#include <array>
 #include <map>
 
 #include "DetDescr/EcalID.h"
@@ -346,8 +347,10 @@ class EcalGeometry : public framework::ConditionsObject {
    * Class constructor, for use only by the provider
    *
    * @param ps Parameters to configure the EcalGeometry
+   * @param offset world (x, y, z) shift of the whole ECal [mm] (alignment)
    */
-  EcalGeometry(const framework::config::Parameters& ps);
+  EcalGeometry(const framework::config::Parameters& ps,
+               const std::array<double, 3>& offset = {0., 0., 0.});
   friend class ecal::EcalGeometryProvider;
 
   /**

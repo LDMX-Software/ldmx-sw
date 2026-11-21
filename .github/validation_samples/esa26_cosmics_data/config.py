@@ -3,9 +3,10 @@
 Skim of run 408 (TS + ECal L1-L3 + HCal, HCal-triggered cosmics at ~400 Hz):
 whole events with a TS pulse >= 35 ADC codes and zero-suppressed ECal and HCal
 data, all streams kept in file order. The TS raw stream is decoded (15
-samples) and pads 1-3 are reconstructed to rec hits. ECal layers 1-3 share one merged ECON-D frame and are split by ECON-D
-ID, the HCal backplane comes in its own frame. Five samples per readout,
-sample of interest 2, zero suppression on.
+samples) and pads 1-3 are reconstructed to rec hits. ECal layers 1-3 share
+one merged ECON-D frame and are split by ECON-D ID, the HCal backplane comes
+in its own frame. Five samples per readout, sample of interest 2, zero
+suppression on.
 
 The raw .dat file is decompressed in init.sh, the EventBuilder takes
 whichever run sits in the ci-data directory.
