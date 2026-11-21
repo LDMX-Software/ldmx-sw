@@ -3,6 +3,7 @@
 from LDMX.Conditions.SimpleCSVTableProvider import simple_csv_double_table_provider
 from LDMX.Ecal.ecal_geometry import EcalGeometryProvider
 
+
 CONDITIONS_DATA = (
     "https://raw.githubusercontent.com/LDMX-Software/conditions-data/refs/heads/main/"
 )
