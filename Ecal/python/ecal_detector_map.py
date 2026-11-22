@@ -27,11 +27,12 @@ class EcalDetectorMap(ConditionsObjectProvider):
 
     @staticmethod
     def esa26():
-        """ESA 2026 cosmic stand, ECal layers 2 and 3
+        """ESA 2026 cosmic stand, ECal layers 0, 2 and 3
 
-        Electronics IDs as written by ECONDDecoder with fiber 2 (L2, 6 ROCs)
-        and fiber 3 (L3, ROC0, 2, 3). Channel to cell from cosmic muons
-        (L2 x L3 pairs, HCal tracks), see data/esa26/README.md.
+        Electronics IDs as written by ECONDDecoder with fiber 0 (L0, ROC1,
+        2, 4, 5), fiber 2 (L2, 6 ROCs) and fiber 3 (L3, ROC0, 2, 3). Channel
+        to cell from cosmic muons (L2 x L3 pairs, HCal tracks), see
+        data/esa26/README.md.
         """
         d = "@CMAKE_INSTALL_PREFIX@/data/Ecal/esa26"
         return EcalDetectorMap(
