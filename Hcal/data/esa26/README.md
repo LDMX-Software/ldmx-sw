@@ -50,6 +50,24 @@ anti-correlates (-1.00) with the bar position and the new one correlates
 (+1.00); plane 8 is then one continuous sequence across ROC0 (strips 0-3) and
 ROC1 (strips 4-7).
 
+Planes 1 and 2 (the short pair) are reversed within each group of 4 bars as
+well, to match planes 3 and 4 below them: in run 227 (the only run with their
+inputs read out, see below) plane 1 strip s paired with plane 3 strip
+4*(s/4) + 3 - s%4, and plane 2 with plane 4 the same way; with the reversal
+both pairings are diagonal. Their bar ends pair up in 73-85% of the events
+and their pulse heights match the other planes, so they are real bars.
+
+Check of every plane with HCal-only straight tracks (leave-one-out residual
+of the plane, from the other planes of its view, as mapped vs reversed
+within each group of 4 bars; fraction within 50 mm): runs 556-564, planes
+5-12 0.97-0.99 vs 0.22-0.28, plane 3 0.65 vs 0.26, plane 4 0.69 vs 0.26;
+run 227, plane 2 0.99 vs 0.25, plane 4 0.91 vs 0.23. Plane 1 has too few x
+tracks in run 227 and follows plane 3 through the strip pairing above.
+Online, their inputs (ROC0 and ROC2 channels 0-12, 36-48) have been switched
+off in the trigger and masked in zero suppression since 4-Nov, because they
+read far above pedestal with the SiPM bias on; runs after that have no
+planes 1 and 2 data.
+
 ROC1 order (runs 549-564, HCal-triggered ZS): drawing order with left = low
 strip, reversed within the cable where the sheet marks the polarity as
 reversed. The two ends of each bar pair up in 84-93% of the events, planes
