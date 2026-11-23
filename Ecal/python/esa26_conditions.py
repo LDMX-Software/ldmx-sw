@@ -45,6 +45,6 @@ def esa26_alignment(base_url=CONDITIONS_DATA):
     """
     align = simple_csv_double_table_provider("EcalAlignment", ["DX", "DY", "DZ"])
     align.conditions_base_url = base_url
-    align.entries_url = "Ecal/esa26/alignment/index_v1_0_0.csv"
+    align.entries_url = "Ecal/esa26/alignment/index_v1_1_0.csv"
     EcalGeometryProvider.get_instance().set_alignment("EcalAlignment")
     return align

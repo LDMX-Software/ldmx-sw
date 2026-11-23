@@ -33,6 +33,13 @@ The EcalReconConditions (pedestals, gains) live in
 [conditions-data](https://github.com/LDMX-Software/conditions-data) under
 `Ecal/esa26`, loaded by `LDMX.Ecal.esa26_conditions.esa26_recon_conditions()`.
 
-Open: the module center from the tracks differs from the v2 geometry by about
--99 mm in x and +65 mm in y; it depends on the provisional HCal conventions
-(front at -y, planes 6 and 8).
+Geometry: `ldmx-esa-cosmic26-v2` places these cells without `flip_x`. With
+the corrected ESA26 HCal map (planes 3, 4, 6, 8 and the ROC1 planes 10, 12),
+HCal x tracks put the module at 30 degrees without a mirror in the HCal frame:
+x residual 11 mm (100 mm with the flip), L2 and L3 at the same x offset. This
+gives the same module cells as the 330 degrees + mirror + `flip_x` above, so
+the cell map is unchanged; the L3 layer center is then -8.79 mm in global x.
+The remaining ECal shift vs the HCal (DX, DY) is the run-dependent EcalAlignment
+condition in conditions-data. Open: the HCal absolute x direction has no
+outside reference (a left/right error in the cabling drawings would bring the
+mirror back).
