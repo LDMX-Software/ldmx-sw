@@ -25,14 +25,13 @@ the top):
 - "Side 1" planes (ROC0, ROC1) have bars along y, "Side 2" planes (ROC2,
   ROC3) along x. With plane numbers increasing downwards this matches the
   alternation of all three stations in the GDML.
-- ROC1 reads plane 8 strips 4-7 (ROC0 reads 0-3) and planes 10 and 12. Its
-  plane 6 cables (J4-1, J12-1) are not installed, so plane 6 reads strips
-  0-3 only.
+- ROC1 reads planes 6 and 8 strips 4-7 (ROC0 reads 0-3) and planes 10 and
+  12. The cabling sheet lists its plane 6 cables (J4-1, J12-1) as not
+  installed, but they read real bars (see below).
 
-248 of 288 channels are mapped: 8 belong to the uninstalled ROC1 plane 6
-cables, 32 are the unconnected every-ninth channels. Cable J9-1 (ROC1
-channels 36-39, plane 10 end 0 of strips 0-3) is mapped but gave no hits in
-runs 549-564.
+256 of 288 channels are mapped; the other 32 are the unconnected every-ninth
+channels. Cable J9-1 (ROC1 channels 36-39, plane 10 end 0 of strips 0-3) is
+mapped but gave no hits in runs 549-600.
 
 Strip order corrected with cosmic tracks (run 227, zero suppression, 4.8 h):
 in the stations above and below the ECal one end of each bar had its strip
@@ -56,6 +55,14 @@ strip, reversed within the cable where the sheet marks the polarity as
 reversed. The two ends of each bar pair up in 84-93% of the events, planes
 10 and 12 agree within one strip in 99.4% of the events, and HCal x tracks
 from planes 1, 3, 6 and 8 give the direction.
+
+ROC1 plane 6 (runs 594 and 600): with one hit on each plane, channel 13+k of
+J4-1 and 49+k of J12-1 pair with plane 8 strip 4+k in 67-86% of the events
+and with a neighbor in nearly all the rest (under 1% two or more strips
+off), so they are
+strips 4-7 in channel order, J12-1 end 0 and J4-1 end 1 as on ROC0. Strip 4
+is also the bar that fires together with ROC0's strip 3. The two ends pair
+up in 99% of the events.
 
 **Provisional:** the drawings fix left/right only relative to the front.
 Front is taken at -y (right at +x). If the front is at +y, the strip order
