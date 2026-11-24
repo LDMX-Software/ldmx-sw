@@ -359,11 +359,13 @@ class EcalGeometry:
             layer_shift_odd=True,
             ecal_center_x=4976.532,
             ecal_center_y=-104.346,
-            flip_x=True,
+            # no x flip: with the ESA26 cell map, HCal x tracks place the
+            # cells unflipped (x residual 11 mm vs 100 mm with the flip)
+            flip_x=False,
         )
         # no designed odd-layer shift in the stand: the shift places L3 (the
         # only odd layer read out) where cosmic muons put it relative to L2,
-        # +8.79 mm in global x (sign flipped by flip_x), +0.29 mm in y
+        # -8.79 mm in global x, +0.29 mm in y
         eg.layer_shift_x = -8.79
         eg.layer_shift_y = 0.29
         return eg
