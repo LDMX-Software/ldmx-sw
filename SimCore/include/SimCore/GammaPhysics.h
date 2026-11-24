@@ -14,8 +14,8 @@
 //   Geant4   //
 //------------//
 #include "Framework/Configure/Parameters.h"
-#include "G4GammaConversionToMuons.hh"
 #include "G4VPhysicsConstructor.hh"
+#include "SimCore/GammaConversionToMuons.h"
 
 namespace simcore {
 
@@ -70,7 +70,7 @@ class GammaPhysics : public G4VPhysicsConstructor {
   /**
    * The gamma to muons process.
    */
-  G4GammaConversionToMuons gamma_conv_process_;
+  GammaConversionToMuons gamma_conv_process_;
 
   /**
    * Parameters from the configuration to pass along to the photonuclear model.

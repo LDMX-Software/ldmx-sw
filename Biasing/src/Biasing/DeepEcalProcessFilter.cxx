@@ -45,7 +45,7 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
 
   // Skip the steps that are for the recoil electron
   // PrimaryToEcalFilter made sure there is a fiducial e-
-  if (process_name.contains("unknown")) return;
+  if (G4StrUtil::contains(process_name, "unknown")) return;
 
   // Energy of the particle is below threshold, move to next step
   if (track->GetKineticEnergy() < bias_threshold_) {
@@ -59,11 +59,12 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
 
   auto track_info{simcore::UserTrackInformation::get(track)};
   // Tag the brem photon from the primary electron
-  if (process_name.contains("eBrem") and (track->GetParentID() == 1)) {
+  if (G4StrUtil::contains(process_name, "eBrem") and
+      (track->GetParentID() == 1)) {
     track_info->tagBremCandidate();
     getEventInfo()->incBremCandidateCount();
     track_info->setSaveFlag(true);
-    if (volume_name.contains("target")) {
+    if (G4StrUtil::contains(volume_name, "target")) {
       photon_from_target_ = true;
     }
   }
@@ -79,7 +80,7 @@ void DeepEcalProcessFilter::stepping(const G4Step* step) {
   for (auto& process : processes_) {
     // ldmx_log(debug) << "Allowed processed " << process << " now we have " <<
     // processName;
-    if (process_name.contains(process)) {
+    if (G4StrUtil::contains(process_name, std::string_view(process))) {
       has_process_needed = true;
       break;
     }

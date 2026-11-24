@@ -26,7 +26,8 @@ void TrackProcessFilter::postUserTrackingAction(const G4Track* track) {
   if (const G4VProcess* process{track->GetCreatorProcess()}; process) {
     auto name{process->GetProcessName()};
     auto track_info{simcore::UserTrackInformation::get(track)};
-    if (name.contains(process_)) track_info->setSaveFlag(true);
+    if (G4StrUtil::contains(name, std::string_view(process_)))
+      track_info->setSaveFlag(true);
   }  // does this track have a creator process
 }
 
